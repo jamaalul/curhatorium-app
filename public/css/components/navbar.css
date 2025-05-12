@@ -1,0 +1,81 @@
+nav {
+    width: 100vw;
+    height: 61px;
+    position: fixed;
+    top: -1px;
+    background-color: #fff;
+    display: flex;
+    align-items: center;
+    padding-inline: 40px;
+    padding-top: 1px;
+    z-index: 5;
+    justify-content: space-between;
+}
+
+nav #logo-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+nav h1 {
+    /* display: flex;
+    align-items: center;
+    gap: 10px; */
+    color: #595959;
+    font-size: 1.5em;
+}
+
+nav #mini-logo {
+    width: 40px;
+    height: 40px;
+}
+
+nav #profile-box {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background-color: #222222;
+    height: 46px;
+    width: fit-content;
+    border-radius: 23px;
+    padding-right: 3px;
+    color: #fff;
+    font-weight: 600;
+    letter-spacing: 1px;
+    font-size: 0.8em;
+}
+
+nav #profile-box img {
+    width: 40px;
+    height: 40px;
+}
+
+nav #profile-box #xp-box {
+    height: 100%;
+    width: fit-content;
+    border-radius: 23px;
+    background-color: #9acbd0;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding-right: 20px;
+}
+
+nav #profile-box #xp-box #badge-box {
+    height: 100%;
+    width: fit-content;
+    border-radius: 23px;
+    background-color: #9acbd0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-inline: 20px;
+    background-color: #ffcd2d;
+}
+
+@media (max-width: 768px) {
+    nav #profile-box {
+        display: none;
+    }
+}

@@ -1,0 +1,137 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body,
+html {
+    height: 100%;
+    background-image: url("/images/background.jpg");
+    background-size: cover;
+    background-position: center;
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    flex-direction: row;
+    padding: 20px;
+}
+
+.illustration {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.illustration img {
+    max-width: 70%;
+    height: auto;
+}
+
+.signup-box {
+    flex: 1;
+    max-width: 350px;
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.signup-box h1 {
+    text-align: center;
+    letter-spacing: 0.03em;
+    margin-bottom: 20px;
+    font-weight: 900;
+    font-size: 3em;
+    color: #2b9c94;
+}
+
+.signup-box input[type="text"],
+.signup-box input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.signup-box .links {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9em;
+    margin-top: 10px;
+}
+
+.signup-box .links a {
+    color: #2b9c94;
+    text-decoration: none;
+}
+
+.signup-box label {
+    font-size: 0.9em;
+}
+
+.signup-box label a {
+    color: #2b9c94;
+}
+
+.signup-box input[type="checkbox"] {
+    margin-right: 5px;
+}
+
+.signup-box button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 20px;
+    background-color: #2b9c94;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.signup-box button:hover {
+    background-color: #258a83;
+}
+
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+    }
+
+    .illustration {
+        margin-bottom: 20px;
+    }
+
+    .illustration img {
+        max-width: 50%;
+    }
+}
+
+@media (max-width: 480px) {
+    .signup-box {
+        padding: 20px;
+        width: 100%;
+    }
+}
+
+@media (min-width: 768px) {
+    .signup-box {
+        transform: translateX(-10vw);
+    }
+}
+
+@media (min-width: 1024px) {
+    .signup-box {
+        transform: translateX(-15vw);
+    }
+
+    .illustration img {
+        transform: translateX(-7vw);
+    }
+}

@@ -1,0 +1,55 @@
+@font-face {
+    font-family: PlayfairDisplay-reg;
+    src: url(fonts/PlayfairDisplay-Regular.ttf);
+}
+
+.quote-section {
+    text-align: center;
+    padding: 40px 20px;
+    background-color: #ffffff;
+    color: #000000;
+}
+
+.quote-section h2 {
+    color: #2b9c94;
+    font-size: 1.5em;
+    font-weight: bold;
+    margin-bottom: 30px;
+}
+
+.quote-box {
+    margin: 0 auto;
+    padding: 30px 20px;
+    /* max-width: 700px; */
+    border-block: 4px solid #eee7dc;
+}
+
+.quote-text {
+    font-size: 1.5em;
+    font-style: italic;
+    color: #000;
+    font-family: PlayfairDisplay-reg, "Times New Roman", Times, serif;
+}
+
+.flower-icon {
+    margin-top: 20px;
+}
+
+.flower-icon img {
+    width: 30px;
+    height: auto;
+}
+
+@media (max-width: 600px) {
+    .quote-section h2 {
+        font-size: 1.2em;
+    }
+
+    .quote-text {
+        font-size: 1.1em;
+    }
+
+    .flower-icon img {
+        width: 24px;
+    }
+}

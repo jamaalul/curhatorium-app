@@ -1,0 +1,83 @@
+.agenda-section {
+    max-width: 800px;
+    margin: 60px auto;
+    padding: 0 35px;
+}
+
+.agenda-section h2 {
+    font-size: 2em;
+    font-weight: bold;
+    color: #000;
+    margin-bottom: 30px;
+}
+
+.agenda-card {
+    display: flex;
+    align-items: center;
+    background-color: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    margin-bottom: 20px;
+    gap: 20px;
+    transition: transform 0.2s ease;
+}
+
+.agenda-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    z-index: 2;
+}
+
+.agenda-card .icon-box {
+    min-width: 90px;
+    height: 90px;
+    border-radius: 12px;
+    flex-shrink: 0;
+}
+
+.agenda-card.teal .icon-box {
+    background-color: #93cdd3;
+}
+
+.agenda-card.yellow .icon-box {
+    background-color: #fcd53f;
+}
+
+.agenda-text {
+    flex: 1;
+}
+
+.agenda-text small {
+    font-size: 0.9em;
+    color: #777;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.agenda-text strong {
+    font-size: 1em;
+    display: block;
+    color: #000;
+    margin-bottom: 6px;
+}
+
+.agenda-text span {
+    font-size: 0.85em;
+    color: #777;
+}
+
+@media (max-width: 768px) {
+    .agenda-card {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .agenda-card .icon-box {
+        width: 100%;
+        height: 60px;
+    }
+
+    .agenda-section h2 {
+        font-size: 1.3em;
+    }
+}
