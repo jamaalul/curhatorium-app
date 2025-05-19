@@ -17,6 +17,8 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->integer('total_xp')->default(0);
+            $table->foreignId('group_id')->nullable()->constrained('sgd_groups', 'id')->onDelete('cascade');
             $table->rememberToken();
             $table->timestamps();
         });

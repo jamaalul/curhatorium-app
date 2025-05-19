@@ -1,0 +1,464 @@
+body {
+    background-color: #f5f2eb;
+    min-height: 100vh;
+    padding-top: 81px; /* Space for fixed navbar (61px) + extra padding */
+}
+
+/* Container */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Page title */
+.page-title {
+    margin-bottom: 30px;
+    color: #333;
+    font-size: 28px;
+}
+
+/* Main layout */
+.main-content {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+/* Form */
+.form-container {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.form-title {
+    margin-bottom: 20px;
+    font-size: 20px;
+    color: #333;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-label {
+    font-weight: 500;
+    color: #555;
+}
+
+.form-input {
+    width: calc(100%-24px);
+    padding: 7px;
+    border: 1px solid #ddd;
+    background-color: #f9f9f9;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.form-textarea {
+    width: calc(100%-24px);
+    padding: 7px;
+    border: 1px solid #ddd;
+    background-color: #f9f9f9;
+    border-radius: 4px;
+    min-height: 100px;
+    font-size: 16px;
+    resize: vertical;
+}
+
+.form-button {
+    width: 100%;
+    padding: 7px;
+    background-color: #222222;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.2s;
+}
+
+.form-button:hover {
+    background-color: #333333;
+}
+
+.form-button span {
+    margin-left: 8px;
+}
+
+/* Groups section */
+.groups-section {
+    margin-top: 20px;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.section-title {
+    font-size: 20px;
+    color: #333;
+}
+
+/* Loading state */
+.loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 200px;
+}
+
+.loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #8ecbcf;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Error state */
+.error-container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    border-left: 4px solid #ff6b6b;
+    margin: 20px 0;
+}
+
+.error-title {
+    color: #ff6b6b;
+    margin-bottom: 10px;
+}
+
+.error-message {
+    color: #666;
+}
+
+.retry-button {
+    margin-top: 15px;
+    padding: 8px 16px;
+    background-color: #ff6b6b;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* Discussion groups */
+.groups-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+}
+
+.group-card {
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+    background-color: #fff;
+}
+
+.group-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+    background-color: #8ecbcf;
+    height: 80px;
+    padding: 16px;
+    position: relative;
+}
+
+.card-header .member-count {
+    position: absolute;
+    right: 16px;
+    top: 16px;
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.card-content {
+    background-color: #fff;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    min-height: 180px;
+}
+
+.card-title {
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: #333;
+    font-size: 18px;
+}
+
+.card-text {
+    font-size: 14px;
+    color: #666;
+    flex: 1;
+    margin-bottom: 15px;
+}
+
+.card-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    font-size: 12px;
+    color: #888;
+}
+
+.join-button {
+    align-self: flex-start;
+    padding: 8px 16px;
+    background-color: #ffcd2d;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    font-weight: 600;
+    transition: background-color 0.2s;
+}
+
+.join-button:hover {
+    background-color: #f0c020;
+}
+
+.join-button span {
+    margin-left: 8px;
+}
+
+/* Navbar styles */
+nav {
+    width: 100%;
+    max-width: 100%;
+    height: 61px;
+    position: fixed;
+    top: 0;
+    background-color: #fff;
+    display: flex;
+    align-items: center;
+    padding-inline: 20px;
+    z-index: 5;
+    justify-content: space-between;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+nav #logo-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+nav h1 {
+    color: #595959;
+    font-size: 1.5em;
+}
+
+nav #mini-logo {
+    width: 40px;
+    height: 40px;
+}
+
+nav #profile-box {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background-color: #222222;
+    height: 46px;
+    width: fit-content;
+    border-radius: 23px;
+    padding-right: 3px;
+    color: #fff;
+    font-weight: 600;
+    letter-spacing: 1px;
+    font-size: 0.8em;
+    transition: all 0.3s ease;
+}
+
+nav #profile-box img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+nav #profile-box #xp-box {
+    height: 100%;
+    width: fit-content;
+    border-radius: 23px;
+    background-color: #9acbd0;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding-right: 20px;
+}
+
+nav #profile-box #xp-box #badge-box {
+    height: 100%;
+    width: fit-content;
+    border-radius: 23px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0px 20px 0px 10px;
+    background-color: #ffcd2d;
+}
+
+/* Mobile menu button */
+.mobile-menu-button {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+}
+
+.mobile-menu-button span {
+    display: block;
+    width: 25px;
+    height: 3px;
+    background-color: #595959;
+    margin: 5px 0;
+    transition: all 0.3s ease;
+}
+
+/* Responsive styles */
+@media (min-width: 768px) {
+    .groups-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 1024px) {
+    .main-content {
+        flex-direction: row;
+    }
+
+    .form-container {
+        width: 350px;
+        flex-shrink: 0;
+        align-self: flex-start;
+        position: sticky;
+        top: 81px;
+    }
+
+    .groups-section {
+        flex: 1;
+        margin-top: 0;
+    }
+
+    .groups-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 1200px) {
+    .groups-container {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 767px) {
+    nav {
+        padding-inline: 15px;
+    }
+
+    nav h1 {
+        font-size: 1.2em;
+    }
+
+    /* Show mobile menu button */
+    .mobile-menu-button {
+        display: block;
+    }
+
+    /* Hide full profile box by default on mobile */
+    nav #profile-box {
+        position: absolute;
+        top: 61px;
+        right: -300px; /* Hide off-screen */
+        flex-direction: column;
+        height: auto;
+        width: 250px;
+        border-radius: 0 0 0 10px;
+        padding: 15px;
+        transition: right 0.3s ease;
+        box-shadow: -2px 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    nav #profile-box.active {
+        right: 0; /* Show when active */
+    }
+
+    nav #profile-box #xp-box {
+        width: 100%;
+        justify-content: space-between;
+        padding: 10px;
+        border-radius: 15px;
+        margin-bottom: 10px;
+    }
+
+    nav #profile-box #xp-box #badge-box {
+        padding: 5px 10px;
+    }
+
+    .username {
+        margin: 10px 0;
+    }
+
+    #pict {
+        margin-top: 5px;
+    }
+}
+
+/* Small mobile screens */
+@media (max-width: 480px) {
+    nav h1 {
+        font-size: 1em;
+    }
+
+    nav #mini-logo {
+        width: 30px;
+        height: 30px;
+    }
+
+    nav #profile-box {
+        width: 220px;
+    }
+
+    .page-title {
+        font-size: 24px;
+    }
+}

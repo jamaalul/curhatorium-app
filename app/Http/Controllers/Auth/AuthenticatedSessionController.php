@@ -44,4 +44,10 @@ class AuthenticatedSessionController extends Controller
 
         return redirect('/');
     }
+
+    public function getUser()
+    {
+        $user = Auth::user();
+        return response()->json($user);
+    }
 }
