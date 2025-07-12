@@ -1,78 +1,3 @@
-/* nav {
-    width: 100vw;
-    max-width: 100vw;
-    height: 61px;
-    position: fixed;
-    top: -1px;
-    background-color: #fff;
-    display: flex;
-    align-items: center;
-    padding-inline: 40px;
-    padding-top: 1px;
-    z-index: 5;
-    justify-content: space-between;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
-}
-
-nav #logo-box {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-nav h1 {
-    color: #595959;
-    font-size: 1.5em;
-}
-
-nav #mini-logo {
-    width: 40px;
-    height: 40px;
-}
-
-nav #profile-box {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    background-color: #222222;
-    height: 46px;
-    width: fit-content;
-    border-radius: 23px;
-    padding-right: 3px;
-    color: #fff;
-    font-weight: 600;
-    letter-spacing: 1px;
-    font-size: 0.8em;
-}
-
-nav #profile-box img {
-    width: 40px;
-    height: 40px;
-}
-
-nav #profile-box #xp-box {
-    height: 100%;
-    width: fit-content;
-    border-radius: 23px;
-    background-color: #9acbd0;
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    padding-right: 20px;
-}
-
-nav #profile-box #xp-box #badge-box {
-    height: 100%;
-    width: fit-content;
-    border-radius: 23px;
-    background-color: #8e805d;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 0px 20px 0px 10px;
-    background-color: #ffcd2d;
-} */
-
 nav * {
     margin: 0;
     padding: 0;
@@ -81,8 +6,7 @@ nav * {
 
 /* Navbar styles */
 nav {
-    width: 100%;
-    max-width: 100%;
+    width: 100vw;
     height: 61px;
     position: fixed;
     top: -1px;
@@ -94,6 +18,7 @@ nav {
     z-index: 5;
     justify-content: space-between;
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
 }
 
 nav #logo-box {

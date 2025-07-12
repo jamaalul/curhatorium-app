@@ -38,7 +38,7 @@
       </div>
       <div class="card-content">
         <div class="card-title">
-          <h3>Mental Support Chatbot</h3>
+          <h3>Ment-AI</h3>
           <span>+10 XP</span>
         </div>
         <p class="card-description">Chatbot AI yang siap mendengar ceritamu 24/7</p>

@@ -1,0 +1,30 @@
+.main {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #f1ede7;
+
+    h1 {
+        font-size: clamp(1.5rem, 3vw, 6rem);
+        padding-top: clamp(6rem, 6vw, 8rem);
+    }
+
+    .shown {
+        width: 100%;
+        height: fit-content;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: clamp(1.5rem, 3vw, 6rem);
+
+        .card {
+            width: 17rem;
+            aspect-ratio: 5 / 7;
+            border: 1px solid black;
+            border-radius: 5px;
+        }
+    }
+}

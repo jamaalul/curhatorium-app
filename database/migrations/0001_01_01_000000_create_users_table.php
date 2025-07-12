@@ -14,11 +14,13 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('username')->unique();
+            $table->string('name')->unique()->nullable();
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->integer('total_xp')->default(0);
             $table->foreignId('group_id')->nullable()->constrained('sgd_groups', 'id')->onDelete('cascade');
+            $table->boolean('is_admin')->default(false)->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

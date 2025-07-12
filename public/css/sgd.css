@@ -1,4 +1,5 @@
 body {
+    width: 100vw;
     background-color: #f5f2eb;
     min-height: 100vh;
     padding-top: 81px; /* Space for fixed navbar (61px) + extra padding */
@@ -6,7 +7,7 @@ body {
 
 /* Container */
 .container {
-    max-width: 1200px;
+    /* max-width: 1200px; */
     margin: 0 auto;
     padding: 20px;
 }

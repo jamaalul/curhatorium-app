@@ -2,7 +2,7 @@
 
 <body>
   <section class="hero-sect">
-    <h1>curhatorium</h1>
+    <h1>Curhatorium</h1>
     <div class="icon-block">
       <img src="assets/logo.svg" alt="Logo" />
     </div>

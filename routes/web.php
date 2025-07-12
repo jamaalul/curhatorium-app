@@ -22,6 +22,10 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::get('/support-group-discussion', [SgdController::class, 'show'])->name('sgd');
+
+    Route::get('/deep-cards', function() {
+        return view('cards');
+    });
 });
 
 require __DIR__.'/auth.php';
