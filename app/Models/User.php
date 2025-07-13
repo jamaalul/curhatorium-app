@@ -21,8 +21,10 @@ class User extends Authenticatable implements FilamentUser
      */
     protected $fillable = [
         'username',
+        'name',
         'email',
         'password',
+        'group_id',
     ];
 
     /**
@@ -46,11 +48,6 @@ class User extends Authenticatable implements FilamentUser
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
-    }
-
-    public function group()
-    {
-        return $this->belongsTo(SgdGroup::class);
     }
 
      public function canAccessPanel(\Filament\Panel $panel): bool

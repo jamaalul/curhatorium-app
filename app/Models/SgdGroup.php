@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Models\User;
+use Illuminate\Support\Str;
 
 class SgdGroup extends Model
 {
@@ -12,11 +12,24 @@ class SgdGroup extends Model
         'title',
         'topic',
         'meeting_address',
+        'schedule',
         'is_done',
         'category'
     ];
-    public function members()
+
+    protected $casts = [
+        'schedule' => 'datetime',
+        'is_done' => 'boolean',
+    ];
+
+    protected static function boot()
     {
-        return $this->hasMany(User::class);
+        parent::boot();
+
+        static::creating(function ($sgdGroup) {
+            if (empty($sgdGroup->meeting_address)) {
+                $sgdGroup->meeting_address = urlencode(Str::random(12));
+            }
+        });
     }
 }

@@ -39,6 +39,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/agenda/pending', [AgendaController::class, 'getPending'])->name('getPendingAgenda');
     Route::get('/quote/today', [QuoteController::class, 'quoteOfTheDay']);
 
-    Route::post('support-group-discussion/create', [SgdController::class, 'createGroup'])->name('group.create');
     Route::get('/support-group-discussion/get', [SgdController::class, 'getGroups'])->name('group.get');
+    Route::post('/support-group-discussion/join', [SgdController::class, 'joinGroup'])->name('group.join');
 });

@@ -1,7 +1,7 @@
 <link rel="stylesheet" href="css/components/navbar.css">
 
     <nav>
-        <div id="logo-box">
+        <div id="logo-box" onclick="window.location.href = '/dashboard'">
             <img src="assets/mini_logo.png" alt="mini_logo" id="mini-logo">
             <h1>Curhatorium</h1>
         </div>

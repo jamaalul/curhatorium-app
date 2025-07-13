@@ -294,5 +294,207 @@ createGroupForm.addEventListener("submit", function (event) {
 
 // Load groups when the page loads
 document.addEventListener("DOMContentLoaded", function () {
-    loadGroups();
+    // Auto-submit form when filters change (optional enhancement)
+    const filterSelects = document.querySelectorAll(".filter-select");
+    const searchInput = document.querySelector(".search-input");
+
+    // Debounce function for search input
+    function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+
+    // Auto-submit on filter change (optional - uncomment if you want this behavior)
+    /*
+    filterSelects.forEach(select => {
+        select.addEventListener('change', function() {
+            this.closest('form').submit();
+        });
+    });
+    */
+
+    // Real-time search with debouncing (optional enhancement)
+    /*
+    const debouncedSearch = debounce(function() {
+        searchInput.closest('form').submit();
+    }, 500);
+    
+    searchInput.addEventListener('input', debouncedSearch);
+    */
+
+    // Add loading states to buttons
+    const applyButton = document.querySelector(".apply-filters-btn");
+    if (applyButton) {
+        applyButton.addEventListener("click", function () {
+            this.innerHTML =
+                '<span class="loading-spinner-small"></span> Applying...';
+            this.disabled = true;
+        });
+    }
+
+    // Add visual feedback for active filters
+    function highlightActiveFilters() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const activeFilters = [];
+
+        if (urlParams.get("search")) {
+            activeFilters.push("Search: " + urlParams.get("search"));
+        }
+        if (urlParams.get("category") && urlParams.get("category") !== "all") {
+            activeFilters.push("Category: " + urlParams.get("category"));
+        }
+        if (urlParams.get("status")) {
+            activeFilters.push("Status: " + urlParams.get("status"));
+        }
+
+        // Create active filters display
+        if (activeFilters.length > 0) {
+            const activeFiltersContainer = document.createElement("div");
+            activeFiltersContainer.className = "active-filters";
+            activeFiltersContainer.innerHTML = `
+                <span class="active-filters-label">Active filters:</span>
+                ${activeFilters
+                    .map(
+                        (filter) =>
+                            `<span class="active-filter-tag">${filter}</span>`
+                    )
+                    .join("")}
+            `;
+
+            const searchFilterSection = document.querySelector(
+                ".search-filter-section"
+            );
+            if (searchFilterSection) {
+                searchFilterSection.appendChild(activeFiltersContainer);
+            }
+        }
+    }
+
+    // Initialize active filters display
+    highlightActiveFilters();
+
+    // Add smooth scrolling for better UX
+    function smoothScrollToTop() {
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth",
+        });
+    }
+
+    // Smooth scroll to top when applying filters
+    const form = document.querySelector(".search-filter-form");
+    if (form) {
+        form.addEventListener("submit", function () {
+            // Small delay to ensure form submission starts
+            setTimeout(smoothScrollToTop, 100);
+        });
+    }
+
+    // Add keyboard shortcuts
+    document.addEventListener("keydown", function (e) {
+        // Ctrl/Cmd + K to focus search
+        if ((e.ctrlKey || e.metaKey) && e.key === "k") {
+            e.preventDefault();
+            searchInput.focus();
+        }
+
+        // Escape to clear search
+        if (e.key === "Escape" && document.activeElement === searchInput) {
+            searchInput.value = "";
+            searchInput.blur();
+        }
+    });
+
+    // Add tooltips for better UX
+    const tooltipElements = document.querySelectorAll("[data-tooltip]");
+    tooltipElements.forEach((element) => {
+        element.addEventListener("mouseenter", function () {
+            const tooltip = document.createElement("div");
+            tooltip.className = "tooltip";
+            tooltip.textContent = this.getAttribute("data-tooltip");
+            document.body.appendChild(tooltip);
+
+            const rect = this.getBoundingClientRect();
+            tooltip.style.left =
+                rect.left + rect.width / 2 - tooltip.offsetWidth / 2 + "px";
+            tooltip.style.top = rect.top - tooltip.offsetHeight - 5 + "px";
+        });
+
+        element.addEventListener("mouseleave", function () {
+            const tooltip = document.querySelector(".tooltip");
+            if (tooltip) {
+                tooltip.remove();
+            }
+        });
+    });
 });
+
+// Add CSS for new elements
+const style = document.createElement("style");
+style.textContent = `
+    .active-filters {
+        margin-top: 16px;
+        padding: 12px;
+        background-color: #f8f9fa;
+        border-radius: 6px;
+        border-left: 4px solid #8ecbcf;
+    }
+    
+    .active-filters-label {
+        font-weight: 500;
+        color: #555;
+        margin-right: 8px;
+    }
+    
+    .active-filter-tag {
+        display: inline-block;
+        background-color: #8ecbcf;
+        color: white;
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 12px;
+        margin: 2px 4px 2px 0;
+    }
+    
+    .loading-spinner-small {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        border: 2px solid #ffffff;
+        border-top: 2px solid transparent;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-right: 8px;
+    }
+    
+    .tooltip {
+        position: fixed;
+        background-color: #333;
+        color: white;
+        padding: 8px 12px;
+        border-radius: 4px;
+        font-size: 12px;
+        z-index: 1000;
+        pointer-events: none;
+        white-space: nowrap;
+    }
+    
+    .tooltip::after {
+        content: '';
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        margin-left: -5px;
+        border-width: 5px;
+        border-style: solid;
+        border-color: #333 transparent transparent transparent;
+    }
+`;
+document.head.appendChild(style);
