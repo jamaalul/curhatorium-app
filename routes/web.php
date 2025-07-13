@@ -41,4 +41,6 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/support-group-discussion/get', [SgdController::class, 'getGroups'])->name('group.get');
     Route::post('/support-group-discussion/join', [SgdController::class, 'joinGroup'])->name('group.join');
+    Route::post('/support-group-discussion/enter-meeting', [SgdController::class, 'enterMeetingRoom'])->name('group.enter-meeting');
+    Route::post('/support-group-discussion/leave', [SgdController::class, 'leaveGroup'])->name('group.leave');
 });

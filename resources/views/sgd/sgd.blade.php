@@ -9,9 +9,9 @@
    <link rel="stylesheet" href="{{ asset('css/global.css') }}">
 </head>
 <body>
-    @include('components.navbar')
-    
-    <h1 class="page-title">Support Group Discussion</h1>
+   @include('components.navbar')
+   
+   <h1 class="page-title">Support Group Discussion</h1>
    <!-- Search and Filter Bar -->
    <div class="search-filter-bar">
        <div class="container">
@@ -82,6 +82,13 @@
                 <div id="groups-container" class="groups-container">
                     @if($groups->count() > 0)
                         @foreach($groups as $group)
+                            @php
+                                $user = auth()->user();
+                                $hasJoined = $user ? $user->hasJoinedSgdGroup($group->id) : false;
+                                $hasStarted = $group->hasStarted();
+                                $isUpcoming = $group->isUpcoming();
+                            @endphp
+                            
                             <div class="group-card">
                                 <div class="card-header">
                                 </div>
@@ -92,13 +99,53 @@
                                         <span>Scheduled: {{ \Carbon\Carbon::parse($group->schedule)->format('M d, Y g:i A') }}</span>
                                     </div>
                                     <p class="card-text">{{ $group->topic }}</p>
-                                    <form action="{{ route('group.join') }}" method="POST" style="display: inline;">
-                                        @csrf
-                                        <input type="hidden" name="group_id" value="{{ $group->id }}">
-                                        <button type="submit" class="join-button">
-                                            Join Group <span>➔</span>
-                                        </button>
-                                    </form>
+                                    
+                                    @auth
+                                        @if($hasJoined)
+                                            @if($isUpcoming || $hasStarted)
+                                                <div class="button-group">
+                                                    <form action="{{ route('group.enter-meeting') }}" method="POST" style="display: inline;">
+                                                        @csrf
+                                                        <input type="hidden" name="group_id" value="{{ $group->id }}">
+                                                        <button type="submit" class="join-button meeting-button">
+                                                            Go to Room
+                                                        </button>
+                                                    </form>
+                                                    @if($isUpcoming)
+                                                        <form action="{{ route('group.leave') }}" method="POST" style="display: inline;" onsubmit="return confirm('Are you sure you want to leave this group?')">
+                                                            @csrf
+                                                            <input type="hidden" name="group_id" value="{{ $group->id }}">
+                                                            <button type="submit" class="join-button leave-button" style="">
+                                                                Leave Group
+                                                            </button>
+                                                        </form>
+                                                    @endif
+                                                </div>
+                                            @else
+                                                <button class="join-button past-button" disabled>
+                                                    Past Event
+                                                </button>
+                                            @endif
+                                        @else
+                                            @if($isUpcoming)
+                                                <form action="{{ route('group.join') }}" method="POST" style="display: inline;">
+                                                    @csrf
+                                                    <input type="hidden" name="group_id" value="{{ $group->id }}">
+                                                    <button type="submit" class="join-button">
+                                                        Join Group <span>➔</span>
+                                                    </button>
+                                                </form>
+                                            @else
+                                                <button class="join-button past-button" disabled>
+                                                    Past Event
+                                                </button>
+                                            @endif
+                                        @endif
+                                    @else
+                                        <a href="{{ route('login') }}" class="join-button">
+                                            Login to Join <span>🔐</span>
+                                        </a>
+                                    @endauth
                                 </div>
                             </div>
                         @endforeach

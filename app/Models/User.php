@@ -50,6 +50,24 @@ class User extends Authenticatable implements FilamentUser
         ];
     }
 
+    /**
+     * The SGD groups that the user has joined.
+     */
+    public function sgdGroups()
+    {
+        return $this->belongsToMany(SgdGroup::class, 'sgd_group_user')
+                    ->withPivot('joined_at')
+                    ->withTimestamps();
+    }
+
+    /**
+     * Check if user has joined a specific SGD group.
+     */
+    public function hasJoinedSgdGroup($sgdGroupId)
+    {
+        return $this->sgdGroups()->where('sgd_group_id', $sgdGroupId)->exists();
+    }
+
      public function canAccessPanel(\Filament\Panel $panel): bool
     {
         return $this->is_admin;

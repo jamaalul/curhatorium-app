@@ -32,4 +32,42 @@ class SgdGroup extends Model
             }
         });
     }
+
+    /**
+     * The users who have joined this SGD group.
+     */
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'sgd_group_user')
+                    ->withPivot('joined_at')
+                    ->withTimestamps();
+    }
+
+    /**
+     * Check if the group is starting within 15 minutes.
+     */
+    public function isStartingSoon()
+    {
+        $now = now();
+        $startTime = $this->schedule;
+        $fifteenMinutesBefore = $startTime->copy()->subMinutes(15);
+        
+        return $now->gte($fifteenMinutesBefore) && $now->lt($startTime);
+    }
+
+    /**
+     * Check if the group has already started.
+     */
+    public function hasStarted()
+    {
+        return now()->gte($this->schedule);
+    }
+
+    /**
+     * Check if the group is upcoming (not started yet).
+     */
+    public function isUpcoming()
+    {
+        return now()->lt($this->schedule);
+    }
 }
