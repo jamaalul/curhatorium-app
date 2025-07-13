@@ -109,10 +109,10 @@ class SgdController extends Controller
         }
 
         // Check if the group has already ended (more than 2 hours after start)
-        $endTime = $group->schedule->addHours(2);
-        if (now()->gt($endTime)) {
-            return redirect()->route('sgd')->with('error', 'This group session has ended.');
-        }
+        // $endTime = $group->schedule->addHours(2);
+        // if (now()->gt($endTime)) {
+        //     return redirect()->route('sgd')->with('error', 'This group session has ended.');
+        // }
 
         // Redirect to meeting room (you can implement the actual meeting room logic here)
         return redirect()->away($group->meeting_address)->with('success', 'Entering meeting room...');

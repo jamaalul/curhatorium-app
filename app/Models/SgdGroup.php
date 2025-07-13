@@ -46,14 +46,14 @@ class SgdGroup extends Model
     /**
      * Check if the group is starting within 15 minutes.
      */
-    public function isStartingSoon()
-    {
-        $now = now();
-        $startTime = $this->schedule;
-        $fifteenMinutesBefore = $startTime->copy()->subMinutes(15);
+    // public function isStartingSoon()
+    // {
+    //     $now = now();
+    //     $startTime = $this->schedule;
+    //     $fifteenMinutesBefore = $startTime->copy()->subMinutes(15);
         
-        return $now->gte($fifteenMinutesBefore) && $now->lt($startTime);
-    }
+    //     return $now->gte($fifteenMinutesBefore) && $now->lt($startTime);
+    // }
 
     /**
      * Check if the group has already started.
