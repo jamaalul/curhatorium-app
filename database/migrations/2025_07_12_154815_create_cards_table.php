@@ -13,6 +13,8 @@ return new class extends Migration
     {
         Schema::create('cards', function (Blueprint $table) {
             $table->id();
+            $table->text('content');
+            $table->string('category');
             $table->timestamps();
         });
     }

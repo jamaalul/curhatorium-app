@@ -115,7 +115,7 @@ class SgdController extends Controller
         // }
 
         // Redirect to meeting room (you can implement the actual meeting room logic here)
-        return redirect()->away($group->meeting_address)->with('success', 'Entering meeting room...');
+        return redirect('/support-group-discussion/join/' . urlencode($group->meeting_address))->with('success', 'Entering meeting room...');
     }
 
     public function leaveGroup(Request $request) {
@@ -145,5 +145,15 @@ class SgdController extends Controller
         $user->sgdGroups()->detach($groupId);
         
         return redirect()->route('sgd')->with('success', 'Successfully left the group.');
+    }
+
+    public function groupMeet(Request $request, $address) {
+        $user = Auth::user();
+        if (!$user instanceof \App\Models\User) {
+            return redirect()->route('sgd')->with('error', 'User not found or invalid.');
+        }
+
+        return view('sgd.meeting', compact('address'));
+        
     }
 }

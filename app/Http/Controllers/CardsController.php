@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 class CardsController extends Controller
 {
     public function index() {
-        return view('cards', compact('stats'));
+        $cards = \App\Models\Card::inRandomOrder()->limit(5)->get();
+        return view('cards', compact('cards'));
     }
 }
