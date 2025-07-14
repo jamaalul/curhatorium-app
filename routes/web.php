@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\QuoteController;
 use App\Http\Controllers\SgdController;
 use App\Http\Controllers\CardController;
+use App\Http\Controllers\ShareAndTalkController;
 
 
 Route::get('/', function () {
@@ -25,6 +26,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/support-group-discussion', [SgdController::class, 'show'])->name('sgd');
 
     Route::get('/deep-cards', [CardController::class, 'index']);
+
+    Route::get('/share-and-talk', [ShareAndTalkController::class, 'index'])->name('share-and-talk');
 });
 
 require __DIR__.'/auth.php';
