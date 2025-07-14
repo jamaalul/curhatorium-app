@@ -102,20 +102,14 @@ class SgdController extends Controller
 
         $groupId = $request->get('group_id');
         $group = SgdGroup::findOrFail($groupId);
-        
+
         // Check if user has joined this group
         if (!$user->hasJoinedSgdGroup($groupId)) {
             return redirect()->route('sgd')->with('error', 'You must join the group first before entering the meeting room.');
         }
 
-        // Check if the group has already ended (more than 2 hours after start)
-        // $endTime = $group->schedule->addHours(2);
-        // if (now()->gt($endTime)) {
-        //     return redirect()->route('sgd')->with('error', 'This group session has ended.');
-        // }
-
-        // Redirect to meeting room (you can implement the actual meeting room logic here)
-        return redirect('/support-group-discussion/join/' . urlencode($group->meeting_address))->with('success', 'Entering meeting room...');
+        // Redirect directly to the external meeting address (e.g., YouTube URL)
+        return redirect()->away($group->meeting_address);
     }
 
     public function leaveGroup(Request $request) {
@@ -147,13 +141,13 @@ class SgdController extends Controller
         return redirect()->route('sgd')->with('success', 'Successfully left the group.');
     }
 
-    public function groupMeet(Request $request, $address) {
-        $user = Auth::user();
-        if (!$user instanceof \App\Models\User) {
-            return redirect()->route('sgd')->with('error', 'User not found or invalid.');
-        }
+    // public function groupMeet(Request $request, $address) {
+    //     $user = Auth::user();
+    //     if (!$user instanceof \App\Models\User) {
+    //         return redirect()->route('sgd')->with('error', 'User not found or invalid.');
+    //     }
 
-        return redirect('https://www.youtube.com');
+    //     return view('sgd.meeting', compact('address'));
         
-    }
+    // }
 }

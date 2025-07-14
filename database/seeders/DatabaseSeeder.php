@@ -50,7 +50,7 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'topic' => 'Mental Health Awareness',
-                'meeting_address' => 'Room 101',
+                'meeting_address' => 'https://www.youtube.com',
                 'schedule' => now()->addDays(1),
                 'is_done' => false,
                 'category' => 'Support',
