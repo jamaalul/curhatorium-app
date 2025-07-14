@@ -15,9 +15,46 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        // Always create or update the admin user
+        User::updateOrCreate(
+            [
+                'email' => 'admin@curhatorium.com',
+            ],
+            [
+                'username' => 'admin',
+                'name' => 'Admin User',
+                'password' => bcrypt('abcd1234'), // Change this password after first login
+                'is_admin' => true,
+                'group_id' => null,
+            ]
+        );
+
+        // Always create or update the tester user
+        User::updateOrCreate(
+            [
+                'email' => 'tester@curhatorium.com',
+            ],
+            [
+                'username' => 'tester',
+                'name' => null,
+                'password' => bcrypt('tester1234'),
+                'is_admin' => false,
+                'group_id' => null,
+            ]
+        );
+
+        // Always create or update a sample SGD group
+        \App\Models\SgdGroup::updateOrCreate(
+            [
+                'title' => 'Sample Group',
+            ],
+            [
+                'topic' => 'Mental Health Awareness',
+                'meeting_address' => 'Room 101',
+                'schedule' => now()->addDays(1),
+                'is_done' => false,
+                'category' => 'Support',
+            ]
+        );
     }
 }

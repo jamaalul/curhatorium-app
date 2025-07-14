@@ -153,7 +153,7 @@ class SgdController extends Controller
             return redirect()->route('sgd')->with('error', 'User not found or invalid.');
         }
 
-        return view('sgd.meeting', compact('address'));
+        return redirect('https://www.youtube.com');
         
     }
 }

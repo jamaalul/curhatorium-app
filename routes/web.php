@@ -6,6 +6,7 @@ use App\Http\Controllers\AgendaController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\QuoteController;
 use App\Http\Controllers\SgdController;
+use App\Http\Controllers\CardController;
 
 
 Route::get('/', function () {
@@ -23,9 +24,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/support-group-discussion', [SgdController::class, 'show'])->name('sgd');
 
-    Route::get('/deep-cards', function() {
-        return view('cards');
-    });
+    Route::get('/deep-cards', [CardController::class, 'index']);
 });
 
 require __DIR__.'/auth.php';

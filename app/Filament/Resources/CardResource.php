@@ -2,27 +2,33 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Resources\CardResource\Pages;
+use App\Filament\Resources\CardResource\RelationManagers;
 use App\Models\Card;
 use Filament\Forms;
 use Filament\Forms\Form;
-use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Textarea;
-use Filament\Tables\Columns\TextColumn;
-use App\Filament\Resources\CardResource\Pages;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class CardResource extends Resource
 {
     protected static ?string $model = Card::class;
 
+    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Textarea::make('content')->required(),
-                TextInput::make('category')->required(),
+                Forms\Components\Textarea::make('content')
+                    ->required()
+                    ->label('Content'),
+                Forms\Components\TextInput::make('category')
+                    ->required()
+                    ->label('Category'),
             ]);
     }
 
@@ -30,14 +36,29 @@ class CardResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('id')->sortable(),
-                TextColumn::make('content')->limit(50),
-                TextColumn::make('category'),
-                TextColumn::make('created_at')->dateTime(),
+                Tables\Columns\TextColumn::make('id')->sortable(),
+                Tables\Columns\TextColumn::make('content')->limit(50)->label('Content'),
+                Tables\Columns\TextColumn::make('category')->label('Category'),
+                Tables\Columns\TextColumn::make('created_at')->dateTime()->sortable()->label('Created At'),
             ])
             ->filters([
                 //
+            ])
+            ->actions([
+                Tables\Actions\EditAction::make(),
+            ])
+            ->bulkActions([
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
+                ]),
             ]);
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            //
+        ];
     }
 
     public static function getPages(): array
@@ -48,4 +69,4 @@ class CardResource extends Resource
             'edit' => Pages\EditCard::route('/{record}/edit'),
         ];
     }
-} 
+}
