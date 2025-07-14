@@ -151,151 +151,55 @@
     </div>
 
     <script>
-        // Mock data for professionals
-        const mockProfessionals = {
-            psychiatrist: [
-                {
-                    id: 1,
-                    name: "Dr. Sarah Johnson",
-                    title: "Licensed Psychiatrist",
-                    avatar: "https://via.placeholder.com/60/8ecbcf/ffffff?text=SJ",
-                    specialties: ["Anxiety Disorders", "Depression", "ADHD"],
-                    availability: "online",
-                    availabilityText: "Available Now",
-                    type: "psychiatrist"
-                },
-                {
-                    id: 2,
-                    name: "Dr. Michael Chen",
-                    title: "Clinical Psychiatrist",
-                    avatar: "https://via.placeholder.com/60/8ecbcf/ffffff?text=MC",
-                    specialties: ["Trauma & PTSD", "Bipolar Disorder", "Anxiety"],
-                    availability: "busy",
-                    availabilityText: "Busy - Next available in 2 hours",
-                    type: "psychiatrist"
-                },
-                {
-                    id: 3,
-                    name: "Dr. Emily Rodriguez",
-                    title: "Child & Adult Psychiatrist",
-                    avatar: "https://via.placeholder.com/60/8ecbcf/ffffff?text=ER",
-                    specialties: ["Depression", "Eating Disorders", "Family Therapy"],
-                    availability: "online",
-                    availabilityText: "Available Now",
-                    type: "psychiatrist"
-                }
-            ],
-            partner: [
-                {
-                    id: 4,
-                    name: "Lisa Thompson",
-                    title: "Licensed Counselor",
-                    avatar: "https://via.placeholder.com/60/ffcd2d/333333?text=LT",
-                    specialties: ["Relationship Issues", "Stress Management", "Life Coaching"],
-                    availability: "online",
-                    availabilityText: "Available Now",
-                    type: "partner"
-                },
-                {
-                    id: 5,
-                    name: "James Wilson",
-                    title: "Mental Health Therapist",
-                    avatar: "https://via.placeholder.com/60/ffcd2d/333333?text=JW",
-                    specialties: ["Anxiety", "Career Counseling", "Mindfulness"],
-                    availability: "offline",
-                    availabilityText: "Offline - Available tomorrow at 9 AM",
-                    type: "partner"
-                },
-                {
-                    id: 6,
-                    name: "Maria Garcia",
-                    title: "Certified Therapist",
-                    avatar: "https://via.placeholder.com/60/ffcd2d/333333?text=MG",
-                    specialties: ["Trauma Recovery", "Women's Issues", "Self-Esteem"],
-                    availability: "busy",
-                    availabilityText: "Busy - Next available in 1 hour",
-                    type: "partner"
-                }
-            ]
-        };
-
+        // Remove mockProfessionals
+        // let mockProfessionals = ...
+        let allProfessionals = [];
         let currentProfessionalType = '';
         let filteredProfessionals = [];
 
-        // Toast notification system
-        const Toast = {
-            create: function(type, title, message, duration = 5000) {
-                const toast = document.createElement('div');
-                toast.className = `toast toast-${type}`;
-                
-                let iconSvg = '';
-                if (type === 'success') {
-                    iconSvg = `<svg class="toast-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#10b981"><path d="M20.285 2l-11.285 11.567-5.286-5.011-3.714 3.716 9 8.728 15-15.285z"/></svg>`;
-                } else if (type === 'error') {
-                    iconSvg = `<svg class="toast-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#ef4444"><path d="M24 20.188l-8.315-8.209 8.2-8.282-3.697-3.697-8.212 8.318-8.31-8.203-3.666 3.666 8.321 8.24-8.206 8.313 3.666 3.666 8.237-8.318 8.285 8.203z"/></svg>`;
-                } else if (type === 'info') {
-                    iconSvg = `<svg class="toast-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#3b82f6"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>`;
-                }
-                
-                toast.innerHTML = `
-                    ${iconSvg}
-                    <div class="toast-content">
-                        <div class="toast-title">${title}</div>
-                        <div class="toast-message">${message}</div>
-                    </div>
-                    <button class="toast-close">&times;</button>
-                `;
-                
-                document.getElementById('toast-container').appendChild(toast);
-                
-                // Add event listener to close button
-                toast.querySelector('.toast-close').addEventListener('click', function() {
-                    toast.classList.add('hide');
-                    setTimeout(() => {
-                        toast.remove();
-                    }, 300);
-                });
-                
-                // Auto remove after duration
-                setTimeout(() => {
-                    toast.classList.add('hide');
-                    setTimeout(() => {
-                        toast.remove();
-                    }, 300);
-                }, duration);
-                
-                return toast;
-            },
-            success: function(title, message, duration) {
-                return this.create('success', title, message, duration);
-            },
-            error: function(title, message, duration) {
-                return this.create('error', title, message, duration);
-            },
-            info: function(title, message, duration) {
-                return this.create('info', title, message, duration);
+        // Fetch professionals from backend
+        async function fetchProfessionals(type = '') {
+            let url = '/share-and-talk/professionals';
+            if (type) {
+                url += `?type=${encodeURIComponent(type)}`;
             }
-        };
+            const response = await fetch(url);
+            if (!response.ok) {
+                Toast.error('Error', 'Failed to load professionals');
+                return [];
+            }
+            return await response.json();
+        }
 
         // Show professionals based on type
-        function showProfessionals(type) {
+        async function showProfessionals(type) {
             currentProfessionalType = type;
-            filteredProfessionals = mockProfessionals[type];
-            
+            allProfessionals = await fetchProfessionals(type);
+            filteredProfessionals = allProfessionals;
+
             const section = document.getElementById('professionals-section');
             const title = document.getElementById('professionals-title');
-            
+
             if (type === 'psychiatrist') {
                 title.textContent = 'Available Professionals';
             } else {
                 title.textContent = 'Available Rangers';
             }
-            
+
             section.style.display = 'block';
             renderProfessionals(filteredProfessionals);
-            
+
             // Smooth scroll to professionals section
             section.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Helper to ensure specialties is always an array
+        function getSpecialtiesArray(specialties) {
+            if (Array.isArray(specialties)) return specialties;
+            if (typeof specialties === 'string') {
+                try { return JSON.parse(specialties); } catch { return []; }
+            }
+            return [];
         }
 
         // Render professionals grid
@@ -314,7 +218,7 @@
             grid.innerHTML = professionals.map(professional => `
                 <div class="professional-card">
                     <div class="professional-header">
-                        <img src="${professional.avatar}" alt="${professional.name}" class="professional-avatar">
+                        <img src="/storage/${professional.avatar}" alt="${professional.name}" class="professional-avatar">
                         <div class="professional-info">
                             <h4>${professional.name}</h4>
                             <p class="professional-title">${professional.title}</p>
@@ -324,7 +228,7 @@
                         <div class="specialties">
                             <p class="specialties-title">Specialties:</p>
                             <div class="specialty-tags">
-                                ${professional.specialties.map(specialty => `<span class="specialty-tag">${specialty}</span>`).join('')}
+                                ${getSpecialtiesArray(professional.specialties).map(specialty => `<span class="specialty-tag">${specialty}</span>`).join('')}
                             </div>
                         </div>
                         <div class="availability">
@@ -346,17 +250,13 @@
 
         // Start consultation
         function startConsultation(professionalId, type) {
-            const professional = [...mockProfessionals.psychiatrist, ...mockProfessionals.partner]
-                .find(p => p.id === professionalId);
-            
+            const professional = allProfessionals.find(p => p.id === professionalId);
             if (!professional) {
                 return;
             }
-            
             if (professional.availability !== 'online') {
                 return;
             }
-            
             // In a real application, this would redirect to the consultation interface
         }
 
@@ -365,33 +265,38 @@
             const specialtyFilter = document.getElementById('specialty-filter').value;
             const availabilityFilter = document.getElementById('availability-filter').value;
             const ratingFilter = document.getElementById('rating-filter').value;
-            
-            let filtered = mockProfessionals[currentProfessionalType];
-            
+
+            let filtered = allProfessionals;
+
             if (specialtyFilter) {
-                filtered = filtered.filter(p => 
+                filtered = filtered.filter(p =>
                     p.specialties.some(s => s.toLowerCase().includes(specialtyFilter.toLowerCase()))
                 );
             }
-            
+
             if (availabilityFilter) {
                 filtered = filtered.filter(p => p.availability === availabilityFilter);
             }
-            
+
             if (ratingFilter) {
                 const minRating = parseFloat(ratingFilter);
-                filtered = filtered.filter(p => p.rating >= minRating);
+                filtered = filtered.filter(p => (p.rating || 0) >= minRating);
             }
-            
+
             filteredProfessionals = filtered;
             renderProfessionals(filtered);
         }
 
         // Event listeners for filters
         document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('specialty-filter').addEventListener('change', applyFilters);
-            document.getElementById('availability-filter').addEventListener('change', applyFilters);
-            document.getElementById('rating-filter').addEventListener('change', applyFilters);
+            const specialty = document.getElementById('specialty-filter');
+            const availability = document.getElementById('availability-filter');
+            const rating = document.getElementById('rating-filter');
+            if (specialty && availability && rating) {
+                specialty.addEventListener('change', applyFilters);
+                availability.addEventListener('change', applyFilters);
+                rating.addEventListener('change', applyFilters);
+            }
         });
     </script>
 </body>

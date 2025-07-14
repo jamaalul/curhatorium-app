@@ -22,7 +22,8 @@ h3,
 h4,
 h5,
 h6 {
-    font-family: FigtreeReg;
+    font-family: FigtreeBold;
+    font-weight: 400;
 }
 
 .error-message {

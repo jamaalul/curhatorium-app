@@ -28,6 +28,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/deep-cards', [CardController::class, 'index']);
 
     Route::get('/share-and-talk', [ShareAndTalkController::class, 'index'])->name('share-and-talk');
+    Route::get('/share-and-talk/professionals', [\App\Http\Controllers\ShareAndTalkController::class, 'getProfessionals']);
 });
 
 require __DIR__.'/auth.php';
