@@ -23,7 +23,7 @@ class DatabaseSeeder extends Seeder
             [
                 'username' => 'admin',
                 'name' => 'Admin User',
-                'password' => bcrypt('abcd1234'), // Change this password after first login
+                'password' => bcrypt('abcd1234'),
                 'is_admin' => true,
                 'group_id' => null,
             ]

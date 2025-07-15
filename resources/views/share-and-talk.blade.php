@@ -7,16 +7,7 @@
     <link rel="stylesheet" href="{{ asset('css/global.css') }}">
     <link rel="stylesheet" href="{{ asset('css/share-and-talk.css') }}">
     <style>
-        .action-button:disabled,
-        .action-button:disabled:hover,
-        .action-button:disabled:focus {
-            opacity: 0.5;
-            cursor: not-allowed;
-            pointer-events: none;
-            background-color: inherit !important;
-            color: inherit !important;
-            box-shadow: none !important;
-        }
+        
     </style>
 </head>
 <body>
@@ -150,6 +141,26 @@
         </div>
     </div>
 
+    <!-- Checkout Modal -->
+    <div id="checkout-modal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <button class="close" id="close-modal" aria-label="Close">&times;</button>
+            <div class="modal-header">
+                <img id="modal-avatar" src="" alt="" class="modal-avatar">
+                <div>
+                    <h2 id="modal-title">Book Consultation</h2>
+                    <div id="modal-professional-title" class="modal-professional-title"></div>
+                </div>
+            </div>
+            <form id="checkout-form" class="modal-form">
+                <div id="consultation-type-section">
+                    <div id="consultation-type-options" class="consultation-type-options"></div>
+                </div>
+                <button type="submit" class="action-button modal-confirm">Confirm Booking</button>
+            </form>
+        </div>
+    </div>
+
     <script>
         // Remove mockProfessionals
         // let mockProfessionals = ...
@@ -257,7 +268,9 @@
             if (professional.availability !== 'online') {
                 return;
             }
-            // In a real application, this would redirect to the consultation interface
+            // Add type info for modal logic
+            professional.type = currentProfessionalType;
+            openCheckoutModal(professional);
         }
 
         // Filter functionality
@@ -298,6 +311,88 @@
                 rating.addEventListener('change', applyFilters);
             }
         });
+    </script>
+    <script>
+    // Modal logic
+    const modal = document.getElementById('checkout-modal');
+    const closeModalBtn = document.getElementById('close-modal');
+    const modalProfessionalInfo = document.getElementById('modal-professional-info'); // unused, replaced by header
+    const modalAvatar = document.getElementById('modal-avatar');
+    const modalProfessionalTitle = document.getElementById('modal-professional-title');
+    const consultationTypeOptions = document.getElementById('consultation-type-options');
+    let selectedProfessional = null;
+    let selectedConsultationType = null;
+    function openCheckoutModal(professional) {
+        selectedProfessional = professional;
+        document.getElementById('modal-title').textContent = `Book Session with ${professional.name}`;
+        modalAvatar.src = `/storage/${professional.avatar}`;
+        modalAvatar.alt = professional.name;
+        modalProfessionalTitle.textContent = professional.title;
+        // Consultation type options as cards
+        let options = '';
+        if (professional.type === 'psychiatrist') {
+            options += `
+                <label class="consultation-option-card selected">
+                    <input type='radio' name='consultation_type' value='chat' checked>
+                    <span class="consultation-option-label">Chat</span>
+                    <span class="consultation-option-desc">Text-based consultation</span>
+                </label>
+                <label class="consultation-option-card">
+                    <input type='radio' name='consultation_type' value='video'>
+                    <span class="consultation-option-label">Video Call</span>
+                    <span class="consultation-option-desc">Face-to-face online session</span>
+                </label>
+            `;
+        } else {
+            options += `
+                <label class="consultation-option-card selected">
+                    <input type='radio' name='consultation_type' value='video' checked>
+                    <span class="consultation-option-label">Video Call</span>
+                    <span class="consultation-option-desc">Face-to-face online session</span>
+                </label>
+            `;
+        }
+        consultationTypeOptions.innerHTML = options;
+        // Card selection logic
+        Array.from(consultationTypeOptions.querySelectorAll('input[type="radio"]')).forEach(input => {
+            input.addEventListener('change', function() {
+                Array.from(consultationTypeOptions.children).forEach(card => card.classList.remove('selected'));
+                this.closest('.consultation-option-card').classList.add('selected');
+            });
+        });
+        modal.style.display = 'flex';
+        setTimeout(() => { modal.querySelector('.modal-content').focus(); }, 100);
+    }
+    function closeCheckoutModal() {
+        modal.style.display = 'none';
+        selectedProfessional = null;
+        selectedConsultationType = null;
+    }
+    closeModalBtn.onclick = closeCheckoutModal;
+    window.onclick = function(event) {
+        if (event.target === modal) closeCheckoutModal();
+    };
+    // Intercept form submit
+    document.getElementById('checkout-form').onsubmit = function(e) {
+        e.preventDefault();
+        const type = document.querySelector('input[name="consultation_type"]:checked').value;
+        selectedConsultationType = type;
+        // Placeholder alert for each consultation type
+        if (type === 'chat') {
+            alert('This would start a chat consultation. (Placeholder)');
+        } else if (type === 'video') {
+            alert('This would start a video call consultation. (Placeholder)');
+        }
+        Toast.success('Success', `Booked ${type === 'chat' ? 'Chat' : 'Video Call'} with ${selectedProfessional.name}`);
+        closeCheckoutModal();
+    };
+    // Patch startConsultation to open modal
+    function startConsultation(professionalId, reserveType) {
+        const professional = allProfessionals.find(p => p.id === professionalId);
+        if (!professional || professional.availability !== 'online') return;
+        professional.type = currentProfessionalType;
+        openCheckoutModal(professional);
+    }
     </script>
 </body>
 </html>
