@@ -43,6 +43,9 @@ class ProfessionalResource extends Resource
                         'psychiatrist' => 'Psychiatrist',
                         'partner' => 'Partner',
                     ])->required(),
+                Forms\Components\TextInput::make('whatsapp_number')->label('WhatsApp Number')->maxLength(32),
+                Forms\Components\TextInput::make('bank_account_number')->label('Bank Account Number')->maxLength(64),
+                Forms\Components\TextInput::make('bank_name')->label('Bank Name')->maxLength(64),
             ]);
     }
 
@@ -56,6 +59,9 @@ class ProfessionalResource extends Resource
                 Tables\Columns\TextColumn::make('availability')->badge(),
                 Tables\Columns\TextColumn::make('availabilityText')->label('Availability Text'),
                 Tables\Columns\TextColumn::make('type')->badge(),
+                Tables\Columns\TextColumn::make('whatsapp_number')->label('WhatsApp'),
+                Tables\Columns\TextColumn::make('bank_account_number')->label('Bank Account'),
+                Tables\Columns\TextColumn::make('bank_name')->label('Bank Name'),
             ])
             ->filters([
                 //

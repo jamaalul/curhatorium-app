@@ -8,7 +8,8 @@ use Illuminate\Support\Facades\Storage;
 class Professional extends Model
 {
     protected $fillable = [
-        'name', 'title', 'avatar', 'specialties', 'availability', 'availabilityText', 'type', 'rating'
+        'name', 'title', 'avatar', 'specialties', 'availability', 'availabilityText', 'type', 'rating',
+        'whatsapp_number', 'bank_account_number', 'bank_name'
     ];
 
     protected $casts = [

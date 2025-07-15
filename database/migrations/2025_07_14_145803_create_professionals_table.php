@@ -21,6 +21,9 @@ return new class extends Migration
             $table->string('availabilityText');
             $table->enum('type', ['psychiatrist', 'partner']);
             $table->float('rating')->nullable();
+            $table->string('whatsapp_number')->nullable();
+            $table->string('bank_account_number')->nullable();
+            $table->string('bank_name')->nullable();
             $table->timestamps();
         });
     }
