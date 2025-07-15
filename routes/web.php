@@ -8,6 +8,7 @@ use App\Http\Controllers\QuoteController;
 use App\Http\Controllers\SgdController;
 use App\Http\Controllers\CardController;
 use App\Http\Controllers\ShareAndTalkController;
+use App\Http\Controllers\ChatbotController;
 
 
 Route::get('/', function () {
@@ -28,7 +29,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/deep-cards', [CardController::class, 'index']);
 
     Route::get('/share-and-talk', [ShareAndTalkController::class, 'index'])->name('share-and-talk');
-    Route::get('/share-and-talk/professionals', [\App\Http\Controllers\ShareAndTalkController::class, 'getProfessionals']);
+    Route::get('/share-and-talk/professionals', [ShareAndTalkController::class, 'getProfessionals']);
+
+    Route::get('/mental-support-chatbot', [ChatbotController::class, 'index'])->name('chatbot');
+    Route::post('/api/chatbot', [ChatbotController::class, 'chat']);
 });
 
 require __DIR__.'/auth.php';
