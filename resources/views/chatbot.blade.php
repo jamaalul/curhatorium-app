@@ -23,6 +23,8 @@
       <button type="button" id="reset-btn">Reset</button>
     </form>
   </div>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify/dist/purify.min.js"></script>
   <script>
     let messages = [];
 
@@ -56,6 +58,11 @@
       return text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
     }
 
+    function renderMarkdownSafe(text) {
+      const rawHtml = marked.parse(text, { breaks: true });
+      return DOMPurify.sanitize(rawHtml, { USE_PROFILES: { html: true } });
+    }
+
     function scrollToBottom() {
       setTimeout(() => {
         chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -69,7 +76,11 @@
         row.className = 'message-row ' + (msg.role === 'user' ? 'user' : 'bot');
         const bubble = document.createElement('div');
         bubble.className = 'message-bubble';
-        bubble.innerHTML = msg.role === 'assistant' ? renderMarkdownBold(msg.content) : msg.content;
+        if (msg.role === 'assistant') {
+          bubble.innerHTML = renderMarkdownSafe(msg.content);
+        } else {
+          bubble.textContent = msg.content;
+        }
         row.appendChild(bubble);
         chatMessages.appendChild(row);
       });

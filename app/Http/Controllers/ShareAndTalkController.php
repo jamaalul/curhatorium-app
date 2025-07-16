@@ -5,6 +5,10 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Professional;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
+use App\Models\ChatSession;
+use App\Models\Message;
+use Illuminate\Support\Facades\Log;
 
 class ShareAndTalkController extends Controller
 {
@@ -25,7 +29,47 @@ class ShareAndTalkController extends Controller
     public function chatConsultation($professionalId) {
         $professional = Professional::findOrFail($professionalId);
         $user = Auth::user();
+        $session_id = Str::uuid();
 
-        return view('share-and-talk.chat', ['professional' => $professional, 'user' => $user]);
+        ChatSession::create([
+            'session_id' => $session_id,
+            'user_id' => $user->id,
+            'professional_id' => $professional->id,
+            'start' => now(),
+            'end' => now()->addHour(),
+        ]);
+
+        
+
+        return view('share-and-talk.chat', ['professional' => $professional, 'user' => $user, 'session_id' => $session_id]);
+    }
+
+    public function userSend(Request $request)
+    {
+        // try {
+            $validated = $request->validate([
+                'session_id' => 'required|string',
+                'message' => 'required|string',
+            ]);
+    
+            Message::create([
+                'sender_id' => Auth::user()->id,
+                'sender_type' => 'user',
+                'session_id' => $validated['session_id'],
+                'message' => $validated['message'],
+            ]);
+    
+            // Process the message here
+            return response()->json([
+                'status' => 'success',
+                'data' => $validated,
+            ]);
+        // } catch (\Throwable $e) {
+        //     Log::error($e);
+        //     return response()->json([
+        //         'status' => 'error',
+        //         'message' => $e->getMessage(),
+        //     ], 500);
+        // }
     }
 }

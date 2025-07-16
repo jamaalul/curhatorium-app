@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="csrf-token" content="{{ csrf_token() }}">
   <title>Chatroom - Share and Talk</title>
   <link rel="stylesheet" href="{{ asset('css/global.css') }}">
   <link rel="stylesheet" href="{{ asset('css/share-and-talk/chat.css') }}">
@@ -25,14 +26,17 @@
       </div>
 
       <div class="chat-body" id="chat-body">
-        <div class="message other">Halo, saya Nadya. Apa yang ingin kamu bahas hari ini?</div>
-        <div class="message user">Akhir-akhir ini saya merasa cemas berlebihan...</div>
+        {{-- <div class="message other">Halo, saya Nadya. Apa yang ingin kamu bahas hari ini?</div>
+        <div class="message user">Akhir-akhir ini saya merasa cemas berlebihan...</div> --}}
       </div>
 
-      <form class="chat-input" onsubmit="sendMessage(event)">
-        <input type="text" placeholder="Tulis pesan..." id="chat-input-field" name="off-chat-history" autocomplete="off" autocorrect="off" autocapitalize="off" />
+      <form class="chat-input" id="chatForm">
+        @csrf
+        <input type="hidden" name="session_id" value="{{ $session_id }}">
+        <input type="text" placeholder="Tulis pesan..." id="chat-input-field" name="message" autocomplete="off" autocorrect="off" autocapitalize="off" />
         <button type="submit" id="send-btn">Kirim</button>
       </form>
+      {{-- <div id="response"></div> --}}
     </div>
   </div>
 
@@ -62,27 +66,67 @@
     setInterval(updateTimer, 1000);
     updateTimer();
 
-    function sendMessage(e) {
-      e.preventDefault();
-      const text = input.value.trim();
-      if (!text || input.disabled) return;
+    // Remove sendMessage function
+    // function sendMessage(e) {
+    //   e.preventDefault();
+    //   const text = input.value.trim();
+    //   if (!text || input.disabled) return;
 
-      const bubble = document.createElement('div');
-      bubble.className = 'message user';
-      bubble.innerText = text;
-      chatBody.appendChild(bubble);
-      chatBody.scrollTop = chatBody.scrollHeight;
-      input.value = '';
+    //   const bubble = document.createElement('div');
+    //   bubble.className = 'message user';
+    //   bubble.innerText = text;
+    //   chatBody.appendChild(bubble);
+    //   chatBody.scrollTop = chatBody.scrollHeight;
+    //   input.value = '';
+    // }
+    
+    
+          // Simulasi balasan psikiater
+          // setTimeout(() => {
+          //   const reply = document.createElement('div');
+          //   reply.className = 'message other';
+          //   reply.innerText = 'Hello World';
+          //   chatBody.appendChild(reply);
+          //   chatBody.scrollTop = chatBody.scrollHeight;
+          // }, 1000);
 
-      // Simulasi balasan psikiater
-      setTimeout(() => {
-        const reply = document.createElement('div');
-        reply.className = 'message other';
-        reply.innerText = 'Hello World';
-        chatBody.appendChild(reply);
+  document.getElementById('chatForm').addEventListener('submit', async function (e) {
+    e.preventDefault(); // Prevents page reload
+
+    const form = e.target;
+    const session_id = form.session_id.value;
+    const message = form.message.value.trim();
+
+    if (!message || input.disabled) return;
+
+    try {
+        const response = await fetch('{{ route('share-and-talk.userSend') }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json', // Added for Laravel JSON response
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify({
+                session_id,
+                message
+            })
+        });
+
+        // const result = await response.json();
+        // document.getElementById('response').innerText = JSON.stringify(result);
+
+        // Add the message bubble to the chat UI
+        const bubble = document.createElement('div');
+        bubble.className = 'message user';
+        bubble.innerText = message;
+        chatBody.appendChild(bubble);
         chatBody.scrollTop = chatBody.scrollHeight;
-      }, 1000);
+        input.value = '';
+    } catch (err) {
+        console.error('Error sending request:', err);
     }
+  });
   </script>
 </body>
 </html>
