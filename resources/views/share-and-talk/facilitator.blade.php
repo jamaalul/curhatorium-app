@@ -12,14 +12,14 @@
   <div class="app" data-session-end="{{ now()->addMinutes(5)->toIso8601String() }}">
     <!-- Sidebar -->
     <div class="sidebar">
-      <h2>Psikolog</h2>
-      <div class="channel active">{{ $professional['name'] }}</div>
+      <h2>Lunar</h2>
+      <div class="channel active">{{ $user['username'] }}</div>
     </div>
 
     <!-- Chat Main Area -->
     <div class="chat-area">
       <div class="chat-header">
-        <div>Konsultasi dengan <strong>{{ $professional['name'] }}</strong></div>
+        <div>Konsultasi dengan <strong>{{ $user['username'] }}</strong></div>
         <div id="session-timer" style="font-size: 0.9rem; color: var(--text-muted);">
           Sisa waktu: 60:00
         </div>
@@ -32,7 +32,7 @@
 
       <form class="chat-input" id="chatForm">
         @csrf
-        <input type="hidden" name="session_id" value="{{ $session_id }}">
+        <input type="hidden" name="session_id" value="{{ $sessionId }}">
         <input type="text" placeholder="Tulis pesan..." id="chat-input-field" name="message" autocomplete="off" autocorrect="off" autocapitalize="off" />
         <button type="submit" id="send-btn">Kirim</button>
       </form>
@@ -100,7 +100,7 @@
     if (!message || input.disabled) return;
 
     try {
-        const response = await fetch('{{ route('share-and-talk.userSend') }}', {
+        const response = await fetch('{{ route('share-and-talk.facilitatorSend') }}', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -129,7 +129,6 @@
   });
 
   // Polling fetch to get new messages every 2.5 seconds
-  // Polling fetch to get new messages every 2.5 seconds
   setInterval(async function () {
     try {
       // Replace with your actual API endpoint for fetching messages for this session
@@ -151,7 +150,7 @@
         chatBody.innerHTML = '';
         data.forEach(msg => {
           const bubble = document.createElement('div');
-          bubble.className = 'message ' + (msg.sender_type === 'user' ? 'user' : 'other');
+          bubble.className = 'message ' + (msg.sender_type === 'user' ? 'other' : 'user');
           bubble.innerText = msg.message;
           chatBody.appendChild(bubble);
         });

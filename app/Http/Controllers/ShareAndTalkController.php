@@ -8,8 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use App\Models\ChatSession;
 use App\Models\Message;
-use Illuminate\Support\Facades\Log;
-
+use App\Models\User;
 class ShareAndTalkController extends Controller
 {
     public function index() {
@@ -44,6 +43,13 @@ class ShareAndTalkController extends Controller
         return view('share-and-talk.chat', ['professional' => $professional, 'user' => $user, 'session_id' => $session_id]);
     }
 
+    public function facilitatorChat($sessionId) {
+        $session = ChatSession::where('session_id', $sessionId)->first();
+        $user = User::where('id', $session->user_id)->first();
+
+        return view('share-and-talk.facilitator', ['sessionId' => $sessionId, 'professionalId' => $session->professional_id, 'user' => $user]);
+    }
+
     public function userSend(Request $request)
     {
         // try {
@@ -64,12 +70,32 @@ class ShareAndTalkController extends Controller
                 'status' => 'success',
                 'data' => $validated,
             ]);
-        // } catch (\Throwable $e) {
-        //     Log::error($e);
-        //     return response()->json([
-        //         'status' => 'error',
-        //         'message' => $e->getMessage(),
-        //     ], 500);
-        // }
+    }
+
+    public function facilitatorSend(Request $request)
+    {
+        // try {
+            $validated = $request->validate([
+                'session_id' => 'required|string',
+                'message' => 'required|string',
+            ]);
+    
+            Message::create([
+                'sender_id' => Auth::user()->id,
+                'sender_type' => 'professional',
+                'session_id' => $validated['session_id'],
+                'message' => $validated['message'],
+            ]);
+    
+            // Process the message here
+            return response()->json([
+                'status' => 'success',
+                'data' => $validated,
+            ]);
+    }
+
+    public function getMessages($sessionId) {
+        $messages = Message::where('session_id', $sessionId)->orderBy('created_at', 'asc')->get();
+        return response()->json($messages);
     }
 }
