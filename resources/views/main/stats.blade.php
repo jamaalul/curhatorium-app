@@ -20,7 +20,7 @@
       </div>
 
       <div class="button-box">
-        <div class="button-yellow">
+        <div class="button-yellow" onclick="window.location.href = '/tracker'">
             Ceritakan Kondisimu Hari Ini →
         </div>
         <div class="button-black">

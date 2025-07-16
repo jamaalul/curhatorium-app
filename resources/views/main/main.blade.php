@@ -15,6 +15,7 @@
     @include('main.cta')
     @include('main.features')
     @include('main.agenda')
+    @include('components.footer')
 
     <script src="/js/main.js"></script>
 </body>

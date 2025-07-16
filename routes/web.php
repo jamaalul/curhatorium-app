@@ -9,6 +9,7 @@ use App\Http\Controllers\SgdController;
 use App\Http\Controllers\CardController;
 use App\Http\Controllers\ShareAndTalkController;
 use App\Http\Controllers\ChatbotController;
+use App\Http\Controllers\TrackerController;
 
 
 Route::get('/', function () {
@@ -36,6 +37,8 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/mental-support-chatbot', [ChatbotController::class, 'index'])->name('chatbot');
     Route::post('/api/chatbot', [ChatbotController::class, 'chat']);
+
+    Route::get('/tracker', [TrackerController::class,'index'])->name('tracker.index');
 });
 
 require __DIR__.'/auth.php';
