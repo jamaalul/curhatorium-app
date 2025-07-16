@@ -5,10 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Curhatorium | Share and Talk</title>
     <link rel="stylesheet" href="{{ asset('css/global.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/share-and-talk.css') }}">
-    <style>
-        
-    </style>
+    <link rel="stylesheet" href="{{ asset('css/share-and-talk/index.css') }}">
 </head>
 <body>
     <!-- Toast container for notifications -->
@@ -379,11 +376,11 @@
         selectedConsultationType = type;
         // Placeholder alert for each consultation type
         if (type === 'chat') {
-            alert('This would start a chat consultation. (Placeholder)');
+            chatConsultation();
         } else if (type === 'video') {
-            alert('This would start a video call consultation. (Placeholder)');
+            videoConsultation();
         }
-        Toast.success('Success', `Booked ${type === 'chat' ? 'Chat' : 'Video Call'} with ${selectedProfessional.name}`);
+        // Toast.success('Success', `Booked ${type === 'chat' ? 'Chat' : 'Video Call'} with ${selectedProfessional.name}`);
         closeCheckoutModal();
     };
     // Patch startConsultation to open modal
@@ -392,6 +389,14 @@
         if (!professional || professional.availability !== 'online') return;
         professional.type = currentProfessionalType;
         openCheckoutModal(professional);
+    }
+
+    function chatConsultation() {
+        window.location.href = `/share-and-talk/chat/${selectedProfessional.id}`;
+    }
+
+    function videoConsultation() {
+        console.log('Video consultation');
     }
     </script>
 </body>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Chatroom - Share and Talk</title>
+  <link rel="stylesheet" href="{{ asset('css/global.css') }}">
+  <link rel="stylesheet" href="{{ asset('css/share-and-talk/chat.css') }}">
+</head>
+<body>
+  <div class="app" data-session-end="{{ now()->addMinutes(5)->toIso8601String() }}">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <h2>Psikolog</h2>
+      <div class="channel active">{{ $professional['name'] }}</div>
+    </div>
+
+    <!-- Chat Main Area -->
+    <div class="chat-area">
+      <div class="chat-header">
+        <div>Konsultasi dengan <strong>{{ $professional['name'] }}</strong></div>
+        <div id="session-timer" style="font-size: 0.9rem; color: var(--text-muted);">
+          Sisa waktu: 60:00
+        </div>
+      </div>
+
+      <div class="chat-body" id="chat-body">
+        <div class="message other">Halo, saya Nadya. Apa yang ingin kamu bahas hari ini?</div>
+        <div class="message user">Akhir-akhir ini saya merasa cemas berlebihan...</div>
+      </div>
+
+      <form class="chat-input" onsubmit="sendMessage(event)">
+        <input type="text" placeholder="Tulis pesan..." id="chat-input-field" name="off-chat-history" autocomplete="off" autocorrect="off" autocapitalize="off" />
+        <button type="submit" id="send-btn">Kirim</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const input = document.getElementById('chat-input-field');
+    const btn = document.getElementById('send-btn');
+    const chatBody = document.getElementById('chat-body');
+    const sessionEnd = new Date(document.querySelector('.app').dataset.sessionEnd);
+    const timerEl = document.getElementById('session-timer');
+
+    function updateTimer() {
+      const now = new Date();
+      const diff = sessionEnd - now;
+
+      if (diff <= 0) {
+        input.disabled = true;
+        btn.disabled = true;
+        timerEl.innerText = 'Sesi telah berakhir';
+        timerEl.style.color = 'red';
+      } else {
+        const mins = String(Math.floor(diff / 60000)).padStart(2, '0');
+        const secs = String(Math.floor((diff % 60000) / 1000)).padStart(2, '0');
+        timerEl.innerText = `Sisa waktu: ${mins}:${secs}`;
+      }
+    }
+
+    setInterval(updateTimer, 1000);
+    updateTimer();
+
+    function sendMessage(e) {
+      e.preventDefault();
+      const text = input.value.trim();
+      if (!text || input.disabled) return;
+
+      const bubble = document.createElement('div');
+      bubble.className = 'message user';
+      bubble.innerText = text;
+      chatBody.appendChild(bubble);
+      chatBody.scrollTop = chatBody.scrollHeight;
+      input.value = '';
+
+      // Simulasi balasan psikiater
+      setTimeout(() => {
+        const reply = document.createElement('div');
+        reply.className = 'message other';
+        reply.innerText = 'Hello World';
+        chatBody.appendChild(reply);
+        chatBody.scrollTop = chatBody.scrollHeight;
+      }, 1000);
+    }
+  </script>
+</body>
+</html>

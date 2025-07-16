@@ -30,6 +30,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/share-and-talk', [ShareAndTalkController::class, 'index'])->name('share-and-talk');
     Route::get('/share-and-talk/professionals', [ShareAndTalkController::class, 'getProfessionals']);
+    Route::get('/share-and-talk/chat/{professionalId}', [ShareAndTalkController::class, 'chatConsultation'])->name('share-and-talk.chat');
 
     Route::get('/mental-support-chatbot', [ChatbotController::class, 'index'])->name('chatbot');
     Route::post('/api/chatbot', [ChatbotController::class, 'chat']);
