@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="{{ asset('css/share-and-talk/chat.css') }}">
 </head>
 <body>
-  <div class="app" data-session-end="{{ now()->addMinutes(5)->toIso8601String() }}">
+  <div class="app" data-session-end="{{ now()->addMinutes($interval)->toIso8601String() }}">
     <!-- Sidebar -->
     <div class="sidebar">
       <h2>Lunar</h2>
@@ -26,8 +26,7 @@
       </div>
 
       <div class="chat-body" id="chat-body">
-        {{-- <div class="message other">Halo, saya Nadya. Apa yang ingin kamu bahas hari ini?</div>
-        <div class="message user">Akhir-akhir ini saya merasa cemas berlebihan...</div> --}}
+        <div style="height: 100%; width: 100%; display: flex; justify-content: center; align-items: center; color: #b9b9b9;">Waiting...</div>
       </div>
 
       <form class="chat-input" id="chatForm">

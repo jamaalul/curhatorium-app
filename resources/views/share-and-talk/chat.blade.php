@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="{{ asset('css/share-and-talk/chat.css') }}">
 </head>
 <body>
-  <div class="app" data-session-end="{{ now()->addMinutes(5)->toIso8601String() }}">
+  <div class="app" data-session-end="{{ now()->addMinutes($interval)->toIso8601String() }}">
     <!-- Sidebar -->
     <div class="sidebar">
       <h2>Psikolog</h2>

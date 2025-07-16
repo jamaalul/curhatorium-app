@@ -29,25 +29,30 @@ class ShareAndTalkController extends Controller
         $professional = Professional::findOrFail($professionalId);
         $user = Auth::user();
         $session_id = Str::uuid();
+        
 
-        ChatSession::create([
+        $session = ChatSession::create([
             'session_id' => $session_id,
             'user_id' => $user->id,
             'professional_id' => $professional->id,
             'start' => now(),
-            'end' => now()->addHour(),
+            'end' => now()->addMinutes(65),
         ]);
+
+        $interval = now()->diffInMinutes($session->end);
 
         
 
-        return view('share-and-talk.chat', ['professional' => $professional, 'user' => $user, 'session_id' => $session_id]);
+        return view('share-and-talk.chat', ['professional' => $professional, 'user' => $user, 'session_id' => $session_id, 'interval' => $interval]);
     }
 
     public function facilitatorChat($sessionId) {
         $session = ChatSession::where('session_id', $sessionId)->first();
         $user = User::where('id', $session->user_id)->first();
 
-        return view('share-and-talk.facilitator', ['sessionId' => $sessionId, 'professionalId' => $session->professional_id, 'user' => $user]);
+        $interval = now()->diffInMinutes($session->end);
+
+        return view('share-and-talk.facilitator', ['sessionId' => $sessionId, 'professionalId' => $session->professional_id, 'user' => $user, 'interval' => $interval]);
     }
 
     public function userSend(Request $request)
