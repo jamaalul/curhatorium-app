@@ -36,7 +36,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/share-and-talk/chat/facilitator-send', [ShareAndTalkController::class, 'facilitatorSend'])->name('share-and-talk.facilitatorSend');
 
     Route::get('/mental-support-chatbot', [ChatbotController::class, 'index'])->name('chatbot');
-    Route::post('/api/chatbot', [ChatbotController::class, 'chat']);
+    Route::post('/api/chatbot', [ChatbotController::class, 'chat'])->name('chatbot.api');
 
     Route::get('/tracker', [TrackerController::class,'index'])->name('tracker.index');
     Route::post('tracker/track', [TrackerController::class,'track'])->name('tracker.entry');

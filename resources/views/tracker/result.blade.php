@@ -562,385 +562,154 @@
             <div class="page-header-content">
                 <h1>Today's Mood Entry</h1>
                 <p>Here's your mood tracking result for today with personalized AI insights.</p>
-                <div class="date-display" id="currentDate"></div>
+                <div class="date-display">{{ \Carbon\Carbon::parse($stat->created_at)->format('l, d F Y') }}</div>
             </div>
         </div>
 
-        <!-- Today's Entry Display -->
-        <div id="entryDisplay">
-            <!-- Content will be populated by JavaScript -->
+        <!-- Entry Card -->
+        <div class="entry-card">
+            <div class="entry-header" style="text-align:center;">
+                <div class="mood-display" style="font-size:4rem;">
+                    @php
+                        $moods = [
+                            1 => ['emoji' => '😢', 'label' => 'Very Sad'],
+                            2 => ['emoji' => '😞', 'label' => 'Sad'],
+                            3 => ['emoji' => '😔', 'label' => 'Down'],
+                            4 => ['emoji' => '😐', 'label' => 'Neutral'],
+                            5 => ['emoji' => '🙂', 'label' => 'Okay'],
+                            6 => ['emoji' => '😊', 'label' => 'Good'],
+                            7 => ['emoji' => '😄', 'label' => 'Happy'],
+                            8 => ['emoji' => '😁', 'label' => 'Very Happy'],
+                            9 => ['emoji' => '🤩', 'label' => 'Excited'],
+                            10 => ['emoji' => '🥳', 'label' => 'Euphoric'],
+                        ];
+                        $mood = $moods[$stat->mood] ?? ['emoji' => '', 'label' => ''];
+                    @endphp
+                    {{ $mood['emoji'] }}
+                </div>
+                <div class="mood-score" style="font-size:2rem;font-weight:700;color:var(--primary-dark);">{{ $stat->mood }}/10</div>
+                <div class="mood-label" style="font-size:1.125rem;color:var(--text-secondary);font-weight:500;">{{ $mood['label'] }}</div>
+            </div>
+
+            <div class="entry-details" style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-bottom:2rem;">
+                <div class="detail-section" style="background:var(--bg-secondary);padding:1.5rem;border-radius:var(--border-radius-lg);">
+                    <div class="detail-title" style="font-size:1rem;font-weight:600;color:var(--text-primary);margin-bottom:1rem;display:flex;align-items:center;gap:0.5rem;">
+                        🎯 Main Activity
+                    </div>
+                    <div class="activity-display" style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem;">
+                        @php
+                            $activities = [
+                                'work' => ['icon' => '💼', 'name' => 'Work/Study'],
+                                'exercise' => ['icon' => '🏃‍♂️', 'name' => 'Exercise'],
+                                'social' => ['icon' => '👥', 'name' => 'Social Time'],
+                                'hobbies' => ['icon' => '🎨', 'name' => 'Hobbies'],
+                                'rest' => ['icon' => '😴', 'name' => 'Rest/Sleep'],
+                                'entertainment' => ['icon' => '📺', 'name' => 'Entertainment'],
+                                'nature' => ['icon' => '🌳', 'name' => 'Nature/Outdoors'],
+                                'food' => ['icon' => '🍽️', 'name' => 'Food/Cooking'],
+                                'health' => ['icon' => '🏥', 'name' => 'Health/Medical'],
+                                'other' => ['icon' => '❓', 'name' => 'Other'],
+                            ];
+                            $activity = $activities[$stat->activity] ?? ['icon' => '', 'name' => $stat->activity];
+                        @endphp
+                        <div class="activity-icon" style="font-size:2rem;width:50px;height:50px;display:flex;align-items:center;justify-content:center;background:var(--white);border-radius:50%;box-shadow:var(--shadow-sm);">
+                            {{ $activity['icon'] }}
+                        </div>
+                        <div class="activity-name" style="font-size:1.125rem;font-weight:600;color:var(--text-primary);">
+                            {{ $activity['name'] }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-section" style="background:var(--bg-secondary);padding:1.5rem;border-radius:var(--border-radius-lg);">
+                    <div class="detail-title" style="font-size:1rem;font-weight:600;color:var(--text-primary);margin-bottom:1rem;display:flex;align-items:center;gap:0.5rem;">
+                        ⚡ Energy & Productivity
+                    </div>
+                    <div class="energy-metrics" style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;">
+                        <div class="metric-item" style="text-align:center;padding:1rem;background:var(--white);border-radius:var(--border-radius-lg);box-shadow:var(--shadow-sm);">
+                            <div class="metric-icon" style="font-size:1.5rem;margin-bottom:0.5rem;">⚡</div>
+                            <div class="metric-value" style="font-size:1.5rem;font-weight:700;color:var(--primary-dark);margin-bottom:0.25rem;">{{ $stat->energy }}</div>
+                            <div class="metric-label" style="font-size:0.875rem;color:var(--text-secondary);">Energy</div>
+                        </div>
+                        <div class="metric-item" style="text-align:center;padding:1rem;background:var(--white);border-radius:var(--border-radius-lg);box-shadow:var(--shadow-sm);">
+                            <div class="metric-icon" style="font-size:1.5rem;margin-bottom:0.5rem;">🎯</div>
+                            <div class="metric-value" style="font-size:1.5rem;font-weight:700;color:var(--primary-dark);margin-bottom:0.25rem;">{{ $stat->productivity }}</div>
+                            <div class="metric-label" style="font-size:0.875rem;color:var(--text-secondary);">Productivity</div>
+                        </div>
+                    </div>
+                </div>
+
+                @if($stat->explanation)
+                <div class="explanation-section" style="grid-column:1/-1;background:var(--bg-secondary);padding:1.5rem;border-radius:var(--border-radius-lg);">
+                    <div class="detail-title" style="font-size:1rem;font-weight:600;color:var(--text-primary);margin-bottom:1rem;display:flex;align-items:center;gap:0.5rem;">
+                        💭 Your Thoughts
+                    </div>
+                    <div class="explanation-text" style="color:var(--text-secondary);line-height:1.6;font-style:italic;background:var(--white);padding:1rem;border-radius:var(--border-radius);border-left:4px solid var(--primary-color);">
+                        "{{ $stat->explanation }}"
+                    </div>
+                </div>
+                @endif
+            </div>
         </div>
 
-        <!-- AI Analysis Section -->
+        <!-- AI Feedback Section -->
         <div class="ai-analysis">
-            <div class="ai-header">
-                <div class="ai-icon">🤖</div>
+            <div class="ai-header" style="display:flex;align-items:center;gap:1rem;margin-bottom:2rem;padding-bottom:1rem;border-bottom:1px solid var(--bg-tertiary);">
+                <div class="ai-icon" style="width:50px;height:50px;background:linear-gradient(135deg,var(--primary-color),var(--primary-dark));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.5rem;color:white;">🤖</div>
                 <div>
-                    <h2 class="ai-title">AI Analysis & Insights</h2>
-                    <p class="ai-subtitle">Personalized analysis of your today's mood entry</p>
+                    <h2 class="ai-title" style="font-size:1.5rem;font-weight:700;color:var(--text-primary);">AI Feedback & Insights</h2>
+                    <p class="ai-subtitle" style="color:var(--text-secondary);font-size:0.95rem;">Personalized feedback from Ment-AI</p>
                 </div>
             </div>
-            
-            <div id="aiContent" class="ai-content">
-                <!-- AI analysis will be populated here -->
+            <div class="ai-content" style="max-width:none;">
+                @if($stat->feedback)
+                    <div class="ai-section-content" style="color:var(--text-secondary);line-height:1.7;">
+                        @php
+                            // A very basic Markdown to safe HTML converter (no HTML tags allowed)
+                            $text = $stat->feedback ?? '';
+                            // Escape all HTML
+                            $text = e($text);
+
+                            // Bold: **text** or __text__
+                            $text = preg_replace('/\*\*(.*?)\*\*/s', '<strong>$1</strong>', $text);
+                            $text = preg_replace('/\_\_(.*?)\_\_/s', '<strong>$1</strong>', $text);
+
+                            // Italic: *text* or _text_
+                            $text = preg_replace('/\*(.*?)\*/s', '<em>$1</em>', $text);
+                            $text = preg_replace('/\_(.*?)\_/s', '<em>$1</em>', $text);
+
+                            // Inline code: `code`
+                            $text = preg_replace('/`([^`]+)`/', '<code>$1</code>', $text);
+
+                            // Headings: #, ##, ###
+                            $text = preg_replace('/^### (.*)$/m', '<b>$1</b>', $text);
+                            $text = preg_replace('/^## (.*)$/m', '<b>$1</b>', $text);
+                            $text = preg_replace('/^# (.*)$/m', '<b>$1</b>', $text);
+
+                            // Unordered lists: - item or * item
+                            $text = preg_replace('/^(\s*)[-\*] (.*)$/m', '$1• $2', $text);
+
+                            // Numbered lists: 1. item
+                            $text = preg_replace('/^(\s*)\d+\.\s(.*)$/m', '$1$2', $text);
+
+                            // Convert newlines to <br>
+                            $text = nl2br($text);
+                        @endphp
+                        {!! $text !!}
+                    </div>
+                @else
+                    <div class="ai-section-content" style="color:var(--text-tertiary);font-style:italic;">No AI feedback available for this entry.</div>
+                @endif
             </div>
         </div>
 
         <!-- Action Buttons -->
-        <div class="action-buttons">
-            <a href="mood-tracker.html" class="action-btn btn-primary">
-                📝 Track Another Entry
-            </a>
-            <a href="#" class="action-btn btn-secondary" onclick="shareResults()">
-                📤 Share Results
+        <div class="action-buttons" style="display:flex;gap:1rem;justify-content:center;margin-top:2rem;">
+            <a href="{{ route('dashboard') }}" class="action-btn btn-primary" style="background:var(--primary-color);color:white;border:none;padding:0.75rem 1.5rem;border-radius:var(--border-radius-lg);font-weight:600;cursor:pointer;transition:var(--transition);text-decoration:none;display:inline-flex;align-items:center;gap:0.5rem;">
+                Kembali
             </a>
         </div>
     </div>
-
-    <script>
-        // Activity metadata
-        const activityMeta = {
-            work: { icon: '💼', name: 'Work/Study' },
-            exercise: { icon: '🏃‍♂️', name: 'Exercise' },
-            social: { icon: '👥', name: 'Social Time' },
-            hobbies: { icon: '🎨', name: 'Hobbies' },
-            rest: { icon: '😴', name: 'Rest/Sleep' },
-            entertainment: { icon: '📺', name: 'Entertainment' },
-            nature: { icon: '🌳', name: 'Nature/Outdoors' },
-            food: { icon: '🍽️', name: 'Food/Cooking' },
-            health: { icon: '🏥', name: 'Health/Medical' },
-            other: { icon: '❓', name: 'Other' }
-        };
-
-        // Mood emojis and labels
-        const moodData = {
-            1: { emoji: '😢', label: 'Very Sad' },
-            2: { emoji: '😞', label: 'Sad' },
-            3: { emoji: '😔', label: 'Down' },
-            4: { emoji: '😐', label: 'Neutral' },
-            5: { emoji: '🙂', label: 'Okay' },
-            6: { emoji: '😊', label: 'Good' },
-            7: { emoji: '😄', label: 'Happy' },
-            8: { emoji: '😁', label: 'Very Happy' },
-            9: { emoji: '🤩', label: 'Excited' },
-            10: { emoji: '🥳', label: 'Euphoric' }
-        };
-
-        // Initialize the page
-        document.addEventListener('DOMContentLoaded', function() {
-            displayCurrentDate();
-            loadTodaysEntry();
-        });
-
-        // Display current date
-        function displayCurrentDate() {
-            const today = new Date();
-            const options = { 
-                weekday: 'long', 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric' 
-            };
-            document.getElementById('currentDate').textContent = today.toLocaleDateString('en-US', options);
-        }
-
-        // Load today's entry
-        function loadTodaysEntry() {
-            // Get today's date in YYYY-MM-DD format
-            const today = new Date().toISOString().split('T')[0];
-            
-            // Get all entries from localStorage
-            const allEntries = JSON.parse(localStorage.getItem('moodEntries') || '[]');
-            
-            // Find today's entry
-            const todaysEntry = allEntries.find(entry => {
-                const entryDate = new Date(entry.timestamp).toISOString().split('T')[0];
-                return entryDate === today;
-            });
-
-            if (todaysEntry) {
-                displayEntry(todaysEntry);
-                generateAIAnalysis(todaysEntry);
-            } else {
-                showEmptyState();
-            }
-        }
-
-        // Display the entry
-        function displayEntry(entry) {
-            const entryDisplay = document.getElementById('entryDisplay');
-            const mood = moodData[entry.mood];
-            const activity = activityMeta[entry.activity];
-
-            entryDisplay.innerHTML = `
-                <div class="entry-card">
-                    <div class="entry-header">
-                        <div class="mood-display">${mood.emoji}</div>
-                        <div class="mood-score">${entry.mood}/10</div>
-                        <div class="mood-label">${mood.label}</div>
-                    </div>
-
-                    <div class="entry-details">
-                        <div class="detail-section">
-                            <div class="detail-title">
-                                🎯 Main Activity
-                            </div>
-                            <div class="activity-display">
-                                <div class="activity-icon">${activity.icon}</div>
-                                <div class="activity-name">${activity.name}</div>
-                            </div>
-                        </div>
-
-                        <div class="detail-section">
-                            <div class="detail-title">
-                                ⚡ Energy Levels
-                            </div>
-                            <div class="energy-metrics">
-                                <div class="metric-item">
-                                    <div class="metric-icon">⚡</div>
-                                    <div class="metric-value">${entry.energy}</div>
-                                    <div class="metric-label">Energy</div>
-                                </div>
-                                <div class="metric-item">
-                                    <div class="metric-icon">🎯</div>
-                                    <div class="metric-value">${entry.productivity}</div>
-                                    <div class="metric-label">Productivity</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        ${entry.explanation ? `
-                        <div class="explanation-section">
-                            <div class="detail-title">
-                                💭 Your Thoughts
-                            </div>
-                            <div class="explanation-text">
-                                "${entry.explanation}"
-                            </div>
-                        </div>
-                        ` : ''}
-                    </div>
-                </div>
-            `;
-        }
-
-        // Generate AI Analysis
-        function generateAIAnalysis(entry) {
-            const aiContent = document.getElementById('aiContent');
-            
-            // Show loading state
-            aiContent.innerHTML = `
-                <div class="ai-loading">
-                    <div class="ai-loading-spinner"></div>
-                    <span>Analyzing your mood entry...</span>
-                </div>
-            `;
-
-            // Simulate AI processing delay
-            setTimeout(() => {
-                const analysis = performTodaysAnalysis(entry);
-                displayAIAnalysis(analysis);
-            }, 2000);
-        }
-
-        // Perform analysis on today's entry
-        function performTodaysAnalysis(entry) {
-            const mood = moodData[entry.mood];
-            const activity = activityMeta[entry.activity];
-            
-            return {
-                entry,
-                mood,
-                activity,
-                moodLevel: entry.mood >= 7 ? 'positive' : entry.mood >= 5 ? 'neutral' : 'concerning',
-                energyLevel: entry.energy >= 7 ? 'high' : entry.energy >= 5 ? 'moderate' : 'low',
-                productivityLevel: entry.productivity >= 7 ? 'high' : entry.productivity >= 5 ? 'moderate' : 'low',
-                energyProductivityBalance: Math.abs(entry.energy - entry.productivity)
-            };
-        }
-
-        // Display AI analysis
-        function displayAIAnalysis(analysis) {
-            const aiContent = document.getElementById('aiContent');
-            
-            const summary = generateTodaysSummary(analysis);
-            const insights = generateTodaysInsights(analysis);
-            const suggestions = generateTodaysSuggestions(analysis);
-
-            aiContent.innerHTML = `
-                <div class="ai-section">
-                    <h3 class="ai-section-title">
-                        📊 Today's Summary
-                    </h3>
-                    <div class="ai-section-content">
-                        <p>${summary}</p>
-                    </div>
-                </div>
-                
-                <div class="ai-section">
-                    <h3 class="ai-section-title">
-                        🔍 Key Insights
-                    </h3>
-                    <div class="ai-section-content">
-                        ${insights}
-                    </div>
-                </div>
-                
-                <div class="ai-section">
-                    <h3 class="ai-section-title">
-                        💡 Personalized Suggestions
-                    </h3>
-                    <div class="ai-section-content">
-                        ${suggestions}
-                    </div>
-                </div>
-            `;
-        }
-
-        // Generate today's summary
-        function generateTodaysSummary(analysis) {
-            const { entry, mood, activity, moodLevel, energyLevel, productivityLevel } = analysis;
-            
-            let summaryText = `Today you're feeling ${mood.label.toLowerCase()} with a mood score of ${entry.mood}/10, which indicates a ${moodLevel} emotional state. `;
-            
-            summaryText += `Your main activity was ${activity.name.toLowerCase()}, and you experienced ${energyLevel} energy levels (${entry.energy}/10) `;
-            summaryText += `with ${productivityLevel} productivity (${entry.productivity}/10). `;
-
-            if (analysis.energyProductivityBalance <= 1) {
-                summaryText += `Your energy and productivity levels are well-balanced today.`;
-            } else if (entry.energy > entry.productivity) {
-                summaryText += `You had more energy than productivity today, which might indicate untapped potential.`;
-            } else {
-                summaryText += `Your productivity exceeded your energy levels, which might suggest you pushed through despite feeling tired.`;
-            }
-
-            return summaryText;
-        }
-
-        // Generate today's insights
-        function generateTodaysInsights(analysis) {
-            const { entry, activity, moodLevel, energyLevel, productivityLevel } = analysis;
-            const insights = [];
-
-            // Mood-activity correlation
-            if (entry.mood >= 7) {
-                insights.push(`${activity.name} had a positive impact on your mood today, contributing to your ${moodLevel} emotional state.`);
-            } else if (entry.mood <= 4) {
-                insights.push(`${activity.name} may have contributed to your lower mood today. Consider what aspects of this activity affected you.`);
-            } else {
-                insights.push(`${activity.name} resulted in a neutral mood impact today. This activity neither significantly boosted nor lowered your emotional state.`);
-            }
-
-            // Energy analysis
-            if (entry.energy >= 8) {
-                insights.push(`Your high energy levels today (${entry.energy}/10) suggest you're well-rested and physically prepared for activities.`);
-            } else if (entry.energy <= 4) {
-                insights.push(`Your low energy levels (${entry.energy}/10) might be affecting your overall well-being. Consider factors like sleep, nutrition, or stress.`);
-            }
-
-            // Productivity analysis
-            if (entry.productivity >= 8) {
-                insights.push(`Excellent productivity today (${entry.productivity}/10)! You accomplished a lot and should feel proud of your achievements.`);
-            } else if (entry.productivity <= 4) {
-                insights.push(`Lower productivity today (${entry.productivity}/10) is normal and happens to everyone. Don't be too hard on yourself.`);
-            }
-
-            // Energy-productivity relationship
-            if (entry.energy > entry.productivity + 2) {
-                insights.push(`You had high energy but lower productivity today. This might indicate distractions or lack of focus rather than physical limitations.`);
-            } else if (entry.productivity > entry.energy + 2) {
-                insights.push(`You were highly productive despite lower energy levels. This shows great determination, but be mindful not to burn out.`);
-            }
-
-            return insights.map(insight => `<p>${insight}</p>`).join('');
-        }
-
-        // Generate today's suggestions
-        function generateTodaysSuggestions(analysis) {
-            const { entry, activity, moodLevel, energyLevel, productivityLevel } = analysis;
-            const suggestions = [];
-
-            // Mood-based suggestions
-            if (entry.mood <= 4) {
-                suggestions.push(`Since you're feeling ${moodLevel} today, consider doing something that usually lifts your spirits - perhaps calling a friend, listening to music, or taking a short walk.`);
-                suggestions.push(`If low mood persists, don't hesitate to reach out to a mental health professional or trusted person in your life.`);
-            } else if (entry.mood >= 7) {
-                suggestions.push(`You're in a great mood today! This is an excellent time to tackle challenging tasks or engage in activities you've been putting off.`);
-                suggestions.push(`Consider sharing your positive energy with others - it might brighten their day too.`);
-            }
-
-            // Activity-specific suggestions
-            if (entry.mood >= 6) {
-                suggestions.push(`${activity.name} seems to work well for you today. Consider incorporating more of this activity into your routine when you need a mood boost.`);
-            } else if (entry.mood <= 5) {
-                suggestions.push(`If ${activity.name.toLowerCase()} contributed to your lower mood, think about ways to make this activity more enjoyable or consider alternative approaches.`);
-            }
-
-            // Energy suggestions
-            if (entry.energy <= 4) {
-                suggestions.push(`Your low energy today suggests you might benefit from prioritizing rest, staying hydrated, and eating nutritious foods.`);
-                suggestions.push(`Consider gentle activities like stretching, meditation, or a short walk to naturally boost your energy levels.`);
-            } else if (entry.energy >= 8) {
-                suggestions.push(`With your high energy levels today, this would be a great time for physical activities or tackling demanding tasks.`);
-            }
-
-            // Productivity suggestions
-            if (entry.productivity <= 4) {
-                suggestions.push(`Lower productivity is completely normal. Focus on small, achievable tasks and celebrate small wins to build momentum.`);
-                suggestions.push(`Consider breaking larger tasks into smaller, more manageable pieces to make progress feel more attainable.`);
-            }
-
-            // Balance suggestions
-            if (analysis.energyProductivityBalance > 2) {
-                if (entry.energy > entry.productivity) {
-                    suggestions.push(`You have energy to spare today. Consider channeling it into activities that align with your goals or bring you joy.`);
-                } else {
-                    suggestions.push(`You've been productive despite lower energy. Make sure to rest and recharge to maintain this level of output.`);
-                }
-            }
-
-            // General suggestions
-            suggestions.push(`Continue tracking your mood daily to identify patterns and understand what activities and circumstances affect your well-being most.`);
-            
-            if (entry.explanation && entry.explanation.trim()) {
-                suggestions.push(`Your reflection on today's experience shows good self-awareness. Keep noting these details as they help identify what works best for you.`);
-            }
-
-            return suggestions.map(suggestion => `<p>${suggestion}</p>`).join('');
-        }
-
-        // Show empty state
-        function showEmptyState() {
-            const entryDisplay = document.getElementById('entryDisplay');
-            entryDisplay.innerHTML = `
-                <div class="empty-state">
-                    <div class="empty-state-icon">📝</div>
-                    <h3>No Entry for Today</h3>
-                    <p>You haven't tracked your mood today yet. Start by recording how you're feeling!</p>
-                    <a href="mood-tracker.html" class="empty-state-btn">Track Your Mood</a>
-                </div>
-            `;
-
-            // Hide AI analysis section
-            document.querySelector('.ai-analysis').style.display = 'none';
-        }
-
-        // Share results function
-        function shareResults() {
-            if (navigator.share) {
-                navigator.share({
-                    title: 'My Mood Tracking Results',
-                    text: 'Check out my mood tracking results from Curhatorium!',
-                    url: window.location.href
-                });
-            } else {
-                // Fallback for browsers that don't support Web Share API
-                const url = window.location.href;
-                navigator.clipboard.writeText(url).then(() => {
-                    alert('Results link copied to clipboard!');
-                });
-            }
-        }
-    </script>
 </body>
 </html>
+

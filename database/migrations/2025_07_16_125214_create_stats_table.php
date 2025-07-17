@@ -20,6 +20,7 @@ return new class extends Migration
             $table->integer('energy')->comment('Energy level from 1-10');
             $table->integer('productivity')->comment('Productivity level from 1-10');
             $table->string('day');
+            $table->text('feedback')->nullable()->comment('AI-generated feedback based on mood entry');
             $table->timestamps();
         });
     }

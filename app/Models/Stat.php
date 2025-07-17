@@ -14,7 +14,8 @@ class Stat extends Model
         'explanation',
         'energy',
         'productivity',
-        'day'
+        'day',
+        'feedback',
     ];
 
     protected $casts = [
