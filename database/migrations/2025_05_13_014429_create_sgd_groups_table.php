@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('meeting_address');
             $table->boolean('is_done')->default(false);
             $table->string('category');
+            $table->dateTime('schedule');
             $table->timestamps();
         });
     }

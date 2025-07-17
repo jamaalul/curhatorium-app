@@ -24,8 +24,8 @@ class AdminprivilegePanelProvider extends PanelProvider
     {
         return $panel
             ->default()
-            ->id('adminprivilege')
-            ->path('adminprivilege')
+            ->id('admin')
+            ->path('admin')
             ->login()
             ->colors([
                 'primary' => Color::Amber,
@@ -53,6 +53,7 @@ class AdminprivilegePanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
-            ]);
+            ])
+            ->authGuard('web');
     }
 }

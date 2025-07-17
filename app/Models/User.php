@@ -21,8 +21,10 @@ class User extends Authenticatable implements FilamentUser
      */
     protected $fillable = [
         'username',
+        'name',
         'email',
         'password',
+        'group_id',
     ];
 
     /**
@@ -48,9 +50,22 @@ class User extends Authenticatable implements FilamentUser
         ];
     }
 
-    public function group()
+    /**
+     * The SGD groups that the user has joined.
+     */
+    public function sgdGroups()
     {
-        return $this->belongsTo(SgdGroup::class);
+        return $this->belongsToMany(SgdGroup::class, 'sgd_group_user')
+                    ->withPivot('joined_at')
+                    ->withTimestamps();
+    }
+
+    /**
+     * Check if user has joined a specific SGD group.
+     */
+    public function hasJoinedSgdGroup($sgdGroupId)
+    {
+        return $this->sgdGroups()->where('sgd_group_id', $sgdGroupId)->exists();
     }
 
      public function canAccessPanel(\Filament\Panel $panel): bool

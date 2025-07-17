@@ -5,7 +5,7 @@
 
 @font-face {
     font-family: "FigtreeBold";
-    src: url(/fonts/Figtree-Bold.ttf) format("truetype");
+    src: url(/fonts/Figtree-Medium.ttf) format("truetype");
 }
 
 * {
@@ -23,11 +23,31 @@ h4,
 h5,
 h6 {
     font-family: FigtreeBold;
+    font-weight: 400;
 }
 
 .error-message {
     color: red;
     font-size: 0.8em;
+}
+
+.alert {
+    padding: 12px 16px;
+    margin: 16px 0;
+    border-radius: 8px;
+    font-weight: 500;
+}
+
+.alert-success {
+    background-color: #d1fae5;
+    color: #065f46;
+    border: 1px solid #a7f3d0;
+}
+
+.alert-error {
+    background-color: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fca5a5;
 }
 
 ::-webkit-scrollbar {
