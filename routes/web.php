@@ -39,6 +39,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/api/chatbot', [ChatbotController::class, 'chat']);
 
     Route::get('/tracker', [TrackerController::class,'index'])->name('tracker.index');
+    Route::post('tracker/track', [TrackerController::class,'track'])->name('tracker.entry');
+    Route::get('/tracker/result', [TrackerController::class, 'result'])->name('tracker.result');
 });
 
 require __DIR__.'/auth.php';

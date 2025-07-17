@@ -252,6 +252,12 @@ nav #mini-logo {
     margin-top: 0.25rem;
 }
 
+.selected {
+    .mood-number {
+        color: #fff;
+    }
+}
+
 /* Activity Selection */
 .activity-grid {
     display: grid;
