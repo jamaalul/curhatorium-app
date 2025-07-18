@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mood & Productivity Tracker - Curhatorium</title>
+    <title>Pencatat Mood & Produktivitas - Curhatorium</title>
     <link rel="stylesheet" href="{{ asset('css/global.css') }}">
     <link rel="stylesheet" href="{{ asset('css/tracker/index.css') }}">
     <style>
@@ -15,11 +15,11 @@
 
     <div class="container">
         <!-- Page Header -->
-        <div class="page-header" style="padding: 3.5rem 0;">
-            <div class="page-header-content" style="padding: 0 2rem;">
-                <h1 style="font-size: 2.25rem;">Mood & Productivity Tracker</h1>
-                <p style="font-size: 1.125rem;">
-                    Track your daily mood, activities, and energy levels to better understand your mental health patterns and improve your well-being.
+        <div class="page-header">
+            <div class="page-header-content">
+                <h1>Pencatat Mood & Produktivitas</h1>
+                <p>
+                    Catat suasana hati, aktivitas, dan tingkat energi harianmu untuk memahami pola kesehatan mental dan meningkatkan kesejahteraanmu.
                 </p>
             </div>
         </div>
@@ -39,28 +39,28 @@
                     @csrf
                     <!-- 1. Mood Scale -->
                     <div class="form-section">
-                        <h2 class="section-title">How are you feeling today?</h2>
+                        <h2 class="section-title">Bagaimana perasaanmu hari ini?</h2>
                         <p class="section-description">
-                            Select the emoji that best represents your overall mood today. This helps us understand your emotional state.
+                            Pilih emoji yang paling menggambarkan suasana hatimu hari ini. Ini membantu kami memahami keadaan emosimu.
                         </p>
                         <div class="mood-scale">
                             @for ($i = 1; $i <= 10; $i++)
                                 @php
                                     $moods = [
-                                        1 => ['emoji' => '😢', 'label' => 'Very Sad'],
-                                        2 => ['emoji' => '😞', 'label' => 'Sad'],
-                                        3 => ['emoji' => '😔', 'label' => 'Down'],
-                                        4 => ['emoji' => '😐', 'label' => 'Neutral'],
-                                        5 => ['emoji' => '🙂', 'label' => 'Okay'],
-                                        6 => ['emoji' => '😊', 'label' => 'Good'],
-                                        7 => ['emoji' => '😄', 'label' => 'Happy'],
-                                        8 => ['emoji' => '😁', 'label' => 'Very Happy'],
-                                        9 => ['emoji' => '🤩', 'label' => 'Excited'],
-                                        10 => ['emoji' => '🥳', 'label' => 'Euphoric'],
+                                        1 => ['emoji' => '😢', 'label' => 'Sangat sedih'],
+                                        2 => ['emoji' => '😞', 'label' => 'Sedih'],
+                                        3 => ['emoji' => '😔', 'label' => 'Murung'],
+                                        4 => ['emoji' => '😐', 'label' => 'Biasa'],
+                                        5 => ['emoji' => '🙂', 'label' => 'Netral'],
+                                        6 => ['emoji' => '😊', 'label' => 'Positif'],
+                                        7 => ['emoji' => '😄', 'label' => 'Senang'],
+                                        8 => ['emoji' => '😁', 'label' => 'Sangat senang'],
+                                        9 => ['emoji' => '🤩', 'label' => 'Bahagia'],
+                                        10 => ['emoji' => '🥳', 'label' => 'Gembira'],
                                     ];
                                 @endphp
-                                <label class="mood-option" data-mood="{{ $i }}" style="cursor:pointer;">
-                                    <input type="radio" name="mood" value="{{ $i }}" style="display:none;">
+                                <label class="mood-option" data-mood="{{ $i }}">
+                                    <input type="radio" name="mood" value="{{ $i }}">
                                     <div class="mood-emoji">{{ $moods[$i]['emoji'] }}</div>
                                     <div class="mood-label">{{ $moods[$i]['label'] }}</div>
                                     <div class="mood-number">{{ $i }}</div>
@@ -71,28 +71,32 @@
 
                     <!-- 2. Activity Selection -->
                     <div class="form-section">
-                        <h2 class="section-title">What activity contributed most to this mood?</h2>
+                        <h2 class="section-title">Aktivitas apa yang paling memengaruhi mood-mu hari ini?</h2>
                         <p class="section-description">
-                            Choose the main activity or experience that influenced your mood today. This helps identify patterns in your daily life.
+                            Pilih aktivitas utama atau pengalaman yang paling memengaruhi suasana hatimu hari ini. Ini membantu mengidentifikasi pola dalam kehidupan sehari-hari.
                         </p>
                         <div class="activity-grid">
                             @php
                                 $activities = [
-                                    'work' => ['icon' => '💼', 'name' => 'Work/Study', 'desc' => 'Job tasks, meetings, studying'],
-                                    'exercise' => ['icon' => '🏃‍♂️', 'name' => 'Exercise', 'desc' => 'Gym, running, sports, yoga'],
-                                    'social' => ['icon' => '👥', 'name' => 'Social Time', 'desc' => 'Friends, family, social events'],
-                                    'hobbies' => ['icon' => '🎨', 'name' => 'Hobbies', 'desc' => 'Creative activities, interests'],
-                                    'rest' => ['icon' => '😴', 'name' => 'Rest/Sleep', 'desc' => 'Relaxation, napping, sleeping'],
-                                    'entertainment' => ['icon' => '📺', 'name' => 'Entertainment', 'desc' => 'Movies, games, reading'],
-                                    'nature' => ['icon' => '🌳', 'name' => 'Nature/Outdoors', 'desc' => 'Walking, hiking, fresh air'],
-                                    'food' => ['icon' => '🍽️', 'name' => 'Food/Cooking', 'desc' => 'Meals, cooking, dining out'],
-                                    'health' => ['icon' => '🏥', 'name' => 'Health/Medical', 'desc' => 'Doctor visits, health care'],
-                                    'other' => ['icon' => '❓', 'name' => 'Other', 'desc' => 'Something else entirely'],
+                                    'work' => ['icon' => '💼', 'name' => 'Pekerjaan & Karir', 'desc' => 'Rapat, presentasi, bisnis'],
+                                    'exercise' => ['icon' => '🏃‍♂️', 'name' => 'Aktivitas Fisik', 'desc' => 'Jalan kaki, senam, gym, yoga'],
+                                    'social' => ['icon' => '💬', 'name' => 'Sosialisasi', 'desc' => 'Berkumpul, hangout'],
+                                    'hobbies' => ['icon' => '🎨', 'name' => 'Kreativitas & Hobi', 'desc' => 'Menggambar, melukis, mendesain'],
+                                    'rest' => ['icon' => '🎧', 'name' => 'Hiburan & Santai', 'desc' => 'Game, film, scrolling'],
+                                    'entertainment' => ['icon' => '🛁', 'name' => 'Perawatan Diri', 'desc' => 'Skincare, potong rambut, mandi'],
+                                    'nature' => ['icon' => '🌳', 'name' => 'Aktivitas Luar Ruangan', 'desc' => 'Jalan pagi, berjemur, piknik'],
+                                    'food' => ['icon' => '🏠', 'name' => 'Rumah Tangga', 'desc' => 'Memasak, menyapu, mencuci baju'],
+                                    'health' => ['icon' => '🧘', 'name' => 'Kesehatan Mental', 'desc' => 'Meditasi, menulis, terapi'],
+                                    'study' => ['icon' => '📖', 'name' => 'Belajar & Produktivitas', 'desc' => 'Membaca, belajar, mengerjakan tugas'],
+                                    'spiritual' => ['icon' => '🙏', 'name' => 'Spiritual', 'desc' => 'Berdoa, kajian, membaca kitab suci'],
+                                    'romance' => ['icon' => '💖', 'name' => 'Hubungan Romantis', 'desc' => 'Kencan, quality time, merayakan momen'],
+                                    'finance' => ['icon' => '📊', 'name' => 'Finansial & Mandiri', 'desc' => 'Mencatat keuangan, investasi, membayar tagihan'],
+                                    'other' => ['icon' => '🧩', 'name' => 'Lainnya', 'desc' => 'Sesuatu yang lain'],
                                 ];
                             @endphp
                             @foreach ($activities as $key => $activity)
-                                <label class="activity-option" data-activity="{{ $key }}" style="cursor:pointer;">
-                                    <input type="radio" name="activity" value="{{ $key }}" style="display:none;">
+                                <label class="activity-option" data-activity="{{ $key }}">
+                                    <input type="radio" name="activity" value="{{ $key }}">
                                     <div class="activity-icon">{{ $activity['icon'] }}</div>
                                     <div class="activity-info">
                                         <div class="activity-name">{{ $activity['name'] }}</div>
@@ -105,37 +109,37 @@
 
                     <!-- 3. Activity Explanation -->
                     <div class="form-section">
-                        <h2 class="section-title">Tell us more about this activity</h2>
+                        <h2 class="section-title">Ceritakan lebih lanjut tentang aktivitas ini</h2>
                         <p class="section-description">
-                            Describe what specifically happened during this activity that influenced your mood. Be as detailed as you'd like.
+                            Jelaskan secara spesifik apa yang terjadi selama aktivitas ini yang memengaruhi suasana hatimu. Ceritakan sedetail mungkin sesuai keinginanmu.
                         </p>
                         <div class="form-group">
-                            <label for="activityExplanation" class="form-label">Activity Details</label>
+                            <label for="activityExplanation" class="form-label">Detail Aktivitas</label>
                             <textarea 
                                 id="activityExplanation" 
                                 name="activityExplanation" 
                                 class="form-textarea"
-                                placeholder="Describe what happened during this activity that affected your mood. For example: 'Had a great workout session at the gym, felt energized and accomplished after completing my routine' or 'Difficult meeting at work with challenging feedback, felt stressed and overwhelmed afterwards'..."
+                                placeholder="Ceritakan apa yang terjadi selama aktivitas ini yang memengaruhi mood-mu. Contoh: 'Latihan di gym berjalan lancar, merasa berenergi dan puas setelah menyelesaikan rutinitas' atau 'Rapat kerja yang sulit dengan banyak masukan, merasa stres dan kewalahan setelahnya'..."
                                 maxlength="500"
                             ></textarea>
-                            <div style="text-align: right; font-size: 0.875rem; color: var(--text-tertiary); margin-top: 0.5rem;">
-                                <span id="charCount">0</span>/500 characters
+                            <div class="char-counter">
+                                <span id="charCount">0</span>/500 karakter
                             </div>
                         </div>
                     </div>
 
                     <!-- 4. Energy Sliders -->
                     <div class="form-section">
-                        <h2 class="section-title">How did this activity affect your energy?</h2>
+                        <h2 class="section-title">Bagaimana aktivitas ini memengaruhi energimu?</h2>
                         <p class="section-description">
-                            Rate your energy and productivity levels during and after this activity. This helps us understand how different activities impact your well-being.
+                            Nilai tingkat energi dan produktivitasmu selama dan setelah aktivitas ini. Ini membantu kami memahami bagaimana aktivitas memengaruhi kesejahteraanmu.
                         </p>
                         <div class="slider-container">
                             <div class="slider-group">
                                 <div class="slider-label">
                                     <div class="slider-title">
-                                        ⚡ Energy Level
-                                        <span style="font-size: 0.875rem; font-weight: 400; color: var(--text-secondary);">(How energetic did you feel?)</span>
+                                        ⚡ Tingkat Energi
+                                        <span>(Seberapa berenergi kamu?)</span>
                                     </div>
                                     <div class="slider-value" id="energyValue">5</div>
                                 </div>
@@ -144,19 +148,19 @@
                                     <div class="slider-track" id="energyTrack"></div>
                                 </div>
                                 <div class="slider-labels">
-                                    <span>Very Low</span>
-                                    <span>Low</span>
-                                    <span>Moderate</span>
-                                    <span>High</span>
-                                    <span>Very High</span>
+                                    <span>Sangat Rendah</span>
+                                    <span>Rendah</span>
+                                    <span>Sedang</span>
+                                    <span>Tinggi</span>
+                                    <span>Sangat Tinggi</span>
                                 </div>
                             </div>
 
                             <div class="slider-group">
                                 <div class="slider-label">
                                     <div class="slider-title">
-                                        🎯 Productivity Level
-                                        <span style="font-size: 0.875rem; font-weight: 400; color: var(--text-secondary);">(How productive were you?)</span>
+                                        🎯 Tingkat Produktivitas
+                                        <span>(Seberapa produktif kamu?)</span>
                                     </div>
                                     <div class="slider-value" id="productivityValue">5</div>
                                 </div>
@@ -165,11 +169,11 @@
                                     <div class="slider-track" id="productivityTrack"></div>
                                 </div>
                                 <div class="slider-labels">
-                                    <span>Very Low</span>
-                                    <span>Low</span>
-                                    <span>Moderate</span>
-                                    <span>High</span>
-                                    <span>Very High</span>
+                                    <span>Sangat Rendah</span>
+                                    <span>Rendah</span>
+                                    <span>Sedang</span>
+                                    <span>Tinggi</span>
+                                    <span>Sangat Tinggi</span>
                                 </div>
                             </div>
                         </div>
@@ -178,7 +182,7 @@
                     <!-- Submit Section -->
                     <div class="submit-section">
                         <button type="submit" class="submit-btn" id="submitBtn">
-                            Save Entry
+                            Simpan
                         </button>
                     </div>
                 </form>
@@ -189,7 +193,7 @@
 
 
     <script>
-        // Form state
+        // State Formulir
         let formData = {
             mood: null,
             activity: null,
@@ -199,7 +203,7 @@
             timestamp: null
         };
 
-        // DOM elements
+        // Elemen DOM
         const moodOptions = document.querySelectorAll('.mood-option');
         const activityOptions = document.querySelectorAll('.activity-option');
         const explanationTextarea = document.getElementById('activityExplanation');
@@ -213,7 +217,7 @@
         const submitBtn = document.getElementById('submitBtn');
         const form = document.getElementById('moodTrackingForm');
 
-        // Progress steps
+        // Langkah Progres
         const progressSteps = {
             step1: document.getElementById('step1'),
             step2: document.getElementById('step2'),
@@ -221,98 +225,98 @@
             step4: document.getElementById('step4')
         };
 
-        // Mood selection
+        // Pilihan Mood
         moodOptions.forEach(option => {
             option.addEventListener('click', function() {
-                // Remove previous selection
+                // Hapus seleksi sebelumnya
                 moodOptions.forEach(opt => opt.classList.remove('selected'));
                 
-                // Add selection to clicked option
+                // Tambahkan seleksi pada yang diklik
                 this.classList.add('selected');
                 
-                // Select the radio button
+                // Pilih radio button
                 const radio = this.querySelector('input[type="radio"]');
                 if (radio) {
                     radio.checked = true;
                 }
                 
-                // Update form data
+                // Update data form
                 formData.mood = parseInt(this.dataset.mood);
                 
-                // Update progress
+                // Update progres
                 updateProgress();
             });
         });
 
-        // Activity selection
+        // Pilihan Aktivitas
         activityOptions.forEach(option => {
             option.addEventListener('click', function() {
-                // Remove previous selection
+                // Hapus seleksi sebelumnya
                 activityOptions.forEach(opt => opt.classList.remove('selected'));
                 
-                // Add selection to clicked option
+                // Tambahkan seleksi pada yang diklik
                 this.classList.add('selected');
                 
-                // Select the radio button
+                // Pilih radio button
                 const radio = this.querySelector('input[type="radio"]');
                 if (radio) {
                     radio.checked = true;
                 }
                 
-                // Update form data
+                // Update data form
                 formData.activity = this.dataset.activity;
                 
-                // Update progress
+                // Update progres
                 updateProgress();
             });
         });
 
-        // Explanation textarea
+        // Textarea Penjelasan
         explanationTextarea.addEventListener('input', function() {
             const length = this.value.length;
             charCount.textContent = length;
             
-            // Update form data
+            // Update data form
             formData.explanation = this.value;
             
-            // Update progress
+            // Update progres
             updateProgress();
         });
 
-        // Energy slider
+        // Slider Energi
         energySlider.addEventListener('input', function() {
             const value = this.value;
             energyValue.textContent = value;
             energyTrack.style.width = ((value - 1) / 9) * 100 + '%';
             
-            // Update form data
+            // Update data form
             formData.energy = parseInt(value);
             
-            // Update progress
+            // Update progres
             updateProgress();
         });
 
-        // Productivity slider
+        // Slider Produktivitas
         productivitySlider.addEventListener('input', function() {
             const value = this.value;
             productivityValue.textContent = value;
             productivityTrack.style.width = ((value - 1) / 9) * 100 + '%';
             
-            // Update form data
+            // Update data form
             formData.productivity = parseInt(value);
             
-            // Update progress
+            // Update progres
             updateProgress();
         });
 
-        // Update progress indicator
+        // Update indikator progres
         function updateProgress() {
-            // Reset all steps
+            // Reset semua langkah
             Object.values(progressSteps).forEach(step => {
                 step.classList.remove('active', 'completed');
             });
 
-            // Step 1: Mood selected
+            // Langkah 1: Mood dipilih
             if (formData.mood !== null) {
                 progressSteps.step1.classList.add('completed');
                 progressSteps.step2.classList.add('active');
@@ -321,7 +325,7 @@
                 return;
             }
 
-            // Step 2: Activity selected
+            // Langkah 2: Aktivitas dipilih
             if (formData.activity !== null) {
                 progressSteps.step2.classList.add('completed');
                 progressSteps.step3.classList.add('active');
@@ -329,7 +333,7 @@
                 return;
             }
 
-            // Step 3: Explanation provided (optional but encouraged)
+            // Langkah 3: Penjelasan diisi (opsional tapi dianjurkan)
             if (formData.explanation.trim().length > 0) {
                 progressSteps.step3.classList.add('completed');
                 progressSteps.step4.classList.add('active');
@@ -337,39 +341,37 @@
                 return;
             }
 
-            // Step 4: Sliders (always have default values)
+            // Langkah 4: Slider (selalu ada nilai default)
             progressSteps.step4.classList.add('completed');
 
-            // Enable submit button when minimum requirements are met
+            // Aktifkan tombol submit jika syarat minimal terpenuhi
             updateSubmitButton();
         }
 
-        // Update submit button state
+        // Update status tombol submit
         function updateSubmitButton() {
             const isValid = formData.mood !== null && formData.activity !== null;
             submitBtn.disabled = !isValid;
         }
 
-        // Form submission is now handled by Laravel
-        // The form will submit to the server and redirect back with success/error messages
+        // Pengiriman form ditangani oleh Laravel
+        // Form akan dikirim ke server dan diarahkan kembali dengan pesan sukses/error
 
+        // Reset form ditangani oleh redirect Laravel
 
-
-        // Form reset is now handled by Laravel redirect
-
-        // Initialize sliders
+        // Inisialisasi slider
         function initializeSliders() {
-            energyTrack.style.width = '44.44%'; // 5/10 * 100% adjusted for 1-10 scale
+            energyTrack.style.width = '44.44%'; // 5/10 * 100% disesuaikan untuk skala 1-10
             productivityTrack.style.width = '44.44%';
         }
 
-        // Initialize the form
+        // Inisialisasi form
         document.addEventListener('DOMContentLoaded', function() {
             initializeSliders();
             updateSubmitButton();
         });
 
-        // Auto-save draft functionality removed - using server-side storage instead
+        // Fitur auto-save draft dihapus - menggunakan penyimpanan server
     </script>
 </body>
 </html>

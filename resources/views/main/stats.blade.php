@@ -23,7 +23,7 @@
         <div class="button-yellow" onclick="window.location.href = '/tracker'">
             Ceritakan Kondisimu Hari Ini →
         </div>
-        <div class="button-black">
+        <div class="button-black" onclick="window.location.href = '/tracker/history'">
             Lihat Laporan Sebelumnya →
         </div>
       </div>

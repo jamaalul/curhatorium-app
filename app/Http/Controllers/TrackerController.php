@@ -10,7 +10,16 @@ use Illuminate\Support\Facades\Log;
 class TrackerController extends Controller
 {
     public function index() {
-        return view("tracker.index");
+        $existing = Stat::where('user_id', Auth::id())
+            ->whereDate('created_at', now()->toDateString())
+            ->first();
+
+        if ($existing) {
+        // Optionally, you can redirect back with an error message
+            return redirect()->back()->withErrors(['msg' => 'You have already submitted your tracker for today.']);
+        } else {
+            return view("tracker.index");
+        }
     }
 
     public function track(Request $request) {
@@ -27,18 +36,25 @@ class TrackerController extends Controller
         ]);
 
         // Compose prompt for Gemini API
-        $prompt = "Berikan summary, analisis seperti analisis kecenderungan dan lainnya, dan feedback (jangan terlalu panjang. Pastikan tidak lebih dari 512 token output. gunakan bahasa santai, menenangkan, dan penuh empati, jangan terlalu formal. Jangan gunakan kata sayang seperti pacar. Anda bersifat supportif) untuk seseorang yang mengisi tracker harian dengan data berikut:\n"
-            . "Mood: {$validated['mood']}/10\n"
-            . "Aktivitas utama: {$validated['activity']}\n"
-            . "Penjelasan aktivitas: " . ($validated['activityExplanation'] ?? '-') . "\n"
-            . "Energi: {$validated['energy']}/10\n"
-            . "Produktivitas: {$validated['productivity']}/10\n"
-            . "Hari: " . now()->format('l') . "\n"
-            . "Jangan sebutkan bahwa kamu AI. Jawab dengan dekat yang supportif, menenagkan, dan positif.";
+        $prompt = "Berikan summary, analisis seperti analisis kecenderungan dan lainnya, dan feedback (jangan terlalu panjang. Pastikan tidak lebih dari 800 token output. gunakan bahasa santai, menenangkan, dan penuh empati, jangan terlalu formal. Jangan gunakan kata sayang seperti pacar. Anda bersifat supportif) untuk seseorang yang mengisi tracker harian dengan data berikut:\n"
+                . "Mood: {$validated['mood']}/10 (" . match (true) {
+                    $validated['mood'] <= 2 => "Sangat Negatif - disarankan untuk istirahat dan cari aktivitas yang menenangkan.",
+                    $validated['mood'] <= 4 => "Negatif - coba luangkan waktu buat refleksi atau ngobrol dengan orang yang dipercaya.",
+                    $validated['mood'] <= 6 => "Netral - kamu cukup stabil, tapi bisa coba sesuatu yang nyenengin diri.",
+                    $validated['mood'] <= 8 => "Positif - suasana hatimu bagus, pertahankan dan terus eksplor hal-hal positif.",
+                    default => "Sangat Positif - kamu lagi di titik yang baik banget, semoga bisa terus stabil ya.",
+                } . ")\n"
+                . "Aktivitas utama: {$validated['activity']}\n"
+                . "Penjelasan aktivitas: " . ($validated['activityExplanation'] ?? '-') . "\n"
+                . "Energi: {$validated['energy']}/10\n"
+                . "Produktivitas: {$validated['productivity']}/10\n"
+                . "Hari: " . now()->format('l') . "\n"
+                . "Jangan sebutkan bahwa kamu AI. Jawab dengan dekat yang supportif, menenangkan, dan positif.";
+
 
         $apiKey = env('GEMINI_API_KEY');
         $apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
-        $maxTokens = 512;
+        $maxTokens = 800;
         $temperature = 0.7;
 
         try {
@@ -92,6 +108,18 @@ class TrackerController extends Controller
         Log::info('Mood entry created successfully', ['stat_id' => $stat->id]);
 
         // Return success response
-        return view('tracker.result', ['stat'=> $stat]);
+        return redirect()->route('tracker.result');
+    }
+
+    public function result() {
+        $stat = Stat::where('user_id', Auth::user()->id)
+            ->whereDate('created_at', now()->toDateString())
+            ->first();
+
+        return view('tracker.result', ['stat' => $stat]);
+    }
+
+    public function history() {
+        return view('tracker.history.index');
     }
 }

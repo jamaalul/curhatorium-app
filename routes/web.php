@@ -41,6 +41,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/tracker', [TrackerController::class,'index'])->name('tracker.index');
     Route::post('tracker/track', [TrackerController::class,'track'])->name('tracker.entry');
     Route::get('/tracker/result', [TrackerController::class, 'result'])->name('tracker.result');
+    Route::get('/tracker/history', [TrackerController::class,'history'])->name('tracker.history');
 });
 
 require __DIR__.'/auth.php';
