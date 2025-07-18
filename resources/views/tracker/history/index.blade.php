@@ -53,47 +53,11 @@
             padding-top: 70px;
         }
 
-        /* Navbar styles */
-        nav {
-            width: 100%;
-            height: 70px;
-            position: fixed;
-            top: 0;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            display: flex;
-            align-items: center;
-            padding: 0 1.5rem;
-            z-index: 1000;
-            justify-content: space-between;
-            box-shadow: var(--shadow);
-            border-bottom: 1px solid rgba(142, 203, 207, 0.1);
-        }
-
-        nav #logo-box {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        nav h1 {
-            color: var(--text-secondary);
-            font-size: 1.5rem;
-            font-weight: 600;
-        }
-
-        nav #mini-logo {
-            width: 40px;
-            height: 40px;
-            border-radius: 8px;
-            overflow: hidden;
-        }
-
         /* Container */
         .container {
             max-width: var(--container-width);
             margin: 0 auto;
-            padding: 0 1.5rem;
+            padding: 1.5rem;
         }
 
         /* Header */
@@ -462,12 +426,7 @@
 </head>
 <body>
     <!-- Navbar -->
-    <nav>
-        <div id="logo-box">
-            <img src="https://via.placeholder.com/40/8ecbcf/ffffff?text=C" alt="mini_logo" id="mini-logo">
-            <h1>curhatorium</h1>
-        </div>
-    </nav>
+    @include('components.navbar')
 
     <div class="container">
         <!-- Page Header -->
@@ -537,7 +496,6 @@
                 week_start: '2024-01-15',
                 week_end: '2024-01-21',
                 avg_mood: 6.4,
-                mood_emoji: '😊',
                 total_entries: 5,
             },
             {
@@ -545,7 +503,6 @@
                 week_start: '2024-01-08',
                 week_end: '2024-01-14',
                 avg_mood: 7.1,
-                mood_emoji: '😄',
                 total_entries: 6,
             },
             {
@@ -553,7 +510,6 @@
                 week_start: '2024-01-01',
                 week_end: '2024-01-07',
                 avg_mood: 5.8,
-                mood_emoji: '🙂',
                 total_entries: 4,
             }
         ];
@@ -563,24 +519,38 @@
                 id: 1,
                 month: 'January 2024',
                 avg_mood: 6.8,
-                mood_emoji: '😊',
                 total_entries: 18,
             },
             {
                 id: 2,
                 month: 'December 2023',
                 avg_mood: 7.2,
-                mood_emoji: '😄',
                 total_entries: 22,
             },
             {
                 id: 3,
                 month: 'November 2023',
                 avg_mood: 6.1,
-                mood_emoji: '😊',
                 total_entries: 20,
             }
         ];
+
+        // Mood emoji mapping (same as tracker/result.blade.php)
+        function getMoodEmoji(score) {
+            const moods = {
+                1: '😢',
+                2: '😞',
+                3: '😔',
+                4: '😐',
+                5: '🙂',
+                6: '😊',
+                7: '😄',
+                8: '😁',
+                9: '🤩',
+                10: '🥳',
+            };
+            return moods[score] || '';
+        }
 
         // Initialize the page
         document.addEventListener('DOMContentLoaded', function() {
@@ -678,7 +648,10 @@
 
             return `
                 <div class="cards-grid">
-                    ${mockWeeklyTracks.map(track => `
+                    ${mockWeeklyTracks.map(track => {
+                        const roundedMood = Math.round(track.avg_mood);
+                        const emoji = getMoodEmoji(roundedMood);
+                        return `
                         <div class="track-card weekly-card" data-type="weekly" data-id="${track.id}">
                             <div class="card-header">
                                 <div>
@@ -686,7 +659,7 @@
                                     <div class="card-date">${track.total_entries} entries</div>
                                 </div>
                                 <div class="card-mood">
-                                    <span class="mood-emoji">${track.mood_emoji}</span>
+                                    <span class="mood-emoji">${emoji}</span>
                                     <span class="mood-score">${track.avg_mood.toFixed(1)}/10</span>
                                 </div>
                             </div>
@@ -701,7 +674,8 @@
                                 <div class="card-arrow">→</div>
                             </div>
                         </div>
-                    `).join('')}
+                        `;
+                    }).join('')}
                 </div>
             `;
         }
@@ -721,7 +695,10 @@
 
             return `
                 <div class="cards-grid">
-                    ${mockMonthlyTracks.map(track => `
+                    ${mockMonthlyTracks.map(track => {
+                        const roundedMood = Math.round(track.avg_mood);
+                        const emoji = getMoodEmoji(roundedMood);
+                        return `
                         <div class="track-card monthly-card" data-type="monthly" data-id="${track.id}">
                             <div class="card-header">
                                 <div>
@@ -729,7 +706,7 @@
                                     <div class="card-date">${track.total_entries} entries</div>
                                 </div>
                                 <div class="card-mood">
-                                    <span class="mood-emoji">${track.mood_emoji}</span>
+                                    <span class="mood-emoji">${emoji}</span>
                                     <span class="mood-score">${track.avg_mood.toFixed(1)}/10</span>
                                 </div>
                             </div>
@@ -744,7 +721,8 @@
                                 <div class="card-arrow">→</div>
                             </div>
                         </div>
-                    `).join('')}
+                        `;
+                    }).join('')}
                 </div>
             `;
         }

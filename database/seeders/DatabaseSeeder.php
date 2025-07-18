@@ -65,5 +65,12 @@ class DatabaseSeeder extends Seeder
             ['quote' => 'Your limitation—it’s only your imagination.'],
             ['quote' => 'Push yourself, because no one else is going to do it for you.'],
         ]);
+
+        // Seed stats, weekly stats, and monthly stats
+        $this->call([
+            StatSeeder::class,
+            WeeklyStatSeeder::class,
+            MonthlyStatSeeder::class,
+        ]);
     }
 }
