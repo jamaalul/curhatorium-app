@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\Stat;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use App\Models\WeeklyStat;
+use App\Models\MonthlyStat;
 
 class TrackerController extends Controller
 {
@@ -121,5 +123,29 @@ class TrackerController extends Controller
 
     public function history() {
         return view('tracker.history.index');
+    }
+
+    // API: Get paginated stats
+    public function getStats(Request $request) {
+        $stats = Stat::where('user_id', Auth::id())
+            ->orderByDesc('created_at')
+            ->paginate(10);
+        return response()->json($stats);
+    }
+
+    // API: Get paginated weekly stats
+    public function getWeeklyStats(Request $request) {
+        $weeklyStats = WeeklyStat::where('user_id', Auth::id())
+            ->orderByDesc('week_start')
+            ->paginate(10);
+        return response()->json($weeklyStats);
+    }
+
+    // API: Get paginated monthly stats
+    public function getMonthlyStats(Request $request) {
+        $monthlyStats = MonthlyStat::where('user_id', Auth::id())
+            ->orderByDesc('month')
+            ->paginate(10);
+        return response()->json($monthlyStats);
     }
 }

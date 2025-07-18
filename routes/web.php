@@ -64,8 +64,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/share-and-talk/messages/{sessionId}', [ShareAndTalkController::class, 'getMessages'])->name('share-and-talk.messages');
 });
 
-
-
+Route::middleware(['auth'])->group(function () {
+    Route::get('/api/tracker/stats', [TrackerController::class, 'getStats']);
+    Route::get('/api/tracker/weekly-stats', [TrackerController::class, 'getWeeklyStats']);
+    Route::get('/api/tracker/monthly-stats', [TrackerController::class, 'getMonthlyStats']);
+});
 
 
 Route::get('/share-and-talk/facilitator/{sessionId}', [ShareAndTalkController::class, 'facilitatorChat'])->name('share-and-talk.facilitator');

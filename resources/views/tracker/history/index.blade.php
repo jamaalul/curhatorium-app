@@ -361,6 +361,39 @@
             transform: translateY(-1px);
         }
 
+        /* Pagination Controls */
+        .pagination-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 1.5rem;
+            gap: 0.5rem;
+        }
+
+        .pagination-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--primary-light);
+            background: var(--white);
+            color: var(--primary-color);
+            border-radius: var(--border-radius-sm);
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.9rem;
+        }
+
+        .pagination-btn:hover:not(:disabled) {
+            background: var(--primary-light);
+            color: var(--white);
+        }
+
+        .pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            border-color: var(--bg-tertiary);
+            color: var(--text-tertiary);
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .page-header h1 {
@@ -454,87 +487,6 @@
         // Global variables
         let currentView = 'daily';
 
-        // Mock data for demonstration
-        const mockDailyTracks = [
-            {
-                id: 1,
-                date: '2024-01-18',
-                mood_score: 8,
-                mood_emoji: '😁',
-                summary: 'Great workout session, feeling energized and accomplished'
-            },
-            {
-                id: 2,
-                date: '2024-01-17',
-                mood_score: 6,
-                mood_emoji: '😊',
-                summary: 'Productive day at work, completed important tasks'
-            },
-            {
-                id: 3,
-                date: '2024-01-16',
-                mood_score: 5,
-                mood_emoji: '🙂',
-            },
-            {
-                id: 4,
-                date: '2024-01-15',
-                mood_score: 7,
-                mood_emoji: '😄',
-            },
-            {
-                id: 5,
-                date: '2024-01-14',
-                mood_score: 4,
-                mood_emoji: '😐',
-            }
-        ];
-
-        const mockWeeklyTracks = [
-            {
-                id: 1,
-                week_start: '2024-01-15',
-                week_end: '2024-01-21',
-                avg_mood: 6.4,
-                total_entries: 5,
-            },
-            {
-                id: 2,
-                week_start: '2024-01-08',
-                week_end: '2024-01-14',
-                avg_mood: 7.1,
-                total_entries: 6,
-            },
-            {
-                id: 3,
-                week_start: '2024-01-01',
-                week_end: '2024-01-07',
-                avg_mood: 5.8,
-                total_entries: 4,
-            }
-        ];
-
-        const mockMonthlyTracks = [
-            {
-                id: 1,
-                month: 'January 2024',
-                avg_mood: 6.8,
-                total_entries: 18,
-            },
-            {
-                id: 2,
-                month: 'December 2023',
-                avg_mood: 7.2,
-                total_entries: 22,
-            },
-            {
-                id: 3,
-                month: 'November 2023',
-                avg_mood: 6.1,
-                total_entries: 20,
-            }
-        ];
-
         // Mood emoji mapping (same as tracker/result.blade.php)
         function getMoodEmoji(score) {
             const moods = {
@@ -552,12 +504,6 @@
             return moods[score] || '';
         }
 
-        // Initialize the page
-        document.addEventListener('DOMContentLoaded', function() {
-            setupEventListeners();
-            updateView();
-        });
-
         // Setup event listeners
         function setupEventListeners() {
             // View toggle buttons
@@ -571,10 +517,57 @@
             });
         }
 
+        // Remove mock data for demonstration
+        // const mockDailyTracks = [...];
+        // const mockWeeklyTracks = [...];
+        // const mockMonthlyTracks = [...];
+
+        // State for fetched data and pagination
+        let dailyTracks = [];
+        let weeklyTracks = [];
+        let monthlyTracks = [];
+        let dailyPage = 1;
+        let weeklyPage = 1;
+        let monthlyPage = 1;
+        let dailyLastPage = 1;
+        let weeklyLastPage = 1;
+        let monthlyLastPage = 1;
+
+        // Fetch data from API
+        async function fetchDailyTracks(page = 1) {
+            const res = await fetch(`/api/tracker/stats?page=${page}`);
+            const data = await res.json();
+            dailyTracks = data.data;
+            dailyPage = data.current_page;
+            dailyLastPage = data.last_page;
+        }
+        async function fetchWeeklyTracks(page = 1) {
+            const res = await fetch(`/api/tracker/weekly-stats?page=${page}`);
+            const data = await res.json();
+            weeklyTracks = data.data;
+            weeklyPage = data.current_page;
+            weeklyLastPage = data.last_page;
+        }
+        async function fetchMonthlyTracks(page = 1) {
+            const res = await fetch(`/api/tracker/monthly-stats?page=${page}`);
+            const data = await res.json();
+            monthlyTracks = data.data;
+            monthlyPage = data.current_page;
+            monthlyLastPage = data.last_page;
+        }
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', async function() {
+            setupEventListeners();
+            await fetchDailyTracks();
+            await fetchWeeklyTracks();
+            await fetchMonthlyTracks();
+            updateView();
+        });
+
         // Update view based on current selection
         function updateView() {
             const historyContainer = document.getElementById('historyContainer');
-            
             switch (currentView) {
                 case 'daily':
                     historyContainer.innerHTML = renderDailyCards();
@@ -586,14 +579,12 @@
                     historyContainer.innerHTML = renderMonthlyCards();
                     break;
             }
-
-            // Add click event listeners to cards
             addCardClickListeners();
         }
 
         // Render daily cards
         function renderDailyCards() {
-            if (mockDailyTracks.length === 0) {
+            if (dailyTracks.length === 0) {
                 return `
                     <div class="empty-state">
                         <div class="empty-state-icon">📅</div>
@@ -603,23 +594,26 @@
                     </div>
                 `;
             }
-
             return `
                 <div class="cards-grid">
-                    ${mockDailyTracks.map(track => `
+                    ${dailyTracks.map(track => {
+                        const moods = {
+                            1: '😢', 2: '😞', 3: '😔', 4: '😐', 5: '🙂', 6: '😊', 7: '😄', 8: '😁', 9: '🤩', 10: '🥳',
+                        };
+                        const emoji = moods[track.mood] || '';
+                        return `
                         <div class="track-card daily-card" data-type="daily" data-id="${track.id}">
                             <div class="card-header">
                                 <div>
-                                    <div class="card-title">${formatDate(track.date)}</div>
-                                    <div class="card-date">${track.date}</div>
+                                    <div class="card-title">${formatDate(track.day)}</div>
+                                    <div class="card-date">${track.day}</div>
                                 </div>
                                 <div class="card-mood">
-                                    <span class="mood-emoji">${track.mood_emoji}</span>
-                                    <span class="mood-score">${track.mood_score}/10</span>
+                                    <span class="mood-emoji">${emoji}</span>
+                                    <span class="mood-score">${track.mood}/10</span>
                                 </div>
                             </div>
-                            <div class="card-content">
-                            </div>
+                            <div class="card-content"></div>
                             <div class="card-footer">
                                 <div class="card-type">
                                     <span class="type-icon">📅</span>
@@ -628,14 +622,16 @@
                                 <div class="card-arrow">→</div>
                             </div>
                         </div>
-                    `).join('')}
+                        `;
+                    }).join('')}
                 </div>
+                ${renderPagination('daily', dailyPage, dailyLastPage)}
             `;
         }
 
         // Render weekly cards
         function renderWeeklyCards() {
-            if (mockWeeklyTracks.length === 0) {
+            if (weeklyTracks.length === 0) {
                 return `
                     <div class="empty-state">
                         <div class="empty-state-icon">📊</div>
@@ -645,10 +641,9 @@
                     </div>
                 `;
             }
-
             return `
                 <div class="cards-grid">
-                    ${mockWeeklyTracks.map(track => {
+                    ${weeklyTracks.map(track => {
                         const roundedMood = Math.round(track.avg_mood);
                         const emoji = getMoodEmoji(roundedMood);
                         return `
@@ -663,9 +658,7 @@
                                     <span class="mood-score">${track.avg_mood.toFixed(1)}/10</span>
                                 </div>
                             </div>
-                            <div class="card-content">
-                                
-                            </div>
+                            <div class="card-content"></div>
                             <div class="card-footer">
                                 <div class="card-type">
                                     <span class="type-icon">📊</span>
@@ -677,12 +670,13 @@
                         `;
                     }).join('')}
                 </div>
+                ${renderPagination('weekly', weeklyPage, weeklyLastPage)}
             `;
         }
 
         // Render monthly cards
         function renderMonthlyCards() {
-            if (mockMonthlyTracks.length === 0) {
+            if (monthlyTracks.length === 0) {
                 return `
                     <div class="empty-state">
                         <div class="empty-state-icon">📈</div>
@@ -692,10 +686,9 @@
                     </div>
                 `;
             }
-
             return `
                 <div class="cards-grid">
-                    ${mockMonthlyTracks.map(track => {
+                    ${monthlyTracks.map(track => {
                         const roundedMood = Math.round(track.avg_mood);
                         const emoji = getMoodEmoji(roundedMood);
                         return `
@@ -710,9 +703,7 @@
                                     <span class="mood-score">${track.avg_mood.toFixed(1)}/10</span>
                                 </div>
                             </div>
-                            <div class="card-content">
-                                
-                            </div>
+                            <div class="card-content"></div>
                             <div class="card-footer">
                                 <div class="card-type">
                                     <span class="type-icon">📈</span>
@@ -724,8 +715,56 @@
                         `;
                     }).join('')}
                 </div>
+                ${renderPagination('monthly', monthlyPage, monthlyLastPage)}
             `;
         }
+
+        // Pagination rendering
+        function renderPagination(type, currentPage, lastPage) {
+            if (lastPage <= 1) return '';
+            let prevDisabled = currentPage <= 1 ? 'disabled' : '';
+            let nextDisabled = currentPage >= lastPage ? 'disabled' : '';
+            return `
+                <div class="pagination-controls" style="text-align:center;margin-top:1.5rem;">
+                    <button class="pagination-btn" data-type="${type}" data-action="prev" ${prevDisabled}>Previous</button>
+                    <span style="margin:0 1rem;">Page ${currentPage} of ${lastPage}</span>
+                    <button class="pagination-btn" data-type="${type}" data-action="next" ${nextDisabled}>Next</button>
+                </div>
+            `;
+        }
+
+        // Pagination event listeners
+        document.addEventListener('click', async function(e) {
+            if (e.target.classList.contains('pagination-btn')) {
+                const type = e.target.getAttribute('data-type');
+                const action = e.target.getAttribute('data-action');
+                if (type === 'daily') {
+                    if (action === 'prev' && dailyPage > 1) {
+                        await fetchDailyTracks(dailyPage - 1);
+                        updateView();
+                    } else if (action === 'next' && dailyPage < dailyLastPage) {
+                        await fetchDailyTracks(dailyPage + 1);
+                        updateView();
+                    }
+                } else if (type === 'weekly') {
+                    if (action === 'prev' && weeklyPage > 1) {
+                        await fetchWeeklyTracks(weeklyPage - 1);
+                        updateView();
+                    } else if (action === 'next' && weeklyPage < weeklyLastPage) {
+                        await fetchWeeklyTracks(weeklyPage + 1);
+                        updateView();
+                    }
+                } else if (type === 'monthly') {
+                    if (action === 'prev' && monthlyPage > 1) {
+                        await fetchMonthlyTracks(monthlyPage - 1);
+                        updateView();
+                    } else if (action === 'next' && monthlyPage < monthlyLastPage) {
+                        await fetchMonthlyTracks(monthlyPage + 1);
+                        updateView();
+                    }
+                }
+            }
+        });
 
         // Add click event listeners to cards
         function addCardClickListeners() {
@@ -778,3 +817,4 @@
     </script>
 </body>
 </html>
+
