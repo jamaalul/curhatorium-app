@@ -605,7 +605,7 @@
                         <div class="track-card daily-card" data-type="daily" data-id="${track.id}">
                             <div class="card-header">
                                 <div>
-                                    <div class="card-title">${formatDate(track.day)}</div>
+                                    <div class="card-title">${formatDate(track.created_at)}</div>
                                     <div class="card-date">${track.day}</div>
                                 </div>
                                 <div class="card-mood">
@@ -651,7 +651,7 @@
                             <div class="card-header">
                                 <div>
                                     <div class="card-title">${formatWeekRange(track.week_start, track.week_end)}</div>
-                                    <div class="card-date">${track.total_entries} entries</div>
+                                    <div class="card-date">${track.total_entries} entri</div>
                                 </div>
                                 <div class="card-mood">
                                     <span class="mood-emoji">${emoji}</span>
@@ -695,7 +695,7 @@
                         <div class="track-card monthly-card" data-type="monthly" data-id="${track.id}">
                             <div class="card-header">
                                 <div>
-                                    <div class="card-title">${track.month}</div>
+                                    <div class="card-title">${formatMonth(track.month)}</div>
                                     <div class="card-date">${track.total_entries} entries</div>
                                 </div>
                                 <div class="card-mood">
@@ -785,34 +785,38 @@
         // Helper functions
         function formatDate(dateString) {
             const date = new Date(dateString);
-            const today = new Date();
-            const yesterday = new Date(today.getTime() - 24 * 60 * 60 * 1000);
-            
-            if (date.toDateString() === today.toDateString()) {
-                return 'Today';
-            } else if (date.toDateString() === yesterday.toDateString()) {
-                return 'Yesterday';
-            } else {
-                return date.toLocaleDateString('en-US', { 
-                    weekday: 'long', 
-                    month: 'short', 
-                    day: 'numeric' 
-                });
-            }
+            return date.toLocaleDateString('id-ID', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+            });
         }
 
-        function formatWeekRange(startDate, endDate) {
-            const start = new Date(startDate);
-            const end = new Date(endDate);
+        function formatWeekRange(start, end) {
+            const startDate = new Date(start);
+            const endDate = new Date(end);
+
+            const options = {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            };
+
+            const formattedStart = startDate.toLocaleDateString('id-ID', options);
+            const formattedEnd = endDate.toLocaleDateString('id-ID', options);
+
+            return `${formattedStart} - ${formattedEnd}`;
+        }
+
+        function formatMonth(monthString) {
+            // Pastikan ada hari agar bisa dibuat objek Date
+            const date = new Date(`${monthString}-01`);
             
-            const startMonth = start.toLocaleDateString('en-US', { month: 'short' });
-            const endMonth = end.toLocaleDateString('en-US', { month: 'short' });
-            
-            if (startMonth === endMonth) {
-                return `${startMonth} ${start.getDate()}-${end.getDate()}`;
-            } else {
-                return `${startMonth} ${start.getDate()} - ${endMonth} ${end.getDate()}`;
-            }
+            return date.toLocaleDateString('id-ID', {
+                month: 'long',
+                year: 'numeric',
+            });
         }
     </script>
 </body>

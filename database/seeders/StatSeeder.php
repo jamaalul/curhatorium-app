@@ -16,6 +16,7 @@ class StatSeeder extends Seeder
         if (empty($userIds)) return;
 
         foreach (range(1, 20) as $i) {
+            $createdAt = $faker->dateTimeBetween('-2 months', 'now');
             Stat::create([
                 'user_id' => $faker->randomElement($userIds),
                 'mood' => $faker->numberBetween(1, 10),
@@ -23,8 +24,10 @@ class StatSeeder extends Seeder
                 'explanation' => $faker->optional()->sentence(),
                 'energy' => $faker->numberBetween(1, 10),
                 'productivity' => $faker->numberBetween(1, 10),
-                'day' => $faker->date(),
+                'day' => $createdAt->format('l'), // e.g., 'Monday'
                 'feedback' => $faker->optional()->sentence(),
+                'created_at' => $createdAt,
+                'updated_at' => $createdAt,
             ]);
         }
     }
