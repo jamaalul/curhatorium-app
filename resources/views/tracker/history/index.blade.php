@@ -762,13 +762,11 @@
                     // Redirect ke halaman detail stat
                     if (type === 'daily') {
                         window.location.href = `/tracker/stat/${id}`;
+                    } else if (type === 'weekly') {
+                        window.location.href = `/tracker/weekly-stat/${id}`;
+                    } else if (type === 'monthly') {
+                        window.location.href = `/tracker/monthly-stat/${id}`;
                     }
-                    // Untuk weekly dan monthly, bisa diimplementasikan nanti
-                    // else if (type === 'weekly') {
-                    //     window.location.href = `/tracker/weekly-stat/${id}`;
-                    // } else if (type === 'monthly') {
-                    //     window.location.href = `/tracker/monthly-stat/${id}`;
-                    // }
                 });
             });
         }

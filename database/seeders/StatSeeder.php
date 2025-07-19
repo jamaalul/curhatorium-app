@@ -15,17 +15,21 @@ class StatSeeder extends Seeder
         $userIds = User::pluck('id')->all();
         if (empty($userIds)) return;
 
-        foreach (range(1, 20) as $i) {
-            $createdAt = $faker->dateTimeBetween('-2 months', 'now');
+        // Create 84 stats (12 weeks * 7 days) starting from 3 months ago
+        $startDate = now()->subMonths(3)->startOfDay();
+        $activities = array_keys(Stat::getActivityOptions());
+        
+        foreach (range(1, 84) as $i) {
+            $createdAt = $startDate->copy()->addDays($i - 1);
             Stat::create([
                 'user_id' => $faker->randomElement($userIds),
                 'mood' => $faker->numberBetween(1, 10),
-                'activity' => $faker->randomElement(array_keys(Stat::getActivityOptions())),
-                'explanation' => $faker->optional()->sentence(),
+                'activity' => $faker->randomElement($activities),
+                'explanation' => $faker->sentence(),
                 'energy' => $faker->numberBetween(1, 10),
                 'productivity' => $faker->numberBetween(1, 10),
                 'day' => $createdAt->format('l'), // e.g., 'Monday'
-                'feedback' => $faker->optional()->sentence(),
+                'feedback' => $faker->sentence(),
                 'created_at' => $createdAt,
                 'updated_at' => $createdAt,
             ]);

@@ -49,7 +49,11 @@ class WeeklyStatSummary extends Command
                 continue;
             }
             $avgMood = $stats->avg('mood');
+            $avgProductivity = $stats->avg('productivity');
             $totalEntries = $stats->count();
+            
+            // Calculate best mood (highest mood score)
+            $bestMood = $stats->max('mood');
 
             // Compose summary for Gemini
             $moods = $stats->pluck('mood')->implode(', ');
@@ -101,7 +105,9 @@ class WeeklyStatSummary extends Command
                 'week_start' => $weekStart->toDateString(),
                 'week_end' => $weekEnd->toDateString(),
                 'avg_mood' => $avgMood,
+                'avg_productivity' => $avgProductivity,
                 'total_entries' => $totalEntries,
+                'best_mood' => $bestMood,
                 'feedback' => $feedback,
             ]);
         }

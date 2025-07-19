@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\WeeklyStat;
+use App\Models\Stat;
 use App\Models\User;
 use Faker\Factory as Faker;
 
@@ -14,17 +15,32 @@ class WeeklyStatSeeder extends Seeder
         $faker = Faker::create();
         $userIds = User::pluck('id')->all();
         if (empty($userIds)) return;
-
-        foreach (range(1, 10) as $i) {
-            $start = $faker->dateTimeBetween('-3 months', 'now');
-            $end = (clone $start)->modify('+6 days');
+        
+        // Get all stats ordered by created_at
+        $stats = Stat::orderBy('created_at', 'asc')->get();
+        
+        // Group stats by week (7 days each)
+        $weeklyGroups = $stats->chunk(7);
+        
+        foreach ($weeklyGroups as $weekStats) {
+            if ($weekStats->count() === 0) continue;
+            
+            $weekStart = $weekStats->first()->created_at->startOfWeek();
+            $weekEnd = $weekStats->first()->created_at->endOfWeek();
+            $avgMood = $weekStats->avg('mood');
+            $avgProductivity = $weekStats->avg('productivity');
+            $bestMood = $weekStats->max('mood');
+            $totalEntries = $weekStats->count();
+            
             WeeklyStat::create([
-                'user_id' => $faker->randomElement($userIds),
-                'week_start' => $start->format('Y-m-d'),
-                'week_end' => $end->format('Y-m-d'),
-                'avg_mood' => $faker->randomFloat(1, 1, 10),
-                'total_entries' => $faker->numberBetween(3, 7),
-                'feedback' => $faker->optional()->sentence(),
+                'user_id' => $weekStats->first()->user_id,
+                'week_start' => $weekStart->format('Y-m-d'),
+                'week_end' => $weekEnd->format('Y-m-d'),
+                'avg_mood' => $avgMood,
+                'avg_productivity' => $avgProductivity,
+                'total_entries' => $totalEntries,
+                'best_mood' => $bestMood,
+                'feedback' => $faker->sentence(),
             ]);
         }
     }

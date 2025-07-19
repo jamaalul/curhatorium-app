@@ -16,7 +16,9 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('month'); // e.g. 'January 2024'
             $table->float('avg_mood');
+            $table->float('avg_productivity');
             $table->integer('total_entries');
+            $table->float('best_mood');
             $table->text('feedback')->nullable()->comment('AI-generated feedback based on monthly summary');
             $table->timestamps();
         });

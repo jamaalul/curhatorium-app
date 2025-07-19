@@ -50,7 +50,11 @@ class MonthlyStatSummary extends Command
                 continue;
             }
             $avgMood = $stats->avg('mood');
+            $avgProductivity = $stats->avg('productivity');
             $totalEntries = $stats->count();
+            
+            // Calculate best mood (highest mood score)
+            $bestMood = $stats->max('mood');
 
             // Compose summary for Gemini
             $moods = $stats->pluck('mood')->implode(', ');
@@ -101,7 +105,9 @@ class MonthlyStatSummary extends Command
                 'user_id' => $user->id,
                 'month' => $monthLabel,
                 'avg_mood' => $avgMood,
+                'avg_productivity' => $avgProductivity,
                 'total_entries' => $totalEntries,
+                'best_mood' => $bestMood,
                 'feedback' => $feedback,
             ]);
         }

@@ -44,6 +44,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/tracker/result', [TrackerController::class, 'result'])->name('tracker.result');
     Route::get('/tracker/history', [TrackerController::class,'history'])->name('tracker.history');
     Route::get('/tracker/stat/{id}', [TrackerController::class, 'showStat'])->name('tracker.stat.detail');
+    Route::get('/tracker/weekly-stat/{id}', [TrackerController::class, 'showWeeklyStat'])->name('tracker.weekly-stat.detail');
+    Route::get('/tracker/monthly-stat/{id}', [TrackerController::class, 'showMonthlyStat'])->name('tracker.monthly-stat.detail');
 });
 
 require __DIR__.'/auth.php';

@@ -11,7 +11,9 @@ class MonthlyStat extends Model
         'user_id',
         'month',
         'avg_mood',
+        'avg_productivity',
         'total_entries',
+        'best_mood',
         'feedback',
     ];
 

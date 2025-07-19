@@ -133,6 +133,38 @@ class TrackerController extends Controller
         return view('tracker.stat-detail', compact('stat'));
     }
 
+    public function showWeeklyStat($id) {
+        $weeklyStat = WeeklyStat::where('user_id', Auth::id())
+            ->where('id', $id)
+            ->firstOrFail();
+        
+        // Get the individual stats for this week
+        $stats = Stat::where('user_id', Auth::id())
+            ->whereBetween('created_at', [$weeklyStat->week_start, $weeklyStat->week_end])
+            ->orderBy('created_at', 'asc')
+            ->get();
+        
+        return view('tracker.weekly-stat-detail', compact('weeklyStat', 'stats'));
+    }
+
+    public function showMonthlyStat($id) {
+        $monthlyStat = MonthlyStat::where('user_id', Auth::id())
+            ->where('id', $id)
+            ->firstOrFail();
+        
+        // Convert month string to Carbon date for querying
+        $monthDate = \Carbon\Carbon::parse($monthlyStat->month);
+        
+        // Get the individual stats for this month
+        $stats = Stat::where('user_id', Auth::id())
+            ->whereYear('created_at', $monthDate->year)
+            ->whereMonth('created_at', $monthDate->month)
+            ->orderBy('created_at', 'asc')
+            ->get();
+        
+        return view('tracker.monthly-stat-detail', compact('monthlyStat', 'stats'));
+    }
+
     // API: Get paginated stats
     public function getStats(Request $request) {
         $stats = Stat::where('user_id', Auth::id())

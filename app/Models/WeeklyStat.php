@@ -12,7 +12,9 @@ class WeeklyStat extends Model
         'week_start',
         'week_end',
         'avg_mood',
+        'avg_productivity',
         'total_entries',
+        'best_mood',
         'feedback',
     ];
 
