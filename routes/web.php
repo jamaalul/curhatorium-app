@@ -33,7 +33,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/share-and-talk/professionals', [ShareAndTalkController::class, 'getProfessionals']);
     Route::get('/share-and-talk/chat/{professionalId}', [ShareAndTalkController::class, 'chatConsultation'])->name('share-and-talk.chat');
     Route::post('/share-and-talk/chat/user-send', [ShareAndTalkController::class, 'userSend'])->name('share-and-talk.userSend');
-    Route::post('/share-and-talk/chat/facilitator-send', [ShareAndTalkController::class, 'facilitatorSend'])->name('share-and-talk.facilitatorSend');
 
     Route::get('/mental-support-chatbot', [ChatbotController::class, 'index'])->name('chatbot');
     Route::post('/api/chatbot', [ChatbotController::class, 'chat'])->name('chatbot.api');
@@ -72,4 +71,5 @@ Route::middleware(['auth'])->group(function () {
 
 
 Route::get('/share-and-talk/facilitator/{sessionId}', [ShareAndTalkController::class, 'facilitatorChat'])->name('share-and-talk.facilitator');
+Route::post('/share-and-talk/chat/facilitator-send', [ShareAndTalkController::class, 'facilitatorSend'])->name('share-and-talk.facilitatorSend');
 Route::get('/api/share-and-talk/messages/{sessionId}', [ShareAndTalkController::class,'getMessages'])->name('share-and-talk.fetch');
