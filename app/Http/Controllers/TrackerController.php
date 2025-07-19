@@ -148,4 +148,53 @@ class TrackerController extends Controller
             ->paginate(10);
         return response()->json($monthlyStats);
     }
+
+    // Get stats data for dashboard
+    public function getStatsForDashboard() {
+        $userId = Auth::id();
+        
+        // Get stats from the last 7 days
+        $sevenDaysAgo = now()->subDays(6)->startOfDay();
+        $stats = Stat::where('user_id', $userId)
+            ->where('created_at', '>=', $sevenDaysAgo)
+            ->orderBy('created_at', 'asc')
+            ->get();
+        
+        // Create a map of day names (Sunday = 0, Monday = 1, etc.)
+        $dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        $chartData = [];
+        
+        // Initialize chart data for the last 7 days
+        for ($i = 0; $i < 7; $i++) {
+            $date = now()->subDays(6 - $i);
+            $dayName = $dayNames[$date->dayOfWeek]; // dayOfWeek is 0-6, matching array index
+            
+            // Find if we have data for this date
+            $stat = $stats->where('created_at', '>=', $date->startOfDay())
+                         ->where('created_at', '<=', $date->endOfDay())
+                         ->first();
+            
+            if ($stat) {
+                $chartData[] = [
+                    'day' => $dayName,
+                    'value' => $stat->mood,
+                    'productivity' => $stat->productivity
+                ];
+            }
+            // Skip days without data - don't add them to chartData
+        }
+        
+        // Calculate averages (only from days with data)
+        $moodValues = collect($chartData)->pluck('value');
+        $productivityValues = collect($chartData)->pluck('productivity');
+        
+        $averageMood = $moodValues->count() > 0 ? number_format($moodValues->avg(), 2) : '0.00';
+        $averageProd = $productivityValues->count() > 0 ? number_format($productivityValues->avg(), 2) : '0.00';
+        
+        return [
+            'chartData' => $chartData,
+            'averageMood' => $averageMood,
+            'averageProd' => $averageProd
+        ];
+    }
 }

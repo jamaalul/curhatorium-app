@@ -1,3 +1,15 @@
+@php
+  // Use real data from database
+  $stats = $statsData['chartData'] ?? [];
+  $labels = collect($stats)->pluck('day');
+  $moodData = collect($stats)->pluck('value');
+  $productivityData = collect($stats)->pluck('productivity');
+
+  // Use calculated averages from database
+  $averageMood = $statsData['averageMood'] ?? '0.00';
+  $averageProd = $statsData['averageProd'] ?? '0.00';
+@endphp
+
 <link rel="stylesheet" href="{{ asset('css/main/stats.css') }}">
 
 <body>
@@ -9,14 +21,30 @@
     <div class="bottom-boxes">
       <div class="box mental">
         <div>Rata-rata Kesehatan Mental</div>
-        <div class="score mood">86.34</div>
-        <div class="status">Baik</div>
+        <div class="score mood">{{ $averageMood }}</div>
+        <div class="status">
+          @php
+            $moodValue = floatval($averageMood);
+            if ($moodValue >= 8) echo 'Sangat Baik';
+            elseif ($moodValue >= 6) echo 'Baik';
+            elseif ($moodValue >= 4) echo 'Cukup';
+            else echo 'Perlu Perhatian';
+          @endphp
+        </div>
       </div>
 
       <div class="box productivity">
         <div>Rata-rata Produktivitas</div>
-        <div class="score prod">87.68</div>
-        <div class="status">Baik</div>
+        <div class="score prod">{{ $averageProd }}</div>
+        <div class="status">
+          @php
+            $prodValue = floatval($averageProd);
+            if ($prodValue >= 8) echo 'Sangat Baik';
+            elseif ($prodValue >= 6) echo 'Baik';
+            elseif ($prodValue >= 4) echo 'Cukup';
+            else echo 'Perlu Perhatian';
+          @endphp
+        </div>
       </div>
 
       <div class="button-box">
@@ -41,28 +69,6 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <script>
-    // Chart data (should be defined in PHP for consistency)
-    @php
-      $stats = [
-        ['day' => 'Mon', 'value' => 7.5, 'productivity' => 8.1],
-        ['day' => 'Tue', 'value' => 8.2, 'productivity' => 8.5],
-        ['day' => 'Wed', 'value' => 6.9, 'productivity' => 7.2],
-        ['day' => 'Thu', 'value' => 7.8, 'productivity' => 8.0],
-        ['day' => 'Fri', 'value' => 8.0, 'productivity' => 9.0],
-        ['day' => 'Sat', 'value' => 9.1, 'productivity' => 9.3],
-        ['day' => 'Sun', 'value' => 8.7, 'productivity' => 8.9],
-      ];
-
-      $labels = collect($stats)->pluck('day');
-      $moodData = collect($stats)->pluck('value');
-      $productivityData = collect($stats)->pluck('productivity');
-
-      // Correct average mood calculation
-      $averageMood = number_format($moodData->avg(), 2);
-      $averageProd = number_format($productivityData->avg(), 2);
-    @endphp
-    document.querySelector('.mood').innerHTML = "{{ $averageMood }}";
-    document.querySelector('.prod').innerHTML = "{{ $averageProd }}";
 
     document.addEventListener('DOMContentLoaded', function () {
       const ctx = document.getElementById('myChart');

@@ -17,7 +17,9 @@ Route::get('/', function () {
 })->name('start');
 
 Route::get('/dashboard', function () {
-    return view('main.main');
+    $trackerController = new \App\Http\Controllers\TrackerController();
+    $statsData = $trackerController->getStatsForDashboard();
+    return view('main.main', compact('statsData'));
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {

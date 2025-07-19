@@ -1,12 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mood History - Curhatorium</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>Riwayat Mood - Curhatorium</title>
+    <link rel="stylesheet" href="{{ asset('css/global.css') }}">
     <style>
         :root {
             --primary-color: #8ecbcf;
@@ -45,7 +43,6 @@
         }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
             color: var(--text-primary);
             line-height: 1.6;
@@ -53,14 +50,12 @@
             padding-top: 70px;
         }
 
-        /* Container */
         .container {
             max-width: var(--container-width);
             margin: 0 auto;
             padding: 1.5rem;
         }
 
-        /* Header */
         .page-header {
             text-align: center;
             padding: 3rem 0;
@@ -102,7 +97,6 @@
             margin: 0 auto;
         }
 
-        /* View Toggle */
         .view-toggle {
             display: flex;
             justify-content: center;
@@ -140,7 +134,6 @@
             color: var(--text-primary);
         }
 
-        /* History Container */
         .history-container {
             background: var(--white);
             border-radius: var(--border-radius-xl);
@@ -150,14 +143,12 @@
             margin-bottom: 2rem;
         }
 
-        /* Cards Grid */
         .cards-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 1.5rem;
         }
 
-        /* Track Card */
         .track-card {
             background: var(--bg-secondary);
             border-radius: var(--border-radius-xl);
@@ -180,7 +171,6 @@
             transform: translateY(-2px);
         }
 
-        /* Card Header */
         .card-header {
             display: flex;
             justify-content: space-between;
@@ -216,7 +206,6 @@
             color: var(--primary-dark);
         }
 
-        /* Card Content */
         .card-content {
             margin-bottom: 1rem;
         }
@@ -260,7 +249,6 @@
             color: var(--text-tertiary);
         }
 
-        /* Card Footer */
         .card-footer {
             display: flex;
             justify-content: space-between;
@@ -293,7 +281,6 @@
             transform: translateX(4px);
         }
 
-        /* Daily Card Specific */
         .daily-card {
             border-left: 4px solid var(--info);
         }
@@ -302,7 +289,6 @@
             color: var(--info);
         }
 
-        /* Weekly Card Specific */
         .weekly-card {
             border-left: 4px solid var(--warning);
         }
@@ -311,7 +297,6 @@
             color: var(--warning);
         }
 
-        /* Monthly Card Specific */
         .monthly-card {
             border-left: 4px solid var(--success);
         }
@@ -320,7 +305,6 @@
             color: var(--success);
         }
 
-        /* Empty State */
         .empty-state {
             text-align: center;
             padding: 3rem;
@@ -361,7 +345,6 @@
             transform: translateY(-1px);
         }
 
-        /* Pagination Controls */
         .pagination-controls {
             display: flex;
             justify-content: center;
@@ -394,7 +377,6 @@
             color: var(--text-tertiary);
         }
 
-        /* Responsive Design */
         @media (max-width: 768px) {
             .page-header h1 {
                 font-size: 2rem;
@@ -465,29 +447,29 @@
         <!-- Page Header -->
         <div class="page-header">
             <div class="page-header-content">
-                <h1>Mood History</h1>
-                <p>Browse your mood tracking records across daily entries, weekly summaries, and monthly overviews.</p>
+                <h1>Riwayat Mood</h1>
+                <p>Jelajahi catatan pelacakan mood Anda dalam entri harian, ringkasan mingguan, dan gambaran bulanan.</p>
             </div>
         </div>
 
         <!-- View Toggle -->
         <div class="view-toggle">
-            <button class="toggle-btn active" data-view="daily">📅 Daily</button>
-            <button class="toggle-btn" data-view="weekly">📊 Weekly</button>
-            <button class="toggle-btn" data-view="monthly">📈 Monthly</button>
+            <button class="toggle-btn active" data-view="daily">Harian</button>
+            <button class="toggle-btn" data-view="weekly">Mingguan</button>
+            <button class="toggle-btn" data-view="monthly">Bulanan</button>
         </div>
 
         <!-- History Container -->
         <div class="history-container" id="historyContainer">
-            <!-- Content will be populated by JavaScript -->
+            <!-- Konten akan diisi oleh JavaScript -->
         </div>
     </div>
 
     <script>
-        // Global variables
+        // Variabel global
         let currentView = 'daily';
 
-        // Mood emoji mapping (same as tracker/result.blade.php)
+        // Pemetaan emoji mood (sama seperti tracker/result.blade.php)
         function getMoodEmoji(score) {
             const moods = {
                 1: '😢',
@@ -504,9 +486,9 @@
             return moods[score] || '';
         }
 
-        // Setup event listeners
+        // Setup event listener
         function setupEventListeners() {
-            // View toggle buttons
+            // Tombol toggle tampilan
             document.querySelectorAll('.toggle-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
                     document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
@@ -517,12 +499,7 @@
             });
         }
 
-        // Remove mock data for demonstration
-        // const mockDailyTracks = [...];
-        // const mockWeeklyTracks = [...];
-        // const mockMonthlyTracks = [...];
-
-        // State for fetched data and pagination
+        // State untuk data dan paginasi
         let dailyTracks = [];
         let weeklyTracks = [];
         let monthlyTracks = [];
@@ -533,7 +510,7 @@
         let weeklyLastPage = 1;
         let monthlyLastPage = 1;
 
-        // Fetch data from API
+        // Ambil data dari API
         async function fetchDailyTracks(page = 1) {
             const res = await fetch(`/api/tracker/stats?page=${page}`);
             const data = await res.json();
@@ -556,7 +533,7 @@
             monthlyLastPage = data.last_page;
         }
 
-        // Initialize the page
+        // Inisialisasi halaman
         document.addEventListener('DOMContentLoaded', async function() {
             setupEventListeners();
             await fetchDailyTracks();
@@ -565,7 +542,7 @@
             updateView();
         });
 
-        // Update view based on current selection
+        // Update tampilan berdasarkan pilihan saat ini
         function updateView() {
             const historyContainer = document.getElementById('historyContainer');
             switch (currentView) {
@@ -582,15 +559,15 @@
             addCardClickListeners();
         }
 
-        // Render daily cards
+        // Render kartu harian
         function renderDailyCards() {
             if (dailyTracks.length === 0) {
                 return `
                     <div class="empty-state">
                         <div class="empty-state-icon">📅</div>
-                        <h3>No Daily Records</h3>
-                        <p>You haven't tracked any daily moods yet.</p>
-                        <a href="mood-tracker.html" class="empty-state-btn">Track Your Mood</a>
+                        <h3>Tidak Ada Catatan Harian</h3>
+                        <p>Anda belum pernah melacak mood harian.</p>
+                        <a href="mood-tracker.html" class="empty-state-btn">Lacak Mood Anda</a>
                     </div>
                 `;
             }
@@ -598,26 +575,35 @@
                 <div class="cards-grid">
                     ${dailyTracks.map(track => {
                         const moods = {
-                            1: '😢', 2: '😞', 3: '😔', 4: '😐', 5: '🙂', 6: '😊', 7: '😄', 8: '😁', 9: '🤩', 10: '🥳',
+                            1: {emoji: '😢', label: 'Sangat sedih'},
+                            2: {emoji: '😞', label: 'Sedih'},
+                            3: {emoji: '😔', label: 'Murung'},
+                            4: {emoji: '😐', label: 'Biasa'},
+                            5: {emoji: '🙂', label: 'Netral'},
+                            6: {emoji: '😊', label: 'Positif'},
+                            7: {emoji: '😄', label: 'Senang'},
+                            8: {emoji: '😁', label: 'Sangat senang'},
+                            9: {emoji: '🤩', label: 'Bahagia'},
+                            10: {emoji: '🥳', label: 'Gembira'},
                         };
-                        const emoji = moods[track.mood] || '';
+                        const mood = moods[track.mood] || {emoji: '', label: ''};
                         return `
                         <div class="track-card daily-card" data-type="daily" data-id="${track.id}">
                             <div class="card-header">
                                 <div>
                                     <div class="card-title">${formatDate(track.created_at)}</div>
-                                    <div class="card-date">${track.day}</div>
+                                    <div class="card-date">${mood.label}</div>
                                 </div>
                                 <div class="card-mood">
-                                    <span class="mood-emoji">${emoji}</span>
+                                    <span class="mood-emoji">${mood.emoji}</span>
                                     <span class="mood-score">${track.mood}/10</span>
                                 </div>
                             </div>
                             <div class="card-content"></div>
                             <div class="card-footer">
                                 <div class="card-type">
-                                    <span class="type-icon">📅</span>
-                                    <span>Daily Track</span>
+                                    <span class="type-icon"></span>
+                                    <span>Catatan Harian</span>
                                 </div>
                                 <div class="card-arrow">→</div>
                             </div>
@@ -629,15 +615,15 @@
             `;
         }
 
-        // Render weekly cards
+        // Render kartu mingguan
         function renderWeeklyCards() {
             if (weeklyTracks.length === 0) {
                 return `
                     <div class="empty-state">
                         <div class="empty-state-icon">📊</div>
-                        <h3>No Weekly Records</h3>
-                        <p>No weekly summaries available yet.</p>
-                        <a href="mood-tracker.html" class="empty-state-btn">Track Your Mood</a>
+                        <h3>Tidak Ada Catatan Mingguan</h3>
+                        <p>Belum ada ringkasan mingguan yang tersedia.</p>
+                        <a href="mood-tracker.html" class="empty-state-btn">Lacak Mood Anda</a>
                     </div>
                 `;
             }
@@ -661,8 +647,8 @@
                             <div class="card-content"></div>
                             <div class="card-footer">
                                 <div class="card-type">
-                                    <span class="type-icon">📊</span>
-                                    <span>Weekly Summary</span>
+                                    <span class="type-icon"></span>
+                                    <span>Ringkasan Mingguan</span>
                                 </div>
                                 <div class="card-arrow">→</div>
                             </div>
@@ -674,15 +660,15 @@
             `;
         }
 
-        // Render monthly cards
+        // Render kartu bulanan
         function renderMonthlyCards() {
             if (monthlyTracks.length === 0) {
                 return `
                     <div class="empty-state">
                         <div class="empty-state-icon">📈</div>
-                        <h3>No Monthly Records</h3>
-                        <p>No monthly summaries available yet.</p>
-                        <a href="mood-tracker.html" class="empty-state-btn">Track Your Mood</a>
+                        <h3>Tidak Ada Catatan Bulanan</h3>
+                        <p>Belum ada ringkasan bulanan yang tersedia.</p>
+                        <a href="mood-tracker.html" class="empty-state-btn">Lacak Mood Anda</a>
                     </div>
                 `;
             }
@@ -696,7 +682,7 @@
                             <div class="card-header">
                                 <div>
                                     <div class="card-title">${formatMonth(track.month)}</div>
-                                    <div class="card-date">${track.total_entries} entries</div>
+                                    <div class="card-date">${track.total_entries} entri</div>
                                 </div>
                                 <div class="card-mood">
                                     <span class="mood-emoji">${emoji}</span>
@@ -706,8 +692,8 @@
                             <div class="card-content"></div>
                             <div class="card-footer">
                                 <div class="card-type">
-                                    <span class="type-icon">📈</span>
-                                    <span>Monthly Overview</span>
+                                    <span class="type-icon"></span>
+                                    <span>Gambaran Bulanan</span>
                                 </div>
                                 <div class="card-arrow">→</div>
                             </div>
@@ -719,21 +705,21 @@
             `;
         }
 
-        // Pagination rendering
+        // Render paginasi
         function renderPagination(type, currentPage, lastPage) {
             if (lastPage <= 1) return '';
             let prevDisabled = currentPage <= 1 ? 'disabled' : '';
             let nextDisabled = currentPage >= lastPage ? 'disabled' : '';
             return `
                 <div class="pagination-controls" style="text-align:center;margin-top:1.5rem;">
-                    <button class="pagination-btn" data-type="${type}" data-action="prev" ${prevDisabled}>Previous</button>
-                    <span style="margin:0 1rem;">Page ${currentPage} of ${lastPage}</span>
-                    <button class="pagination-btn" data-type="${type}" data-action="next" ${nextDisabled}>Next</button>
+                    <button class="pagination-btn" data-type="${type}" data-action="prev" ${prevDisabled}>Sebelumnya</button>
+                    <span style="margin:0 1rem;">Halaman ${currentPage} dari ${lastPage}</span>
+                    <button class="pagination-btn" data-type="${type}" data-action="next" ${nextDisabled}>Berikutnya</button>
                 </div>
             `;
         }
 
-        // Pagination event listeners
+        // Event listener paginasi
         document.addEventListener('click', async function(e) {
             if (e.target.classList.contains('pagination-btn')) {
                 const type = e.target.getAttribute('data-type');
@@ -766,23 +752,23 @@
             }
         });
 
-        // Add click event listeners to cards
+        // Tambahkan event click ke kartu
         function addCardClickListeners() {
             document.querySelectorAll('.track-card').forEach(card => {
                 card.addEventListener('click', function() {
                     const type = this.dataset.type;
                     const id = this.dataset.id;
                     
-                    // For now, just log the click - later this will navigate to detail page
-                    console.log(`Clicked ${type} track with ID: ${id}`);
+                    // Untuk saat ini, hanya log klik - nanti akan diarahkan ke halaman detail
+                    console.log(`Klik catatan ${type} dengan ID: ${id}`);
                     
-                    // Future implementation:
+                    // Implementasi selanjutnya:
                     // window.location.href = `${type}-detail.html?id=${id}`;
                 });
             });
         }
 
-        // Helper functions
+        // Fungsi bantu
         function formatDate(dateString) {
             const date = new Date(dateString);
             return date.toLocaleDateString('id-ID', {
@@ -821,4 +807,3 @@
     </script>
 </body>
 </html>
-

@@ -76,8 +76,8 @@
                         <div class="consultation-options">
                             <p class="options-title">Pilihan Tersedia:</p>
                             <div class="option-list">
-                                <span class="option-badge video">
-                                    Video Call
+                                <span class="option-badge chat">
+                                    Chat
                                 </span>
                             </div>
                         </div>
@@ -343,9 +343,9 @@
         } else {
             options += `
                 <label class="consultation-option-card selected">
-                    <input type='radio' name='consultation_type' value='video' checked>
-                    <span class="consultation-option-label">Video Call</span>
-                    <span class="consultation-option-desc">Sesi online tatap muka</span>
+                    <input type='radio' name='consultation_type' value='chat' checked>
+                    <span class="consultation-option-label">Chat</span>
+                    <span class="consultation-option-desc">Konsultasi berbasis teks</span>
                 </label>
             `;
         }
