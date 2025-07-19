@@ -759,11 +759,16 @@
                     const type = this.dataset.type;
                     const id = this.dataset.id;
                     
-                    // Untuk saat ini, hanya log klik - nanti akan diarahkan ke halaman detail
-                    console.log(`Klik catatan ${type} dengan ID: ${id}`);
-                    
-                    // Implementasi selanjutnya:
-                    // window.location.href = `${type}-detail.html?id=${id}`;
+                    // Redirect ke halaman detail stat
+                    if (type === 'daily') {
+                        window.location.href = `/tracker/stat/${id}`;
+                    }
+                    // Untuk weekly dan monthly, bisa diimplementasikan nanti
+                    // else if (type === 'weekly') {
+                    //     window.location.href = `/tracker/weekly-stat/${id}`;
+                    // } else if (type === 'monthly') {
+                    //     window.location.href = `/tracker/monthly-stat/${id}`;
+                    // }
                 });
             });
         }

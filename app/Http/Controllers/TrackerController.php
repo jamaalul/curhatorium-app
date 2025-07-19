@@ -125,6 +125,14 @@ class TrackerController extends Controller
         return view('tracker.history.index');
     }
 
+    public function showStat($id) {
+        $stat = Stat::where('user_id', Auth::id())
+            ->where('id', $id)
+            ->firstOrFail();
+        
+        return view('tracker.stat-detail', compact('stat'));
+    }
+
     // API: Get paginated stats
     public function getStats(Request $request) {
         $stats = Stat::where('user_id', Auth::id())
