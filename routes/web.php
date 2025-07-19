@@ -46,6 +46,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/tracker/stat/{id}', [TrackerController::class, 'showStat'])->name('tracker.stat.detail');
     Route::get('/tracker/weekly-stat/{id}', [TrackerController::class, 'showWeeklyStat'])->name('tracker.weekly-stat.detail');
     Route::get('/tracker/monthly-stat/{id}', [TrackerController::class, 'showMonthlyStat'])->name('tracker.monthly-stat.detail');
+
+    Route::get('mental-health-test', function () {
+        return view('mental-test.form');
+    })->name('mhc-sf.form');
 });
 
 require __DIR__.'/auth.php';
