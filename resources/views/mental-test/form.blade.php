@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Tes Kesehatan Mental - Curhatorium</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1351,10 +1352,73 @@
     </div>
 
     <script>
-        document.getElementById('mhcForm').addEventListener('submit', function(e) {
+        document.getElementById('mhcForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-            calculateResults();
+            await submitTestResult();
         });
+
+        async function submitTestResult() {
+            const formData = new FormData(document.getElementById('mhcForm'));
+            // Prepare answers array
+            let answers = {};
+            for (let i = 1; i <= 14; i++) {
+                answers[`q${i}`] = formData.get(`q${i}`);
+            }
+
+            // Calculate scores
+            let totalScore = 0;
+            let emotionalScore = 0;
+            let socialScore = 0;
+            let psychologicalScore = 0;
+
+            for (let i = 1; i <= 3; i++) {
+                const value = parseInt(formData.get(`q${i}`)) || 0;
+                emotionalScore += value;
+                totalScore += value;
+            }
+            for (let i = 4; i <= 8; i++) {
+                const value = parseInt(formData.get(`q${i}`)) || 0;
+                socialScore += value;
+                totalScore += value;
+            }
+            for (let i = 9; i <= 14; i++) {
+                const value = parseInt(formData.get(`q${i}`)) || 0;
+                psychologicalScore += value;
+                totalScore += value;
+            }
+
+            // Determine category
+            const category = determineCategory(formData);
+
+            // Prepare payload
+            const payload = {
+                answers: answers,
+                total_score: totalScore,
+                emotional_score: emotionalScore,
+                social_score: socialScore,
+                psychological_score: psychologicalScore,
+                category: category
+            };
+
+            try {
+                const response = await fetch('/mental-test/submit', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+                if (result.success) {
+                    calculateResults(); // Show results as before
+                } else {
+                    alert('Gagal menyimpan hasil tes. Silakan coba lagi.');
+                }
+            } catch (error) {
+                alert('Terjadi kesalahan saat mengirim hasil tes. Silakan coba lagi.');
+            }
+        }
 
         function calculateResults() {
             const formData = new FormData(document.getElementById('mhcForm'));
@@ -1548,35 +1612,3 @@
     </script>
 </body>
 </html>
-
-{{-- Perfect! I've updated the mental health test page to match the uniform styling of the previous pages in the project. The key changes include:
-
-## 🎨 **Uniform Styling Applied**
-
-### ✅ **Consistent Color Scheme**
-- Uses the same CSS variables as other pages (--primary-color: #8ecbcf, etc.)
-- Matching gradient backgrounds and color palette
-- Consistent text colors and hierarchy
-
-### ✅ **Matching Layout Structure**
-- Same navbar styling with logo and branding
-- Consistent page header with gradient background and decorative elements
-- Main content wrapped in white cards with proper shadows and borders
-
-### ✅ **Unified Component Styles**
-- Form elements match the mood tracker styling
-- Buttons use the same gradient and hover effects
-- Cards and sections have consistent padding, borders, and shadows
-- Typography matches other pages (Inter font, consistent sizing)
-
-### ✅ **Responsive Design Consistency**
-- Same breakpoints and mobile adaptations
-- Consistent spacing and layout adjustments
-- Mobile-friendly form elements and interactions
-
-### ✅ **Interactive Elements**
-- Hover effects match other pages
-- Transition animations are consistent
-- Form validation styling aligns with project standards
-
-The page now seamlessly integrates with the rest of the Curhatorium project while maintaining all the MHC-SF functionality and scientific accuracy. The styling is now uniform across all pages in the mental health platform. --}}

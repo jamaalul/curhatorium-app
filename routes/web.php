@@ -10,6 +10,7 @@ use App\Http\Controllers\CardController;
 use App\Http\Controllers\ShareAndTalkController;
 use App\Http\Controllers\ChatbotController;
 use App\Http\Controllers\TrackerController;
+use App\Http\Controllers\MentalTestController;
 
 
 Route::get('/', function () {
@@ -82,3 +83,5 @@ Route::middleware(['auth'])->group(function () {
 Route::get('/share-and-talk/facilitator/{sessionId}', [ShareAndTalkController::class, 'facilitatorChat'])->name('share-and-talk.facilitator');
 Route::post('/share-and-talk/chat/facilitator-send', [ShareAndTalkController::class, 'facilitatorSend'])->name('share-and-talk.facilitatorSend');
 Route::get('/api/share-and-talk/messages/{sessionId}', [ShareAndTalkController::class,'getMessages'])->name('share-and-talk.fetch');
+
+Route::post('/mental-test/submit', [MentalTestController::class, 'store'])->name('mental-test.store');
