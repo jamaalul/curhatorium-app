@@ -51,6 +51,10 @@ Route::middleware('auth')->group(function () {
     Route::get('mental-health-test', function () {
         return view('mental-test.form');
     })->name('mhc-sf.form');
+
+    Route::get('missions-of-the-day', function () {
+        return view('missions');
+    })->name('missions.index');
 });
 
 require __DIR__.'/auth.php';
