@@ -10,6 +10,7 @@ use App\Http\Controllers\CardController;
 use App\Http\Controllers\ShareAndTalkController;
 use App\Http\Controllers\ChatbotController;
 use App\Http\Controllers\TrackerController;
+use App\Http\Controllers\MentalTestController;
 
 
 Route::get('/', function () {
@@ -17,7 +18,9 @@ Route::get('/', function () {
 })->name('start');
 
 Route::get('/dashboard', function () {
-    return view('main.main');
+    $trackerController = new \App\Http\Controllers\TrackerController();
+    $statsData = $trackerController->getStatsForDashboard();
+    return view('main.main', compact('statsData'));
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
@@ -33,7 +36,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/share-and-talk/professionals', [ShareAndTalkController::class, 'getProfessionals']);
     Route::get('/share-and-talk/chat/{professionalId}', [ShareAndTalkController::class, 'chatConsultation'])->name('share-and-talk.chat');
     Route::post('/share-and-talk/chat/user-send', [ShareAndTalkController::class, 'userSend'])->name('share-and-talk.userSend');
-    Route::post('/share-and-talk/chat/facilitator-send', [ShareAndTalkController::class, 'facilitatorSend'])->name('share-and-talk.facilitatorSend');
 
     Route::get('/mental-support-chatbot', [ChatbotController::class, 'index'])->name('chatbot');
     Route::post('/api/chatbot', [ChatbotController::class, 'chat'])->name('chatbot.api');
@@ -41,6 +43,14 @@ Route::middleware('auth')->group(function () {
     Route::get('/tracker', [TrackerController::class,'index'])->name('tracker.index');
     Route::post('tracker/track', [TrackerController::class,'track'])->name('tracker.entry');
     Route::get('/tracker/result', [TrackerController::class, 'result'])->name('tracker.result');
+    Route::get('/tracker/history', [TrackerController::class,'history'])->name('tracker.history');
+    Route::get('/tracker/stat/{id}', [TrackerController::class, 'showStat'])->name('tracker.stat.detail');
+    Route::get('/tracker/weekly-stat/{id}', [TrackerController::class, 'showWeeklyStat'])->name('tracker.weekly-stat.detail');
+    Route::get('/tracker/monthly-stat/{id}', [TrackerController::class, 'showMonthlyStat'])->name('tracker.monthly-stat.detail');
+
+    Route::get('mental-health-test', function () {
+        return view('mental-test.form');
+    })->name('mhc-sf.form');
 });
 
 require __DIR__.'/auth.php';
@@ -63,9 +73,15 @@ Route::middleware('auth')->group(function () {
     Route::get('/share-and-talk/messages/{sessionId}', [ShareAndTalkController::class, 'getMessages'])->name('share-and-talk.messages');
 });
 
-
-
+Route::middleware(['auth'])->group(function () {
+    Route::get('/api/tracker/stats', [TrackerController::class, 'getStats']);
+    Route::get('/api/tracker/weekly-stats', [TrackerController::class, 'getWeeklyStats']);
+    Route::get('/api/tracker/monthly-stats', [TrackerController::class, 'getMonthlyStats']);
+});
 
 
 Route::get('/share-and-talk/facilitator/{sessionId}', [ShareAndTalkController::class, 'facilitatorChat'])->name('share-and-talk.facilitator');
+Route::post('/share-and-talk/chat/facilitator-send', [ShareAndTalkController::class, 'facilitatorSend'])->name('share-and-talk.facilitatorSend');
 Route::get('/api/share-and-talk/messages/{sessionId}', [ShareAndTalkController::class,'getMessages'])->name('share-and-talk.fetch');
+
+Route::post('/mental-test/submit', [MentalTestController::class, 'store'])->name('mental-test.store');

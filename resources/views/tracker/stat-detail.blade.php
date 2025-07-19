@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hasil Mood Hari Ini - Curhatorium</title>
+    <title>Detail Catatan Mood - Curhatorium</title>
     <link rel="stylesheet" href="{{ asset('css/global.css') }}">
     <link rel="stylesheet" href="{{ asset('css/tracker/result.css') }}">
 </head>
@@ -15,8 +15,8 @@
         <!-- Page Header -->
         <div class="page-header">
             <div class="page-header-content">
-                <h1>Laporan Hari Ini</h1>
-                <p>Berikut hasil tracking mental kamu hari ini.</p>
+                <h1>Detail Catatan Mood</h1>
+                <p>Berikut detail tracking mental kamu pada tanggal ini.</p>
                 <div class="date-display">{{ \Carbon\Carbon::parse($stat->created_at)->translatedFormat('l, j F Y') }}</div>
             </div>
         </div>
@@ -164,10 +164,13 @@
 
         <!-- Action Buttons -->
         <div class="action-buttons">
+            <a href="{{ route('tracker.history') }}" class="action-btn btn-secondary">
+                Kembali ke Riwayat
+            </a>
             <a href="{{ route('dashboard') }}" class="action-btn btn-primary">
-                Kembali
+                Dashboard
             </a>
         </div>
     </div>
 </body>
-</html>
+</html> 

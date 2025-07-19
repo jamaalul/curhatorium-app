@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -20,14 +20,14 @@
         <div class="hero">
             <div class="hero-content">
                 <h1>Share and Talk</h1>
-                <p>Connect with licensed psychiatrists or trained mental health partners for professional support and guidance.</p>
+                <p>Terhubung dengan psikiater berlisensi atau mitra kesehatan mental terlatih untuk dukungan dan bimbingan profesional.</p>
             </div>
         </div>
 
         <div class="main-content">
             <!-- Consultation Types -->
             <div class="consultation-types">
-                <h2 class="section-title">Choose Your Consultation Type</h2>
+                <h2 class="section-title">Pilih Jenis Konsultasi Anda</h2>
                 
                 <div class="types-grid">
                     <!-- Psychiatrist Card -->
@@ -36,15 +36,15 @@
                             <div class="type-icon">🩺</div>
                             <div class="type-info">
                                 <h3>Psikolog Profesional</h3>
-                                <p class="subtitle">Certified medical profesional</p>
+                                <p class="subtitle">Profesional medis bersertifikat</p>
                             </div>
                         </div>
                         <p class="type-description">
-                            Get professional medical consultation from licensed psychiatrists who can provide diagnosis, 
-                            treatment plans, and medication management for various mental health conditions.
+                            Dapatkan konsultasi medis profesional dari psikiater berlisensi yang dapat memberikan diagnosis, 
+                            rencana perawatan, dan pengelolaan obat untuk berbagai kondisi kesehatan mental.
                         </p>
                         <div class="consultation-options">
-                            <p class="options-title">Available Options:</p>
+                            <p class="options-title">Pilihan Tersedia:</p>
                             <div class="option-list">
                                 <span class="option-badge chat">
                                     Chat
@@ -55,7 +55,7 @@
                             </div>
                         </div>
                         <button class="select-button" onclick="showProfessionals('psychiatrist')">
-                            Select Professionals
+                            Pilih Profesional
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                         </button>
                     </div>
@@ -66,23 +66,23 @@
                             <div class="type-icon">🤝</div>
                             <div class="type-info">
                                 <h3>Rangers</h3>
-                                <p class="subtitle">Trained Curhatorium partners</p>
+                                <p class="subtitle">Mitra Curhatorium terlatih</p>
                             </div>
                         </div>
                         <p class="type-description">
-                            Connect with trained mental health partners who provide supportive counseling, 
-                            emotional guidance, and therapeutic conversations to help you navigate life's challenges.
+                            Terhubung dengan mitra kesehatan mental terlatih yang memberikan konseling suportif, 
+                            bimbingan emosional, dan percakapan terapeutik untuk membantu Anda menghadapi tantangan hidup.
                         </p>
                         <div class="consultation-options">
-                            <p class="options-title">Available Options:</p>
+                            <p class="options-title">Pilihan Tersedia:</p>
                             <div class="option-list">
-                                <span class="option-badge video">
-                                    Video Call
+                                <span class="option-badge chat">
+                                    Chat
                                 </span>
                             </div>
                         </div>
                         <button class="select-button" onclick="showProfessionals('partner')">
-                            Select Partner
+                            Pilih Ranger
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                         </button>
                     </div>
@@ -91,40 +91,40 @@
 
             <!-- Professionals Section -->
             <div class="professionals-section" id="professionals-section" style="display: none;">
-                <h2 class="section-title" id="professionals-title">Available Professionals</h2>
+                <h2 class="section-title" id="professionals-title">Profesional Tersedia</h2>
                 
                 {{-- <!-- Filter Section -->
                 <div class="filter-section">
-                    <h3 class="filter-title">Filter Professionals</h3>
+                    <h3 class="filter-title">Filter Profesional</h3>
                     <div class="filter-options">
                         <div class="filter-group">
-                            <label class="filter-label">Specialty</label>
+                            <label class="filter-label">Spesialisasi</label>
                             <select class="filter-select" id="specialty-filter">
-                                <option value="">All Specialties</option>
-                                <option value="anxiety">Anxiety Disorders</option>
-                                <option value="depression">Depression</option>
+                                <option value="">Semua Spesialisasi</option>
+                                <option value="anxiety">Gangguan Kecemasan</option>
+                                <option value="depression">Depresi</option>
                                 <option value="trauma">Trauma & PTSD</option>
-                                <option value="relationships">Relationship Issues</option>
-                                <option value="addiction">Addiction</option>
-                                <option value="eating">Eating Disorders</option>
+                                <option value="relationships">Masalah Hubungan</option>
+                                <option value="addiction">Adiksi</option>
+                                <option value="eating">Gangguan Makan</option>
                             </select>
                         </div>
                         <div class="filter-group">
-                            <label class="filter-label">Availability</label>
+                            <label class="filter-label">Ketersediaan</label>
                             <select class="filter-select" id="availability-filter">
-                                <option value="">All</option>
-                                <option value="online">Available Now</option>
-                                <option value="busy">Busy</option>
+                                <option value="">Semua</option>
+                                <option value="online">Tersedia Sekarang</option>
+                                <option value="busy">Sibuk</option>
                                 <option value="offline">Offline</option>
                             </select>
                         </div>
                         <div class="filter-group">
                             <label class="filter-label">Rating</label>
                             <select class="filter-select" id="rating-filter">
-                                <option value="">All Ratings</option>
-                                <option value="5">5 Stars</option>
-                                <option value="4">4+ Stars</option>
-                                <option value="3">3+ Stars</option>
+                                <option value="">Semua Rating</option>
+                                <option value="5">5 Bintang</option>
+                                <option value="4">4+ Bintang</option>
+                                <option value="3">3+ Bintang</option>
                             </select>
                         </div>
                     </div>
@@ -132,7 +132,7 @@
 
                 <!-- Professionals Grid -->
                 <div class="professionals-grid" id="professionals-grid">
-                    <!-- Will be populated by JavaScript -->
+                    <!-- Akan diisi oleh JavaScript -->
                 </div>
             </div>
         </div>
@@ -141,11 +141,11 @@
     <!-- Checkout Modal -->
     <div id="checkout-modal" class="modal" style="display:none;">
         <div class="modal-content">
-            <button class="close" id="close-modal" aria-label="Close">&times;</button>
+            <button class="close" id="close-modal" aria-label="Tutup">&times;</button>
             <div class="modal-header">
                 <img id="modal-avatar" src="" alt="" class="modal-avatar">
                 <div>
-                    <h2 id="modal-title">Book Consultation</h2>
+                    <h2 id="modal-title">Pesan Konsultasi</h2>
                     <div id="modal-professional-title" class="modal-professional-title"></div>
                 </div>
             </div>
@@ -153,7 +153,7 @@
                 <div id="consultation-type-section">
                     <div id="consultation-type-options" class="consultation-type-options"></div>
                 </div>
-                <button type="submit" class="action-button modal-confirm">Confirm Booking</button>
+                <button type="submit" class="action-button modal-confirm">Konfirmasi Pemesanan</button>
             </form>
         </div>
     </div>
@@ -173,7 +173,7 @@
             }
             const response = await fetch(url);
             if (!response.ok) {
-                Toast.error('Error', 'Failed to load professionals');
+                Toast.error('Kesalahan', 'Gagal memuat profesional');
                 return [];
             }
             return await response.json();
@@ -189,9 +189,9 @@
             const title = document.getElementById('professionals-title');
 
             if (type === 'psychiatrist') {
-                title.textContent = 'Available Professionals';
+                title.textContent = 'Profesional Tersedia';
             } else {
-                title.textContent = 'Available Rangers';
+                title.textContent = 'Ranger Tersedia';
             }
 
             section.style.display = 'block';
@@ -217,7 +217,7 @@
             if (professionals.length === 0) {
                 grid.innerHTML = `
                     <div style="grid-column: 1 / -1; text-align: center; padding: 2rem; color: var(--text-secondary);">
-                        No professionals found matching your criteria.
+                        Tidak ada profesional yang sesuai dengan kriteria Anda.
                     </div>
                 `;
                 return;
@@ -234,7 +234,7 @@
                     </div>
                     <div class="professional-body">
                         <div class="specialties">
-                            <p class="specialties-title">Specialties:</p>
+                            <p class="specialties-title">Spesialisasi:</p>
                             <div class="specialty-tags">
                                 ${getSpecialtiesArray(professional.specialties).map(specialty => `<span class="specialty-tag">${specialty}</span>`).join('')}
                             </div>
@@ -248,7 +248,7 @@
                         </div>
                         <div class="consultation-actions">
                             <button class="action-button video" onclick="startConsultation(${professional.id}, 'reserve')" ${professional.availability !== 'online' ? 'disabled' : ''}>
-                                Reserve
+                                Pesan
                             </button>
                         </div>
                     </div>
@@ -321,7 +321,7 @@
     let selectedConsultationType = null;
     function openCheckoutModal(professional) {
         selectedProfessional = professional;
-        document.getElementById('modal-title').textContent = `Book Session with ${professional.name}`;
+        document.getElementById('modal-title').textContent = `Pesan Sesi dengan ${professional.name}`;
         modalAvatar.src = `/storage/${professional.avatar}`;
         modalAvatar.alt = professional.name;
         modalProfessionalTitle.textContent = professional.title;
@@ -332,20 +332,20 @@
                 <label class="consultation-option-card selected">
                     <input type='radio' name='consultation_type' value='chat' checked>
                     <span class="consultation-option-label">Chat</span>
-                    <span class="consultation-option-desc">Text-based consultation</span>
+                    <span class="consultation-option-desc">Konsultasi berbasis teks</span>
                 </label>
                 <label class="consultation-option-card">
                     <input type='radio' name='consultation_type' value='video'>
                     <span class="consultation-option-label">Video Call</span>
-                    <span class="consultation-option-desc">Face-to-face online session</span>
+                    <span class="consultation-option-desc">Sesi online tatap muka</span>
                 </label>
             `;
         } else {
             options += `
                 <label class="consultation-option-card selected">
-                    <input type='radio' name='consultation_type' value='video' checked>
-                    <span class="consultation-option-label">Video Call</span>
-                    <span class="consultation-option-desc">Face-to-face online session</span>
+                    <input type='radio' name='consultation_type' value='chat' checked>
+                    <span class="consultation-option-label">Chat</span>
+                    <span class="consultation-option-desc">Konsultasi berbasis teks</span>
                 </label>
             `;
         }
@@ -380,7 +380,7 @@
         } else if (type === 'video') {
             videoConsultation();
         }
-        // Toast.success('Success', `Booked ${type === 'chat' ? 'Chat' : 'Video Call'} with ${selectedProfessional.name}`);
+        // Toast.success('Berhasil', `Berhasil memesan ${type === 'chat' ? 'Chat' : 'Video Call'} dengan ${selectedProfessional.name}`);
         closeCheckoutModal();
     };
     // Patch startConsultation to open modal
@@ -396,7 +396,7 @@
     }
 
     function videoConsultation() {
-        console.log('Video consultation');
+        console.log('Konsultasi video');
     }
     </script>
 </body>

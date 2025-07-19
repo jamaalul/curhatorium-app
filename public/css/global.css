@@ -12,6 +12,11 @@
     font-family: FigtreeReg;
 }
 
+*::selection {
+    background-color: #ffd84d7b;
+    color: #888;
+}
+
 body {
     margin: 0;
 }

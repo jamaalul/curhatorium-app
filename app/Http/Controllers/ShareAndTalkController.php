@@ -85,8 +85,18 @@ class ShareAndTalkController extends Controller
                 'message' => 'required|string',
             ]);
     
+            // Get the chat session to find the professional_id
+            $session = ChatSession::where('session_id', $validated['session_id'])->first();
+            
+            if (!$session) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Session not found'
+                ], 404);
+            }
+    
             Message::create([
-                'sender_id' => Auth::user()->id,
+                'sender_id' => $session->professional_id,
                 'sender_type' => 'professional',
                 'session_id' => $validated['session_id'],
                 'message' => $validated['message'],
