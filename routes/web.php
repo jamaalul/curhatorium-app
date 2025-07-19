@@ -55,6 +55,10 @@ Route::middleware('auth')->group(function () {
     Route::get('missions-of-the-day', function () {
         return view('missions');
     })->name('missions.index');
+
+    Route::get('/membership', function () {
+        return view('membership.index');
+    })->name('membership.index');
 });
 
 require __DIR__.'/auth.php';
