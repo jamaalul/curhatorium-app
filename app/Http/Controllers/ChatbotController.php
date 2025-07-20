@@ -64,60 +64,50 @@ class ChatbotController extends Controller
 
     public function chat(Request $request)
     {
+        // Validasi request yang masuk
         $request->validate([
             'session_id' => 'required|exists:chatbot_sessions,id',
             'message' => 'required|string',
         ]);
 
+        // Temukan sesi chatbot berdasarkan ID dan user yang sedang login
         $session = ChatbotSession::where('id', $request->session_id)
             ->where('user_id', Auth::id())
             ->firstOrFail();
 
-        // Save user message
+        // Simpan pesan user ke database
         ChatbotMessage::create([
             'chatbot_session_id' => $session->id,
             'role' => 'user',
             'content' => $request->message
         ]);
 
-        // Get recent messages for context (last 10 messages)
-        $recentMessages = $session->messages()
-            ->orderBy('created_at', 'desc')
-            ->limit(10)
-            ->get()
-            ->reverse()
-            ->values();
+        // Ambil pesan dari sesi untuk konteks percakapan (termasuk pesan user yang baru saja disimpan)
+        $allMessages = $session->messages()
+            ->orderBy('created_at', 'asc')
+            ->get();
 
+        // Konfigurasi API Gemini
         $apiKey = env('GEMINI_API_KEY');
-        $apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
-        $maxTokens = 384;
-        $temperature = 0.7;
+        $apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent';
+        $maxTokens = 800;
+        $temperature = 0.5;
 
-        // System prompt lebih terstruktur dan jelas
+        // System prompt untuk mendefinisikan persona Ment-AI
         $systemPrompt = implode("\n", [
             "Kamu adalah Ment-AI, chatbot curhat dari Curhatorium yang berperilaku seperti teman dekat sehari-hari.",
             "",
-            "• Gunakan Bahasa Indonesia yang alami dan nyaman didengar oleh anak muda.",
-            "• Jangan gunakan terjemahan literal seperti 'saya tahu kan', 'mari saya bantu', atau frasa kaku lainnya.",
+            "• Gunakan Bahasa Indonesia yang alami dan nyaman didengar.",
             "• Gunakan gaya santai dan akrab, misalnya: 'iyaa yaa', 'wahh', 'beneran dehh', 'aku paham kok', dll.",
             "• Dengarkan dengan penuh empati dan jangan menghakimi.",
-            "• Tunjukkan bahwa kamu tertarik dengan cerita user. Tanyakan hal-hal ringan seperti 'terus gimana?', 'abis itu kamu ngapain?', atau 'kalau boleh tahu, kenapa kamu ngerasa gituu yaa?'.",
-            "• Sesekali tambahkan ekspresi khas anak muda dengan huruf berulang seperti 'haiiii', 'oke dehhh', 'hehee', 'gituu yaaa'.",
+            "• Sesekali tambahkan ekspresi dengan huruf akhir berulang seperti 'haiiii', 'oke dehhh', 'hehee', 'gituu yaaa'.",
             "• Jangan pernah menyebutkan bahwa kamu adalah AI, model bahasa, atau menyebutkan nama model seperti 'Gemini'.",
             "• Jawaban tidak perlu panjang, cukup seperti ngobrol biasa."
         ]);
 
-        // Convert messages to Gemini format
+        // Konversi pesan ke format yang diterima oleh API Gemini
         $geminiMessages = [];
-        
-        // Add system prompt as first message
-        $geminiMessages[] = [
-            'role' => 'user',
-            'parts' => [['text' => $systemPrompt]]
-        ];
-        
-        // Convert user/assistant messages to Gemini format
-        foreach ($recentMessages as $message) {
+        foreach ($allMessages as $message) {
             $geminiMessages[] = [
                 'role' => $message->role === 'user' ? 'user' : 'model',
                 'parts' => [['text' => $message->content]]
@@ -125,14 +115,20 @@ class ChatbotController extends Controller
         }
 
         try {
+            // Panggil API Gemini
             $response = Http::post($apiUrl . '?key=' . $apiKey, [
-                'contents' => $geminiMessages,
+                // PENTING: system_instruction dipisahkan dari 'contents'
+                'system_instruction' => [
+                    'parts' => [['text' => $systemPrompt]]
+                ],
+                'contents' => $geminiMessages, // Ini hanya berisi riwayat percakapan user/model
                 'generationConfig' => [
                     'maxOutputTokens' => $maxTokens,
                     'temperature' => $temperature,
                 ]
             ]);
 
+            // Cek jika ada error dari respons API Gemini
             if (!$response->ok()) {
                 return response()->json([
                     'error' => 'Gemini API error: ' . $response->status(),
@@ -142,27 +138,29 @@ class ChatbotController extends Controller
 
             $data = $response->json();
             
-            // Extract the response text from Gemini format
+            // Ekstrak teks respons dari format Gemini
             $responseText = $data['candidates'][0]['content']['parts'][0]['text'] ?? 'Maaf, saya tidak mengerti.';
             
-            // Save bot response
+            // Simpan respons bot ke database
             ChatbotMessage::create([
                 'chatbot_session_id' => $session->id,
                 'role' => 'assistant',
                 'content' => $responseText
             ]);
 
-            // Update session title if it's still the default
+            // Perbarui judul sesi jika masih default ('New Chat')
             if (!$session->title || $session->title === 'New Chat') {
                 $session->update(['title' => Str::limit($request->message, 50)]);
             }
             
+            // Kembalikan respons ke frontend
             return response()->json([
                 'message' => $responseText,
                 'session' => $session->fresh()
             ]);
 
         } catch (\Exception $e) {
+            // Tangani error jika ada masalah saat memanggil API atau lainnya
             return response()->json([
                 'error' => 'Server error: ' . $e->getMessage()
             ], 500);

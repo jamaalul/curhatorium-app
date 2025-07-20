@@ -55,6 +55,7 @@ Route::middleware('auth')->group(function () {
     Route::get('mental-health-test', function () {
         return view('mental-test.form');
     })->name('mhc-sf.form');
+    Route::post('/mental-test/submit', [MentalTestController::class, 'store'])->name('mental-test.store');
 
     Route::get('missions-of-the-day', function () {
         return view('missions');
@@ -96,4 +97,6 @@ Route::get('/share-and-talk/facilitator/{sessionId}', [ShareAndTalkController::c
 Route::post('/share-and-talk/chat/facilitator-send', [ShareAndTalkController::class, 'facilitatorSend'])->name('share-and-talk.facilitatorSend');
 Route::get('/api/share-and-talk/messages/{sessionId}', [ShareAndTalkController::class,'getMessages'])->name('share-and-talk.fetch');
 
-Route::post('/mental-test/submit', [MentalTestController::class, 'store'])->name('mental-test.store');
+Route::get('test', function () {
+    return view('profile');
+});

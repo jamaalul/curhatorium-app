@@ -9,11 +9,26 @@
   <link rel="stylesheet" href="{{ asset('css/chatbot.css') }}">
 </head>
 <body>
-  @include('components.navbar')
+  <!-- Custom Chatbot Navbar -->
+  <nav class="chatbot-navbar">
+    <button class="chatbot-mobile-menu-btn" id="chatbot-mobile-menu-btn" aria-label="Toggle sidebar">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    
+    <div class="chatbot-logo-box" onclick="window.location.href = '/dashboard'">
+      <img src="{{ asset('assets/mini_logo.png') }}" alt="mini_logo" class="chatbot-mini-logo">
+      <h1>Curhatorium</h1>
+    </div>
+  </nav>
+
   <main class="chatbot-main">
     <div class="chatbot-layout">
+
+
       <!-- Sidebar -->
-      <div class="chatbot-sidebar">
+      <div class="chatbot-sidebar" id="chatbot-sidebar">
         <div class="sidebar-header">
           <div class="search-container">
             <input type="text" id="session-search" class="session-search" placeholder="Search chats..." />
@@ -34,6 +49,9 @@
           @endforeach
         </div>
       </div>
+
+      <!-- Mobile Overlay -->
+      <div class="mobile-overlay" id="mobile-overlay"></div>
 
       <!-- Main Chat Area -->
       <div class="chatbot-content">
@@ -59,6 +77,7 @@
     let messages = [];
 
     const chatMessages = document.getElementById('chat-messages');
+    const chatContainer = document.querySelector('.chat-container');
     const chatbotForm = document.getElementById('chatbot-form');
     const userInput = document.getElementById('user-input');
     const sendBtn = document.getElementById('send-btn');
@@ -66,6 +85,9 @@
     const newChatBtn = document.getElementById('new-chat-btn');
     const sidebarSessions = document.querySelector('.sidebar-sessions');
     const sessionSearch = document.getElementById('session-search');
+    const chatbotMobileMenuBtn = document.getElementById('chatbot-mobile-menu-btn');
+    const chatbotSidebar = document.getElementById('chatbot-sidebar');
+    const mobileOverlay = document.getElementById('mobile-overlay');
 
     function renderMarkdownSafe(text) {
       const rawHtml = marked.parse(text, { breaks: true });
@@ -74,8 +96,15 @@
 
     function scrollToBottom() {
       setTimeout(() => {
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-      }, 0);
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+      }, 100);
+    }
+
+    function scrollToBottomSmooth() {
+      chatContainer.scrollTo({
+        top: chatContainer.scrollHeight,
+        behavior: 'smooth'
+      });
     }
 
     function renderMessages() {
@@ -93,7 +122,14 @@
         row.appendChild(bubble);
         chatMessages.appendChild(row);
       });
-      scrollToBottom();
+      
+      // Scroll after all messages are rendered
+      setTimeout(() => {
+        console.log('Scrolling to bottom...');
+        console.log('Chat container scroll height:', chatContainer.scrollHeight);
+        console.log('Chat container client height:', chatContainer.clientHeight);
+        scrollToBottomSmooth();
+      }, 100);
     }
 
     function updateSessionList() {
@@ -125,6 +161,16 @@
         const matches = title.includes(searchTerm.toLowerCase());
         item.style.display = matches ? 'flex' : 'none';
       });
+    }
+
+    function toggleMobileSidebar() {
+      chatbotSidebar.classList.toggle('open');
+      mobileOverlay.classList.toggle('open');
+    }
+
+    function closeMobileSidebar() {
+      chatbotSidebar.classList.remove('open');
+      mobileOverlay.classList.remove('open');
     }
 
     function loadSession(sessionId) {
@@ -251,6 +297,10 @@
 
     newChatBtn.addEventListener('click', createNewSession);
 
+    // Mobile menu functionality
+    chatbotMobileMenuBtn.addEventListener('click', toggleMobileSidebar);
+    mobileOverlay.addEventListener('click', closeMobileSidebar);
+
     // Search functionality
     sessionSearch.addEventListener('input', function(e) {
       const searchTerm = e.target.value.trim();
@@ -263,6 +313,8 @@
         const sessionItem = e.target.classList.contains('session-item') ? e.target : e.target.closest('.session-item');
         const sessionId = sessionItem.getAttribute('data-session-id');
         loadSession(sessionId);
+        // Close mobile sidebar when session is selected
+        closeMobileSidebar();
       }
       
       if (e.target.classList.contains('delete-session-btn')) {
