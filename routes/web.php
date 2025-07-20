@@ -38,6 +38,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/share-and-talk/chat/user-send', [ShareAndTalkController::class, 'userSend'])->name('share-and-talk.userSend');
 
     Route::get('/mental-support-chatbot', [ChatbotController::class, 'index'])->name('chatbot');
+    Route::get('/api/chatbot/sessions', [ChatbotController::class, 'getSessions'])->name('chatbot.get-sessions');
+    Route::post('/api/chatbot/session', [ChatbotController::class, 'createSession'])->name('chatbot.create-session');
+    Route::get('/api/chatbot/session/{sessionId}', [ChatbotController::class, 'getSession'])->name('chatbot.get-session');
+    Route::delete('/api/chatbot/session/{sessionId}', [ChatbotController::class, 'deleteSession'])->name('chatbot.delete-session');
     Route::post('/api/chatbot', [ChatbotController::class, 'chat'])->name('chatbot.api');
 
     Route::get('/tracker', [TrackerController::class,'index'])->name('tracker.index');

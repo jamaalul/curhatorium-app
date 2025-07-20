@@ -4,20 +4,89 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
+use App\Models\ChatbotSession;
+use App\Models\ChatbotMessage;
 
 class ChatbotController extends Controller
 {
     public function index() {
-        return view('chatbot');
+        $sessions = ChatbotSession::where('user_id', Auth::id())
+            ->orderBy('updated_at', 'desc')
+            ->get();
+        
+        return view('chatbot', compact('sessions'));
+    }
+
+    public function getSessions() {
+        $sessions = ChatbotSession::where('user_id', Auth::id())
+            ->orderBy('updated_at', 'desc')
+            ->get();
+        
+        return response()->json($sessions);
+    }
+
+    public function getSession($sessionId) {
+        $session = ChatbotSession::where('id', $sessionId)
+            ->where('user_id', Auth::id())
+            ->with('messages')
+            ->firstOrFail();
+        
+        return response()->json($session);
+    }
+
+    public function createSession(Request $request) {
+        $session = ChatbotSession::create([
+            'user_id' => Auth::id(),
+            'title' => $request->input('title', 'New Chat')
+        ]);
+
+        // Add initial bot message
+        ChatbotMessage::create([
+            'chatbot_session_id' => $session->id,
+            'role' => 'assistant',
+            'content' => 'Haiiii. Ada cerita apa hari ini?'
+        ]);
+
+        return response()->json($session->load('messages'));
+    }
+
+    public function deleteSession($sessionId) {
+        $session = ChatbotSession::where('id', $sessionId)
+            ->where('user_id', Auth::id())
+            ->firstOrFail();
+        
+        $session->delete();
+        
+        return response()->json(['success' => true]);
     }
 
     public function chat(Request $request)
     {
         $request->validate([
-            'messages' => 'required|array',
-            'messages.*.role' => 'required|string',
-            'messages.*.content' => 'required|string',
+            'session_id' => 'required|exists:chatbot_sessions,id',
+            'message' => 'required|string',
         ]);
+
+        $session = ChatbotSession::where('id', $request->session_id)
+            ->where('user_id', Auth::id())
+            ->firstOrFail();
+
+        // Save user message
+        ChatbotMessage::create([
+            'chatbot_session_id' => $session->id,
+            'role' => 'user',
+            'content' => $request->message
+        ]);
+
+        // Get recent messages for context (last 10 messages)
+        $recentMessages = $session->messages()
+            ->orderBy('created_at', 'desc')
+            ->limit(10)
+            ->get()
+            ->reverse()
+            ->values();
 
         $apiKey = env('GEMINI_API_KEY');
         $apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
@@ -39,7 +108,6 @@ class ChatbotController extends Controller
         ]);
 
         // Convert messages to Gemini format
-        $userMessages = array_slice($request->input('messages'), -10);
         $geminiMessages = [];
         
         // Add system prompt as first message
@@ -49,10 +117,10 @@ class ChatbotController extends Controller
         ];
         
         // Convert user/assistant messages to Gemini format
-        foreach ($userMessages as $message) {
+        foreach ($recentMessages as $message) {
             $geminiMessages[] = [
-                'role' => $message['role'] === 'user' ? 'user' : 'model',
-                'parts' => [['text' => $message['content']]]
+                'role' => $message->role === 'user' ? 'user' : 'model',
+                'parts' => [['text' => $message->content]]
             ];
         }
 
@@ -77,15 +145,21 @@ class ChatbotController extends Controller
             // Extract the response text from Gemini format
             $responseText = $data['candidates'][0]['content']['parts'][0]['text'] ?? 'Maaf, saya tidak mengerti.';
             
-            // Return in OpenAI-compatible format for frontend compatibility
+            // Save bot response
+            ChatbotMessage::create([
+                'chatbot_session_id' => $session->id,
+                'role' => 'assistant',
+                'content' => $responseText
+            ]);
+
+            // Update session title if it's still the default
+            if (!$session->title || $session->title === 'New Chat') {
+                $session->update(['title' => Str::limit($request->message, 50)]);
+            }
+            
             return response()->json([
-                'choices' => [
-                    [
-                        'message' => [
-                            'content' => $responseText
-                        ]
-                    ]
-                ]
+                'message' => $responseText,
+                'session' => $session->fresh()
             ]);
 
         } catch (\Exception $e) {
@@ -94,5 +168,4 @@ class ChatbotController extends Controller
             ], 500);
         }
     }
-
 }
