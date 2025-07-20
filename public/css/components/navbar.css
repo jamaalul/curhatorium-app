@@ -175,3 +175,12 @@ nav #profile-box #xp-box #badge-box {
     height: 100vh;
     background-color: #f5f5f5;
 }
+
+#pict {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #fff;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}

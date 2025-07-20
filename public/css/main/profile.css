@@ -116,6 +116,7 @@
     font-size: 1.1em;
     color: #333;
     margin-bottom: 14px;
+    text-align: center;
 }
 
 .tickets-list {
@@ -152,4 +153,10 @@
     font-size: 1.1em;
     color: #48a6a6;
     font-weight: 700;
+}
+
+.profile-save,
+.profile-logout,
+button {
+    cursor: pointer;
 }

@@ -13,17 +13,22 @@
             <span></span>
         </button>
         
-        <div id="profile-box">
-            <div id="xp-box">
-                <div id="badge-box">
-                    <img class="badge-logo" src="{{ asset('assets/kindle.svg') }}" alt="badge">
-                    <p class="badge-text">Kindle</p>
+        @php
+  $navUser = isset($user) ? $user : (Auth::check() ? Auth::user() : null);
+@endphp
+        <a href="/profile" style="text-decoration:none;color:inherit;">
+            <div id="profile-box">
+                <div id="xp-box">
+                    <div id="badge-box">
+                        <img class="badge-logo" src="{{ asset('assets/kindle.svg') }}" alt="badge">
+                        <p class="badge-text">Kindle</p>
+                    </div>
+                    <p id="xp"></p>
                 </div>
-                <p id="xp"></p>
+                <p class="username">Loading...</p>
+                <img src="{{ $navUser && $navUser->profile_picture ? asset('storage/' . $navUser->profile_picture) : asset('assets/profile_pict.svg') }}" alt="pict" id="pict">
             </div>
-            <p class="username">Loading...</p>
-            <img src="{{ asset('assets/profile_pict.svg') }}" alt="pict" id="pict">
-        </div>
+        </a>
     </nav>
     
     <script>
