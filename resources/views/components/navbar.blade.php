@@ -2,16 +2,14 @@
 
     <nav>
         <div id="logo-box" onclick="window.location.href = '/dashboard'">
+            @if (!request()->is('dashboard'))
+                <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" fill="currentColor" class="bi bi-arrow-left-short" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M12 8a.5.5 0 0 1-.5.5H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5a.5.5 0 0 1 .5.5"/>
+                </svg>
+            @endif
             <img src="{{ asset('assets/mini_logo.png') }}" alt="mini_logo" id="mini-logo">
             <h1>Curhatorium</h1>
         </div>
-        
-        <!-- Mobile menu button -->
-        <button class="mobile-menu-button" aria-label="Toggle menu">
-            <span></span>
-            <span></span>
-            <span></span>
-        </button>
         
         @php
   $navUser = isset($user) ? $user : (Auth::check() ? Auth::user() : null);
@@ -29,6 +27,12 @@
                 <img src="{{ $navUser && $navUser->profile_picture ? asset('storage/' . $navUser->profile_picture) : asset('assets/profile_pict.svg') }}" alt="pict" id="pict">
             </div>
         </a>
+        <!-- Mobile menu button -->
+        <button class="mobile-menu-button" aria-label="Go to profile" onclick="window.location.href = '/profile'">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
     </nav>
     
     <script>
@@ -80,47 +84,5 @@
                 });
         });
 
-        // Toggle mobile menu
-        document
-            .querySelector(".mobile-menu-button")
-            .addEventListener("click", function () {
-                const profileBox = document.getElementById("profile-box");
-                profileBox.classList.toggle("active");
-
-                // Toggle hamburger to X
-                const spans = this.querySelectorAll("span");
-                if (profileBox.classList.contains("active")) {
-                    spans[0].style.transform = "rotate(-45deg) translate(-5px, 6px)";
-                    spans[1].style.opacity = "0";
-                    spans[2].style.transform = "rotate(45deg) translate(-5px, -6px)";
-                } else {
-                    spans[0].style.transform = "none";
-                    spans[1].style.opacity = "1";
-                    spans[2].style.transform = "none";
-                }
-            });
-
-        // Close menu when clicking outside
-        document.addEventListener("click", function (event) {
-            const profileBox = document.getElementById("profile-box");
-            const mobileMenuButton = document.querySelector(".mobile-menu-button");
-
-            if (
-                !profileBox.contains(event.target) &&
-                !mobileMenuButton.contains(event.target) &&
-                profileBox.classList.contains("active")
-            ) {
-                profileBox.classList.remove("active");
-
-                // Reset hamburger icon
-                const spans = mobileMenuButton.querySelectorAll("span");
-                spans[0].style.transform = "none";
-                spans[1].style.opacity = "1";
-                spans[2].style.transform = "none";
-            }
-        });
-
-        // Example: Set username and XP from JavaScript
-        // document.querySelector(".username").textContent = "JohnDoe";
-        // document.getElementById("xp").textContent = "1250 XP";
+        // Remove mobile menu toggle and close logic
     </script>

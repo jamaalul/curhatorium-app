@@ -159,7 +159,7 @@
       
           <!-- Aksi Akun -->
           <div style="display:flex;justify-content:space-between;align-items:center;margin-top:24px;">
-            <form method="POST" action="#">
+            <form method="POST" action="{{ route('logout') }}">
               <button type="submit" class="profile-logout" style="background:#e57373;color:#fff;padding:12px 28px;border-radius:8px;font-weight:600;font-size:1em;border:none;transition:background 0.2s;">Keluar</button>
             </form>
             <form method="POST" action="#" onsubmit="return confirm('Apakah Anda yakin ingin menghapus akun Anda? Tindakan ini tidak dapat dibatalkan.');">

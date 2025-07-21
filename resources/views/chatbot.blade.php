@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
@@ -9,9 +9,9 @@
   <link rel="stylesheet" href="{{ asset('css/chatbot.css') }}">
 </head>
 <body>
-  <!-- Custom Chatbot Navbar -->
+  <!-- Navbar Chatbot Kustom -->
   <nav class="chatbot-navbar">
-    <button class="chatbot-mobile-menu-btn" id="chatbot-mobile-menu-btn" aria-label="Toggle sidebar">
+    <button class="chatbot-mobile-menu-btn" id="chatbot-mobile-menu-btn" aria-label="Buka/tutup sidebar">
       <span></span>
       <span></span>
       <span></span>
@@ -26,19 +26,18 @@
   <main class="chatbot-main">
     <div class="chatbot-layout">
 
-
       <!-- Sidebar -->
       <div class="chatbot-sidebar" id="chatbot-sidebar">
         <div class="sidebar-header">
           <div class="search-container">
-            <input type="text" id="session-search" class="session-search" placeholder="Search chats..." />
+            <input type="text" id="session-search" class="session-search" placeholder="Cari percakapan..." />
             <div class="search-icon">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M23.562 21.4452L18.9165 16.7981C22.3925 12.1533 21.4447 5.57034 16.7995 2.09462C12.1544 -1.3811 5.57081 -0.433388 2.09479 4.21139C-1.38122 8.85617 -0.433425 15.4392 4.21174 18.9149C7.94312 21.7069 13.0681 21.7069 16.7995 18.9149L21.447 23.562C22.0311 24.146 22.978 24.146 23.562 23.562C24.146 22.978 24.146 22.0312 23.562 21.4472L23.562 21.4452ZM10.5444 18.018C6.41596 18.018 3.06927 14.6715 3.06927 10.5435C3.06927 6.41543 6.41596 3.06901 10.5444 3.06901C14.6728 3.06901 18.0195 6.41543 18.0195 10.5435C18.0151 14.6697 14.6709 18.0136 10.5444 18.018Z" fill="black"/>
               </svg>
             </div>
           </div>
-          <button id="new-chat-btn" class="new-chat-btn">+ New Chat</button>
+          <button id="new-chat-btn" class="new-chat-btn">+ Percakapan Baru</button>
         </div>
         <div class="sidebar-sessions">
           @foreach($sessions as $session)
@@ -50,20 +49,26 @@
         </div>
       </div>
 
-      <!-- Mobile Overlay -->
+      <!-- Overlay Mobile -->
       <div class="mobile-overlay" id="mobile-overlay"></div>
 
-      <!-- Main Chat Area -->
+      <!-- Area Utama Chat -->
       <div class="chatbot-content">
         <div class="chat-container">
           <div id="chat-messages" class="chat-messages"></div>
-          <div id="loading" class="loading-indicator" style="display:none;">Thinking...</div>
+          <div id="loading" class="loading-indicator" style="display:none;">Sedang berpikir...</div>
+          <div id="no-session-overlay" style="display:none; text-align:center; margin-top:40px;">
+            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 24px; padding: 40px 0;">
+              <div style="font-size: 1.2em; color: #595959; font-weight: 500;">Siap kapan saja Anda butuh!<br><span style='font-size:0.95em; color:#888;'>Mulai percakapan baru untuk memulai obrolan Anda.</span></div>
+              <button id="center-new-chat-btn" class="new-chat-btn center-new-chat-btn" style="font-size:1.1em; padding: 12px 32px; border-radius: 24px; box-shadow: 0 2px 8px rgba(72,166,166,0.08); background: linear-gradient(90deg, #48a6a6 60%, #4ecdc4 100%); min-width: 0; width: auto; max-width: 100%;">+ Percakapan Baru</button>
+            </div>
+          </div>
         </div>
         
         <div class="chatbot-form-container">
           <form id="chatbot-form" class="chatbot-form" autocomplete="off">
-            <input type="text" id="user-input" placeholder="Type your message..." required autocomplete="off" />
-            <button type="submit" id="send-btn">Send</button>
+            <input type="text" id="user-input" placeholder="Ketik pesan Anda..." required autocomplete="off" disabled />
+            <button type="submit" id="send-btn" disabled>Kirim</button>
           </form>
         </div>
       </div>
@@ -119,15 +124,14 @@
         } else {
           bubble.textContent = msg.content;
         }
-        row.appendChild(bubble);
-        chatMessages.appendChild(row);
+        chatMessages.appendChild(row.appendChild(bubble) && row);
       });
       
-      // Scroll after all messages are rendered
+      // Scroll setelah semua pesan dirender
       setTimeout(() => {
-        console.log('Scrolling to bottom...');
-        console.log('Chat container scroll height:', chatContainer.scrollHeight);
-        console.log('Chat container client height:', chatContainer.clientHeight);
+        console.log('Scroll ke bawah...');
+        console.log('Tinggi scroll chat container:', chatContainer.scrollHeight);
+        console.log('Tinggi client chat container:', chatContainer.clientHeight);
         scrollToBottomSmooth();
       }, 100);
     }
@@ -173,7 +177,27 @@
       mobileOverlay.classList.remove('open');
     }
 
-    function loadSession(sessionId) {
+    function setFormEnabled(enabled) {
+      userInput.disabled = !enabled;
+      sendBtn.disabled = !enabled;
+    }
+
+    function showNoSessionOverlay(show) {
+      document.getElementById('no-session-overlay').style.display = show ? '' : 'none';
+    }
+
+    function handleSessionState() {
+      if (!currentSessionId) {
+        setFormEnabled(false);
+        showNoSessionOverlay(true);
+      } else {
+        setFormEnabled(true);
+        showNoSessionOverlay(false);
+      }
+    }
+
+    // Patch: Setelah memuat atau membuat sesi, panggil handleSessionState
+    async function loadSession(sessionId) {
       currentSessionId = sessionId;
       fetch(`/api/chatbot/session/${sessionId}`)
         .then(response => response.json())
@@ -183,25 +207,24 @@
             content: msg.content
           }));
           renderMessages();
-          
-          // Update active session in sidebar
+          // Update sesi aktif di sidebar
           document.querySelectorAll('.session-item').forEach(item => {
             item.classList.remove('active');
           });
           document.querySelector(`[data-session-id="${sessionId}"]`).classList.add('active');
+          handleSessionState();
         });
     }
 
-    function createNewSession() {
+    async function createNewSession() {
       const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-      
       fetch('/api/chatbot/session', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'X-CSRF-TOKEN': csrfToken
         },
-        body: JSON.stringify({ title: 'New Chat' })
+        body: JSON.stringify({ title: 'Percakapan Baru' })
       })
       .then(response => response.json())
       .then(session => {
@@ -212,14 +235,32 @@
         }));
         renderMessages();
         updateSessionList();
+        handleSessionState();
       });
     }
 
+    // Saat halaman dimuat, cek apakah ada sesi yang dimuat
+    window.addEventListener('DOMContentLoaded', () => {
+      const firstSession = document.querySelector('.session-item');
+      if (firstSession) {
+        const sessionId = firstSession.getAttribute('data-session-id');
+        loadSession(sessionId);
+      } else {
+        handleSessionState();
+      }
+    });
+
+    // Tambahkan event untuk tombol percakapan baru di tengah
+    document.addEventListener('click', function(e) {
+      if (e.target && e.target.id === 'center-new-chat-btn') {
+        createNewSession();
+      }
+    });
+
+    // Juga panggil handleSessionState setelah menghapus sesi
     function deleteSession(sessionId) {
-      if (!confirm('Are you sure you want to delete this chat?')) return;
-      
+      if (!confirm('Apakah Anda yakin ingin menghapus percakapan ini?')) return;
       const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-      
       fetch(`/api/chatbot/session/${sessionId}`, {
         method: 'DELETE',
         headers: {
@@ -233,6 +274,7 @@
             currentSessionId = null;
             messages = [];
             renderMessages();
+            handleSessionState();
           }
           updateSessionList();
         }
@@ -265,17 +307,17 @@
           })
         });
 
-        if (!response.ok) throw new Error('Chatbot API error: ' + response.status);
+        if (!response.ok) throw new Error('Terjadi kesalahan pada API Chatbot: ' + response.status);
 
         const data = await response.json();
         
         messages.push({ role: "assistant", content: data.message });
         renderMessages();
         
-        // Update session list to reflect new title
+        // Update daftar sesi untuk memperbarui judul baru
         updateSessionList();
       } catch (err) {
-        console.error('Error in sendMessageToChatbot:', err);
+        console.error('Kesalahan pada sendMessageToChatbot:', err);
         messages.push({ role: "assistant", content: "Maaf, ada masalah dengan koneksi chatbot." });
         renderMessages();
       } finally {
@@ -287,7 +329,7 @@
       }
     }
 
-    // Event Listeners
+    // Event Listener
     chatbotForm.addEventListener('submit', function(e) {
       e.preventDefault();
       const text = userInput.value.trim();
@@ -297,23 +339,23 @@
 
     newChatBtn.addEventListener('click', createNewSession);
 
-    // Mobile menu functionality
+    // Fungsi menu mobile
     chatbotMobileMenuBtn.addEventListener('click', toggleMobileSidebar);
     mobileOverlay.addEventListener('click', closeMobileSidebar);
 
-    // Search functionality
+    // Fungsi pencarian
     sessionSearch.addEventListener('input', function(e) {
       const searchTerm = e.target.value.trim();
       filterSessions(searchTerm);
     });
 
-    // Session click events
+    // Event klik sesi
     sidebarSessions.addEventListener('click', function(e) {
       if (e.target.classList.contains('session-item') || e.target.closest('.session-item')) {
         const sessionItem = e.target.classList.contains('session-item') ? e.target : e.target.closest('.session-item');
         const sessionId = sessionItem.getAttribute('data-session-id');
         loadSession(sessionId);
-        // Close mobile sidebar when session is selected
+        // Tutup sidebar mobile saat sesi dipilih
         closeMobileSidebar();
       }
       
@@ -324,18 +366,9 @@
       }
     });
 
-    // Initialize
-    window.addEventListener('DOMContentLoaded', () => {
-      // Load first session if available
-      const firstSession = document.querySelector('.session-item');
-      if (firstSession) {
-        const sessionId = firstSession.getAttribute('data-session-id');
-        loadSession(sessionId);
-      } else {
-        // Create new session if none exist
-        createNewSession();
-      }
-    });
+    // Inisialisasi
+    // Listener DOMContentLoaded sekarang ditangani oleh klik newSessionBtn
+    // dan fungsi handleSessionState.
   </script>
 </body>
 </html>
