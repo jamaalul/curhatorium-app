@@ -128,13 +128,19 @@
                                             @endif
                                         @else
                                             @if($isUpcoming)
-                                                <form action="{{ route('group.join') }}" method="POST" style="display: inline;">
-                                                    @csrf
-                                                    <input type="hidden" name="group_id" value="{{ $group->id }}">
-                                                    <button type="submit" class="join-button">
-                                                        Join Group <span>➔</span>
+                                                @if($group->users->count() >= 5)
+                                                    <button class="join-button" disabled>
+                                                        Group Full (5/5)
                                                     </button>
-                                                </form>
+                                                @else
+                                                    <form action="{{ route('group.join') }}" method="POST" style="display: inline;">
+                                                        @csrf
+                                                        <input type="hidden" name="group_id" value="{{ $group->id }}">
+                                                        <button type="submit" class="join-button">
+                                                            Join Group <span>➔</span>
+                                                        </button>
+                                                    </form>
+                                                @endif
                                             @else
                                                 <button class="join-button past-button" disabled>
                                                     Past Event

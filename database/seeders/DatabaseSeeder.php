@@ -66,11 +66,18 @@ class DatabaseSeeder extends Seeder
             ['quote' => 'Push yourself, because no one else is going to do it for you.'],
         ]);
 
+        // Seed cards
+        $this->call(CardSeeder::class);
+
         // Seed stats, weekly stats, and monthly stats
         $this->call([
             StatSeeder::class,
             WeeklyStatSeeder::class,
             MonthlyStatSeeder::class,
         ]);
+
+        // Other seeders
+        $this->call(MissionSeeder::class);
+        $this->call(MembershipSeeder::class);
     }
 }

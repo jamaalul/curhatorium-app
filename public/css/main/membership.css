@@ -1,0 +1,293 @@
+/* Membership Page Styles - matches app palette and provided image */
+
+body {
+    background: linear-gradient(180deg, #ffffff 0%, #47a6a6 100%);
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 100px 20px 40px 20px;
+
+    .header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .header h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #222;
+        margin-bottom: 10px;
+    }
+
+    .header h1 .highlight {
+        color: #f8c932;
+    }
+
+    .header p {
+        font-size: 1.1rem;
+        color: #7f8c8d;
+        font-weight: 400;
+    }
+
+    .pricing-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 32px;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .pricing-card {
+        background: #fff;
+        border-radius: 20px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08),
+            0 1.5px 8px rgba(0, 0, 0, 0.06);
+        padding: 32px 24px 24px 24px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        min-height: 420px;
+        border: 1.5px solid #eaeaea;
+        transition: box-shadow 0.2s, transform 0.2s;
+    }
+
+    .pricing-card.yellow {
+        background: #f8c932;
+        color: #222;
+        border: none;
+    }
+
+    .pricing-card.black,
+    .pricing-card.dark {
+        background: #222;
+        color: #fff;
+        border: none;
+    }
+
+    .pricing-card:hover {
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.13),
+            0 2px 12px rgba(0, 0, 0, 0.09);
+        transform: translateY(-4px) scale(1.01);
+    }
+
+    .card-header {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 12px;
+    }
+
+    .card-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: #f8c932;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        color: #fff;
+        flex-shrink: 0;
+    }
+
+    .pricing-card.yellow .card-icon {
+        background: #fff;
+        color: #f8c932;
+        border: 2.5px solid #f8c932;
+    }
+
+    .pricing-card.black .card-icon,
+    .pricing-card.dark .card-icon {
+        background: #fff;
+        color: #222;
+        border: 2.5px solid #222;
+    }
+
+    .card-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin: 0;
+        color: inherit;
+    }
+
+    .card-price {
+        font-size: 2rem;
+        font-weight: 800;
+        margin-bottom: 8px;
+        color: inherit;
+    }
+
+    .card-price .currency {
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+
+    .card-price .thousands {
+        font-size: 1rem;
+        font-weight: 400;
+        color: #000;
+        font-weight: 800;
+    }
+
+    .card-price .period {
+        font-size: 0.95rem;
+        font-weight: 400;
+        color: #000;
+        font-weight: 800;
+    }
+
+    .thousands-yellow {
+        font-size: 1rem;
+        font-weight: 400;
+        color: #ffcd2d;
+        font-weight: 800;
+    }
+
+    .benefits-list {
+        list-style: none;
+        margin-bottom: 32px;
+        flex-grow: 1;
+        padding-left: 0;
+    }
+
+    .benefits-list li {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 4px;
+        font-size: 1rem;
+        line-height: 1.5;
+        color: inherit;
+    }
+
+    .benefits-list li::before {
+        content: "\2022";
+        color: #70c0bb;
+        font-weight: bold;
+        margin-right: 10px;
+        font-size: 1.2em;
+        margin-top: 2px;
+        flex-shrink: 0;
+    }
+
+    .pricing-card.yellow .benefits-list li::before {
+        color: #fff;
+    }
+
+    .pricing-card.black .benefits-list li::before,
+    .pricing-card.dark .benefits-list li::before {
+        color: #f8c932;
+    }
+
+    .benefits-list .highlight {
+        font-weight: 700;
+        color: #419f9c;
+    }
+
+    .benefits-list .highlight-yellow {
+        color: #f8c932;
+        font-weight: 700;
+    }
+
+    .benefits-list .highlight-black {
+        color: #222;
+        font-weight: 700;
+    }
+
+    .subscribe-btn {
+        background: #fff;
+        color: #222;
+        border: 2px solid #eaeaea;
+        padding: 16px 0 16px 0;
+        border-radius: 12px;
+        font-size: 1.08rem;
+        font-weight: 700;
+        cursor: pointer;
+        width: 100%;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        transition: background 0.2s, color 0.2s, border 0.2s, box-shadow 0.2s;
+        margin-top: auto;
+        letter-spacing: 0.02em;
+        display: block;
+    }
+
+    .pricing-card.yellow .subscribe-btn {
+        background: #f8c932;
+        color: #fff;
+        border: none;
+    }
+
+    .pricing-card.dark .subscribe-btn,
+    .pricing-card.black .subscribe-btn {
+        background: #222;
+        color: #fff;
+        border: none;
+    }
+
+    .subscribe-btn:hover {
+        background: #ffd84d;
+        color: #222;
+        border: 2px solid #ffd84d;
+    }
+
+    .pricing-card.yellow .subscribe-btn:hover {
+        background: #ffe066;
+        color: #222;
+    }
+
+    .pricing-card.dark .subscribe-btn:hover,
+    .pricing-card.black .subscribe-btn:hover {
+        background: #333;
+        color: #fff;
+    }
+
+    .subscribe-form {
+        width: 100%;
+        margin: 0;
+        padding: 0;
+    }
+
+    @media (max-width: 900px) {
+        .pricing-grid {
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+    }
+
+    @media (min-width: 1024px) {
+        .pricing-grid {
+            grid-template-columns: repeat(4, 1fr);
+            gap: 32px;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .pricing-grid {
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+        .container {
+            padding: 0 4px;
+        }
+        .header h1 {
+            font-size: 1.5rem;
+        }
+        .pricing-card {
+            padding: 18px 10px 16px 10px;
+            min-height: 320px;
+        }
+        .card-title {
+            font-size: 1.1rem;
+        }
+        .card-price {
+            font-size: 1.3rem;
+        }
+        .subscribe-btn {
+            font-size: 1rem;
+            padding: 14px 0 14px 0;
+            border-radius: 10px;
+        }
+    }
+}

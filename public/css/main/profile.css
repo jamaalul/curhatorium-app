@@ -1,0 +1,162 @@
+/* Profile Page Styles */
+
+.profile-main {
+    min-height: 100vh;
+    background: #f5f1eb;
+    padding-top: 80px;
+    padding-left: 40px;
+    padding-right: 40px;
+}
+
+@media (max-width: 600px) {
+    .profile-main {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+}
+
+.profile-section {
+    max-width: 700px;
+    margin: auto;
+    padding: 40px 0;
+}
+
+.profile-title {
+    font-family: FigtreeBold;
+    font-size: 2em;
+    color: #333;
+    margin-bottom: 32px;
+    text-align: center;
+}
+
+.profile-overview {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+    margin-bottom: 32px;
+}
+
+.profile-pic-container {
+    position: relative;
+}
+
+.profile-pic {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.change-pic-label {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background: #8ecbcf;
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 16px;
+    font-size: 0.9em;
+    cursor: pointer;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+.profile-username {
+    font-size: 1.3em;
+    font-family: FigtreeBold;
+    color: #222;
+}
+
+.profile-email {
+    color: #888;
+    font-size: 1em;
+}
+
+.xp-badge-box {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    margin-top: 10px;
+}
+
+.badge-box-profile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 18px;
+    border-radius: 20px;
+    background: #8ecbcf;
+}
+
+.badge-logo-profile {
+    width: 32px;
+    height: 32px;
+}
+
+.badge-text-profile {
+    font-weight: 600;
+    color: #fff;
+}
+
+.xp-profile {
+    font-weight: 600;
+    color: #48a6a6;
+    font-size: 1.1em;
+}
+
+.tickets-section {
+    width: 100%;
+    margin-top: 32px;
+}
+
+.tickets-title {
+    font-family: FigtreeBold;
+    font-size: 1.1em;
+    color: #333;
+    margin-bottom: 14px;
+    text-align: center;
+}
+
+.tickets-list {
+    display: flex;
+    gap: 18px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.ticket-card {
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    padding: 18px 28px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 140px;
+}
+
+.ticket-card img {
+    width: 38px;
+    height: 38px;
+    margin-bottom: 8px;
+}
+
+.ticket-card .ticket-feature {
+    font-weight: 600;
+    color: #222;
+}
+
+.ticket-card .ticket-count {
+    margin-top: 6px;
+    font-size: 1.1em;
+    color: #48a6a6;
+    font-weight: 700;
+}
+
+.profile-save,
+.profile-logout,
+button {
+    cursor: pointer;
+}

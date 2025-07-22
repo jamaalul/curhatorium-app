@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 use App\Models\Professional;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -40,6 +41,16 @@ class ShareAndTalkController extends Controller
         ]);
 
         $interval = now()->diffInMinutes($session->end);
+
+        $response = Http::withHeaders([
+            'Authorization' => env('FONNTE_TOKEN'),
+        ])->post('https://api.fonnte.com/send', [
+            'target' => $professional->whatsapp_number,
+            'message' => 
+                "Kamu mendapat pesanan konsultasi baru.\n" .
+                "Akses URL berikut sebelum " . $session->start->addMinutes(5)->format('H:i') . " agar pesanannya tidak dibatalkan.\n\n" .
+                "https://curhatorium.com/share-and-talk/facilitator/" . $session_id,
+        ]);
 
         
 

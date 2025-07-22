@@ -4,67 +4,131 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
+use App\Models\ChatbotSession;
+use App\Models\ChatbotMessage;
 
 class ChatbotController extends Controller
 {
     public function index() {
-        return view('chatbot');
+        $sessions = ChatbotSession::where('user_id', Auth::id())
+            ->orderBy('updated_at', 'desc')
+            ->get();
+        
+        return view('chatbot', compact('sessions'));
+    }
+
+    public function getSessions() {
+        $sessions = ChatbotSession::where('user_id', Auth::id())
+            ->orderBy('updated_at', 'desc')
+            ->get();
+        
+        return response()->json($sessions);
+    }
+
+    public function getSession($sessionId) {
+        $session = ChatbotSession::where('id', $sessionId)
+            ->where('user_id', Auth::id())
+            ->with('messages')
+            ->firstOrFail();
+        
+        return response()->json($session);
+    }
+
+    public function createSession(Request $request) {
+        $session = ChatbotSession::create([
+            'user_id' => Auth::id(),
+            'title' => $request->input('title', 'New Chat')
+        ]);
+
+        // Add initial bot message
+        ChatbotMessage::create([
+            'chatbot_session_id' => $session->id,
+            'role' => 'assistant',
+            'content' => 'Haiiii. Ada cerita apa hari ini?'
+        ]);
+
+        return response()->json($session->load('messages'));
+    }
+
+    public function deleteSession($sessionId) {
+        $session = ChatbotSession::where('id', $sessionId)
+            ->where('user_id', Auth::id())
+            ->firstOrFail();
+        
+        $session->delete();
+        
+        return response()->json(['success' => true]);
     }
 
     public function chat(Request $request)
     {
+        // Validasi request yang masuk
         $request->validate([
-            'messages' => 'required|array',
-            'messages.*.role' => 'required|string',
-            'messages.*.content' => 'required|string',
+            'session_id' => 'required|exists:chatbot_sessions,id',
+            'message' => 'required|string',
         ]);
 
-        $apiKey = env('GEMINI_API_KEY');
-        $apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
-        $maxTokens = 384;
-        $temperature = 0.7;
+        // Temukan sesi chatbot berdasarkan ID dan user yang sedang login
+        $session = ChatbotSession::where('id', $request->session_id)
+            ->where('user_id', Auth::id())
+            ->firstOrFail();
 
-        // System prompt lebih terstruktur dan jelas
+        // Simpan pesan user ke database
+        ChatbotMessage::create([
+            'chatbot_session_id' => $session->id,
+            'role' => 'user',
+            'content' => $request->message
+        ]);
+
+        // Ambil pesan dari sesi untuk konteks percakapan (termasuk pesan user yang baru saja disimpan)
+        $allMessages = $session->messages()
+            ->orderBy('created_at', 'asc')
+            ->get();
+
+        // Konfigurasi API Gemini
+        $apiKey = env('GEMINI_API_KEY');
+        $apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent';
+        $maxTokens = 800;
+        $temperature = 0.5;
+
+        // System prompt untuk mendefinisikan persona Ment-AI
         $systemPrompt = implode("\n", [
             "Kamu adalah Ment-AI, chatbot curhat dari Curhatorium yang berperilaku seperti teman dekat sehari-hari.",
             "",
-            "• Gunakan Bahasa Indonesia yang alami dan nyaman didengar oleh anak muda.",
-            "• Jangan gunakan terjemahan literal seperti 'saya tahu kan', 'mari saya bantu', atau frasa kaku lainnya.",
+            "• Gunakan Bahasa Indonesia yang alami dan nyaman didengar.",
             "• Gunakan gaya santai dan akrab, misalnya: 'iyaa yaa', 'wahh', 'beneran dehh', 'aku paham kok', dll.",
             "• Dengarkan dengan penuh empati dan jangan menghakimi.",
-            "• Tunjukkan bahwa kamu tertarik dengan cerita user. Tanyakan hal-hal ringan seperti 'terus gimana?', 'abis itu kamu ngapain?', atau 'kalau boleh tahu, kenapa kamu ngerasa gituu yaa?'.",
-            "• Sesekali tambahkan ekspresi khas anak muda dengan huruf berulang seperti 'haiiii', 'oke dehhh', 'hehee', 'gituu yaaa'.",
+            "• Sesekali tambahkan ekspresi dengan huruf akhir berulang seperti 'haiiii', 'oke dehhh', 'hehee', 'gituu yaaa'.",
             "• Jangan pernah menyebutkan bahwa kamu adalah AI, model bahasa, atau menyebutkan nama model seperti 'Gemini'.",
             "• Jawaban tidak perlu panjang, cukup seperti ngobrol biasa."
         ]);
 
-        // Convert messages to Gemini format
-        $userMessages = array_slice($request->input('messages'), -10);
+        // Konversi pesan ke format yang diterima oleh API Gemini
         $geminiMessages = [];
-        
-        // Add system prompt as first message
-        $geminiMessages[] = [
-            'role' => 'user',
-            'parts' => [['text' => $systemPrompt]]
-        ];
-        
-        // Convert user/assistant messages to Gemini format
-        foreach ($userMessages as $message) {
+        foreach ($allMessages as $message) {
             $geminiMessages[] = [
-                'role' => $message['role'] === 'user' ? 'user' : 'model',
-                'parts' => [['text' => $message['content']]]
+                'role' => $message->role === 'user' ? 'user' : 'model',
+                'parts' => [['text' => $message->content]]
             ];
         }
 
         try {
+            // Panggil API Gemini
             $response = Http::post($apiUrl . '?key=' . $apiKey, [
-                'contents' => $geminiMessages,
+                // PENTING: system_instruction dipisahkan dari 'contents'
+                'system_instruction' => [
+                    'parts' => [['text' => $systemPrompt]]
+                ],
+                'contents' => $geminiMessages, // Ini hanya berisi riwayat percakapan user/model
                 'generationConfig' => [
                     'maxOutputTokens' => $maxTokens,
                     'temperature' => $temperature,
                 ]
             ]);
 
+            // Cek jika ada error dari respons API Gemini
             if (!$response->ok()) {
                 return response()->json([
                     'error' => 'Gemini API error: ' . $response->status(),
@@ -74,25 +138,32 @@ class ChatbotController extends Controller
 
             $data = $response->json();
             
-            // Extract the response text from Gemini format
+            // Ekstrak teks respons dari format Gemini
             $responseText = $data['candidates'][0]['content']['parts'][0]['text'] ?? 'Maaf, saya tidak mengerti.';
             
-            // Return in OpenAI-compatible format for frontend compatibility
+            // Simpan respons bot ke database
+            ChatbotMessage::create([
+                'chatbot_session_id' => $session->id,
+                'role' => 'assistant',
+                'content' => $responseText
+            ]);
+
+            // Perbarui judul sesi jika masih default ('New Chat')
+            if (!$session->title || $session->title === 'New Chat') {
+                $session->update(['title' => Str::limit($request->message, 50)]);
+            }
+            
+            // Kembalikan respons ke frontend
             return response()->json([
-                'choices' => [
-                    [
-                        'message' => [
-                            'content' => $responseText
-                        ]
-                    ]
-                ]
+                'message' => $responseText,
+                'session' => $session->fresh()
             ]);
 
         } catch (\Exception $e) {
+            // Tangani error jika ada masalah saat memanggil API atau lainnya
             return response()->json([
                 'error' => 'Server error: ' . $e->getMessage()
             ], 500);
         }
     }
-
 }
