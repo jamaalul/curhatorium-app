@@ -78,5 +78,6 @@ class DatabaseSeeder extends Seeder
 
         // Other seeders
         $this->call(MissionSeeder::class);
+        $this->call(MembershipSeeder::class);
     }
 }

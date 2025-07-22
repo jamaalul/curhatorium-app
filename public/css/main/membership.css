@@ -200,15 +200,17 @@ body {
         background: #fff;
         color: #222;
         border: 2px solid #eaeaea;
-        padding: 14px 0;
-        border-radius: 10px;
-        font-size: 1rem;
+        padding: 16px 0 16px 0;
+        border-radius: 12px;
+        font-size: 1.08rem;
         font-weight: 700;
         cursor: pointer;
         width: 100%;
-        box-shadow: none;
-        transition: background 0.2s, color 0.2s, border 0.2s;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        transition: background 0.2s, color 0.2s, border 0.2s, box-shadow 0.2s;
         margin-top: auto;
+        letter-spacing: 0.02em;
+        display: block;
     }
 
     .pricing-card.yellow .subscribe-btn {
@@ -239,6 +241,12 @@ body {
     .pricing-card.black .subscribe-btn:hover {
         background: #333;
         color: #fff;
+    }
+
+    .subscribe-form {
+        width: 100%;
+        margin: 0;
+        padding: 0;
     }
 
     @media (max-width: 900px) {
@@ -277,8 +285,9 @@ body {
             font-size: 1.3rem;
         }
         .subscribe-btn {
-            font-size: 0.95rem;
-            padding: 10px 0;
+            font-size: 1rem;
+            padding: 14px 0 14px 0;
+            border-radius: 10px;
         }
     }
 }
