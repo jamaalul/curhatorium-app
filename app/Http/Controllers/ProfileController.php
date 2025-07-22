@@ -17,8 +17,22 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): View
     {
+        $user = Auth::user();
+        // Group tickets by type and aggregate info for each type
+        $tickets = $user->userTickets
+            ->groupBy('ticket_type')
+            ->map(function ($group) {
+                $first = $group->first();
+                return [
+                    'ticket_type' => $first->ticket_type,
+                    'limit_type' => $first->limit_type,
+                    'remaining_value' => $group->sum('remaining_value'),
+                    'expires_at' => $first->expires_at,
+                ];
+            });
         return view('profile', [
-            'user' => Auth::user(),
+            'user' => $user,
+            'tickets' => $tickets,
         ]);
     }
 

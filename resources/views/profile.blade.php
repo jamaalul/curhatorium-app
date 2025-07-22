@@ -69,52 +69,48 @@
           </div>
           <span class="xp-profile" id="xp-profile">{{ $xp }} XP</span>
         </div>
-        <!-- Bagian Tiket (placeholder) -->
-        <div class="tickets-section">
-          <div class="tickets-title">Tiket Anda</div>
-          <div class="tickets-list">
-            <!-- Ticket Card 1 -->
-            <div class="ticket-card">
-              <img src="/assets/support_group_discussion.svg" alt="SGD">
-              <div class="ticket-feature">SGD Group</div>
-              <div class="ticket-count">2 Tiket</div>
-            </div>
-            <!-- Ticket Card 2 -->
-            <div class="ticket-card">
-              <img src="/assets/deep_cards.svg" alt="Deep Cards">
-              <div class="ticket-feature">Deep Cards</div>
-              <div class="ticket-count">1 Tiket</div>
-            </div>
-            <!-- Ticket Card 3 -->
-            <div class="ticket-card">
-              <img src="/assets/mental_support_chatbot.svg" alt="Ment-AI">
-              <div class="ticket-feature">Ment-AI</div>
-              <div class="ticket-count">3 Tiket</div>
-            </div>
-            <!-- Ticket Card 4 -->
-            <div class="ticket-card">
-              <img src="/assets/mental_health_test.svg" alt="Mental Test">
-              <div class="ticket-feature">Mental Test</div>
-              <div class="ticket-count">0 Tiket</div>
-            </div>
-            <!-- Ticket Card 5 -->
-            <div class="ticket-card">
-              <img src="/assets/share_talk.svg" alt="Share & Talk">
-              <div class="ticket-feature">Share & Talk</div>
-              <div class="ticket-count">1 Tiket</div>
-            </div>
-            <!-- Ticket Card 6 -->
-            <div class="ticket-card">
-              <img src="/assets/missions_of_the_day.svg" alt="Missions of the Day">
-              <div class="ticket-feature">Missions of the Day</div>
-              <div class="ticket-count">2 Tiket</div>
-            </div>
-            <!-- Ticket Card 7 -->
-            <div class="ticket-card">
-              <img src="/assets/torch.svg" alt="Mental Tracker">
-              <div class="ticket-feature">Mental Tracker</div>
-              <div class="ticket-count">4 Tiket</div>
-            </div>
+        <!-- Cinema-style Tickets Section -->
+        <div class="cinema-tickets-section">
+          <h3 class="cinema-tickets-title">Tiket Anda</h3>
+          <div class="cinema-tickets-list">
+            @php
+              $featureNames = [
+                'mental_test' => 'Mental Health Test',
+                'tracker' => 'Mood & Productivity Tracker',
+                'mentai_chatbot' => 'Ment-AI Chatbot',
+                'missions' => 'Missions of the Day',
+                'support_group' => 'Support Group Discussion',
+                'deep_cards' => 'Deep Cards',
+                'share_talk_ranger_chat' => 'Share & Talk (Ranger)',
+                'share_talk_psy_chat' => 'Share & Talk (Psychiatrist Chat)',
+                'share_talk_psy_video' => 'Share & Talk (Psychiatrist Video Call)',
+              ];
+            @endphp
+            @foreach ($tickets as $ticket)
+              @php
+                $isUnlimited = $ticket['limit_type'] === 'unlimited';
+                $value = $isUnlimited ? 'Unlimited' : ($ticket['remaining_value'] ?? 0);
+              @endphp
+              <div class="cinema-ticket">
+                <div class="cinema-ticket-content">
+                  <div class="cinema-ticket-feature">{{ $featureNames[$ticket['ticket_type']] ?? ucfirst(str_replace(['_', '-'], ' ', $ticket['ticket_type'])) }}</div>
+                  <div class="cinema-ticket-value">
+                    @if($isUnlimited)
+                      Unlimited
+                    @elseif($ticket['limit_type'] === 'hour')
+                      {{ $value }} Jam
+                    @elseif($ticket['limit_type'] === 'day')
+                      {{ $value }} Hari
+                    @else
+                      {{ $value }} Tiket
+                    @endif
+                  </div>
+                  @if($ticket['expires_at'])
+                    <div class="cinema-ticket-expiry">Exp: {{ \Carbon\Carbon::parse($ticket['expires_at'])->format('d M Y') }}</div>
+                  @endif
+                </div>
+              </div>
+            @endforeach
           </div>
         </div>
       </div>
