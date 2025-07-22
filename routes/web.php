@@ -11,6 +11,7 @@ use App\Http\Controllers\ShareAndTalkController;
 use App\Http\Controllers\ChatbotController;
 use App\Http\Controllers\TrackerController;
 use App\Http\Controllers\MentalTestController;
+use App\Http\Controllers\MissionController;
 
 
 Route::get('/', function () {
@@ -52,6 +53,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/tracker/weekly-stat/{id}', [TrackerController::class, 'showWeeklyStat'])->name('tracker.weekly-stat.detail');
     Route::get('/tracker/monthly-stat/{id}', [TrackerController::class, 'showMonthlyStat'])->name('tracker.monthly-stat.detail');
 
+    Route::get('/api/tracker/stats', [TrackerController::class, 'getStats'])->name('api.tracker.stats');
+    Route::get('/api/tracker/weekly-stats', [TrackerController::class, 'getWeeklyStats'])->name('api.tracker.weekly-stats');
+    Route::get('/api/tracker/monthly-stats', [TrackerController::class, 'getMonthlyStats'])->name('api.tracker.monthly-stats');
+
     Route::get('mental-health-test', function () {
         return view('mental-test.form');
     })->name('mhc-sf.form');
@@ -87,9 +92,8 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('/api/tracker/stats', [TrackerController::class, 'getStats']);
-    Route::get('/api/tracker/weekly-stats', [TrackerController::class, 'getWeeklyStats']);
-    Route::get('/api/tracker/monthly-stats', [TrackerController::class, 'getMonthlyStats']);
+    Route::get('/missions-of-the-day', [MissionController::class, 'index'])->name('missions.index');
+    Route::post('/missions-of-the-day/{mission}/complete', [MissionController::class, 'complete'])->name('missions.complete');
 });
 
 

@@ -72,5 +72,8 @@ class DatabaseSeeder extends Seeder
             WeeklyStatSeeder::class,
             MonthlyStatSeeder::class,
         ]);
+
+        // Other seeders
+        $this->call(MissionSeeder::class);
     }
 }

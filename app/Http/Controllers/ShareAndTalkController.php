@@ -54,9 +54,7 @@ class ShareAndTalkController extends Controller
 
         
 
-        // return view('share-and-talk.chat', ['professional' => $professional, 'user' => $user, 'session_id' => $session_id, 'interval' => $interval]);
-
-        dd(json_decode($response));
+        return view('share-and-talk.chat', ['professional' => $professional, 'user' => $user, 'session_id' => $session_id, 'interval' => $interval]);
     }
 
     public function facilitatorChat($sessionId) {
