@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->string('ticket_type');
             $table->enum('limit_type', ['unlimited', 'count', 'day', 'hour']);
+            // For 'unlimited', limit_value and remaining_value should be NULL. For others, use numeric values.
             $table->unsignedInteger('limit_value')->nullable(); // null for unlimited
             $table->unsignedInteger('remaining_value')->nullable(); // null for unlimited
             $table->timestamp('expires_at');

@@ -69,6 +69,14 @@ class User extends Authenticatable implements FilamentUser
         return $this->sgdGroups()->where('sgd_group_id', $sgdGroupId)->exists();
     }
 
+    /**
+     * Get the tickets owned by the user.
+     */
+    public function userTickets()
+    {
+        return $this->hasMany(\App\Models\UserTicket::class, 'user_id');
+    }
+
      public function canAccessPanel(\Filament\Panel $panel): bool
     {
         return $this->is_admin;
