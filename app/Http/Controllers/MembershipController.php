@@ -58,7 +58,7 @@ class MembershipController extends Controller
         $tickets = MembershipTicket::where('membership_id', $membership->id)->get();
         foreach ($tickets as $ticket) {
             $isUnlimited = $ticket->limit_type === 'unlimited';
-            $value = $isUnlimited ? null : ($ticket->limit_value ?? 0);
+            $value = $isUnlimited ? null : $ticket->limit_value;
             UserTicket::create([
                 'user_id' => $user->id,
                 'ticket_type' => $ticket->ticket_type,

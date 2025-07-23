@@ -65,7 +65,9 @@ Route::middleware('auth')->group(function () {
 
     Route::get('missions-of-the-day', function () {
         return view('missions');
-    })->name('missions.index');
+    })
+        ->middleware(\App\Http\Middleware\TicketGateMiddleware::class . ':missions')
+        ->name('missions.index');
 
     Route::get('/membership', [\App\Http\Controllers\MembershipController::class, 'index'])->name('membership.index');
     Route::post('/membership/buy/{id}', [\App\Http\Controllers\MembershipController::class, 'buy'])->name('membership.buy');

@@ -88,8 +88,8 @@
             @endphp
             @foreach ($tickets as $ticket)
               @php
-                $isUnlimited = $ticket['limit_type'] === 'unlimited';
-                $value = $isUnlimited ? 'Unlimited' : ($ticket['remaining_value'] ?? 0);
+                $isUnlimited = $ticket['remaining_value'] === null;
+                $value = $isUnlimited ? 'Unlimited' : $ticket['remaining_value'];
               @endphp
               <div class="cinema-ticket">
                 <div class="cinema-ticket-content">

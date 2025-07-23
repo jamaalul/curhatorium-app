@@ -66,15 +66,13 @@ class TicketGateMiddleware
             }
         }
 
-        // Count/day: sum all valid tickets
-        if (in_array($ticket->limit_type, ['count', 'day'])) {
+        // Count: normal logic
+        if ($ticket->limit_type === 'count') {
             $total_remaining = $tickets->sum('remaining_value');
             if ($total_remaining <= 0) {
                 return redirect()->back()->with('error', 'Tiket Anda sudah habis untuk fitur ini.');
             }
-            // Accept GET with redeem=1 or POST for consumption
             if (($request->isMethod('get') && $request->input('redeem') == '1') || $request->isMethod('post')) {
-                // Decrement from the ticket with the earliest expiration
                 foreach ($tickets as $t) {
                     if ($t->remaining_value > 0) {
                         $t->remaining_value -= 1;
@@ -82,16 +80,51 @@ class TicketGateMiddleware
                         break;
                     }
                 }
-                // Recalculate after decrement
                 $total_remaining = $tickets->sum('remaining_value');
                 if ($total_remaining < 0) {
                     return redirect()->back()->with('error', 'Tiket Anda sudah habis untuk fitur ini.');
                 }
                 return $next($request);
             } else {
-                // Show modal for count/day, pass total_remaining
                 return response()->view('components.ticket-gate-modal', [
-                    'ticket' => $ticket, // for info
+                    'ticket' => $ticket,
+                    'ticketType' => $ticketType,
+                    'total_remaining' => $total_remaining,
+                ]);
+            }
+        }
+
+        // Day-based: only decrement once per day
+        if ($ticket->limit_type === 'day') {
+            $total_remaining = $tickets->sum('remaining_value');
+            if ($total_remaining <= 0) {
+                return redirect()->back()->with('error', 'Tiket Anda sudah habis untuk fitur ini.');
+            }
+            $sessionKey = 'ticket_day_'.$ticketType.'_'.($user->id);
+            $today = Carbon::now()->toDateString();
+            $lastAccess = session($sessionKey);
+            if ($lastAccess === $today) {
+                // Already accessed today, do not decrement
+                return $next($request);
+            }
+            // Not accessed today, show modal
+            if (($request->isMethod('get') && $request->input('redeem') == '1') || $request->isMethod('post')) {
+                foreach ($tickets as $t) {
+                    if ($t->remaining_value > 0) {
+                        $t->remaining_value -= 1;
+                        $t->save();
+                        break;
+                    }
+                }
+                session([$sessionKey => $today]);
+                $total_remaining = $tickets->sum('remaining_value');
+                if ($total_remaining < 0) {
+                    return redirect()->back()->with('error', 'Tiket Anda sudah habis untuk fitur ini.');
+                }
+                return $next($request);
+            } else {
+                return response()->view('components.ticket-gate-modal', [
+                    'ticket' => $ticket,
                     'ticketType' => $ticketType,
                     'total_remaining' => $total_remaining,
                 ]);
