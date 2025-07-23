@@ -141,11 +141,6 @@ class SgdGroupResource extends Resource
         ];
     }
 
-    public static function getNavigationGroup(): ?string
-    {
-        return 'Support Groups';
-    }
-
     public static function canCreate(): bool
     {
         return Auth::user()->is_admin ?? false;

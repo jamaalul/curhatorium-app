@@ -242,12 +242,17 @@
                         <div class="availability">
                             <p class="availability-title">Availability:</p>
                             <div class="availability-status">
-                                <span class="status-indicator ${professional.availability}"></span>
-                                ${professional.availabilityText}
+                                <div style="display: flex; align-items: center; gap: 0.5em;">
+                                    <span class="status-indicator ${professional.status}"></span>
+                                    <span class="status-label">${professional.status.charAt(0).toUpperCase() + professional.status.slice(1)}</span>
+                                </div>
+                                <div class="availability-text" style="font-size:1em;color:var(--text-tertiary);">
+                                    ${professional.statusText}
+                                </div>
                             </div>
                         </div>
                         <div class="consultation-actions">
-                            <button class="action-button video" onclick="startConsultation(${professional.id}, 'reserve')" ${professional.availability !== 'online' ? 'disabled' : ''}>
+                            <button class="action-button video" onclick="startConsultation(${professional.id}, 'reserve')" ${professional.status !== 'online' ? 'disabled' : ''}>
                                 Pesan
                             </button>
                         </div>
@@ -262,7 +267,7 @@
             if (!professional) {
                 return;
             }
-            if (professional.availability !== 'online') {
+            if (professional.status !== 'online') {
                 return;
             }
             // Add type info for modal logic
@@ -285,7 +290,7 @@
             }
 
             if (availabilityFilter) {
-                filtered = filtered.filter(p => p.availability === availabilityFilter);
+                filtered = filtered.filter(p => p.status === availabilityFilter);
             }
 
             if (ratingFilter) {
@@ -386,7 +391,7 @@
     // Patch startConsultation to open modal
     function startConsultation(professionalId, reserveType) {
         const professional = allProfessionals.find(p => p.id === professionalId);
-        if (!professional || professional.availability !== 'online') return;
+        if (!professional || professional.status !== 'online') return;
         professional.type = currentProfessionalType;
         openCheckoutModal(professional);
     }

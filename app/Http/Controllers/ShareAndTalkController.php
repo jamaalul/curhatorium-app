@@ -23,7 +23,20 @@ class ShareAndTalkController extends Controller
         if ($type) {
             $query->where('type', $type);
         }
-        return response()->json($query->get());
+        $professionals = $query->get()->map(function ($professional) {
+            return [
+                'id' => $professional->id,
+                'name' => $professional->name,
+                'title' => $professional->title,
+                'avatar' => $professional->avatar,
+                'specialties' => $professional->specialties,
+                'type' => $professional->type,
+                'rating' => $professional->rating,
+                'status' => $professional->availability,
+                'statusText' => $professional->availabilityText,
+            ];
+        });
+        return response()->json($professionals);
     }
 
     public function chatConsultation($professionalId) {
@@ -36,8 +49,8 @@ class ShareAndTalkController extends Controller
             'session_id' => $session_id,
             'user_id' => $user->id,
             'professional_id' => $professional->id,
-            'start' => now(),
-            'end' => now()->addMinutes(65),
+            'start' => now('Asia/Jakarta'),
+            'end' => now('Asia/Jakarta')->addMinutes(65),
         ]);
 
         $interval = now()->diffInMinutes($session->end);
