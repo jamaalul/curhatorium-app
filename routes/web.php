@@ -82,7 +82,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/quote/today', [QuoteController::class, 'quoteOfTheDay']);
 
     Route::get('/support-group-discussion/get', [SgdController::class, 'getGroups'])->name('group.get');
-    Route::post('/support-group-discussion/join', [SgdController::class, 'joinGroup'])->name('group.join');
+    Route::match(['GET', 'POST'], '/support-group-discussion/join', [SgdController::class, 'joinGroup'])
+        ->middleware(\App\Http\Middleware\TicketGateMiddleware::class . ':support_group')
+        ->name('group.join');
     // Route::get('/support-group-discussion/join/{id}', [SgdController::class, 'groupMeet'])->name('group.meet');
     Route::post('/support-group-discussion/enter-meeting', [SgdController::class, 'enterMeetingRoom'])->name('group.enter-meeting');
     Route::post('/support-group-discussion/leave', [SgdController::class, 'leaveGroup'])->name('group.leave');

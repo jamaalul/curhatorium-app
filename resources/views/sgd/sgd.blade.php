@@ -133,8 +133,7 @@
                                                         Group Full (5/5)
                                                     </button>
                                                 @else
-                                                    <form action="{{ route('group.join') }}" method="POST" style="display: inline;">
-                                                        @csrf
+                                                    <form action="{{ route('group.join') }}" method="GET" style="display: inline;">
                                                         <input type="hidden" name="group_id" value="{{ $group->id }}">
                                                         <button type="submit" class="join-button">
                                                             Join Group <span>➔</span>
