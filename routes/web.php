@@ -36,7 +36,9 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/share-and-talk', [ShareAndTalkController::class, 'index'])->name('share-and-talk');
     Route::get('/share-and-talk/professionals', [ShareAndTalkController::class, 'getProfessionals']);
-    Route::get('/share-and-talk/chat/{professionalId}', [ShareAndTalkController::class, 'chatConsultation'])->name('share-and-talk.chat');
+    Route::get('/share-and-talk/chat/{professionalId}', [ShareAndTalkController::class, 'chatConsultation'])
+        ->middleware(\App\Http\Middleware\ShareAndTalkTicketGateMiddleware::class)
+        ->name('share-and-talk.chat');
     Route::post('/share-and-talk/chat/user-send', [ShareAndTalkController::class, 'userSend'])->name('share-and-talk.userSend');
 
     Route::get('/mental-support-chatbot', [ChatbotController::class, 'index'])
