@@ -31,7 +31,8 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/support-group-discussion', [SgdController::class, 'show'])->name('sgd');
 
-    Route::get('/deep-cards', [CardController::class, 'index']);
+    Route::get('/deep-cards', [CardController::class, 'index'])
+        ->middleware(\App\Http\Middleware\TicketGateMiddleware::class . ':deep_cards');
 
     Route::get('/share-and-talk', [ShareAndTalkController::class, 'index'])->name('share-and-talk');
     Route::get('/share-and-talk/professionals', [ShareAndTalkController::class, 'getProfessionals']);

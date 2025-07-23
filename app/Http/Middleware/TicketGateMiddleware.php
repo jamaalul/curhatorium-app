@@ -72,7 +72,8 @@ class TicketGateMiddleware
             if ($total_remaining <= 0) {
                 return redirect()->back()->with('error', 'Tiket Anda sudah habis untuk fitur ini.');
             }
-            if ($request->isMethod('post')) {
+            // Accept GET with redeem=1 or POST for consumption
+            if (($request->isMethod('get') && $request->input('redeem') == '1') || $request->isMethod('post')) {
                 // Decrement from the ticket with the earliest expiration
                 foreach ($tickets as $t) {
                     if ($t->remaining_value > 0) {

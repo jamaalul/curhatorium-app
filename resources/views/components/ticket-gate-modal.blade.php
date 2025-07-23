@@ -3,6 +3,7 @@
     $isCount = $ticket->limit_type === 'count';
     $isDay = $ticket->limit_type === 'day';
     $showTotal = ($isCount || $isDay) && isset($total_remaining);
+    $isSupportGroupJoin = request()->routeIs('group.join');
 @endphp
 
 <link rel="stylesheet" href="{{ asset('css/components/ticket-gate-modal.css') }}">
@@ -32,11 +33,19 @@
                 <button type="submit" class="modal-btn">Gunakan</button>
             </form>
         @elseif($isCount || $isDay)
-            <form method="POST" action="">
-                @csrf
-                <p style="margin-bottom:1rem;">Anda akan menggunakan 1 tiket untuk fitur ini.<br>Sisa tiket setelah ini: <strong>{{ $showTotal ? $total_remaining - 1 : $ticket->remaining_value - 1 }}</strong></p>
-                <button type="submit" class="modal-btn">Lanjutkan</button>
-            </form>
+            @if($isSupportGroupJoin)
+                <form method="POST" action="">
+                    @csrf
+                    <p style="margin-bottom:1rem;">Anda akan menggunakan 1 tiket untuk fitur ini.<br>Sisa tiket setelah ini: <strong>{{ $showTotal ? $total_remaining - 1 : $ticket->remaining_value - 1 }}</strong></p>
+                    <button type="submit" class="modal-btn">Lanjutkan</button>
+                </form>
+            @else
+                <form method="GET" action="">
+                    <input type="hidden" name="redeem" value="1">
+                    <p style="margin-bottom:1rem;">Anda akan menggunakan 1 tiket untuk fitur ini.<br>Sisa tiket setelah ini: <strong>{{ $showTotal ? $total_remaining - 1 : $ticket->remaining_value - 1 }}</strong></p>
+                    <button type="submit" class="modal-btn">Lanjutkan</button>
+                </form>
+            @endif
         @endif
         <form method="GET" action="/dashboard" style="margin-top:1rem;">
             <button type="submit" class="modal-btn cancel">Batal</button>
