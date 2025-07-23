@@ -16,86 +16,102 @@ class TicketGateMiddleware
             return redirect()->route('login');
         }
 
-        // Fetch all valid tickets for this feature
-        $tickets = $user->userTickets()
+        $allTickets = $user->userTickets()
             ->where('ticket_type', $ticketType)
             ->where('expires_at', '>', Carbon::now())
-            ->whereIn('limit_type', ['count', 'day'])
-            ->where('remaining_value', '>', 0)
-            ->orderBy('expires_at')
             ->get();
 
-        // For unlimited/hour, fallback to old logic
-        $ticket = $user->userTickets()
-            ->where('ticket_type', $ticketType)
-            ->where('expires_at', '>', Carbon::now())
-            ->orderByDesc('remaining_value')
-            ->first();
-
-        if (!$ticket) {
-            return redirect()->back()->with('error', 'Anda tidak memiliki tiket yang valid untuk fitur ini.');
+        if ($allTickets->isEmpty()) {
+            return redirect()->back()->withErrors(['msg' => 'Anda tidak memiliki tiket yang valid untuk fitur ini.']);
         }
 
-        // Unlimited: always allow
-        if ($ticket->limit_type === 'unlimited') {
+        // If any ticket is unlimited, always allow
+        if ($allTickets->contains(function ($t) { return $t->limit_type === 'unlimited'; })) {
+            return $next($request);
+        }
+        // If any day-based ticket has remaining_value=null, treat as unlimited
+        if ($allTickets->contains(function ($t) { return $t->limit_type === 'day' && is_null($t->remaining_value); })) {
             return $next($request);
         }
 
-        // Hour-based: show modal or consume
-        if ($ticket->limit_type === 'hour') {
+        // Hour-based: only consider hour tickets
+        $hourTicket = $user->userTickets()
+            ->where('ticket_type', $ticketType)
+            ->where('expires_at', '>', Carbon::now())
+            ->where('limit_type', 'hour')
+            ->where('remaining_value', '>', 0)
+            ->orderByDesc('remaining_value')
+            ->first();
+        if ($hourTicket) {
             if (($request->isMethod('get') && $request->has('consume_amount')) || ($request->isMethod('post') && $request->has('consume_amount'))) {
-                $consume = floatval($request->input('consume_amount'));
-                if ($consume <= 0 || $consume > $ticket->remaining_value) {
-                    return redirect()->back()->with('error', 'Jumlah waktu tidak valid atau melebihi sisa waktu.');
+                // Convert minutes to decimal hours
+                $minutes = intval($request->input('consume_amount'));
+                $consume = $minutes / 60.0;
+                if ($consume <= 0 || $consume > $hourTicket->remaining_value) {
+                    return redirect()->back()->withErrors(['msg' => 'Jumlah waktu tidak valid atau melebihi sisa waktu.']);
                 }
-                $ticket->remaining_value -= $consume;
-                $ticket->save();
-                if ($ticket->remaining_value <= 0) {
-                    return redirect()->back()->with('error', 'Tiket Anda sudah habis untuk fitur ini.');
+                $hourTicket->remaining_value -= $consume;
+                $hourTicket->save();
+                if ($hourTicket->remaining_value <= 0) {
+                    return redirect()->back()->withErrors(['msg' => 'Tiket Anda sudah habis untuk fitur ini.']);
                 }
                 return $next($request);
             } else {
                 // Show modal for hour-based
                 return response()->view('components.ticket-gate-modal', [
-                    'ticket' => $ticket,
+                    'ticket' => $hourTicket,
                     'ticketType' => $ticketType,
                 ]);
             }
         }
 
-        // Count: normal logic
-        if ($ticket->limit_type === 'count') {
-            $total_remaining = $tickets->sum('remaining_value');
+        // Count-based: only consider count tickets
+        $countTickets = $user->userTickets()
+            ->where('ticket_type', $ticketType)
+            ->where('expires_at', '>', Carbon::now())
+            ->where('limit_type', 'count')
+            ->where('remaining_value', '>', 0)
+            ->orderBy('expires_at')
+            ->get();
+        if ($countTickets->isNotEmpty()) {
+            $total_remaining = $countTickets->sum('remaining_value');
             if ($total_remaining <= 0) {
-                return redirect()->back()->with('error', 'Tiket Anda sudah habis untuk fitur ini.');
+                return redirect()->back()->withErrors(['msg' => 'Tiket Anda sudah habis untuk fitur ini.']);
             }
             if (($request->isMethod('get') && $request->input('redeem') == '1') || $request->isMethod('post')) {
-                foreach ($tickets as $t) {
+                foreach ($countTickets as $t) {
                     if ($t->remaining_value > 0) {
                         $t->remaining_value -= 1;
                         $t->save();
                         break;
                     }
                 }
-                $total_remaining = $tickets->sum('remaining_value');
+                $total_remaining = $countTickets->sum('remaining_value');
                 if ($total_remaining < 0) {
-                    return redirect()->back()->with('error', 'Tiket Anda sudah habis untuk fitur ini.');
+                    return redirect()->back()->withErrors(['msg' => 'Tiket Anda sudah habis untuk fitur ini.']);
                 }
                 return $next($request);
             } else {
                 return response()->view('components.ticket-gate-modal', [
-                    'ticket' => $ticket,
+                    'ticket' => $countTickets->first(),
                     'ticketType' => $ticketType,
                     'total_remaining' => $total_remaining,
                 ]);
             }
         }
 
-        // Day-based: only decrement once per day
-        if ($ticket->limit_type === 'day') {
-            $total_remaining = $tickets->sum('remaining_value');
+        // Day-based: only consider day tickets
+        $dayTickets = $user->userTickets()
+            ->where('ticket_type', $ticketType)
+            ->where('expires_at', '>', Carbon::now())
+            ->where('limit_type', 'day')
+            ->where('remaining_value', '>', 0)
+            ->orderBy('expires_at')
+            ->get();
+        if ($dayTickets->isNotEmpty()) {
+            $total_remaining = $dayTickets->sum('remaining_value');
             if ($total_remaining <= 0) {
-                return redirect()->back()->with('error', 'Tiket Anda sudah habis untuk fitur ini.');
+                return redirect()->back()->withErrors(['msg' => 'Tiket Anda sudah habis untuk fitur ini.']);
             }
             $sessionKey = 'ticket_day_'.$ticketType.'_'.($user->id);
             $today = Carbon::now()->toDateString();
@@ -106,7 +122,7 @@ class TicketGateMiddleware
             }
             // Not accessed today, show modal
             if (($request->isMethod('get') && $request->input('redeem') == '1') || $request->isMethod('post')) {
-                foreach ($tickets as $t) {
+                foreach ($dayTickets as $t) {
                     if ($t->remaining_value > 0) {
                         $t->remaining_value -= 1;
                         $t->save();
@@ -114,14 +130,14 @@ class TicketGateMiddleware
                     }
                 }
                 session([$sessionKey => $today]);
-                $total_remaining = $tickets->sum('remaining_value');
+                $total_remaining = $dayTickets->sum('remaining_value');
                 if ($total_remaining < 0) {
-                    return redirect()->back()->with('error', 'Tiket Anda sudah habis untuk fitur ini.');
+                    return redirect()->back()->withErrors(['msg' => 'Tiket Anda sudah habis untuk fitur ini.']);
                 }
                 return $next($request);
             } else {
                 return response()->view('components.ticket-gate-modal', [
-                    'ticket' => $ticket,
+                    'ticket' => $dayTickets->first(),
                     'ticketType' => $ticketType,
                     'total_remaining' => $total_remaining,
                 ]);
@@ -129,6 +145,6 @@ class TicketGateMiddleware
         }
 
         // Unknown type
-        return redirect()->back()->with('error', 'Tipe tiket tidak dikenali.');
+        return redirect()->back()->withErrors(['msg' => 'Tipe tiket tidak dikenali.']);
     }
 } 

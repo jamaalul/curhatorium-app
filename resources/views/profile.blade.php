@@ -98,7 +98,7 @@
                     @if($isUnlimited)
                       Unlimited
                     @elseif($ticket['limit_type'] === 'hour')
-                      {{ $value }} Jam
+                      {{ is_numeric($value) ? number_format($value, 2, '.', '') : $value }} Jam
                     @elseif($ticket['limit_type'] === 'day')
                       {{ $value }} Hari
                     @else

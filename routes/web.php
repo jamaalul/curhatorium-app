@@ -50,7 +50,9 @@ Route::middleware('auth')->group(function () {
     Route::delete('/api/chatbot/session/{sessionId}', [ChatbotController::class, 'deleteSession'])->name('chatbot.delete-session');
     Route::post('/api/chatbot', [ChatbotController::class, 'chat'])->name('chatbot.api');
 
-    Route::get('/tracker', [TrackerController::class,'index'])->name('tracker.index');
+    Route::get('/tracker', [TrackerController::class,'index'])
+        ->middleware(\App\Http\Middleware\TicketGateMiddleware::class . ':tracker')
+        ->name('tracker.index');
     Route::post('tracker/track', [TrackerController::class,'track'])->name('tracker.entry');
     Route::get('/tracker/result', [TrackerController::class, 'result'])->name('tracker.result');
     Route::get('/tracker/history', [TrackerController::class,'history'])->name('tracker.history');

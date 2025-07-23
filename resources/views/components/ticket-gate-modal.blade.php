@@ -29,15 +29,15 @@
         @if($isHour)
             @if($isChatbot)
                 <form method="GET" action="">
-                    <label for="consume_amount" style="font-size:1em;">Masukkan waktu yang ingin digunakan (jam, bisa desimal):</label>
-                    <input type="number" step="0.01" min="0.01" max="{{ $ticket->remaining_value }}" name="consume_amount" id="consume_amount" required class="form-control" style="margin-bottom:1rem;">
+                    <label for="consume_amount" style="font-size:1em;">Masukkan waktu yang ingin digunakan (menit):</label>
+                    <input type="number" step="1" min="1" max="{{ intval($ticket->remaining_value * 60) }}" name="consume_amount" id="consume_amount" required class="form-control" style="margin-bottom:1rem;">
                     <button type="submit" class="modal-btn">Gunakan</button>
                 </form>
             @else
                 <form method="POST" action="">
                     @csrf
-                    <label for="consume_amount" style="font-size:1em;">Masukkan waktu yang ingin digunakan (jam, bisa desimal):</label>
-                    <input type="number" step="0.01" min="0.01" max="{{ $ticket->remaining_value }}" name="consume_amount" id="consume_amount" required class="form-control" style="margin-bottom:1rem;">
+                    <label for="consume_amount" style="font-size:1em;">Masukkan waktu yang ingin digunakan (menit):</label>
+                    <input type="number" step="1" min="1" max="{{ intval($ticket->remaining_value * 60) }}" name="consume_amount" id="consume_amount" required class="form-control" style="margin-bottom:1rem;">
                     <button type="submit" class="modal-btn">Gunakan</button>
                 </form>
             @endif
