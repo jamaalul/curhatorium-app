@@ -4,6 +4,7 @@
     $isDay = $ticket->limit_type === 'day';
     $showTotal = ($isCount || $isDay) && isset($total_remaining);
     $isSupportGroupJoin = request()->routeIs('group.join');
+    $isChatbot = request()->routeIs('chatbot');
 @endphp
 
 <link rel="stylesheet" href="{{ asset('css/components/ticket-gate-modal.css') }}">
@@ -26,12 +27,20 @@
             <p style="font-size:1.1em;margin-bottom:6px;">Expired: <strong>{{ \Carbon\Carbon::parse($ticket->expires_at)->format('d M Y H:i') }}</strong></p>
         </div>
         @if($isHour)
-            <form method="POST" action="">
-                @csrf
-                <label for="consume_amount" style="font-size:1em;">Masukkan waktu yang ingin digunakan (jam, bisa desimal):</label>
-                <input type="number" step="0.01" min="0.01" max="{{ $ticket->remaining_value }}" name="consume_amount" id="consume_amount" required class="form-control" style="margin-bottom:1rem;">
-                <button type="submit" class="modal-btn">Gunakan</button>
-            </form>
+            @if($isChatbot)
+                <form method="GET" action="">
+                    <label for="consume_amount" style="font-size:1em;">Masukkan waktu yang ingin digunakan (jam, bisa desimal):</label>
+                    <input type="number" step="0.01" min="0.01" max="{{ $ticket->remaining_value }}" name="consume_amount" id="consume_amount" required class="form-control" style="margin-bottom:1rem;">
+                    <button type="submit" class="modal-btn">Gunakan</button>
+                </form>
+            @else
+                <form method="POST" action="">
+                    @csrf
+                    <label for="consume_amount" style="font-size:1em;">Masukkan waktu yang ingin digunakan (jam, bisa desimal):</label>
+                    <input type="number" step="0.01" min="0.01" max="{{ $ticket->remaining_value }}" name="consume_amount" id="consume_amount" required class="form-control" style="margin-bottom:1rem;">
+                    <button type="submit" class="modal-btn">Gunakan</button>
+                </form>
+            @endif
         @elseif($isCount || $isDay)
             @if($isSupportGroupJoin)
                 <form method="POST" action="">

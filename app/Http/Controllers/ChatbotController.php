@@ -11,12 +11,15 @@ use App\Models\ChatbotMessage;
 
 class ChatbotController extends Controller
 {
-    public function index() {
-        $sessions = ChatbotSession::where('user_id', Auth::id())
+    public function index(Request $request) {
+        $sessions = \App\Models\ChatbotSession::where('user_id', \Auth::id())
             ->orderBy('updated_at', 'desc')
             ->get();
-        
-        return view('chatbot', compact('sessions'));
+        $chatbotSecondsLeft = null;
+        if ($request->has('consume_amount')) {
+            $chatbotSecondsLeft = intval(floatval($request->input('consume_amount')) * 3600);
+        }
+        return view('chatbot', compact('sessions', 'chatbotSecondsLeft'));
     }
 
     public function getSessions() {

@@ -43,10 +43,7 @@ class TicketGateMiddleware
 
         // Hour-based: show modal or consume
         if ($ticket->limit_type === 'hour') {
-            if ($ticket->remaining_value === null || $ticket->remaining_value <= 0) {
-                return redirect()->back()->with('error', 'Tiket Anda sudah habis untuk fitur ini.');
-            }
-            if ($request->isMethod('post') && $request->has('consume_amount')) {
+            if (($request->isMethod('get') && $request->has('consume_amount')) || ($request->isMethod('post') && $request->has('consume_amount'))) {
                 $consume = floatval($request->input('consume_amount'));
                 if ($consume <= 0 || $consume > $ticket->remaining_value) {
                     return redirect()->back()->with('error', 'Jumlah waktu tidak valid atau melebihi sisa waktu.');
