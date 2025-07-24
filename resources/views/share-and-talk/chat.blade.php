@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="{{ asset('css/share-and-talk/chat.css') }}">
 </head>
 <body>
-  <div class="app" data-session-end="{{ now()->addMinutes($interval)->toIso8601String() }}">
+  <div class="app" data-session-end="{{ now()->addMinutes($interval)->toIso8601String() }}" data-session-id="{{ $session_id }}">
     <!-- Sidebar -->
     <div class="sidebar">
       <h2>Psikolog</h2>
@@ -23,6 +23,9 @@
         <div id="session-timer" style="font-size: 0.9rem; color: var(--text-muted);">
           Sisa waktu: 60:00
         </div>
+      </div>
+      <div id="cancel-warning" style="font-size:0.95em;color:#b97c00;margin-bottom:0.5em;display:none;">
+        Sesi akan dibatalkan otomatis jika fasilitator tidak merespons dalam 5 menit. Jangan khawatir, tiketmu akan dikembalikan.
       </div>
 
       <div class="chat-body" id="chat-body">
@@ -46,11 +49,24 @@
     const chatBody = document.getElementById('chat-body');
     const sessionEnd = new Date(document.querySelector('.app').dataset.sessionEnd);
     const timerEl = document.getElementById('session-timer');
+    const sessionId = document.querySelector('.app').dataset.sessionId;
+    let sessionStatus = 'waiting';
+    let timerInterval = null;
+
+    async function fetchSessionStatus() {
+      try {
+        const res = await fetch(`/api/share-and-talk/session-status/${sessionId}`);
+        if (!res.ok) return 'waiting';
+        const data = await res.json();
+        return data.status;
+      } catch {
+        return 'waiting';
+      }
+    }
 
     function updateTimer() {
       const now = new Date();
       const diff = sessionEnd - now;
-
       if (diff <= 0) {
         input.disabled = true;
         btn.disabled = true;
@@ -63,8 +79,36 @@
       }
     }
 
-    setInterval(updateTimer, 1000);
-    updateTimer();
+    async function pollStatusAndControlUI() {
+      sessionStatus = await fetchSessionStatus();
+      const warning = document.getElementById('cancel-warning');
+      if (sessionStatus === 'waiting') {
+        input.disabled = true;
+        btn.disabled = true;
+        timerEl.innerText = 'Menunggu fasilitator';
+        timerEl.style.color = 'orange';
+        if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+        warning.style.display = '';
+      } else if (sessionStatus === 'active') {
+        input.disabled = false;
+        btn.disabled = false;
+        if (!timerInterval) {
+          updateTimer();
+          timerInterval = setInterval(updateTimer, 1000);
+        }
+        warning.style.display = 'none';
+      } else if (sessionStatus === 'cancelled') {
+        input.disabled = true;
+        btn.disabled = true;
+        timerEl.innerText = 'Sesi dibatalkan';
+        timerEl.style.color = 'red';
+        if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+        warning.style.display = 'none';
+      }
+    }
+
+    setInterval(pollStatusAndControlUI, 2000);
+    pollStatusAndControlUI();
 
     // Remove sendMessage function
     // function sendMessage(e) {

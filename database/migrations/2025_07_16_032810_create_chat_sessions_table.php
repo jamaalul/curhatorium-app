@@ -18,6 +18,7 @@ return new class extends Migration
             $table->foreignId('professional_id')->constrained('professionals')->onDelete('cascade');
             $table->dateTime('start');
             $table->dateTime('end');
+            $table->string('status')->default('waiting'); // Add status column here
             $table->timestamps();
         });
     }
