@@ -17,8 +17,23 @@ class ChatbotController extends Controller
             ->get();
         $chatbotSecondsLeft = null;
         if ($request->has('consume_amount')) {
-            // Fix: treat consume_amount as minutes, convert to seconds for timer
-            $chatbotSecondsLeft = intval(floatval($request->input('consume_amount')) * 60);
+            // Set end time in session (per user) when redeeming/starting
+            $minutes = floatval($request->input('consume_amount'));
+            $endTime = now()->addMinutes($minutes)->timestamp;
+            session(['chatbot_end_time' => $endTime]);
+            // Redirect to chatbot page without consume_amount to prevent timer reset
+            return redirect()->route('chatbot');
+        }
+        // Always check remaining seconds from session
+        $endTime = session('chatbot_end_time');
+        if ($endTime) {
+            $remaining = $endTime - now()->timestamp;
+            if ($remaining > 0) {
+                $chatbotSecondsLeft = $remaining;
+            } else {
+                $chatbotSecondsLeft = 0;
+                session()->forget('chatbot_end_time');
+            }
         }
         return view('chatbot', compact('sessions', 'chatbotSecondsLeft'));
     }

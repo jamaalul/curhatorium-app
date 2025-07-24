@@ -42,6 +42,13 @@ class TicketGateMiddleware
             ->where('remaining_value', '>', 0)
             ->orderByDesc('remaining_value')
             ->first();
+        // Allow access if user has a valid timer in session (for mentai_chatbot)
+        if ($ticketType === 'mentai_chatbot') {
+            $endTime = session('chatbot_end_time');
+            if ($endTime && $endTime > Carbon::now()->timestamp) {
+                return $next($request);
+            }
+        }
         if ($hourTicket) {
             if (($request->isMethod('get') && $request->has('consume_amount')) || ($request->isMethod('post') && $request->has('consume_amount'))) {
                 // Convert minutes to decimal hours
