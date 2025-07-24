@@ -13,9 +13,9 @@
     --bg-secondary: #f3f4f6;
     --bg-tertiary: #e5e7eb;
     --white: #ffffff;
-    --success: #10b981;
+    --success: #22c55e;
+    --warning: #f59e42;
     --error: #ef4444;
-    --warning: #f59e0b;
     --info: #3b82f6;
     --profile-bg: #222222;
     --border-radius-sm: 0.25rem;
@@ -392,9 +392,10 @@ h6 {
 
 .availability-status {
     display: flex;
-    align-items: center;
+    justify-content: center;
     gap: 0.5rem;
     font-size: 0.875rem;
+    flex-direction: column;
 }
 
 .status-indicator {

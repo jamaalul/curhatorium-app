@@ -82,14 +82,14 @@
                 'support_group' => 'Support Group Discussion',
                 'deep_cards' => 'Deep Cards',
                 'share_talk_ranger_chat' => 'Share & Talk (Ranger)',
-                'share_talk_psy_chat' => 'Share & Talk (Psychiatrist Chat)',
-                'share_talk_psy_video' => 'Share & Talk (Psychiatrist Video Call)',
+                'share_talk_psy_chat' => 'Share & Talk (Psikolog Chat)',
+                'share_talk_psy_video' => 'Share & Talk (Psikolog Video Call)',
               ];
             @endphp
             @foreach ($tickets as $ticket)
               @php
-                $isUnlimited = $ticket['limit_type'] === 'unlimited';
-                $value = $isUnlimited ? 'Unlimited' : ($ticket['remaining_value'] ?? 0);
+                $isUnlimited = $ticket['remaining_value'] === null;
+                $value = $isUnlimited ? 'Unlimited' : $ticket['remaining_value'];
               @endphp
               <div class="cinema-ticket">
                 <div class="cinema-ticket-content">
@@ -98,7 +98,7 @@
                     @if($isUnlimited)
                       Unlimited
                     @elseif($ticket['limit_type'] === 'hour')
-                      {{ $value }} Jam
+                      {{ is_numeric($value) ? number_format($value, 2, '.', '') : $value }} Jam
                     @elseif($ticket['limit_type'] === 'day')
                       {{ $value }} Hari
                     @else

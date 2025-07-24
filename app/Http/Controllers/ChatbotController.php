@@ -11,12 +11,31 @@ use App\Models\ChatbotMessage;
 
 class ChatbotController extends Controller
 {
-    public function index() {
-        $sessions = ChatbotSession::where('user_id', Auth::id())
+    public function index(Request $request) {
+        $sessions = \App\Models\ChatbotSession::where('user_id', \Auth::id())
             ->orderBy('updated_at', 'desc')
             ->get();
-        
-        return view('chatbot', compact('sessions'));
+        $chatbotSecondsLeft = null;
+        if ($request->has('consume_amount')) {
+            // Set end time in session (per user) when redeeming/starting
+            $minutes = floatval($request->input('consume_amount'));
+            $endTime = now()->addMinutes($minutes)->timestamp;
+            session(['chatbot_end_time' => $endTime]);
+            // Redirect to chatbot page without consume_amount to prevent timer reset
+            return redirect()->route('chatbot');
+        }
+        // Always check remaining seconds from session
+        $endTime = session('chatbot_end_time');
+        if ($endTime) {
+            $remaining = $endTime - now()->timestamp;
+            if ($remaining > 0) {
+                $chatbotSecondsLeft = $remaining;
+            } else {
+                $chatbotSecondsLeft = 0;
+                session()->forget('chatbot_end_time');
+            }
+        }
+        return view('chatbot', compact('sessions', 'chatbotSecondsLeft'));
     }
 
     public function getSessions() {

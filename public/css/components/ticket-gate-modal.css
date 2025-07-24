@@ -1,0 +1,75 @@
+body.ticket-modal-bg {
+    height: 100vh;
+    background-image: url("/images/background.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    margin: 0;
+    padding: 0;
+}
+
+.ticket-modal-center {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ticket-modal-box {
+    max-width: 350px;
+    width: 100%;
+    background: white;
+    padding: 30px 28px 24px 28px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+.ticket-modal-box h1 {
+    text-align: center;
+    font-weight: 900;
+    font-size: 2em;
+    color: #2b9c94;
+    margin-bottom: 18px;
+}
+.ticket-modal-box input[type="number"],
+.ticket-modal-box input[type="text"],
+.ticket-modal-box .form-control {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0 18px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1em;
+}
+.modal-btn {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    background-color: #2b9c94;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.1em;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+.modal-btn:hover {
+    background-color: #258a83;
+}
+.modal-btn.cancel {
+    background: #eee;
+    color: #2b9c94;
+    margin-top: 8px;
+}
+.modal-btn.cancel:hover {
+    background: #e0e0e0;
+}
+@media (max-width: 480px) {
+    .ticket-modal-box {
+        padding: 18px 8px 16px 8px;
+        max-width: 98vw;
+    }
+}

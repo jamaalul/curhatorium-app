@@ -23,7 +23,20 @@ class ShareAndTalkController extends Controller
         if ($type) {
             $query->where('type', $type);
         }
-        return response()->json($query->get());
+        $professionals = $query->get()->map(function ($professional) {
+            return [
+                'id' => $professional->id,
+                'name' => $professional->name,
+                'title' => $professional->title,
+                'avatar' => $professional->avatar,
+                'specialties' => $professional->specialties,
+                'type' => $professional->type,
+                'rating' => $professional->rating,
+                'status' => $professional->availability,
+                'statusText' => $professional->availabilityText,
+            ];
+        });
+        return response()->json($professionals);
     }
 
     public function chatConsultation($professionalId) {
@@ -36,9 +49,15 @@ class ShareAndTalkController extends Controller
             'session_id' => $session_id,
             'user_id' => $user->id,
             'professional_id' => $professional->id,
-            'start' => now(),
-            'end' => now()->addMinutes(65),
+            'start' => now('Asia/Jakarta'),
+            'end' => now('Asia/Jakarta')->addMinutes(65), // 65 minutes
+            'status' => 'waiting', // Set initial status
         ]);
+
+        // Set professional to busy for 5 minutes
+        $professional->availability = 'busy';
+        $professional->availabilityText = 'Sedang menunggu konfirmasi sesi (5 menit)';
+        $professional->save();
 
         $interval = now()->diffInMinutes($session->end);
 
@@ -60,6 +79,19 @@ class ShareAndTalkController extends Controller
     public function facilitatorChat($sessionId) {
         $session = ChatSession::where('session_id', $sessionId)->first();
         $user = User::where('id', $session->user_id)->first();
+
+        // If session is still waiting, activate it now
+        if ($session->status === 'waiting') {
+            $session->status = 'active';
+            $session->start = now('Asia/Jakarta');
+            $session->end = now('Asia/Jakarta')->addMinutes(65); // 65 minutes
+            $session->save();
+            // Set professional to busy for 65 minutes
+            $professional = $session->professional;
+            $professional->availability = 'busy';
+            $professional->availabilityText = 'Sedang dalam sesi (65 menit)';
+            $professional->save();
+        }
 
         $interval = now()->diffInMinutes($session->end);
 
@@ -123,5 +155,74 @@ class ShareAndTalkController extends Controller
     public function getMessages($sessionId) {
         $messages = Message::where('session_id', $sessionId)->orderBy('created_at', 'asc')->get();
         return response()->json($messages);
+    }
+
+    // API endpoint to get session status
+    public function getSessionStatus($sessionId) {
+        $session = ChatSession::where('session_id', $sessionId)->first();
+        if (!$session) {
+            return response()->json(['status' => 'not_found'], 404);
+        }
+        return response()->json(['status' => $session->status]);
+    }
+
+    // API endpoint to cancel a session by sessionId (for frontend timeout)
+    public function cancelSessionByUser($sessionId) {
+        $session = ChatSession::where('session_id', $sessionId)->first();
+        if (!$session || $session->status !== 'waiting') {
+            return response()->json(['status' => 'not_found_or_not_waiting'], 404);
+        }
+        $session->status = 'cancelled';
+        $session->save();
+        // Return ticket to user
+        $user = $session->user;
+        $type = $session->professional->type === 'psychiatrist' ? 'share_talk_psy_chat' : 'share_talk_ranger_chat';
+        $ticket = $user->userTickets()->where('ticket_type', $type)->where(function($q) {
+            $q->whereNull('limit_type')->orWhere('limit_type', '!=', 'unlimited');
+        })->orderByDesc('expires_at')->first();
+        if ($ticket && $ticket->remaining_value !== null) {
+            $ticket->remaining_value += 1;
+            $ticket->save();
+        }
+        // Set professional back to online
+        $professional = $session->professional;
+        $professional->availability = 'online';
+        $professional->availabilityText = 'Tersedia';
+        $professional->save();
+        return response()->json(['status' => 'cancelled']);
+    }
+
+    // Cancel sessions that are still 'waiting' after 5 minutes and return user's ticket
+    public function cancelExpiredWaitingSessions()
+    {
+        $expiredSessions = ChatSession::where('status', 'waiting')
+            ->where('start', '<', now('Asia/Jakarta')->subMinutes(5))
+            ->get();
+        foreach ($expiredSessions as $session) {
+            $session->status = 'cancelled';
+            $session->save();
+            // Return ticket to user
+            $user = $session->user;
+            $type = $session->professional->type === 'psychiatrist' ? 'share_talk_psy_chat' : 'share_talk_ranger_chat';
+            $ticket = $user->userTickets()->where('ticket_type', $type)->where(function($q) {
+                $q->whereNull('limit_type')->orWhere('limit_type', '!=', 'unlimited');
+            })->orderByDesc('expires_at')->first();
+            if ($ticket && $ticket->remaining_value !== null) {
+                $ticket->remaining_value += 1;
+                $ticket->save();
+            }
+        }
+    }
+
+    // API endpoint to set professional online (after session ends)
+    public function setProfessionalOnline($professionalId) {
+        $professional = Professional::find($professionalId);
+        if ($professional) {
+            $professional->availability = 'online';
+            $professional->availabilityText = 'Tersedia';
+            $professional->save();
+            return response()->json(['status' => 'online']);
+        }
+        return response()->json(['status' => 'not_found'], 404);
     }
 }

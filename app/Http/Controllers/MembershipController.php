@@ -27,6 +27,7 @@ class MembershipController extends Controller
 
         // Memberships that can be stacked
         $stackable = [
+            'Calm Starter',
             'Harmony',
             'Serenity',
             "Chat with Sanny's Aid",
@@ -57,12 +58,13 @@ class MembershipController extends Controller
         // Grant tickets
         $tickets = MembershipTicket::where('membership_id', $membership->id)->get();
         foreach ($tickets as $ticket) {
-            $isUnlimited = $ticket->limit_type === 'unlimited';
-            $value = $isUnlimited ? null : ($ticket->limit_value ?? 0);
+            // Treat as unlimited if limit_type is 'unlimited' OR limit_value is null
+            $isUnlimited = $ticket->limit_type === 'unlimited' || is_null($ticket->limit_value);
+            $value = $isUnlimited ? null : $ticket->limit_value;
             UserTicket::create([
                 'user_id' => $user->id,
                 'ticket_type' => $ticket->ticket_type,
-                'limit_type' => $ticket->limit_type,
+                'limit_type' => $isUnlimited ? 'unlimited' : $ticket->limit_type,
                 'limit_value' => $isUnlimited ? null : $value,
                 'remaining_value' => $isUnlimited ? null : $value,
                 'expires_at' => $expires ?? $now->copy()->addMonth(),

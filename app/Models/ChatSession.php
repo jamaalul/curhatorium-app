@@ -14,6 +14,7 @@ class ChatSession extends Model
         'professional_id',
         'start',
         'end',
+        'status', // Add status to fillable
     ];
 
     public function user()

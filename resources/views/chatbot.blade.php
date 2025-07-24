@@ -54,6 +54,30 @@
 
       <!-- Area Utama Chat -->
       <div class="chatbot-content">
+        @if(isset($chatbotSecondsLeft) && $chatbotSecondsLeft)
+        <div id="chatbot-timer" style="font-weight:bold;color:#2a7; margin-bottom:1rem;"></div>
+        <script>
+          let chatbotSecondsLeft = {{ $chatbotSecondsLeft }};
+          function updateChatbotTimer() {
+            if (chatbotSecondsLeft <= 0) {
+              document.getElementById('chatbot-timer').innerText = 'Waktu anda sudah habis';
+              document.getElementById('user-input').disabled = true;
+              document.getElementById('send-btn').disabled = true;
+              setTimeout(function() {
+                window.location.href = '/dashboard?error=Waktu+anda+sudah+habis';
+              }, 1500);
+              return;
+            }
+            let h = Math.floor(chatbotSecondsLeft / 3600);
+            let m = Math.floor((chatbotSecondsLeft % 3600) / 60);
+            let s = chatbotSecondsLeft % 60;
+            document.getElementById('chatbot-timer').innerText = `Sisa waktu: ${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+            chatbotSecondsLeft--;
+          }
+          updateChatbotTimer();
+          setInterval(updateChatbotTimer, 1000);
+        </script>
+        @endif
         <div class="chat-container">
           <div id="chat-messages" class="chat-messages"></div>
           <div id="loading" class="loading-indicator" style="display:none;">Sedang berpikir...</div>

@@ -31,21 +31,28 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/support-group-discussion', [SgdController::class, 'show'])->name('sgd');
 
-    Route::get('/deep-cards', [CardController::class, 'index']);
+    Route::get('/deep-cards', [CardController::class, 'index'])
+        ->middleware(\App\Http\Middleware\TicketGateMiddleware::class . ':deep_cards');
 
     Route::get('/share-and-talk', [ShareAndTalkController::class, 'index'])->name('share-and-talk');
     Route::get('/share-and-talk/professionals', [ShareAndTalkController::class, 'getProfessionals']);
-    Route::get('/share-and-talk/chat/{professionalId}', [ShareAndTalkController::class, 'chatConsultation'])->name('share-and-talk.chat');
+    Route::get('/share-and-talk/chat/{professionalId}', [ShareAndTalkController::class, 'chatConsultation'])
+        ->middleware(\App\Http\Middleware\ShareAndTalkTicketGateMiddleware::class)
+        ->name('share-and-talk.chat');
     Route::post('/share-and-talk/chat/user-send', [ShareAndTalkController::class, 'userSend'])->name('share-and-talk.userSend');
 
-    Route::get('/mental-support-chatbot', [ChatbotController::class, 'index'])->name('chatbot');
+    Route::get('/mental-support-chatbot', [ChatbotController::class, 'index'])
+        ->middleware(\App\Http\Middleware\TicketGateMiddleware::class . ':mentai_chatbot')
+        ->name('chatbot');
     Route::get('/api/chatbot/sessions', [ChatbotController::class, 'getSessions'])->name('chatbot.get-sessions');
     Route::post('/api/chatbot/session', [ChatbotController::class, 'createSession'])->name('chatbot.create-session');
     Route::get('/api/chatbot/session/{sessionId}', [ChatbotController::class, 'getSession'])->name('chatbot.get-session');
     Route::delete('/api/chatbot/session/{sessionId}', [ChatbotController::class, 'deleteSession'])->name('chatbot.delete-session');
     Route::post('/api/chatbot', [ChatbotController::class, 'chat'])->name('chatbot.api');
 
-    Route::get('/tracker', [TrackerController::class,'index'])->name('tracker.index');
+    Route::get('/tracker', [TrackerController::class,'index'])
+        ->middleware(\App\Http\Middleware\TicketGateMiddleware::class . ':tracker')
+        ->name('tracker.index');
     Route::post('tracker/track', [TrackerController::class,'track'])->name('tracker.entry');
     Route::get('/tracker/result', [TrackerController::class, 'result'])->name('tracker.result');
     Route::get('/tracker/history', [TrackerController::class,'history'])->name('tracker.history');
@@ -64,7 +71,9 @@ Route::middleware('auth')->group(function () {
 
     Route::get('missions-of-the-day', function () {
         return view('missions');
-    })->name('missions.index');
+    })
+        ->middleware(\App\Http\Middleware\TicketGateMiddleware::class . ':missions')
+        ->name('missions.index');
 
     Route::get('/membership', [\App\Http\Controllers\MembershipController::class, 'index'])->name('membership.index');
     Route::post('/membership/buy/{id}', [\App\Http\Controllers\MembershipController::class, 'buy'])->name('membership.buy');
@@ -82,7 +91,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/quote/today', [QuoteController::class, 'quoteOfTheDay']);
 
     Route::get('/support-group-discussion/get', [SgdController::class, 'getGroups'])->name('group.get');
-    Route::post('/support-group-discussion/join', [SgdController::class, 'joinGroup'])->name('group.join');
+    Route::match(['GET', 'POST'], '/support-group-discussion/join', [SgdController::class, 'joinGroup'])
+        ->middleware(\App\Http\Middleware\TicketGateMiddleware::class . ':support_group')
+        ->name('group.join');
     // Route::get('/support-group-discussion/join/{id}', [SgdController::class, 'groupMeet'])->name('group.meet');
     Route::post('/support-group-discussion/enter-meeting', [SgdController::class, 'enterMeetingRoom'])->name('group.enter-meeting');
     Route::post('/support-group-discussion/leave', [SgdController::class, 'leaveGroup'])->name('group.leave');
@@ -99,3 +110,6 @@ Route::middleware(['auth'])->group(function () {
 Route::get('/share-and-talk/facilitator/{sessionId}', [ShareAndTalkController::class, 'facilitatorChat'])->name('share-and-talk.facilitator');
 Route::post('/share-and-talk/chat/facilitator-send', [ShareAndTalkController::class, 'facilitatorSend'])->name('share-and-talk.facilitatorSend');
 Route::get('/api/share-and-talk/messages/{sessionId}', [ShareAndTalkController::class,'getMessages'])->name('share-and-talk.fetch');
+Route::get('/api/share-and-talk/session-status/{sessionId}', [\App\Http\Controllers\ShareAndTalkController::class, 'getSessionStatus']);
+Route::post('/api/share-and-talk/cancel-session/{sessionId}', [\App\Http\Controllers\ShareAndTalkController::class, 'cancelSessionByUser']);
+Route::post('/api/share-and-talk/professional-online/{professionalId}', [\App\Http\Controllers\ShareAndTalkController::class, 'setProfessionalOnline']);
