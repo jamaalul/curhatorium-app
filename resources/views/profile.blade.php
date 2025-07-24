@@ -82,8 +82,8 @@
                 'support_group' => 'Support Group Discussion',
                 'deep_cards' => 'Deep Cards',
                 'share_talk_ranger_chat' => 'Share & Talk (Ranger)',
-                'share_talk_psy_chat' => 'Share & Talk (Psychiatrist Chat)',
-                'share_talk_psy_video' => 'Share & Talk (Psychiatrist Video Call)',
+                'share_talk_psy_chat' => 'Share & Talk (Psikolog Chat)',
+                'share_talk_psy_video' => 'Share & Talk (Psikolog Video Call)',
               ];
             @endphp
             @foreach ($tickets as $ticket)

@@ -27,6 +27,7 @@ class MembershipController extends Controller
 
         // Memberships that can be stacked
         $stackable = [
+            'Calm Starter',
             'Harmony',
             'Serenity',
             "Chat with Sanny's Aid",
