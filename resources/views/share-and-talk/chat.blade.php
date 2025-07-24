@@ -81,11 +81,18 @@
         btn.disabled = true;
         timerEl.innerText = 'Sesi telah berakhir';
         timerEl.style.color = 'red';
+        setProfessionalOnline();
       } else {
         const mins = String(Math.floor(diff / 60000)).padStart(2, '0');
         const secs = String(Math.floor((diff % 60000) / 1000)).padStart(2, '0');
         timerEl.innerText = `Sisa waktu: ${mins}:${secs}`;
       }
+    }
+
+    async function setProfessionalOnline() {
+      try {
+        await fetch(`/api/share-and-talk/professional-online/${selectedProfessional ? selectedProfessional.id : ''}`, { method: 'POST', headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content') } });
+      } catch {}
     }
 
     function startWaitingCountdown() {

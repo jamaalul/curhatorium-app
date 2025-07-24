@@ -54,6 +54,11 @@ class ShareAndTalkController extends Controller
             'status' => 'waiting', // Set initial status
         ]);
 
+        // Set professional to busy for 5 minutes
+        $professional->availability = 'busy';
+        $professional->availabilityText = 'Sedang menunggu konfirmasi sesi (5 menit)';
+        $professional->save();
+
         $interval = now()->diffInMinutes($session->end);
 
         $response = Http::withHeaders([
@@ -81,6 +86,11 @@ class ShareAndTalkController extends Controller
             $session->start = now('Asia/Jakarta');
             $session->end = now('Asia/Jakarta')->addMinutes(65); // 65 minutes
             $session->save();
+            // Set professional to busy for 65 minutes
+            $professional = $session->professional;
+            $professional->availability = 'busy';
+            $professional->availabilityText = 'Sedang dalam sesi (65 menit)';
+            $professional->save();
         }
 
         $interval = now()->diffInMinutes($session->end);
@@ -174,6 +184,11 @@ class ShareAndTalkController extends Controller
             $ticket->remaining_value += 1;
             $ticket->save();
         }
+        // Set professional back to online
+        $professional = $session->professional;
+        $professional->availability = 'online';
+        $professional->availabilityText = 'Tersedia';
+        $professional->save();
         return response()->json(['status' => 'cancelled']);
     }
 
@@ -197,5 +212,17 @@ class ShareAndTalkController extends Controller
                 $ticket->save();
             }
         }
+    }
+
+    // API endpoint to set professional online (after session ends)
+    public function setProfessionalOnline($professionalId) {
+        $professional = Professional::find($professionalId);
+        if ($professional) {
+            $professional->availability = 'online';
+            $professional->availabilityText = 'Tersedia';
+            $professional->save();
+            return response()->json(['status' => 'online']);
+        }
+        return response()->json(['status' => 'not_found'], 404);
     }
 }
