@@ -17,7 +17,8 @@ class ChatbotController extends Controller
             ->get();
         $chatbotSecondsLeft = null;
         if ($request->has('consume_amount')) {
-            $chatbotSecondsLeft = intval(floatval($request->input('consume_amount')) * 3600);
+            // Fix: treat consume_amount as minutes, convert to seconds for timer
+            $chatbotSecondsLeft = intval(floatval($request->input('consume_amount')) * 60);
         }
         return view('chatbot', compact('sessions', 'chatbotSecondsLeft'));
     }
