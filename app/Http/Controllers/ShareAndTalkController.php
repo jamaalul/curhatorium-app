@@ -50,7 +50,7 @@ class ShareAndTalkController extends Controller
             'user_id' => $user->id,
             'professional_id' => $professional->id,
             'start' => now('Asia/Jakarta'),
-            'end' => now('Asia/Jakarta')->addMinutes(60), // 60 minutes
+            'end' => now('Asia/Jakarta')->addMinutes(65), // 65 minutes
             'status' => 'waiting', // Set initial status
         ]);
 
@@ -79,7 +79,7 @@ class ShareAndTalkController extends Controller
         if ($session->status === 'waiting') {
             $session->status = 'active';
             $session->start = now('Asia/Jakarta');
-            $session->end = now('Asia/Jakarta')->addMinutes(60); // 60 minutes
+            $session->end = now('Asia/Jakarta')->addMinutes(65); // 65 minutes
             $session->save();
         }
 
@@ -154,6 +154,27 @@ class ShareAndTalkController extends Controller
             return response()->json(['status' => 'not_found'], 404);
         }
         return response()->json(['status' => $session->status]);
+    }
+
+    // API endpoint to cancel a session by sessionId (for frontend timeout)
+    public function cancelSessionByUser($sessionId) {
+        $session = ChatSession::where('session_id', $sessionId)->first();
+        if (!$session || $session->status !== 'waiting') {
+            return response()->json(['status' => 'not_found_or_not_waiting'], 404);
+        }
+        $session->status = 'cancelled';
+        $session->save();
+        // Return ticket to user
+        $user = $session->user;
+        $type = $session->professional->type === 'psychiatrist' ? 'share_talk_psy_chat' : 'share_talk_ranger_chat';
+        $ticket = $user->userTickets()->where('ticket_type', $type)->where(function($q) {
+            $q->whereNull('limit_type')->orWhere('limit_type', '!=', 'unlimited');
+        })->orderByDesc('expires_at')->first();
+        if ($ticket && $ticket->remaining_value !== null) {
+            $ticket->remaining_value += 1;
+            $ticket->save();
+        }
+        return response()->json(['status' => 'cancelled']);
     }
 
     // Cancel sessions that are still 'waiting' after 5 minutes and return user's ticket

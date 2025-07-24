@@ -24,8 +24,14 @@
           Sisa waktu: 60:00
         </div>
       </div>
+      <div id="waiting-timer" style="font-size:0.95em;color:#b97c00;margin-bottom:0.5em;display:none;">
+        Menunggu fasilitator... (<span id="waiting-countdown">05:00</span>)
+      </div>
       <div id="cancel-warning" style="font-size:0.95em;color:#b97c00;margin-bottom:0.5em;display:none;">
         Sesi akan dibatalkan otomatis jika fasilitator tidak merespons dalam 5 menit. Jangan khawatir, tiketmu akan dikembalikan.
+      </div>
+      <div id="cancelled-redirect" style="display:none;text-align:center;margin-top:1em;">
+        <button onclick="window.location.href='/dashboard'" style="padding:0.7em 1.5em;font-size:1em;background:#b97c00;color:#fff;border:none;border-radius:6px;cursor:pointer;">Kembali ke Dashboard</button>
       </div>
 
       <div class="chat-body" id="chat-body">
@@ -52,6 +58,9 @@
     const sessionId = document.querySelector('.app').dataset.sessionId;
     let sessionStatus = 'waiting';
     let timerInterval = null;
+    let waitingCountdown = 300; // 5 minutes in seconds
+    let waitingInterval = null;
+    let cancelledByTimeout = false;
 
     async function fetchSessionStatus() {
       try {
@@ -79,6 +88,50 @@
       }
     }
 
+    function startWaitingCountdown() {
+      const waitingTimer = document.getElementById('waiting-timer');
+      const waitingCountdownEl = document.getElementById('waiting-countdown');
+      waitingTimer.style.display = '';
+      waitingCountdown = 300;
+      waitingCountdownEl.innerText = formatTime(waitingCountdown);
+      waitingInterval = setInterval(() => {
+        waitingCountdown--;
+        waitingCountdownEl.innerText = formatTime(waitingCountdown);
+        if (waitingCountdown <= 0) {
+          clearInterval(waitingInterval);
+          waitingInterval = null;
+          cancelSessionByTimeout();
+        }
+      }, 1000);
+    }
+
+    function stopWaitingCountdown() {
+      const waitingTimer = document.getElementById('waiting-timer');
+      waitingTimer.style.display = 'none';
+      if (waitingInterval) { clearInterval(waitingInterval); waitingInterval = null; }
+    }
+
+    function formatTime(seconds) {
+      const m = String(Math.floor(seconds / 60)).padStart(2, '0');
+      const s = String(seconds % 60).padStart(2, '0');
+      return `${m}:${s}`;
+    }
+
+    async function cancelSessionByTimeout() {
+      // Call API to cancel session
+      try {
+        await fetch(`/api/share-and-talk/cancel-session/${sessionId}`, { method: 'POST', headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content') } });
+      } catch {}
+      cancelledByTimeout = true;
+      input.disabled = true;
+      btn.disabled = true;
+      timerEl.innerText = 'Sesi dibatalkan (fasilitator tidak merespons)';
+      timerEl.style.color = 'red';
+      stopWaitingCountdown();
+      warning.style.display = 'none';
+      document.getElementById('cancelled-redirect').style.display = '';
+    }
+
     async function pollStatusAndControlUI() {
       sessionStatus = await fetchSessionStatus();
       const warning = document.getElementById('cancel-warning');
@@ -89,6 +142,7 @@
         timerEl.style.color = 'orange';
         if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
         warning.style.display = '';
+        if (!waitingInterval && !cancelledByTimeout) startWaitingCountdown();
       } else if (sessionStatus === 'active') {
         input.disabled = false;
         btn.disabled = false;
@@ -97,6 +151,7 @@
           timerInterval = setInterval(updateTimer, 1000);
         }
         warning.style.display = 'none';
+        stopWaitingCountdown();
       } else if (sessionStatus === 'cancelled') {
         input.disabled = true;
         btn.disabled = true;
@@ -104,6 +159,8 @@
         timerEl.style.color = 'red';
         if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
         warning.style.display = 'none';
+        stopWaitingCountdown();
+        document.getElementById('cancelled-redirect').style.display = '';
       }
     }
 

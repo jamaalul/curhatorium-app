@@ -111,3 +111,4 @@ Route::get('/share-and-talk/facilitator/{sessionId}', [ShareAndTalkController::c
 Route::post('/share-and-talk/chat/facilitator-send', [ShareAndTalkController::class, 'facilitatorSend'])->name('share-and-talk.facilitatorSend');
 Route::get('/api/share-and-talk/messages/{sessionId}', [ShareAndTalkController::class,'getMessages'])->name('share-and-talk.fetch');
 Route::get('/api/share-and-talk/session-status/{sessionId}', [\App\Http\Controllers\ShareAndTalkController::class, 'getSessionStatus']);
+Route::post('/api/share-and-talk/cancel-session/{sessionId}', [\App\Http\Controllers\ShareAndTalkController::class, 'cancelSessionByUser']);
