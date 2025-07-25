@@ -53,7 +53,7 @@ class DatabaseSeeder extends Seeder
                 'meeting_address' => 'https://www.youtube.com',
                 'schedule' => now()->addDays(1),
                 'is_done' => false,
-                'category' => 'Support',
+                'category' => 'mental-health', // Changed from 'Support' to 'mental-health'
             ]
         );
 
