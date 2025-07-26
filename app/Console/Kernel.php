@@ -12,7 +12,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('weekly:stat-summary')->sundays()->at('00:10');
         $schedule->command('monthly:stat-summary')->monthlyOn(1, '00:20');
         $schedule->command('membership:grant-calm-starter')->monthlyOn(1, '00:05');
-        $schedule->command('share-and-talk:cancel-expired-sessions')->everyMinute();
+        $schedule->command('sessions:cleanup-expired')->everyMinute();
         $schedule->command('tickets:cleanup-expired')->daily()->at('02:00');
     }
 

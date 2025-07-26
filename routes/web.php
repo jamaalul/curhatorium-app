@@ -19,7 +19,7 @@ Route::get('/', function () {
 })->name('start');
 
 Route::get('/dashboard', function () {
-    $trackerController = new \App\Http\Controllers\TrackerController();
+    $trackerController = new TrackerController();
     $statsData = $trackerController->getStatsForDashboard();
     return view('main.main', compact('statsData'));
 })->middleware(['auth', 'verified'])->name('dashboard');
@@ -115,8 +115,10 @@ Route::middleware(['auth'])->group(function () {
 
 
 Route::get('/share-and-talk/facilitator/{sessionId}', [ShareAndTalkController::class, 'facilitatorChat'])->name('share-and-talk.facilitator');
+Route::get('/share-and-talk/facilitator-video/{sessionId}', [ShareAndTalkController::class, 'facilitatorVideo'])->name('share-and-talk.facilitator-video');
 Route::post('/share-and-talk/chat/facilitator-send', [ShareAndTalkController::class, 'facilitatorSend'])->name('share-and-talk.facilitatorSend');
 Route::get('/api/share-and-talk/messages/{sessionId}', [ShareAndTalkController::class,'getMessages'])->name('share-and-talk.fetch');
-Route::get('/api/share-and-talk/session-status/{sessionId}', [\App\Http\Controllers\ShareAndTalkController::class, 'getSessionStatus']);
-Route::post('/api/share-and-talk/cancel-session/{sessionId}', [\App\Http\Controllers\ShareAndTalkController::class, 'cancelSessionByUser']);
-Route::post('/api/share-and-talk/professional-online/{professionalId}', [\App\Http\Controllers\ShareAndTalkController::class, 'setProfessionalOnline']);
+Route::get('/api/share-and-talk/session-status/{sessionId}', [ShareAndTalkController::class, 'getSessionStatus']);
+Route::post('/api/share-and-talk/cancel-session/{sessionId}', [ShareAndTalkController::class, 'cancelSessionByUser']);
+Route::post('/api/share-and-talk/professional-online/{professionalId}', [ShareAndTalkController::class, 'setProfessionalOnline']);
+Route::get('/share-and-talk/activate-session/{sessionId}', [ShareAndTalkController::class, 'activateSession'])->name('share-and-talk.activate-session');

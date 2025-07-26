@@ -32,8 +32,8 @@ class ShareAndTalkController extends Controller
                 'specialties' => $professional->specialties,
                 'type' => $professional->type,
                 'rating' => $professional->rating,
-                'status' => $professional->availability,
-                'statusText' => $professional->availabilityText,
+                'status' => $professional->getEffectiveAvailability(),
+                'statusText' => $professional->getEffectiveAvailabilityText(),
             ];
         });
         return response()->json($professionals);
@@ -54,11 +54,6 @@ class ShareAndTalkController extends Controller
             'status' => 'waiting', // Set initial status
         ]);
 
-        // Set professional to busy for 5 minutes
-        $professional->availability = 'busy';
-        $professional->availabilityText = 'Sedang menunggu konfirmasi sesi (5 menit)';
-        $professional->save();
-
         $interval = now()->diffInMinutes($session->end);
 
         $response = Http::withHeaders([
@@ -68,7 +63,7 @@ class ShareAndTalkController extends Controller
             'message' => 
                 "Kamu mendapat pesanan konsultasi baru.\n" .
                 "Akses URL berikut sebelum " . $session->start->addMinutes(5)->format('H:i') . " agar pesanannya tidak dibatalkan.\n\n" .
-                "https://curhatorium.com/share-and-talk/facilitator/" . $session_id,
+                "https://curhatorium.com/share-and-talk/activate-session/" . $session_id,
         ]);
 
         
@@ -78,24 +73,41 @@ class ShareAndTalkController extends Controller
 
     public function facilitatorChat($sessionId) {
         $session = ChatSession::where('session_id', $sessionId)->first();
+        
+        if (!$session) {
+            return redirect()->back()->withErrors(['msg' => 'Session not found.']);
+        }
+        
+        // If this is a video session, redirect to the video facilitator
+        if ($session->type === 'video') {
+            return redirect()->route('share-and-talk.facilitator-video', ['sessionId' => $sessionId]);
+        }
+        
         $user = User::where('id', $session->user_id)->first();
 
-        // If session is still waiting, activate it now
-        if ($session->status === 'waiting') {
+        // If session is still waiting or pending, activate it now
+        if ($session->status === 'waiting' || $session->status === 'pending') {
             $session->status = 'active';
             $session->start = now('Asia/Jakarta');
             $session->end = now('Asia/Jakarta')->addMinutes(65); // 65 minutes
+            $session->pending_end = null; // Clear pending end
             $session->save();
-            // Set professional to busy for 65 minutes
-            $professional = $session->professional;
-            $professional->availability = 'busy';
-            $professional->availabilityText = 'Sedang dalam sesi (65 menit)';
-            $professional->save();
         }
 
         $interval = now()->diffInMinutes($session->end);
 
         return view('share-and-talk.facilitator', ['sessionId' => $sessionId, 'professionalId' => $session->professional_id, 'user' => $user, 'interval' => $interval]);
+    }
+
+    public function facilitatorVideo($sessionId) {
+        $session = ChatSession::where('session_id', $sessionId)->first();
+    
+        $interval = now('Asia/Jakarta')->diffInMinutes($session->end);
+
+        return view('share-and-talk.facilitator-video', [
+            'sessionId' => $sessionId, 
+            'interval' => $interval,
+        ]);
     }
 
     public function userSend(Request $request)
@@ -163,7 +175,10 @@ class ShareAndTalkController extends Controller
         if (!$session) {
             return response()->json(['status' => 'not_found'], 404);
         }
-        return response()->json(['status' => $session->status]);
+        return response()->json([
+            'status' => $session->status,
+            'created_at' => $session->created_at,
+        ]);
     }
 
     // API endpoint to cancel a session by sessionId (for frontend timeout)
@@ -200,15 +215,20 @@ class ShareAndTalkController extends Controller
         return response()->json(['status' => 'cancelled']);
     }
 
-    // Cancel sessions that are still 'waiting' after 5 minutes and return user's ticket
+    // Cancel sessions that are still 'waiting' or 'pending' after timeout and return user's ticket
     public function cancelExpiredWaitingSessions()
     {
-        $expiredSessions = ChatSession::where('status', 'waiting')
-            ->where('start', '<', now('Asia/Jakarta')->subMinutes(5))
+        $expiredSessions = ChatSession::whereIn('status', ['waiting', 'pending'])
+            ->where(function($query) {
+                $query->where('start', '<', now('Asia/Jakarta')->subMinutes(5))
+                      ->orWhere('pending_end', '<', now('Asia/Jakarta'));
+            })
             ->get();
+            
         foreach ($expiredSessions as $session) {
             $session->status = 'cancelled';
             $session->save();
+            
             // Return ticket to user based on session type
             $user = $session->user;
             
@@ -253,32 +273,31 @@ class ShareAndTalkController extends Controller
             }
             
             // Check if professional is available
-            if ($professional->availability !== 'online') {
+            if ($professional->getEffectiveAvailability() !== 'online') {
                 return redirect()->route('share-and-talk')->with('error', 'This professional is currently not available for video consultations.');
             }
             
             $session_id = Str::uuid();
             
-            // Create video session
+            // Create video session with pending status
             $session = ChatSession::create([
                 'session_id' => $session_id,
                 'user_id' => $user->id,
                 'professional_id' => $professional->id,
                 'start' => now('Asia/Jakarta'),
-                'end' => now('Asia/Jakarta')->addMinutes(65), // 65 minutes
-                'status' => 'waiting',
-                'type' => 'video', // Add type to distinguish video sessions
+                'end' => now('Asia/Jakarta')->addMinutes(60), // 65 minutes
+                'status' => 'pending', // Changed from 'waiting' to 'pending'
+                'type' => 'video',
+                'pending_end' => now('Asia/Jakarta')->addMinutes(5), // 5 minutes pending timeout
             ]);
     
-            // Set professional to busy
-            $professional->availability = 'busy';
-            $professional->availabilityText = 'Sedang menunggu konfirmasi sesi video (5 menit)';
-            $professional->save();
+            $interval = now('Asia/Jakarta')->diffInMinutes($session->end);
     
-            $interval = now()->diffInMinutes($session->end);
-    
-            // Create Google Meet link
-            $meetLink = $this->createGoogleMeetLink($session_id, $professional, $user);
+            // Generate a more unique Jitsi room name to avoid authentication issues
+            $jitsiRoom = 'curhatorium_video_' . Str::random(16) . '_' . $session_id;
+            
+            // Store the room name in the session for the facilitator to use
+            $session->update(['jitsi_room' => $jitsiRoom]);
     
             // Send WhatsApp notification to professional
             try {
@@ -289,8 +308,7 @@ class ShareAndTalkController extends Controller
                     'message' => 
                         "Kamu mendapat pesanan konsultasi VIDEO baru.\n" .
                         "Akses URL berikut sebelum " . $session->start->addMinutes(5)->format('H:i') . " agar pesanannya tidak dibatalkan.\n\n" .
-                        "Google Meet: " . $meetLink . "\n\n" .
-                        "Dashboard: https://curhatorium.com/share-and-talk/facilitator/" . $session_id,
+                        "Dashboard: https://curhatorium.com/share-and-talk/activate-session/" . $session_id,
                 ]);
             } catch (\Exception $e) {
                 // Log the error but don't fail the session creation
@@ -302,7 +320,8 @@ class ShareAndTalkController extends Controller
                 'user' => $user, 
                 'session_id' => $session_id, 
                 'interval' => $interval,
-                'meet_link' => $meetLink
+                'jitsi_room' => $jitsiRoom,
+                'user_display_name' => $user->name,
             ]);
             
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
@@ -335,12 +354,6 @@ class ShareAndTalkController extends Controller
             $session->status = 'cancelled';
             $session->save();
 
-            // Reset professional availability
-            $professional = $session->professional;
-            $professional->availability = 'online';
-            $professional->availabilityText = 'Tersedia';
-            $professional->save();
-
             // Refund the ticket based on session type
             $ticketType = $session->type === 'video' ? 'share_talk_psy_video' : 'share_talk_psy_chat';
             $this->refundTicket(Auth::user(), $ticketType);
@@ -370,12 +383,6 @@ class ShareAndTalkController extends Controller
             $session->status = 'completed';
             $session->end = now('Asia/Jakarta');
             $session->save();
-
-            // Reset professional availability
-            $professional = $session->professional;
-            $professional->availability = 'online';
-            $professional->availabilityText = 'Tersedia';
-            $professional->save();
 
             return response()->json([
                 'success' => true,
@@ -412,6 +419,28 @@ class ShareAndTalkController extends Controller
             \Log::info("Ticket refunded for user {$user->id}, ticket type: {$ticketType}, refund amount: {$refundAmount}");
         } else {
             \Log::warning("No ticket found to refund for user {$user->id}, ticket type: {$ticketType}");
+        }
+    }
+
+    // Route for professional to activate the session (e.g., from WhatsApp link)
+    public function activateSession($sessionId) {
+        $session = ChatSession::where('session_id', $sessionId)->first();
+        if (!$session) {
+            return response('Session not found', 404);
+        }
+        if ($session->status === 'waiting' || $session->status === 'pending') {
+            $session->status = 'active';
+            $session->start = now('Asia/Jakarta');
+            $session->end = now('Asia/Jakarta')->addMinutes(60); // 60 minutes for video
+            $session->pending_end = null;
+            $session->save();
+            // Redirect to the video page for the professional
+            return redirect()->route('share-and-talk.facilitator-video', ['sessionId' => $sessionId]);
+        } elseif ($session->status === 'active') {
+            // Already active, just redirect
+            return redirect()->route('share-and-talk.facilitator-video', ['sessionId' => $sessionId]);
+        } else {
+            return response('Session is not in a state that can be activated.', 400);
         }
     }
 

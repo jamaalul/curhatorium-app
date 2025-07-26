@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
+use Carbon\Carbon;
 
 class Professional extends Model
 {
@@ -32,5 +33,59 @@ class Professional extends Model
                 }
             }
         });
+    }
+
+    /**
+     * Check if professional has an active session
+     */
+    public function hasActiveSession()
+    {
+        return $this->chatSessions()
+            ->whereIn('status', ['active', 'pending'])
+            ->where('start', '>', Carbon::now('Asia/Jakarta')->subMinutes(5))
+            ->exists();
+    }
+
+    /**
+     * Get the effective availability status (considers active sessions)
+     */
+    public function getEffectiveAvailability()
+    {
+        if ($this->availability === 'offline') {
+            return 'offline';
+        }
+
+        if ($this->hasActiveSession()) {
+            return 'busy';
+        }
+
+        return 'online';
+    }
+
+    /**
+     * Get the effective availability text
+     */
+    public function getEffectiveAvailabilityText()
+    {
+        $status = $this->getEffectiveAvailability();
+        
+        switch ($status) {
+            case 'offline':
+                return 'Offline';
+            case 'busy':
+                return 'Sedang dalam sesi';
+            case 'online':
+                return 'Tersedia';
+            default:
+                return 'Tidak diketahui';
+        }
+    }
+
+    /**
+     * Relationship with chat sessions
+     */
+    public function chatSessions()
+    {
+        return $this->hasMany(ChatSession::class);
     }
 }

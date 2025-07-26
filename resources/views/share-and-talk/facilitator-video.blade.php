@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html>
-<head>
+  <head>
     <script src='https://8x8.vc/vpaas-magic-cookie-ac9ee141fc8a4c308ac24f5ec225af3f/external_api.js' async></script>
     <style>html, body, #jaas-container { height: 100%; }</style>
     <script type="text/javascript">
       window.onload = () => {
         const api = new JitsiMeetExternalAPI("8x8.vc", {
-          roomName: "vpaas-magic-cookie-ac9ee141fc8a4c308ac24f5ec225af3f/{{ $session_id }}",
+          roomName: "vpaas-magic-cookie-ac9ee141fc8a4c308ac24f5ec225af3f/{{ $sessionId }}",
           parentNode: document.querySelector('#jaas-container'),
           // Make sure to include a JWT if you intend to record,
           // make outbound calls or use any other premium features!
@@ -14,11 +14,11 @@
         });
       }
     </script>
-</head>
-<body>
+  </head>
+  <body>
     <div id="draggable-timer" style="position:fixed;top:20px;right:20px;z-index:9999;cursor:move;background:#222;color:#fff;padding:8px 16px;border-radius:8px;box-shadow:0 2px 8px #0003;user-select:none;">
-      <span id="timer-label">Waiting: </span>
-      <span id="timer-value">05:00</span>
+      <span id="timer-label">Session: </span>
+      <span id="timer-value">{{ $interval }}:00</span>
     </div>
     <div id="jaas-container" />
     <script>
@@ -45,79 +45,26 @@
       });
     })();
 
-    // --- Timer & Polling Logic ---
-    const sessionId = "{{ $session_id }}";
-    console.log('SessionId:', sessionId);
-    let polling = true;
-    let status = 'waiting';
-    let createdAt = null;
+    // --- Timer Logic for Professional ---
+    const sessionId = "{{ $sessionId }}";
+    const interval = {{ $interval }};
     let timerLabel = document.getElementById('timer-label');
     let timerValue = document.getElementById('timer-value');
-    let fallbackStart = new Date(); // Fallback start time
-
-    async function fetchSessionStatus() {
-      try {
-        const res = await fetch(`/api/share-and-talk/session-status/${sessionId}`);
-        if (!res.ok) return;
-        const data = await res.json();
-        console.log('API Response:', data);
-        status = data.status;
-        if (!createdAt && data.created_at) {
-          // Parse 'YYYY-MM-DD HH:mm:ss' as local time
-          const dt = data.created_at.replace(' ', 'T');
-          let parsed = Date.parse(dt);
-          if (isNaN(parsed)) {
-            // Fallback: parse as local time
-            const parts = data.created_at.split(/[- :]/);
-            parsed = new Date(parts[0], parts[1]-1, parts[2], parts[3], parts[4], parts[5]).getTime();
-          }
-          createdAt = new Date(parsed);
-          console.log('createdAt:', createdAt);
-        }
-        if (status === 'active') {
-          polling = false;
-        }
-      } catch (e) { console.error('Fetch error:', e); }
-    }
+    let sessionStart = new Date();
 
     function updateTimer() {
       let now = new Date();
-      let end;
-      let startTime = createdAt || fallbackStart;
-      
-      if (status === 'waiting' || status === 'pending') {
-        timerLabel.textContent = 'Waiting: ';
-        end = new Date(startTime.getTime() + 5 * 60 * 1000);
-      } else if (status === 'active') {
-        timerLabel.textContent = 'Session: ';
-        end = new Date(startTime.getTime() + 65 * 60 * 1000);
-                } else {
-        timerLabel.textContent = 'Loading...';
-        timerValue.textContent = '--:--';
-        return;
-      }
-      
+      let end = new Date(sessionStart.getTime() + interval * 60 * 1000);
       let diff = end - now;
+      
       if (diff < 0) diff = 0;
       let mins = String(Math.floor(diff / 60000)).padStart(2, '0');
       let secs = String(Math.floor((diff % 60000) / 1000)).padStart(2, '0');
       timerValue.textContent = `${mins}:${secs}`;
     }
 
-    async function pollAndUpdate() {
-      await fetchSessionStatus();
-                        updateTimer();
-      if (polling && (status === 'waiting' || status === 'pending')) {
-        setTimeout(pollAndUpdate, 2000);
-      }
-    }
-
-    // Start timer immediately with fallback
-    updateTimer();
-    // Initial fetch and start polling
-    pollAndUpdate();
-    // Always update timer every second
+    // Update timer every second
     setInterval(updateTimer, 1000);
     </script>
-</body>
+  </body>
 </html> 

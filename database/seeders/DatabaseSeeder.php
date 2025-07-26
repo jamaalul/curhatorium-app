@@ -69,6 +69,9 @@ class DatabaseSeeder extends Seeder
         // Seed cards
         $this->call(CardSeeder::class);
 
+        // Seed professionals
+        $this->call(ProfessionalSeeder::class);
+
         // Seed stats, weekly stats, and monthly stats
         $this->call([
             StatSeeder::class,
