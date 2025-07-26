@@ -184,8 +184,8 @@ class ShareAndTalkController extends Controller
     // API endpoint to cancel a session by sessionId (for frontend timeout)
     public function cancelSessionByUser($sessionId) {
         $session = ChatSession::where('session_id', $sessionId)->first();
-        if (!$session || $session->status !== 'waiting') {
-            return response()->json(['status' => 'not_found_or_not_waiting'], 404);
+        if (!$session || !in_array($session->status, ['waiting', 'pending'])) {
+            return response()->json(['status' => 'not_found_or_not_cancellable'], 404);
         }
         $session->status = 'cancelled';
         $session->save();

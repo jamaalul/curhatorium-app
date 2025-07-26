@@ -16,37 +16,15 @@
     </script>
   </head>
   <body>
-    <div id="draggable-timer" style="position:fixed;top:20px;right:20px;z-index:9999;cursor:move;background:#222;color:#fff;padding:8px 16px;border-radius:8px;box-shadow:0 2px 8px #0003;user-select:none;">
-      <span id="timer-label">Session: </span>
-      <span id="timer-value">{{ $interval }}:00</span>
+    <div id="timer-container" style="position:fixed;bottom:32px;right:32px;z-index:9999;">
+      <div id="session-timer" style="background:#222;color:#fff;padding:12px 28px;border-radius:16px;box-shadow:0 2px 12px #0002;display:flex;flex-direction:column;align-items:center;min-width:110px;font-family:'FigtreeReg', Figtree, Arial,sans-serif;">
+        <span id="timer-label" style="font-size:0.85em;color:#9acbd0;font-family:'FigtreeBold', Figtree, Arial,sans-serif;font-weight:600;letter-spacing:0.5px;">Session: </span>
+        <span id="timer-value" style="font-size:1.5em;font-family:'Courier New',monospace;font-weight:700;letter-spacing:1px;">{{ $interval }}:00</span>
+      </div>
     </div>
     <div id="jaas-container" />
     <script>
-    // --- Draggable Timer Logic ---
-    (function() {
-      const timer = document.getElementById('draggable-timer');
-      let offsetX, offsetY, isDragging = false;
-      timer.addEventListener('mousedown', function(e) {
-        isDragging = true;
-        offsetX = e.clientX - timer.getBoundingClientRect().left;
-        offsetY = e.clientY - timer.getBoundingClientRect().top;
-        document.body.style.userSelect = 'none';
-      });
-      document.addEventListener('mousemove', function(e) {
-        if (!isDragging) return;
-        timer.style.left = 'unset';
-        timer.style.right = 'unset';
-        timer.style.top = (e.clientY - offsetY) + 'px';
-        timer.style.left = (e.clientX - offsetX) + 'px';
-      });
-      document.addEventListener('mouseup', function() {
-        isDragging = false;
-        document.body.style.userSelect = '';
-      });
-    })();
-
     // --- Timer Logic for Professional ---
-    const sessionId = "{{ $sessionId }}";
     const interval = {{ $interval }};
     let timerLabel = document.getElementById('timer-label');
     let timerValue = document.getElementById('timer-value');
@@ -56,14 +34,12 @@
       let now = new Date();
       let end = new Date(sessionStart.getTime() + interval * 60 * 1000);
       let diff = end - now;
-      
       if (diff < 0) diff = 0;
       let mins = String(Math.floor(diff / 60000)).padStart(2, '0');
       let secs = String(Math.floor((diff % 60000) / 1000)).padStart(2, '0');
       timerValue.textContent = `${mins}:${secs}`;
     }
 
-    // Update timer every second
     setInterval(updateTimer, 1000);
     </script>
   </body>
