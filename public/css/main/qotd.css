@@ -1,8 +1,3 @@
-@font-face {
-    font-family: PlayfairDisplay-reg;
-    src: url(fonts/PlayfairDisplay-Regular.ttf);
-}
-
 .quote-section {
     text-align: center;
     padding: 40px 20px;
@@ -28,7 +23,7 @@
     font-size: 2em;
     font-style: italic;
     color: #000;
-    font-family: PlayfairDisplay-reg, "Times New Roman", Times, serif;
+    font-family: "Times New Roman", Times, serif;
 }
 
 .flower-icon {

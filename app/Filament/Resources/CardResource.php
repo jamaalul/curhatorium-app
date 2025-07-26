@@ -26,9 +26,13 @@ class CardResource extends Resource
                 Forms\Components\Textarea::make('content')
                     ->required()
                     ->label('Content'),
-                Forms\Components\TextInput::make('category')
+                Forms\Components\Select::make('category')
                     ->required()
-                    ->label('Category'),
+                    ->label('Category')
+                    ->options([
+                        'pertanyaan' => 'pertanyaan',
+                        'pernyataan' => 'pernyataan',
+                    ]),
             ]);
     }
 

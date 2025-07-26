@@ -24,6 +24,10 @@ Route::get('/dashboard', function () {
     return view('main.main', compact('statsData'));
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+Route::get('/terms-and-conditions', function () {
+    return view('terms-and-conditions');
+})->name('terms-and-conditions');
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

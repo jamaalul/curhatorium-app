@@ -57,17 +57,11 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
-        // Seed sample quotes
-        \App\Models\Quote::insert([
-            ['quote' => 'The only way to do great work is to love what you do.'],
-            ['quote' => 'Success is not the key to happiness. Happiness is the key to success.'],
-            ['quote' => 'Believe you can and you’re halfway there.'],
-            ['quote' => 'Your limitation—it’s only your imagination.'],
-            ['quote' => 'Push yourself, because no one else is going to do it for you.'],
-        ]);
-
         // Seed cards
         $this->call(CardSeeder::class);
+
+        // Seed quotes
+        $this->call(QuoteSeeder::class);
 
         // Seed professionals
         $this->call(ProfessionalSeeder::class);
