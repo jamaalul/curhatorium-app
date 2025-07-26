@@ -42,6 +42,18 @@ class ShareAndTalkController extends Controller
     public function chatConsultation($professionalId) {
         $professional = Professional::findOrFail($professionalId);
         $user = Auth::user();
+        
+        // Check if user already has an active session with this professional
+        $existingSession = ChatSession::where('user_id', $user->id)
+            ->where('professional_id', $professional->id)
+            ->whereIn('status', ['waiting', 'pending', 'active'])
+            ->first();
+            
+        if ($existingSession) {
+            // Redirect to existing session instead of creating a new one
+            return redirect()->route('share-and-talk.start-chat-session', ['sessionId' => $existingSession->session_id]);
+        }
+        
         $session_id = Str::uuid();
         
 
@@ -68,7 +80,7 @@ class ShareAndTalkController extends Controller
 
         
 
-        return view('share-and-talk.chat', ['professional' => $professional, 'user' => $user, 'session_id' => $session_id, 'interval' => $interval]);
+        return redirect()->route('share-and-talk.start-chat-session', ['sessionId' => $session_id]);
     }
 
     public function facilitatorChat($sessionId) {
@@ -85,8 +97,8 @@ class ShareAndTalkController extends Controller
         
         $user = User::where('id', $session->user_id)->first();
 
-        // If session is still waiting or pending, activate it now
-        if ($session->status === 'waiting' || $session->status === 'pending') {
+        // Only activate if session is still waiting or pending (not already active)
+        if (in_array($session->status, ['waiting', 'pending'])) {
             $session->status = 'active';
             $session->start = now('Asia/Jakarta');
             $session->end = now('Asia/Jakarta')->addMinutes(65); // 65 minutes
@@ -275,6 +287,18 @@ class ShareAndTalkController extends Controller
             // Check if professional is available
             if ($professional->getEffectiveAvailability() !== 'online') {
                 return redirect()->route('share-and-talk')->with('error', 'This professional is currently not available for video consultations.');
+            }
+            
+            // Check if user already has an active video session with this professional
+            $existingSession = ChatSession::where('user_id', $user->id)
+                ->where('professional_id', $professional->id)
+                ->where('type', 'video')
+                ->whereIn('status', ['waiting', 'pending', 'active'])
+                ->first();
+                
+            if ($existingSession) {
+                // Redirect to existing session instead of creating a new one
+                return redirect()->route('share-and-talk.start-video-session', ['sessionId' => $existingSession->session_id]);
             }
             
             $session_id = Str::uuid();
@@ -493,6 +517,63 @@ class ShareAndTalkController extends Controller
             'interval' => $interval,
             'jitsi_room' => $session->jitsi_room,
             'user_display_name' => $user->name,
+        ]);
+    }
+
+    // First step: Validate chat session and redirect to chat session
+    public function startChatSession($sessionId) {
+        $session = ChatSession::where('session_id', $sessionId)->first();
+        
+        if (!$session) {
+            return redirect()->route('share-and-talk')->with('error', 'Session not found.');
+        }
+        
+        // Check if the current user owns this session
+        if ($session->user_id !== Auth::id()) {
+            return redirect()->route('share-and-talk')->with('error', 'You are not authorized to access this session.');
+        }
+        
+        // Check if session is still valid (not cancelled or completed)
+        if (in_array($session->status, ['cancelled', 'completed'])) {
+            return redirect()->route('share-and-talk')->with('error', 'This session has ended.');
+        }
+        
+        // Redirect to the actual chat session
+        return redirect()->route('share-and-talk.chat-session', ['sessionId' => $sessionId]);
+    }
+
+    // Second step: Display the chat session (no session creation)
+    public function userChatSession($sessionId) {
+        $session = ChatSession::where('session_id', $sessionId)->first();
+        
+        if (!$session) {
+            return redirect()->route('share-and-talk')->with('error', 'Session not found.');
+        }
+        
+        // Check if the current user owns this session
+        if ($session->user_id !== Auth::id()) {
+            return redirect()->route('share-and-talk')->with('error', 'You are not authorized to access this session.');
+        }
+        
+        // Check if session is still valid
+        if (in_array($session->status, ['cancelled', 'completed'])) {
+            return redirect()->route('share-and-talk')->with('error', 'This session has ended.');
+        }
+        
+        $user = User::where('id', $session->user_id)->first();
+        $professional = Professional::where('id', $session->professional_id)->first();
+        
+        if (!$user || !$professional) {
+            return redirect()->route('share-and-talk')->with('error', 'Session data is invalid.');
+        }
+        
+        $interval = now('Asia/Jakarta')->diffInMinutes($session->end);
+        
+        return view('share-and-talk.chat', [
+            'professional' => $professional, 
+            'user' => $user, 
+            'session_id' => $sessionId, 
+            'interval' => $interval,
         ]);
     }
 

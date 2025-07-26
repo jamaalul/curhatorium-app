@@ -39,6 +39,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/share-and-talk/chat/{professionalId}', [ShareAndTalkController::class, 'chatConsultation'])
         ->middleware(\App\Http\Middleware\ShareAndTalkTicketGateMiddleware::class)
         ->name('share-and-talk.chat');
+    Route::get('/share-and-talk/start-chat-session/{sessionId}', [ShareAndTalkController::class, 'startChatSession'])
+        ->name('share-and-talk.start-chat-session');
+    Route::get('/share-and-talk/chat-session/{sessionId}', [ShareAndTalkController::class, 'userChatSession'])
+        ->name('share-and-talk.chat-session');
     Route::get('/share-and-talk/video/{professionalId}', [ShareAndTalkController::class, 'videoConsultation'])
         ->middleware(\App\Http\Middleware\ShareAndTalkVideoTicketGateMiddleware::class)
         ->name('share-and-talk.video');
