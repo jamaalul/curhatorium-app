@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="{{ asset('css/share-and-talk/chat.css') }}">
 </head>
 <body>
-  <div class="app" data-session-end="{{ now()->addMinutes($interval)->toIso8601String() }}">
+  <div class="app">
     <!-- Sidebar -->
     <div class="sidebar">
       <h2>Lunar</h2>
@@ -43,12 +43,14 @@
     const input = document.getElementById('chat-input-field');
     const btn = document.getElementById('send-btn');
     const chatBody = document.getElementById('chat-body');
-    const sessionEnd = new Date(document.querySelector('.app').dataset.sessionEnd);
     const timerEl = document.getElementById('session-timer');
+    const interval = {{ $interval }};
+    let sessionStart = new Date();
 
     function updateTimer() {
       const now = new Date();
-      const diff = sessionEnd - now;
+      const end = new Date(sessionStart.getTime() + interval * 60 * 1000);
+      const diff = end - now;
 
       if (diff <= 0) {
         input.disabled = true;

@@ -16,6 +16,22 @@
 
     <!-- Main Content -->
     <div class="container">
+        <!-- Success and Error Messages -->
+        @if(session('success'))
+            <div class="alert alert-success">{{ session('success') }}</div>
+        @endif
+        @if(session('error'))
+            <div class="alert alert-error">{{ session('error') }}</div>
+        @endif
+        @if($errors->has('msg'))
+            <div class="alert alert-error">{{ $errors->first('msg') }}</div>
+        @endif
+        @if($errors->any())
+            @foreach($errors->all() as $error)
+                <div class="alert alert-error">{{ $error }}</div>
+            @endforeach
+        @endif
+
         <!-- Hero Section -->
         <div class="hero">
             <div class="hero-content">
@@ -377,16 +393,16 @@
     // Intercept form submit
     document.getElementById('checkout-form').onsubmit = function(e) {
         e.preventDefault();
-        const type = document.querySelector('input[name="consultation_type"]:checked').value;
-        selectedConsultationType = type;
-        // Placeholder alert for each consultation type
-        if (type === 'chat') {
-            chatConsultation();
-        } else if (type === 'video') {
-            videoConsultation();
+        
+        const consultationType = document.querySelector('input[name="consultation_type"]:checked').value;
+        const professionalId = selectedProfessional.id;
+        
+        // Route based on consultation type
+        if (consultationType === 'video') {
+            window.location.href = `/share-and-talk/video/${professionalId}`;
+        } else {
+            window.location.href = `/share-and-talk/chat/${professionalId}`;
         }
-        // Toast.success('Berhasil', `Berhasil memesan ${type === 'chat' ? 'Chat' : 'Video Call'} dengan ${selectedProfessional.name}`);
-        closeCheckoutModal();
     };
     // Patch startConsultation to open modal
     function startConsultation(professionalId, reserveType) {

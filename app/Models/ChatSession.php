@@ -15,6 +15,7 @@ class ChatSession extends Model
         'start',
         'end',
         'status', // Add status to fillable
+        'type', // Add type to distinguish video/chat sessions
     ];
 
     public function user()

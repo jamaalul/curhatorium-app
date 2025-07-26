@@ -19,10 +19,18 @@ Route::get('/', function () {
 })->name('start');
 
 Route::get('/dashboard', function () {
-    $trackerController = new \App\Http\Controllers\TrackerController();
+    $trackerController = new TrackerController();
     $statsData = $trackerController->getStatsForDashboard();
     return view('main.main', compact('statsData'));
 })->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::get('/terms-and-conditions', function () {
+    return view('terms-and-conditions');
+})->name('terms-and-conditions');
+
+Route::get('/privacy-policy', function () {
+    return view('privacy-policy');
+})->name('privacy-policy');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -39,7 +47,22 @@ Route::middleware('auth')->group(function () {
     Route::get('/share-and-talk/chat/{professionalId}', [ShareAndTalkController::class, 'chatConsultation'])
         ->middleware(\App\Http\Middleware\ShareAndTalkTicketGateMiddleware::class)
         ->name('share-and-talk.chat');
+    Route::get('/share-and-talk/start-chat-session/{sessionId}', [ShareAndTalkController::class, 'startChatSession'])
+        ->name('share-and-talk.start-chat-session');
+    Route::get('/share-and-talk/chat-session/{sessionId}', [ShareAndTalkController::class, 'userChatSession'])
+        ->name('share-and-talk.chat-session');
+    Route::get('/share-and-talk/video/{professionalId}', [ShareAndTalkController::class, 'videoConsultation'])
+        ->middleware(\App\Http\Middleware\ShareAndTalkVideoTicketGateMiddleware::class)
+        ->name('share-and-talk.video');
+    Route::get('/share-and-talk/start-video-session/{sessionId}', [ShareAndTalkController::class, 'startVideoSession'])
+        ->name('share-and-talk.start-video-session');
+    Route::get('/share-and-talk/video-session/{sessionId}', [ShareAndTalkController::class, 'userVideoSession'])
+        ->name('share-and-talk.video-session');
     Route::post('/share-and-talk/chat/user-send', [ShareAndTalkController::class, 'userSend'])->name('share-and-talk.userSend');
+    
+    // Video consultation API endpoints
+    Route::post('/api/share-and-talk/cancel-session/{sessionId}', [ShareAndTalkController::class, 'cancelSession'])->name('share-and-talk.cancel-session');
+    Route::post('/api/share-and-talk/end-session/{sessionId}', [ShareAndTalkController::class, 'endSession'])->name('share-and-talk.end-session');
 
     Route::get('/mental-support-chatbot', [ChatbotController::class, 'index'])
         ->middleware(\App\Http\Middleware\TicketGateMiddleware::class . ':mentai_chatbot')
@@ -108,8 +131,10 @@ Route::middleware(['auth'])->group(function () {
 
 
 Route::get('/share-and-talk/facilitator/{sessionId}', [ShareAndTalkController::class, 'facilitatorChat'])->name('share-and-talk.facilitator');
+Route::get('/share-and-talk/facilitator-video/{sessionId}', [ShareAndTalkController::class, 'facilitatorVideo'])->name('share-and-talk.facilitator-video');
 Route::post('/share-and-talk/chat/facilitator-send', [ShareAndTalkController::class, 'facilitatorSend'])->name('share-and-talk.facilitatorSend');
 Route::get('/api/share-and-talk/messages/{sessionId}', [ShareAndTalkController::class,'getMessages'])->name('share-and-talk.fetch');
-Route::get('/api/share-and-talk/session-status/{sessionId}', [\App\Http\Controllers\ShareAndTalkController::class, 'getSessionStatus']);
-Route::post('/api/share-and-talk/cancel-session/{sessionId}', [\App\Http\Controllers\ShareAndTalkController::class, 'cancelSessionByUser']);
-Route::post('/api/share-and-talk/professional-online/{professionalId}', [\App\Http\Controllers\ShareAndTalkController::class, 'setProfessionalOnline']);
+Route::get('/api/share-and-talk/session-status/{sessionId}', [ShareAndTalkController::class, 'getSessionStatus']);
+Route::post('/api/share-and-talk/cancel-session/{sessionId}', [ShareAndTalkController::class, 'cancelSessionByUser']);
+Route::post('/api/share-and-talk/professional-online/{professionalId}', [ShareAndTalkController::class, 'setProfessionalOnline']);
+Route::get('/share-and-talk/activate-session/{sessionId}', [ShareAndTalkController::class, 'activateSession'])->name('share-and-talk.activate-session');
