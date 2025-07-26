@@ -100,6 +100,8 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/membership', [\App\Http\Controllers\MembershipController::class, 'index'])->name('membership.index');
     Route::post('/membership/buy/{id}', [\App\Http\Controllers\MembershipController::class, 'buy'])->name('membership.buy');
+    
+
 });
 
 require __DIR__.'/auth.php';

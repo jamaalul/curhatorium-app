@@ -10,8 +10,18 @@ class UserMembership extends Model
         'user_id', 'membership_id', 'started_at', 'expires_at',
     ];
 
+    protected $casts = [
+        'started_at' => 'datetime',
+        'expires_at' => 'datetime',
+    ];
+
     public function membership()
     {
         return $this->belongsTo(Membership::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

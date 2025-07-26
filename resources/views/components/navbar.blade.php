@@ -27,6 +27,19 @@
                 <img src="{{ $navUser && $navUser->profile_picture ? asset('storage/' . $navUser->profile_picture) : asset('assets/profile_pict.svg') }}" alt="pict" id="pict">
             </div>
         </a>
+        
+        @if($navUser && $navUser->is_admin)
+            <a href="/admin" style="text-decoration:none;color:inherit;margin-left: 16px;">
+                <div style="display: flex; align-items: center; gap: 8px; padding: 8px 16px; background: #f8c932; border-radius: 8px; color: #222; font-weight: 600; font-size: 0.9rem;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Admin
+                </div>
+            </a>
+        @endif
         <!-- Mobile menu button -->
         <button class="mobile-menu-button" aria-label="Go to profile" onclick="window.location.href = '/profile'">
             <span></span>

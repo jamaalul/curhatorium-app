@@ -132,13 +132,34 @@
                             <li>{{ $benefit }}</li>
                         @endforeach
                     </ul>
-                    <form class="subscribe-form" method="POST" action="{{ route('membership.buy', $membership->id) }}" onsubmit="return confirm('Yakin ingin membeli {{ $membership->name }}?');" @if($membership->name === 'Calm Starter') style="display:none;" @endif>
-                        @csrf
-                        <button class="subscribe-btn" type="submit">Langganan Sekarang</button>
-                    </form>
+                    @if($membership->name === 'Calm Starter')
+                        <form class="subscribe-form" method="POST" action="{{ route('membership.buy', $membership->id) }}" onsubmit="return confirm('Yakin ingin membeli {{ $membership->name }}?');" style="display:none;">
+                            @csrf
+                            <button class="subscribe-btn" type="submit">Langganan Sekarang</button>
+                        </form>
+                    @else
+                        <button class="subscribe-btn" onclick="redirectToWhatsApp('{{ $membership->name }}', {{ $membership->price }}, {{ Auth::user()->id }})" type="button">Beli via WhatsApp</button>
+                    @endif
                 </div>
             @endforeach
         </div>
     </div>
+
+    </div>
+
+    <script>
+        function redirectToWhatsApp(membershipName, price, userId) {
+            // Create a disguised payment ID: CURH-YYYYMMDD-XXXX where XXXX is the user ID padded with zeros
+            const now = new Date();
+            const dateStr = now.getFullYear().toString() + 
+                           (now.getMonth() + 1).toString().padStart(2, '0') + 
+                           now.getDate().toString().padStart(2, '0');
+            const paymentId = `CURH-${dateStr}-${userId.toString().padStart(4, '0')}`;
+            
+            const message = `Halo! Saya ingin membeli membership "${membershipName}" seharga Rp${price.toLocaleString('id-ID')}.\n\n> Payment ID: ${paymentId}\n\nMohon informasi lebih lanjut untuk proses pembayaran.`;
+            const whatsappUrl = `https://wa.me/6288989406047?text=${encodeURIComponent(message)}`;
+            window.open(whatsappUrl, '_blank');
+        }
+    </script>
 </body>
 </html>
