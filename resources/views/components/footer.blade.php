@@ -31,8 +31,8 @@
 
     .footer-grid {
         display: grid;
-        grid-template-columns: 2fr 1fr 1fr;
-        gap: 2rem;
+        grid-template-columns: 1fr 1fr;
+        gap: 3rem;
         margin-bottom: 1.5rem;
     }
 
@@ -57,7 +57,7 @@
 
     .footer-description {
         color: #d1d5db;
-        margin-bottom: 1rem;
+        margin-bottom: 1.5rem;
         line-height: 1.6;
         font-size: 1rem;
     }
@@ -65,15 +65,15 @@
     .footer-social {
         display: flex;
         gap: 1rem;
-        margin-top: 0.5rem;
+        margin-bottom: 1.5rem;
     }
 
     .social-link {
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 36px;
-        height: 36px;
+        width: 40px;
+        height: 40px;
         background: rgba(255, 255, 255, 0.1);
         border-radius: 50%;
         color: white;
@@ -87,15 +87,18 @@
     }
 
     .footer-section h4 {
-        font-size: 1.1rem;
+        font-size: 1.2rem;
         font-weight: 600;
-        margin-bottom: 0.75rem;
+        margin-bottom: 1rem;
         color: white;
     }
 
     .footer-links {
         list-style: none;
         padding: 0;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.5rem 2rem;
     }
 
     .footer-links li {
@@ -107,6 +110,8 @@
         text-decoration: none;
         transition: var(--transition);
         font-size: 0.95rem;
+        display: block;
+        padding: 0.25rem 0;
     }
 
     .footer-links a:hover {
@@ -131,6 +136,7 @@
         width: 16px;
         height: 16px;
         color: var(--primary-color);
+        flex-shrink: 0;
     }
 
     .footer-bottom {
@@ -165,10 +171,19 @@
         color: var(--primary-color);
     }
 
-    @media (max-width: 900px) {
+    .ftr {
+        padding-bottom: 10px;
+    }
+
+    @media (max-width: 768px) {
         .footer-grid {
-            grid-template-columns: 1fr 1fr;
-            gap: 1.5rem;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+        
+        .footer-links {
+            grid-template-columns: 1fr;
+            gap: 0.5rem;
         }
     }
 
@@ -178,10 +193,6 @@
         }
         .footer-container {
             padding: 0 1rem;
-        }
-        .footer-grid {
-            grid-template-columns: 1fr;
-            gap: 1rem;
         }
         .footer-logo {
             justify-content: center;
@@ -210,47 +221,33 @@
                         <h3>curhatorium</h3>
                     </div>
                     <p class="footer-description">
-                        Your trusted companion for mental health support and community connection.
+                        Tempat tepercaya Anda untuk dukungan kesehatan mental dan koneksi komunitas.
                     </p>
                     <div class="footer-social">
-                        <a href="#" class="social-link" aria-label="Facebook">
-                            <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                        <a href="https://instagram.com/curhatorium_" class="social-link" aria-label="Instagram">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-instagram" viewBox="0 0 16 16">
+                                <path d="M8 0C5.829 0 5.556.01 4.703.048 3.85.088 3.269.222 2.76.42a3.9 3.9 0 0 0-1.417.923A3.9 3.9 0 0 0 .42 2.76C.222 3.268.087 3.85.048 4.7.01 5.555 0 5.827 0 8.001c0 2.172.01 2.444.048 3.297.04.852.174 1.433.372 1.942.205.526.478.972.923 1.417.444.445.89.719 1.416.923.51.198 1.09.333 1.942.372C5.555 15.99 5.827 16 8 16s2.444-.01 3.298-.048c.851-.04 1.434-.174 1.943-.372a3.9 3.9 0 0 0 1.416-.923c.445-.445.718-.891.923-1.417.197-.509.332-1.09.372-1.942C15.99 10.445 16 10.173 16 8s-.01-2.445-.048-3.299c-.04-.851-.175-1.433-.372-1.941a3.9 3.9 0 0 0-.923-1.417A3.9 3.9 0 0 0 13.24.42c-.51-.198-1.092-.333-1.943-.372C10.443.01 10.172 0 7.998 0zm-.717 1.442h.718c2.136 0 2.389.007 3.232.046.78.035 1.204.166 1.486.275.373.145.64.319.92.599s.453.546.598.92c.11.281.24.705.275 1.485.039.843.047 1.096.047 3.231s-.008 2.389-.047 3.232c-.035.78-.166 1.203-.275 1.485a2.5 2.5 0 0 1-.599.919c-.28.28-.546.453-.92.598-.28.11-.704.24-1.485.276-.843.038-1.096.047-3.232.047s-2.39-.009-3.233-.047c-.78-.036-1.203-.166-1.485-.276a2.5 2.5 0 0 1-.92-.598 2.5 2.5 0 0 1-.6-.92c-.109-.281-.24-.705-.275-1.485-.038-.843-.046-1.096-.046-3.233s.008-2.388.046-3.231c.036-.78.166-1.204.276-1.486.145-.373.319-.64.599-.92s.546-.453.92-.598c.282-.11.705-.24 1.485-.276.738-.034 1.024-.044 2.515-.045zm4.988 1.328a.96.96 0 1 0 0 1.92.96.96 0 0 0 0-1.92m-4.27 1.122a4.109 4.109 0 1 0 0 8.217 4.109 4.109 0 0 0 0-8.217m0 1.441a2.667 2.667 0 1 1 0 5.334 2.667 2.667 0 0 1 0-5.334"/>
                             </svg>
                         </a>
-                        <a href="#" class="social-link" aria-label="Twitter">
-                            <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
-                            </svg>
-                        </a>
-                        <a href="#" class="social-link" aria-label="Instagram">
-                            <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 6.62 5.367 11.987 11.988 11.987 6.62 0 11.987-5.367 11.987-11.987C24.014 5.367 18.637.001 12.017.001zM8.449 16.988c-1.297 0-2.448-.49-3.323-1.297C4.198 14.895 3.708 13.744 3.708 12.447s.49-2.448 1.418-3.323c.875-.875 2.026-1.297 3.323-1.297s2.448.422 3.323 1.297c.928.875 1.418 2.026 1.418 3.323s-.49 2.448-1.418 3.244c-.875.807-2.026 1.297-3.323 1.297zm7.83-9.405c-.49 0-.928-.422-.928-.928 0-.49.438-.928.928-.928.49 0 .928.438.928.928 0 .506-.438.928-.928.928zm-4.262 1.364c-1.297 0-2.346 1.049-2.346 2.346s1.049 2.346 2.346 2.346 2.346-1.049 2.346-2.346-1.049-2.346-2.346-2.346z"/>
+                        <a href="https://tiktok.com/@curhatorium" class="social-link" aria-label="TikTok">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-tiktok" viewBox="0 0 16 16">
+                                <path d="M9 0h1.98c.144.715.54 1.617 1.235 2.512C12.895 3.389 13.797 4 15 4v2c-1.753 0-3.07-.814-4-1.829V11a5 5 0 1 1-5-5v2a3 3 0 1 0 3 3z"/>
                             </svg>
                         </a>
                     </div>
-                    <div class="contact-info" style="margin-top:1rem;">
+                    <div class="contact-info">
                         <div class="contact-item">
                             <svg class="contact-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                             </svg>
-                            <span>curhatorium@gmail.com</span>
+                            <span>hello@curhatorium.com</span>
                         </div>
                     </div>
                 </div>
                 
-                <!-- Resources -->
+                <!-- Features -->
                 <div class="footer-section">
-                    <h4>Resources</h4>
-                    <ul class="footer-links">
-                        <li><a href="#">Help Center</a></li>
-                        <li><a href="#">Blog</a></li>
-                        <li><a href="#">Guides</a></li>
-                    </ul>
-                </div>
-                <!-- Services -->
-                <div class="footer-section">
-                    <h4>Services</h4>
+                    <h4 class="ftr">Fitur & Layanan</h4>
                     <ul class="footer-links">
                         <li><a href="#">Mental Health Test</a></li>
                         <li><a href="#">Ment-AI</a></li>

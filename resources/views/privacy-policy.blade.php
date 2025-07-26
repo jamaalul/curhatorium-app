@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Syarat & Ketentuan | Curhatorium</title>
+  <title>Kebijakan Privasi | Curhatorium</title>
   <link rel="stylesheet" href="{{ asset('css/global.css') }}">
   <style>
     :root {
@@ -223,6 +223,48 @@
       color: var(--white);
     }
 
+    /* Login Button Section */
+    .login-section {
+      background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+      border-radius: var(--border-radius-lg);
+      padding: 2rem;
+      text-align: center;
+      margin-top: 2rem;
+    }
+
+    .login-section h2 {
+      color: var(--text-primary);
+      margin-bottom: 1rem;
+      font-size: 1.25rem;
+    }
+
+    .login-section p {
+      color: var(--text-secondary);
+      margin-bottom: 1.5rem;
+    }
+
+    .login-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.5rem;
+      background: var(--white);
+      color: var(--text-primary);
+      text-decoration: none;
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
+      font-weight: 500;
+      font-size: 1.125rem;
+    }
+
+    .login-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+      background: var(--primary-color);
+      color: var(--white);
+    }
+
     /* Footer */
     .footer {
       text-align: center;
@@ -292,8 +334,8 @@
     <!-- Page Header -->
     <div class="page-header">
       <div class="page-header-content">
-        <h1>Terms & Conditions</h1>
-        <p class="subtitle">Syarat & Ketentuan Penggunaan Platform Curhatorium</p>
+        <h1>Kebijakan Privasi</h1>
+        <p class="subtitle">Bagaimana Curhatorium melindungi dan mengelola data pribadi Anda</p>
         <div class="updated-date">
           <strong>Terakhir diperbarui:</strong> 19 Juli 2025
         </div>
@@ -303,115 +345,177 @@
     <!-- Main Content -->
     <div class="content-card">
       <div class="section">
-        <h2>1. PENGANTAR UMUM</h2>
-        <p>Selamat datang di Curhatorium!</p>
-        <p>Dengan mengakses atau menggunakan layanan Curhatorium, Anda menyatakan telah membaca, memahami, dan menyetujui untuk terikat oleh Syarat & Ketentuan ini. Apabila Anda tidak setuju terhadap salah satu bagian dari ketentuan ini, mohon untuk tidak menggunakan layanan kami.</p>
+        <h2>1. PENGANTAR</h2>
+        <p>Curhatorium berkomitmen untuk melindungi privasi dan data pribadi seluruh pengguna platform. Dokumen ini menjelaskan bagaimana kami mengumpulkan, menggunakan, menyimpan, dan melindungi informasi yang Anda berikan saat menggunakan layanan Curhatorium. Dengan menggunakan platform ini, Anda menyatakan telah membaca, memahami, dan menyetujui isi kebijakan privasi ini.</p>
       </div>
 
       <div class="section">
-        <h2>2. DEFINISI</h2>
+        <h2>2. RUANG LINGKUP KEBIJAKAN</h2>
+        <p>Kebijakan ini berlaku untuk seluruh pengguna Curhatorium, baik yang hanya mengakses informasi maupun yang menggunakan seluruh layanan secara aktif, termasuk Support Group, Chatbot, Tracker, dan fitur lain di dalam platform.</p>
+      </div>
+
+      <div class="section">
+        <h2>3. DATA APA SAJA YANG KAMI KUMPULKAN</h2>
+        <p>Curhatorium hanya mengumpulkan data seperlunya, terbatas, dan relevan untuk operasional non-komersial dan peningkatan layanan. Data yang dikumpulkan antara lain:</p>
+        <p><strong>a. Data Identifikasi Minimal</strong></p>
         <ul>
-          <li><strong>Curhatorium</strong> adalah platform digital berbasis komunitas yang menyediakan layanan dukungan psikososial non-klinis, termasuk namun tidak terbatas pada: diskusi support group, chatbot reflektif, misi penguatan mental harian, dan pelacakan keseharian.</li>
-          <li><strong>Pengguna</strong> adalah setiap individu yang mengakses, mendaftar, dan/atau menggunakan layanan Curhatorium.</li>
-          <li><strong>Ranger</strong> adalah fasilitator peer-support yang telah melalui proses seleksi dan pelatihan internal Curhatorium.</li>
-          <li><strong>Fitur</strong> merujuk pada seluruh layanan digital yang disediakan oleh Curhatorium, baik bersifat publik maupun terbatas.</li>
-          <li><strong>Tim Pusat</strong> adalah entitas pengelola utama Curhatorium yang terdiri dari CEO, COO, CTO, CFO, dan CMO.</li>
+          <li>Alamat email (dihash untuk tujuan autentikasi dan verifikasi akun)</li>
+          <li>Username/alias (bukan nama asli)</li>
+        </ul>
+        <p><strong>b. Data Aktivitas Pengguna</strong></p>
+        <ul>
+          <li>Riwayat penggunaan fitur (misalnya: sesi Support Group yang diikuti, progress tracker, aktivitas misi harian)</li>
+          <li>Waktu dan durasi penggunaan layanan</li>
+        </ul>
+        <p><strong>c. Data Opsional</strong></p>
+        <ul>
+          <li>Hasil tes kesehatan mental (screening non-diagnostik, jika diisi secara sukarela)</li>
+          <li>Feedback atau rating pasca diskusi</li>
+        </ul>
+        <p><strong>d. Data Teknis</strong></p>
+        <ul>
+          <li>IP address dan jenis perangkat/browser (untuk deteksi keamanan dan statistik internal)</li>
+          <li>Cookies dan session ID</li>
+        </ul>
+        <p><strong>Curhatorium tidak mengumpulkan:</strong></p>
+        <ul>
+          <li>Nama asli</li>
+          <li>Nomor telepon</li>
+          <li>Alamat rumah</li>
+          <li>Kontak darurat</li>
+          <li>Informasi medis resmi</li>
         </ul>
       </div>
 
       <div class="section">
-        <h2>3. KETENTUAN UMUM AKSES LAYANAN</h2>
+        <h2>4. TUJUAN PENGGUNAAN DATA</h2>
+        <p>Data Anda digunakan untuk:</p>
         <ul>
-          <li>Curhatorium dapat digunakan oleh pengguna berusia minimal 15 tahun.</li>
-          <li>Untuk mengakses layanan tertentu, pengguna harus membuat akun dengan informasi yang akurat dan aktif (contoh: email).</li>
-          <li>Pengguna bertanggung jawab atas aktivitas yang dilakukan melalui akun pribadinya.</li>
-          <li>Curhatorium berhak membatasi, menangguhkan, atau menghapus akun apabila terdapat pelanggaran terhadap kebijakan ini.</li>
+          <li>Memastikan layanan berjalan dengan aman dan optimal</li>
+          <li>Personalisasi pengalaman pengguna (misalnya: penyesuaian rekomendasi)</li>
+          <li>Monitoring dan evaluasi kualitas layanan secara agregat dan anonim</li>
+          <li>Mendeteksi pelanggaran atau aktivitas yang mencurigakan</li>
+          <li>Memfasilitasi respon darurat (dalam kondisi ekstrem dan sangat terbatas)</li>
         </ul>
       </div>
 
       <div class="section">
-        <h2>4. KARAKTERISTIK LAYANAN</h2>
-        <p>Layanan yang tersedia di Curhatorium tidak bersifat klinis (kecuali untuk Share and Talk Profesional atau Chat dan Meet with Sanny's Aid), dan tidak ditujukan untuk menggantikan psikoterapi, diagnosis, atau intervensi medis profesional.</p>
-        <p>Seluruh layanan berbasis prinsip Psychological First Aid dan peer-support, yang bersifat sukarela, berbasis komunitas, dan bersifat anonim.</p>
-        <p>Curhatorium tidak menyediakan layanan darurat. Untuk kondisi krisis (misal: risiko bunuh diri, kekerasan domestik), pengguna disarankan menghubungi pihak profesional atau layanan gawat darurat terdekat.</p>
-      </div>
-
-      <div class="section">
-        <h2>5. HAK DAN KEWAJIBAN PENGGUNA</h2>
-        <p><strong>Pengguna berhak untuk:</strong></p>
+        <h2>5. DASAR HUKUM PENGOLAHAN DATA</h2>
+        <p>Pengolahan data dilakukan berdasarkan:</p>
         <ul>
-          <li>Mengakses fitur secara anonim dan aman.</li>
-          <li>Menggunakan layanan sesuai kebutuhan tanpa diskriminasi.</li>
-          <li>Menyampaikan kritik dan saran secara bertanggung jawab.</li>
-          <li>Meminta penghapusan akun dan data pribadi sewaktu-waktu.</li>
-        </ul>
-        <p><strong>Pengguna berkewajiban untuk:</strong></p>
-        <ul>
-          <li>Menghormati Ranger dan pengguna lain.</li>
-          <li>Tidak menyebarkan konten yang mengandung unsur SARA, kekerasan, pornografi, ujaran kebencian, atau ancaman.</li>
-          <li>Tidak melakukan upaya manipulasi, eksploitasi, atau pelacakan terhadap pengguna lain.</li>
-          <li>Tidak menyebarluaskan hasil diskusi atau konten dalam platform ke pihak eksternal tanpa izin.</li>
+          <li>Persetujuan eksplisit pengguna saat mendaftar atau menggunakan layanan</li>
+          <li>Kebutuhan pelaksanaan layanan yang diminta oleh pengguna</li>
+          <li>Kepentingan sah Curhatorium dalam menjaga keamanan dan mutu platform</li>
+          <li>Kewajiban hukum jika diminta oleh otoritas yang berwenang</li>
         </ul>
       </div>
 
       <div class="section">
-        <h2>6. PERILAKU DALAM LAYANAN SUPPORT GROUP</h2>
+        <h2>6. PENYIMPANAN DAN PERLINDUNGAN DATA</h2>
         <ul>
-          <li>Setiap sesi diskusi dijalankan secara anonim dan difasilitasi oleh Ranger.</li>
-          <li>Tidak diperbolehkan menyebutkan nama asli, akun media sosial, nomor telepon, atau data identitas lainnya selama diskusi berlangsung.</li>
-          <li>Curhatorium memiliki kebijakan nol toleransi terhadap perilaku manipulatif, meremehkan, atau mengarahkan peserta secara tidak etis.</li>
-          <li>Pelanggaran terhadap prinsip ini dapat menyebabkan pemblokiran permanen.</li>
+          <li>Semua data disimpan dalam server terenkripsi dan terlindungi dengan standar keamanan tinggi (AES 256-bit / TLS 1.3).</li>
+          <li>Akses internal terhadap data pengguna sangat terbatas, hanya diberikan kepada tim teknis yang ditunjuk dengan autentikasi ganda (2FA).</li>
+          <li>Backup data dilakukan secara periodik dan disimpan secara terpisah untuk mitigasi kehilangan data.</li>
         </ul>
       </div>
 
       <div class="section">
-        <h2>7. KEBIJAKAN PENGGUNAAN FITUR LAINNYA</h2>
+        <h2>7. PELAKSANAAN PRINSIP ANONIMITAS</h2>
+        <p>Curhatorium menjunjung tinggi prinsip anonimitas sebagai landasan etika utama:</p>
         <ul>
-          <li>Fitur chatbot (Ment-AI) hanya menyediakan dukungan reflektif dan validasi umum, tanpa memberikan diagnosis atau keputusan personal.</li>
-          <li>Fitur tracker dan misi harian digunakan untuk memantau kondisi emosional dan kebiasaan positif pengguna secara mandiri.</li>
-          <li>Setiap data dari fitur ini bersifat pribadi, tidak dapat diakses oleh pengguna lain, dan tidak digunakan untuk iklan atau penargetan komersial.</li>
+          <li>Seluruh aktivitas pengguna di ruang diskusi tidak dapat dilacak ke identitas asli.</li>
+          <li>Ranger dan pengguna tidak memiliki akses terhadap data identifikasi satu sama lain.</li>
+          <li>Tidak ada fitur pencarian atau pelacakan berbasis nama, lokasi, atau akun media sosial.</li>
         </ul>
       </div>
 
       <div class="section">
-        <h2>8. KEAMANAN SISTEM DAN DATA PENGGUNA</h2>
+        <h2>8. HAK-HAK PENGGUNA TERHADAP DATA PRIBADI</h2>
+        <p>Pengguna Curhatorium memiliki hak sebagai berikut:</p>
         <ul>
-          <li>Seluruh data disimpan secara terenkripsi dan hanya dapat diakses oleh tim teknis terbatas.</li>
-          <li>Curhatorium menerapkan sistem keamanan dengan autentikasi dan kontrol perangkat.</li>
-          <li>Kami tidak membagikan data Anda kepada pihak ketiga tanpa persetujuan eksplisit, kecuali diwajibkan oleh hukum atau dalam kondisi darurat yang membahayakan nyawa.</li>
+          <li><strong>Hak Akses:</strong> Melihat dan mengetahui data pribadi yang disimpan oleh platform.</li>
+          <li><strong>Hak Koreksi:</strong> Memperbarui informasi akun jika diperlukan.</li>
+          <li><strong>Hak Hapus:</strong> Menghapus akun dan seluruh data pribadi secara permanen.</li>
+          <li><strong>Hak Penarikan Persetujuan:</strong> Menolak penggunaan data opsional sewaktu-waktu.</li>
+        </ul>
+        <p>Permintaan dapat diajukan melalui email ke: curhatorium@gmail.com. Waktu pemrosesan maksimal: 14 hari kerja.</p>
+      </div>
+
+      <div class="section">
+        <h2>9. PENGUNGKAPAN KEPADA PIHAK KETIGA</h2>
+        <p>Curhatorium tidak pernah menjual, menyewakan, atau memperdagangkan data pengguna kepada pihak ketiga untuk tujuan iklan atau keuntungan komersial. Namun, data dapat diungkapkan dalam kondisi terbatas berikut:</p>
+        <ul>
+          <li>Atas permintaan resmi dari otoritas hukum negara Republik Indonesia</li>
+          <li>Dalam kondisi darurat yang mengancam keselamatan pengguna (misalnya indikasi bunuh diri atau kekerasan)</li>
+          <li>Dengan persetujuan eksplisit tertulis dari pengguna</li>
         </ul>
       </div>
 
       <div class="section">
-        <h2>9. PEMBATASAN TANGGUNG JAWAB</h2>
+        <h2>10. PENGGUNAAN COOKIES & ANALITIK</h2>
+        <p>Kami menggunakan cookies dan alat analitik internal untuk:</p>
         <ul>
-          <li>Curhatorium tidak bertanggung jawab atas keputusan atau tindakan yang diambil pengguna berdasarkan informasi atau diskusi dalam platform.</li>
-          <li>Kami tidak menjamin bahwa layanan akan selalu bebas dari gangguan teknis, karena mungkin dilakukan pemeliharaan atau pembaruan sistem.</li>
-          <li>Segala konsekuensi dari penyalahgunaan layanan di luar batas kontrol Curhatorium menjadi tanggung jawab pribadi pengguna.</li>
+          <li>Mengingat preferensi login pengguna</li>
+          <li>Mengukur statistik interaksi pengguna</li>
+          <li>Mendeteksi penyalahgunaan layanan</li>
+        </ul>
+        <p>Pengguna dapat menonaktifkan cookies dari browser masing-masing, namun beberapa fitur mungkin menjadi terbatas.</p>
+      </div>
+
+      <div class="section">
+        <h2>11. PENYIMPANAN DATA INTERNASIONAL</h2>
+        <p>Saat ini, seluruh server Curhatorium berlokasi di dalam wilayah hukum Republik Indonesia. Jika di masa depan terjadi pengalihan lokasi server (termasuk ke luar negeri), pengguna akan diberi notifikasi dan opsi persetujuan ulang.</p>
+      </div>
+
+      <div class="section">
+        <h2>12. MASA SIMPAN DATA</h2>
+        <ul>
+          <li>Data akun aktif disimpan selama pengguna menggunakan layanan.</li>
+          <li>Data pengguna yang meminta penghapusan akun akan dihapus permanen dalam waktu maksimal 14 hari.</li>
+          <li>Data agregat anonim untuk keperluan statistik dapat disimpan tanpa batas waktu (tanpa identitas personal).</li>
         </ul>
       </div>
 
       <div class="section">
-        <h2>10. PEMBARUAN SYARAT & KETENTUAN</h2>
-        <p>Curhatorium berhak untuk memperbarui isi Terms & Conditions ini dari waktu ke waktu. Setiap perubahan akan diinformasikan kepada pengguna melalui platform, dan versi terbaru akan berlaku efektif sejak tanggal yang tercantum.</p>
+        <h2>13. PEMBARUAN KEBIJAKAN PRIVASI</h2>
+        <p>Curhatorium dapat memperbarui isi kebijakan ini secara berkala. Perubahan akan diumumkan melalui situs/platform dan akan berlaku efektif sejak tanggal revisi yang diumumkan.</p>
       </div>
 
       <div class="section">
-        <h2>11. HUKUM YANG BERLAKU</h2>
-        <p>Dokumen ini tunduk dan diatur berdasarkan hukum yang berlaku di Republik Indonesia, termasuk UU No. 27 Tahun 2022 tentang Perlindungan Data Pribadi dan UU ITE.</p>
+        <h2>14. KONTAK DAN PERNYATAAN</h2>
+        <p>Untuk pertanyaan, permintaan, atau laporan pelanggaran terkait data pribadi, silakan hubungi:</p>
+        <p><strong>curhatorium@gmail.com</strong> (Email)</p>
+        <p><strong>Jam operasional:</strong> Setiap hari, pukul 08.00 – 17.00 WIB</p>
       </div>
+
+      <div class="section">
+        <h2>15. PERSETUJUAN</h2>
+        <p>Dengan mendaftar atau menggunakan Curhatorium, Anda menyatakan telah membaca, memahami, dan menyetujui seluruh isi Kebijakan Privasi ini.</p>
+      </div>
+    </div>
+
+    <!-- Login Button Section -->
+    <div class="login-section">
+      <h2>Mulai Perjalanan Anda</h2>
+      <p>Setelah membaca kebijakan privasi kami, Anda dapat melanjutkan untuk masuk ke akun Curhatorium Anda.</p>
+      <a href="{{ route('login') }}" class="login-btn">
+        <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+          <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"/>
+        </svg>
+        Masuk ke Akun
+      </a>
     </div>
 
     <!-- Contact Section -->
     <div class="contact-section">
       <h2>KONTAK RESMI</h2>
-      <p>Untuk pertanyaan atau klarifikasi, silakan hubungi kami:</p>
+      <p>Untuk pertanyaan atau klarifikasi tentang kebijakan privasi, silakan hubungi kami:</p>
       <div class="contact-links">
         <a href="mailto:curhatorium@gmail.com" class="contact-link">
           <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
             <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4Zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1H2Zm13 2.383-4.708 2.825L15 11.105V5.383Zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741ZM1 11.105l4.708-2.897L1 5.383v5.722Z"/>
           </svg>
-          hello@curhatorium.com
+          curhatorium@gmail.com
         </a>
         <a href="https://instagram.com/curhatorium_" target="_blank" class="contact-link">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-instagram" viewBox="0 0 16 16">
@@ -428,4 +532,4 @@
     </div>
   </div>
 </body>
-</html>
+</html> 
