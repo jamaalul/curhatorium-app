@@ -211,13 +211,28 @@ button {
     font-family: Figtree, sans-serif;
 }
 @media (max-width: 600px) {
+    .cinema-tickets-list {
+        width: 100% !important;
+    }
     .cinema-ticket {
-        min-width: 98vw;
-        max-width: 99vw;
-        height: 100px;
-        padding: 0 2vw;
+        width: 100% !important;
+        height: 100px !important;
+        padding: 0 !important;
     }
     .cinema-ticket-content {
-        padding: 0 4px;
+        padding: 0 4px !important;
+    }
+    .cinema-ticket:before,
+    .cinema-ticket:after {
+        width: 28px !important;
+        height: 28px !important;
+        left: -14px !important;
+        right: -14px !important;
+    }
+    .cinema-ticket:before {
+        left: -14px !important;
+    }
+    .cinema-ticket:after {
+        right: -14px !important;
     }
 }

@@ -18,8 +18,14 @@ class ProfileController extends Controller
     public function edit(Request $request): View
     {
         $user = Auth::user();
-        // Group tickets by type and aggregate info for each type
+        // Group tickets by type and aggregate info for each type, excluding tickets with 0 values
         $tickets = $user->userTickets
+            ->filter(function ($ticket) {
+                // Exclude tickets with 0 limit_value
+                // For remaining_value: exclude 0, but allow null (unlimited tickets)
+                return $ticket->limit_value !== 0 && 
+                       ($ticket->remaining_value === null || $ticket->remaining_value > 0);
+            })
             ->groupBy('ticket_type')
             ->map(function ($group) {
                 $first = $group->first();
@@ -32,6 +38,10 @@ class ProfileController extends Controller
                     'remaining_value' => $allUnlimited ? null : $group->sum('remaining_value'),
                     'expires_at' => $first->expires_at,
                 ];
+            })
+            ->filter(function ($ticket) {
+                // Additional filter to remove tickets with 0 remaining_value after aggregation
+                return $ticket['remaining_value'] === null || $ticket['remaining_value'] > 0;
             });
         return view('profile', [
             'user' => $user,

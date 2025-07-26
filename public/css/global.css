@@ -1,11 +1,16 @@
 @font-face {
     font-family: "FigtreeReg";
-    src: url(/fonts/Figtree-Regular.ttf) format("truetype");
+    src: url(../fonts/Figtree-Regular.ttf) format("truetype");
 }
 
 @font-face {
     font-family: "FigtreeBold";
-    src: url(/fonts/Figtree-Medium.ttf) format("truetype");
+    src: url(../fonts/Figtree-Medium.ttf) format("truetype");
+}
+
+@font-face {
+    font-family: "PlayfairDisplay-reg";
+    src: url(../fonts/PlayfairDisplay-Regular.ttf);
 }
 
 * {

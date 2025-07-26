@@ -75,15 +75,15 @@
           <div class="cinema-tickets-list">
             @php
               $featureNames = [
-                'mental_test' => 'Mental Health Test',
-                'tracker' => 'Mood & Productivity Tracker',
+                'mental_test' => 'Tes Kesehatan Mental',
+                'tracker' => 'Mood and Productivity Tracker',
                 'mentai_chatbot' => 'Ment-AI Chatbot',
-                'missions' => 'Missions of the Day',
+                'missions' => 'Missions of The Day',
                 'support_group' => 'Support Group Discussion',
                 'deep_cards' => 'Deep Cards',
-                'share_talk_ranger_chat' => 'Share & Talk (Ranger)',
-                'share_talk_psy_chat' => 'Share & Talk (Psikolog Chat)',
-                'share_talk_psy_video' => 'Share & Talk (Psikolog Video Call)',
+                'share_talk_ranger_chat' => 'Share and Talk via Chat w/ Rangers',
+                'share_talk_psy_chat' => 'Share and Talk via Chat w/ Psikolog',
+                'share_talk_psy_video' => 'Share and Talk via Video Call w/ Psikiater',
               ];
             @endphp
             @foreach ($tickets as $ticket)

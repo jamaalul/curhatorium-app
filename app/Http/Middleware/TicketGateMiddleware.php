@@ -59,6 +59,10 @@ class TicketGateMiddleware
                 }
                 $hourTicket->remaining_value -= $consume;
                 $hourTicket->save();
+                
+                // Clean up any tickets that should be deleted
+                \App\Models\UserTicket::cleanupAfterConsumption();
+                
                 if ($hourTicket->remaining_value <= 0) {
                     return redirect()->back()->withErrors(['msg' => 'Tiket Anda sudah habis untuk fitur ini.']);
                 }
@@ -93,6 +97,9 @@ class TicketGateMiddleware
                         break;
                     }
                 }
+                
+                // Clean up any tickets that should be deleted
+                \App\Models\UserTicket::cleanupAfterConsumption();
                 $total_remaining = $countTickets->sum('remaining_value');
                 if ($total_remaining < 0) {
                     return redirect()->back()->withErrors(['msg' => 'Tiket Anda sudah habis untuk fitur ini.']);
@@ -136,6 +143,10 @@ class TicketGateMiddleware
                         break;
                     }
                 }
+                
+                // Clean up any tickets that should be deleted
+                \App\Models\UserTicket::cleanupAfterConsumption();
+                
                 session([$sessionKey => $today]);
                 $total_remaining = $dayTickets->sum('remaining_value');
                 if ($total_remaining < 0) {

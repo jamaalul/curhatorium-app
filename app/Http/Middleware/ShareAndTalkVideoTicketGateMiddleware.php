@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Professional;
 use Illuminate\Support\Facades\App;
 
-class ShareAndTalkTicketGateMiddleware
+class ShareAndTalkVideoTicketGateMiddleware
 {
     public function handle(Request $request, Closure $next)
     {
@@ -16,8 +16,17 @@ class ShareAndTalkTicketGateMiddleware
         if (!$professional) {
             return redirect()->back()->withErrors(['msg' => 'Professional not found.']);
         }
+        
         $type = $professional->type;
-        $ticketType = $type === 'psychiatrist' ? 'share_talk_psy_chat' : 'share_talk_ranger_chat';
+        
+        // For video consultations, use video ticket types
+        if ($type === 'psychiatrist') {
+            $ticketType = 'share_talk_psy_video';
+        } else {
+            // Rangers don't have video consultations, so redirect with error
+            return redirect()->back()->withErrors(['msg' => 'Video consultations are only available with psychiatrists.']);
+        }
+        
         // Forward to TicketGateMiddleware with the correct ticket type
         return App::make(TicketGateMiddleware::class)
             ->handle($request, $next, $ticketType);

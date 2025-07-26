@@ -53,20 +53,33 @@
     const input = document.getElementById('chat-input-field');
     const btn = document.getElementById('send-btn');
     const chatBody = document.getElementById('chat-body');
-    const sessionEnd = new Date(document.querySelector('.app').dataset.sessionEnd);
     const timerEl = document.getElementById('session-timer');
     const sessionId = document.querySelector('.app').dataset.sessionId;
+    const interval = {{ $interval }};
     let sessionStatus = 'waiting';
     let timerInterval = null;
     let waitingCountdown = 300; // 5 minutes in seconds
     let waitingInterval = null;
     let cancelledByTimeout = false;
+    let createdAt = null;
+    let fallbackStart = new Date(); // Fallback start time
 
     async function fetchSessionStatus() {
       try {
         const res = await fetch(`/api/share-and-talk/session-status/${sessionId}`);
         if (!res.ok) return 'waiting';
         const data = await res.json();
+        if (!createdAt && data.created_at) {
+          // Parse 'YYYY-MM-DD HH:mm:ss' as local time
+          const dt = data.created_at.replace(' ', 'T');
+          let parsed = Date.parse(dt);
+          if (isNaN(parsed)) {
+            // Fallback: parse as local time
+            const parts = data.created_at.split(/[- :]/);
+            parsed = new Date(parts[0], parts[1]-1, parts[2], parts[3], parts[4], parts[5]).getTime();
+          }
+          createdAt = new Date(parsed);
+        }
         return data.status;
       } catch {
         return 'waiting';
@@ -75,17 +88,42 @@
 
     function updateTimer() {
       const now = new Date();
-      const diff = sessionEnd - now;
-      if (diff <= 0) {
-        input.disabled = true;
-        btn.disabled = true;
-        timerEl.innerText = 'Sesi telah berakhir';
-        timerEl.style.color = 'red';
-        setProfessionalOnline();
-      } else {
+      const startTime = createdAt || fallbackStart;
+      let end;
+      let diff;
+      
+      if (sessionStatus === 'waiting' || sessionStatus === 'pending') {
+        // 5-minute waiting period
+        end = new Date(startTime.getTime() + 5 * 60 * 1000);
+        diff = end - now;
+        if (diff <= 0) {
+          input.disabled = true;
+          btn.disabled = true;
+          timerEl.innerText = 'Sesi dibatalkan (fasilitator tidak merespons)';
+          timerEl.style.color = 'red';
+          cancelSessionByTimeout();
+          return;
+        }
         const mins = String(Math.floor(diff / 60000)).padStart(2, '0');
         const secs = String(Math.floor((diff % 60000) / 1000)).padStart(2, '0');
-        timerEl.innerText = `Sisa waktu: ${mins}:${secs}`;
+        timerEl.innerText = `Menunggu fasilitator: ${mins}:${secs}`;
+      } else if (sessionStatus === 'active') {
+        // Session period based on interval from backend
+        end = new Date(startTime.getTime() + interval * 60 * 1000);
+        diff = end - now;
+        if (diff <= 0) {
+          input.disabled = true;
+          btn.disabled = true;
+          timerEl.innerText = 'Sesi telah berakhir';
+          timerEl.style.color = 'red';
+          setProfessionalOnline();
+        } else {
+          const mins = String(Math.floor(diff / 60000)).padStart(2, '0');
+          const secs = String(Math.floor((diff % 60000) / 1000)).padStart(2, '0');
+          timerEl.innerText = `Sisa waktu: ${mins}:${secs}`;
+        }
+      } else {
+        timerEl.innerText = 'Loading...';
       }
     }
 
@@ -95,33 +133,10 @@
       } catch {}
     }
 
-    function startWaitingCountdown() {
-      const waitingTimer = document.getElementById('waiting-timer');
-      const waitingCountdownEl = document.getElementById('waiting-countdown');
-      waitingTimer.style.display = '';
-      waitingCountdown = 300;
-      waitingCountdownEl.innerText = formatTime(waitingCountdown);
-      waitingInterval = setInterval(() => {
-        waitingCountdown--;
-        waitingCountdownEl.innerText = formatTime(waitingCountdown);
-        if (waitingCountdown <= 0) {
-          clearInterval(waitingInterval);
-          waitingInterval = null;
-          cancelSessionByTimeout();
-        }
-      }, 1000);
-    }
-
     function stopWaitingCountdown() {
       const waitingTimer = document.getElementById('waiting-timer');
       waitingTimer.style.display = 'none';
       if (waitingInterval) { clearInterval(waitingInterval); waitingInterval = null; }
-    }
-
-    function formatTime(seconds) {
-      const m = String(Math.floor(seconds / 60)).padStart(2, '0');
-      const s = String(seconds % 60).padStart(2, '0');
-      return `${m}:${s}`;
     }
 
     async function cancelSessionByTimeout() {
@@ -142,17 +157,21 @@
     async function pollStatusAndControlUI() {
       sessionStatus = await fetchSessionStatus();
       const warning = document.getElementById('cancel-warning');
-      if (sessionStatus === 'waiting') {
+      
+      if (sessionStatus === 'waiting' || sessionStatus === 'pending') {
         input.disabled = true;
         btn.disabled = true;
-        timerEl.innerText = 'Menunggu fasilitator';
         timerEl.style.color = 'orange';
         if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
         warning.style.display = '';
-        if (!waitingInterval && !cancelledByTimeout) startWaitingCountdown();
+        updateTimer();
+        if (!timerInterval) {
+          timerInterval = setInterval(updateTimer, 1000);
+        }
       } else if (sessionStatus === 'active') {
         input.disabled = false;
         btn.disabled = false;
+        timerEl.style.color = 'var(--text-muted)';
         if (!timerInterval) {
           updateTimer();
           timerInterval = setInterval(updateTimer, 1000);
@@ -173,6 +192,7 @@
 
     setInterval(pollStatusAndControlUI, 2000);
     pollStatusAndControlUI();
+    updateTimer(); // Initial timer update
 
     // Remove sendMessage function
     // function sendMessage(e) {
