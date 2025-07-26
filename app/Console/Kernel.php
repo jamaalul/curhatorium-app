@@ -13,6 +13,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('monthly:stat-summary')->monthlyOn(1, '00:20');
         $schedule->command('membership:grant-calm-starter')->monthlyOn(1, '00:05');
         $schedule->command('share-and-talk:cancel-expired-sessions')->everyMinute();
+        $schedule->command('tickets:cleanup-expired')->daily()->at('02:00');
     }
 
     protected function commands()

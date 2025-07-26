@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Video Consultation - Share and Talk</title>
+    <title>Curhatorium | Video Consultation</title>
     <link rel="stylesheet" href="{{ asset('css/global.css') }}">
     <link rel="stylesheet" href="{{ asset('css/share-and-talk/video.css') }}">
 </head>
@@ -142,16 +142,62 @@
             }, 1000);
         }
 
-        function cancelSession() {
+        async function cancelSession() {
             clearInterval(waitingInterval);
-            document.getElementById('waiting-message').style.display = 'none';
-            document.getElementById('cancelled-message').style.display = 'flex';
-            // TODO: Implement session cancellation API call
+            
+            try {
+                const response = await fetch(`/api/share-and-talk/cancel-session/${sessionId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    document.getElementById('waiting-message').style.display = 'none';
+                    document.getElementById('cancelled-message').style.display = 'flex';
+                    console.log('Session cancelled and ticket refunded successfully');
+                } else {
+                    console.error('Failed to cancel session:', data.message);
+                    // Still show cancelled message even if API fails
+                    document.getElementById('waiting-message').style.display = 'none';
+                    document.getElementById('cancelled-message').style.display = 'flex';
+                }
+            } catch (error) {
+                console.error('Error cancelling session:', error);
+                // Still show cancelled message even if API fails
+                document.getElementById('waiting-message').style.display = 'none';
+                document.getElementById('cancelled-message').style.display = 'flex';
+            }
         }
 
-        function endSession() {
+        async function endSession() {
             clearInterval(timerInterval);
-            // TODO: Implement session end API call
+            
+            try {
+                const response = await fetch(`/api/share-and-talk/end-session/${sessionId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    console.log('Session ended successfully');
+                } else {
+                    console.error('Failed to end session:', data.message);
+                }
+            } catch (error) {
+                console.error('Error ending session:', error);
+            }
+            
+            // Redirect to dashboard regardless of API success/failure
             window.location.href = '/dashboard';
         }
 

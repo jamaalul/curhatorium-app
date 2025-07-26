@@ -43,6 +43,10 @@ Route::middleware('auth')->group(function () {
         ->middleware(\App\Http\Middleware\ShareAndTalkVideoTicketGateMiddleware::class)
         ->name('share-and-talk.video');
     Route::post('/share-and-talk/chat/user-send', [ShareAndTalkController::class, 'userSend'])->name('share-and-talk.userSend');
+    
+    // Video consultation API endpoints
+    Route::post('/api/share-and-talk/cancel-session/{sessionId}', [ShareAndTalkController::class, 'cancelSession'])->name('share-and-talk.cancel-session');
+    Route::post('/api/share-and-talk/end-session/{sessionId}', [ShareAndTalkController::class, 'endSession'])->name('share-and-talk.end-session');
 
     Route::get('/mental-support-chatbot', [ChatbotController::class, 'index'])
         ->middleware(\App\Http\Middleware\TicketGateMiddleware::class . ':mentai_chatbot')

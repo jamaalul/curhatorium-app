@@ -174,10 +174,18 @@ class ShareAndTalkController extends Controller
         }
         $session->status = 'cancelled';
         $session->save();
-        // Return ticket to user
+        // Return ticket to user based on session type
         $user = $session->user;
-        $type = $session->professional->type === 'psychiatrist' ? 'share_talk_psy_chat' : 'share_talk_ranger_chat';
-        $ticket = $user->userTickets()->where('ticket_type', $type)->where(function($q) {
+        
+        if ($session->type === 'video') {
+            // Video session - refund video ticket
+            $ticketType = 'share_talk_psy_video';
+        } else {
+            // Chat session - determine ticket type based on professional type
+            $ticketType = $session->professional->type === 'psychiatrist' ? 'share_talk_psy_chat' : 'share_talk_ranger_chat';
+        }
+        
+        $ticket = $user->userTickets()->where('ticket_type', $ticketType)->where(function($q) {
             $q->whereNull('limit_type')->orWhere('limit_type', '!=', 'unlimited');
         })->orderByDesc('expires_at')->first();
         if ($ticket && $ticket->remaining_value !== null) {
@@ -201,10 +209,18 @@ class ShareAndTalkController extends Controller
         foreach ($expiredSessions as $session) {
             $session->status = 'cancelled';
             $session->save();
-            // Return ticket to user
+            // Return ticket to user based on session type
             $user = $session->user;
-            $type = $session->professional->type === 'psychiatrist' ? 'share_talk_psy_chat' : 'share_talk_ranger_chat';
-            $ticket = $user->userTickets()->where('ticket_type', $type)->where(function($q) {
+            
+            if ($session->type === 'video') {
+                // Video session - refund video ticket
+                $ticketType = 'share_talk_psy_video';
+            } else {
+                // Chat session - determine ticket type based on professional type
+                $ticketType = $session->professional->type === 'psychiatrist' ? 'share_talk_psy_chat' : 'share_talk_ranger_chat';
+            }
+            
+            $ticket = $user->userTickets()->where('ticket_type', $ticketType)->where(function($q) {
                 $q->whereNull('limit_type')->orWhere('limit_type', '!=', 'unlimited');
             })->orderByDesc('expires_at')->first();
             if ($ticket && $ticket->remaining_value !== null) {
@@ -253,17 +269,17 @@ class ShareAndTalkController extends Controller
                 'status' => 'waiting',
                 'type' => 'video', // Add type to distinguish video sessions
             ]);
-
+    
             // Set professional to busy
             $professional->availability = 'busy';
             $professional->availabilityText = 'Sedang menunggu konfirmasi sesi video (5 menit)';
             $professional->save();
-
+    
             $interval = now()->diffInMinutes($session->end);
-
+    
             // Create Google Meet link
             $meetLink = $this->createGoogleMeetLink($session_id, $professional, $user);
-
+    
             // Send WhatsApp notification to professional
             try {
                 $response = Http::withHeaders([
@@ -280,7 +296,7 @@ class ShareAndTalkController extends Controller
                 // Log the error but don't fail the session creation
                 \Log::error('Failed to send WhatsApp notification: ' . $e->getMessage());
             }
-
+    
             return view('share-and-talk.video', [
                 'professional' => $professional, 
                 'user' => $user, 
@@ -296,7 +312,7 @@ class ShareAndTalkController extends Controller
             return redirect()->route('share-and-talk')->with('error', 'An error occurred while creating the video consultation. Please try again.');
         }
     }
-
+    
     private function createGoogleMeetLink($sessionId, $professional, $user) {
         // For now, create a simple Google Meet link
         // In production, you'd use Google Calendar API to create actual meetings
@@ -307,4 +323,97 @@ class ShareAndTalkController extends Controller
         // This would create a proper calendar event with Meet link
         // and send invites to both parties
     }
+
+    public function cancelSession($sessionId) {
+        try {
+            $session = ChatSession::where('session_id', $sessionId)
+                ->where('user_id', Auth::id())
+                ->where('status', 'waiting')
+                ->firstOrFail();
+
+            // Update session status to cancelled
+            $session->status = 'cancelled';
+            $session->save();
+
+            // Reset professional availability
+            $professional = $session->professional;
+            $professional->availability = 'online';
+            $professional->availabilityText = 'Tersedia';
+            $professional->save();
+
+            // Refund the ticket based on session type
+            $ticketType = $session->type === 'video' ? 'share_talk_psy_video' : 'share_talk_psy_chat';
+            $this->refundTicket(Auth::user(), $ticketType);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Session cancelled and ticket refunded successfully.'
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Session cancellation error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to cancel session.'
+            ], 500);
+        }
+    }
+
+    public function endSession($sessionId) {
+        try {
+            $session = ChatSession::where('session_id', $sessionId)
+                ->where('user_id', Auth::id())
+                ->where('status', 'active')
+                ->firstOrFail();
+
+            // Update session status to completed
+            $session->status = 'completed';
+            $session->end = now('Asia/Jakarta');
+            $session->save();
+
+            // Reset professional availability
+            $professional = $session->professional;
+            $professional->availability = 'online';
+            $professional->availabilityText = 'Tersedia';
+            $professional->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Session ended successfully.'
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Session end error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to end session.'
+            ], 500);
+        }
+    }
+
+    private function refundTicket($user, $ticketType) {
+        // Find the most recently used ticket for this type
+        $ticket = $user->userTickets()
+            ->where('ticket_type', $ticketType)
+            ->where(function($q) {
+                $q->where('limit_type', 'hour')
+                  ->orWhere('limit_type', 'count');
+            })
+            ->where('remaining_value', '<', 1.0) // Assuming 1 unit was consumed
+            ->orderBy('updated_at', 'desc')
+            ->first();
+
+        if ($ticket) {
+            // Refund 1 unit back to the ticket (1 hour for hour-based, 1 count for count-based)
+            $refundAmount = $ticket->limit_type === 'hour' ? 1.0 : 1;
+            $ticket->remaining_value += $refundAmount;
+            $ticket->save();
+            
+            \Log::info("Ticket refunded for user {$user->id}, ticket type: {$ticketType}, refund amount: {$refundAmount}");
+        } else {
+            \Log::warning("No ticket found to refund for user {$user->id}, ticket type: {$ticketType}");
+        }
+    }
+
+
 }
