@@ -315,14 +315,7 @@ class ShareAndTalkController extends Controller
                 \Log::error('Failed to send WhatsApp notification: ' . $e->getMessage());
             }
     
-            return view('share-and-talk.video', [
-                'professional' => $professional, 
-                'user' => $user, 
-                'session_id' => $session_id, 
-                'interval' => $interval,
-                'jitsi_room' => $jitsiRoom,
-                'user_display_name' => $user->name,
-            ]);
+            return redirect()->route('share-and-talk.start-video-session', ['sessionId' => $session_id]);
             
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return redirect()->route('share-and-talk')->with('error', 'Professional not found.');
@@ -442,6 +435,65 @@ class ShareAndTalkController extends Controller
         } else {
             return response('Session is not in a state that can be activated.', 400);
         }
+    }
+
+    // First step: Validate session and redirect to video session
+    public function startVideoSession($sessionId) {
+        $session = ChatSession::where('session_id', $sessionId)->first();
+        
+        if (!$session) {
+            return redirect()->route('share-and-talk')->with('error', 'Session not found.');
+        }
+        
+        // Check if the current user owns this session
+        if ($session->user_id !== Auth::id()) {
+            return redirect()->route('share-and-talk')->with('error', 'You are not authorized to access this session.');
+        }
+        
+        // Check if session is still valid (not cancelled or completed)
+        if (in_array($session->status, ['cancelled', 'completed'])) {
+            return redirect()->route('share-and-talk')->with('error', 'This session has ended.');
+        }
+        
+        // Redirect to the actual video session
+        return redirect()->route('share-and-talk.video-session', ['sessionId' => $sessionId]);
+    }
+
+    // Second step: Display the video session (no session creation)
+    public function userVideoSession($sessionId) {
+        $session = ChatSession::where('session_id', $sessionId)->first();
+        
+        if (!$session) {
+            return redirect()->route('share-and-talk')->with('error', 'Session not found.');
+        }
+        
+        // Check if the current user owns this session
+        if ($session->user_id !== Auth::id()) {
+            return redirect()->route('share-and-talk')->with('error', 'You are not authorized to access this session.');
+        }
+        
+        // Check if session is still valid
+        if (in_array($session->status, ['cancelled', 'completed'])) {
+            return redirect()->route('share-and-talk')->with('error', 'This session has ended.');
+        }
+        
+        $user = User::where('id', $session->user_id)->first();
+        $professional = Professional::where('id', $session->professional_id)->first();
+        
+        if (!$user || !$professional) {
+            return redirect()->route('share-and-talk')->with('error', 'Session data is invalid.');
+        }
+        
+        $interval = now('Asia/Jakarta')->diffInMinutes($session->end);
+        
+        return view('share-and-talk.video', [
+            'professional' => $professional, 
+            'user' => $user, 
+            'session_id' => $sessionId, 
+            'interval' => $interval,
+            'jitsi_room' => $session->jitsi_room,
+            'user_display_name' => $user->name,
+        ]);
     }
 
 

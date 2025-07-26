@@ -14,8 +14,10 @@
         });
       }
     </script>
+    <link rel="stylesheet" href="{{ asset('css/global.css') }}">
 </head>
 <body>
+  @include('components.navbar')
     <div id="draggable-timer" style="position:fixed;top:20px;right:20px;z-index:9999;cursor:move;background:#222;color:#fff;padding:8px 16px;border-radius:8px;box-shadow:0 2px 8px #0003;user-select:none;">
       <span id="timer-label">Waiting: </span>
       <span id="timer-value">05:00</span>

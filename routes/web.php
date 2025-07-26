@@ -42,6 +42,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/share-and-talk/video/{professionalId}', [ShareAndTalkController::class, 'videoConsultation'])
         ->middleware(\App\Http\Middleware\ShareAndTalkVideoTicketGateMiddleware::class)
         ->name('share-and-talk.video');
+    Route::get('/share-and-talk/start-video-session/{sessionId}', [ShareAndTalkController::class, 'startVideoSession'])
+        ->name('share-and-talk.start-video-session');
+    Route::get('/share-and-talk/video-session/{sessionId}', [ShareAndTalkController::class, 'userVideoSession'])
+        ->name('share-and-talk.video-session');
     Route::post('/share-and-talk/chat/user-send', [ShareAndTalkController::class, 'userSend'])->name('share-and-talk.userSend');
     
     // Video consultation API endpoints
