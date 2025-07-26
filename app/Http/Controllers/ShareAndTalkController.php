@@ -225,4 +225,86 @@ class ShareAndTalkController extends Controller
         }
         return response()->json(['status' => 'not_found'], 404);
     }
+
+    public function videoConsultation($professionalId) {
+        try {
+            $professional = Professional::findOrFail($professionalId);
+            $user = Auth::user();
+            
+            // Validate that the professional is a psychiatrist
+            if ($professional->type !== 'psychiatrist') {
+                return redirect()->route('share-and-talk')->with('error', 'Video consultations are only available with psychiatrists.');
+            }
+            
+            // Check if professional is available
+            if ($professional->availability !== 'online') {
+                return redirect()->route('share-and-talk')->with('error', 'This professional is currently not available for video consultations.');
+            }
+            
+            $session_id = Str::uuid();
+            
+            // Create video session
+            $session = ChatSession::create([
+                'session_id' => $session_id,
+                'user_id' => $user->id,
+                'professional_id' => $professional->id,
+                'start' => now('Asia/Jakarta'),
+                'end' => now('Asia/Jakarta')->addMinutes(65), // 65 minutes
+                'status' => 'waiting',
+                'type' => 'video', // Add type to distinguish video sessions
+            ]);
+
+            // Set professional to busy
+            $professional->availability = 'busy';
+            $professional->availabilityText = 'Sedang menunggu konfirmasi sesi video (5 menit)';
+            $professional->save();
+
+            $interval = now()->diffInMinutes($session->end);
+
+            // Create Google Meet link
+            $meetLink = $this->createGoogleMeetLink($session_id, $professional, $user);
+
+            // Send WhatsApp notification to professional
+            try {
+                $response = Http::withHeaders([
+                    'Authorization' => env('FONNTE_TOKEN'),
+                ])->post('https://api.fonnte.com/send', [
+                    'target' => $professional->whatsapp_number,
+                    'message' => 
+                        "Kamu mendapat pesanan konsultasi VIDEO baru.\n" .
+                        "Akses URL berikut sebelum " . $session->start->addMinutes(5)->format('H:i') . " agar pesanannya tidak dibatalkan.\n\n" .
+                        "Google Meet: " . $meetLink . "\n\n" .
+                        "Dashboard: https://curhatorium.com/share-and-talk/facilitator/" . $session_id,
+                ]);
+            } catch (\Exception $e) {
+                // Log the error but don't fail the session creation
+                \Log::error('Failed to send WhatsApp notification: ' . $e->getMessage());
+            }
+
+            return view('share-and-talk.video', [
+                'professional' => $professional, 
+                'user' => $user, 
+                'session_id' => $session_id, 
+                'interval' => $interval,
+                'meet_link' => $meetLink
+            ]);
+            
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return redirect()->route('share-and-talk')->with('error', 'Professional not found.');
+        } catch (\Exception $e) {
+            \Log::error('Video consultation error: ' . $e->getMessage());
+            return redirect()->route('share-and-talk')->with('error', 'An error occurred while creating the video consultation. Please try again.');
+        }
+    }
+
+    private function createGoogleMeetLink($sessionId, $professional, $user) {
+        // For now, create a simple Google Meet link
+        // In production, you'd use Google Calendar API to create actual meetings
+        $meetingId = Str::random(10);
+        return "https://meet.google.com/" . $meetingId;
+        
+        // TODO: Implement Google Calendar API integration
+        // This would create a proper calendar event with Meet link
+        // and send invites to both parties
+    }
 }
