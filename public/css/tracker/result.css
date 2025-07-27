@@ -29,7 +29,7 @@
     --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
         0 10px 10px -5px rgba(0, 0, 0, 0.04);
     --transition: all 0.3s ease;
-    --container-width: 800px;
+    --container-width: 1400px;
 }
 
 * {
@@ -153,7 +153,7 @@ body {
 /* Entry Details */
 .entry-details {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
     gap: 2rem;
     margin-bottom: 2rem;
 }
@@ -464,7 +464,17 @@ body {
 }
 
 /* Responsive Design */
+@media (max-width: 1200px) {
+    :root {
+        --container-width: 1000px;
+    }
+}
+
 @media (max-width: 768px) {
+    :root {
+        --container-width: 100%;
+    }
+
     .page-header h1 {
         font-size: 2rem;
     }

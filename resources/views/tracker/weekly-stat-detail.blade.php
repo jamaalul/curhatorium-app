@@ -35,7 +35,7 @@
         
         .summary-metrics {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 20px;
             margin-bottom: 24px;
         }
@@ -61,6 +61,12 @@
         
         .daily-entries {
             margin-top: 32px;
+        }
+        
+        .entries-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 16px;
         }
         
         .entries-title {
@@ -281,44 +287,46 @@
             <div class="entries-title">Entri Harian Minggu Ini</div>
             
             @if($stats->count() > 0)
-                @foreach($stats as $stat)
-                    <div class="entry-item" onclick="window.location.href = '{{ route('tracker.stat.detail', $stat->id) }}'">
-                        <div class="entry-header">
-                            <div class="entry-date">
-                                {{ \Carbon\Carbon::parse($stat->created_at)->translatedFormat('l, j F Y') }}
+                <div class="entries-grid">
+                    @foreach($stats as $stat)
+                        <div class="entry-item" onclick="window.location.href = '{{ route('tracker.stat.detail', $stat->id) }}'">
+                            <div class="entry-header">
+                                <div class="entry-date">
+                                    {{ \Carbon\Carbon::parse($stat->created_at)->translatedFormat('l, j F Y') }}
+                                </div>
+                                <div class="entry-mood">
+                                    @php
+                                        $dayMood = $moods[$stat->mood] ?? ['emoji' => '😐', 'label' => 'Netral'];
+                                    @endphp
+                                    <span class="mood-emoji">{{ $dayMood['emoji'] }}</span>
+                                    <span class="mood-score">{{ $stat->mood }}/10</span>
+                                </div>
                             </div>
-                            <div class="entry-mood">
+                            <div class="entry-activity">
                                 @php
-                                    $dayMood = $moods[$stat->mood] ?? ['emoji' => '😐', 'label' => 'Netral'];
+                                    $activities = [
+                                        'work' => '💼 Pekerjaan & Karir',
+                                        'exercise' => '🏃‍♂️ Aktivitas Fisik',
+                                        'social' => '💬 Sosialisasi',
+                                        'hobbies' => '🎨 Kreativitas & Hobi',
+                                        'rest' => '🎧 Hiburan & Santai',
+                                        'entertainment' => '🛁 Perawatan Diri',
+                                        'nature' => '🌳 Aktivitas Luar Ruangan',
+                                        'food' => '🏠 Rumah Tangga',
+                                        'health' => '🧘 Kesehatan Mental',
+                                        'study' => '📖 Belajar & Produktivitas',
+                                        'spiritual' => '🙏 Spiritual',
+                                        'romance' => '💖 Hubungan Romantis',
+                                        'finance' => '📊 Finansial & Mandiri',
+                                        'other' => '🧩 Lainnya',
+                                    ];
+                                    $activityName = $activities[$stat->activity] ?? $stat->activity;
                                 @endphp
-                                <span class="mood-emoji">{{ $dayMood['emoji'] }}</span>
-                                <span class="mood-score">{{ $stat->mood }}/10</span>
+                                {{ $activityName }}
                             </div>
                         </div>
-                        <div class="entry-activity">
-                            @php
-                                $activities = [
-                                    'work' => '💼 Pekerjaan & Karir',
-                                    'exercise' => '🏃‍♂️ Aktivitas Fisik',
-                                    'social' => '💬 Sosialisasi',
-                                    'hobbies' => '🎨 Kreativitas & Hobi',
-                                    'rest' => '🎧 Hiburan & Santai',
-                                    'entertainment' => '🛁 Perawatan Diri',
-                                    'nature' => '🌳 Aktivitas Luar Ruangan',
-                                    'food' => '🏠 Rumah Tangga',
-                                    'health' => '🧘 Kesehatan Mental',
-                                    'study' => '📖 Belajar & Produktivitas',
-                                    'spiritual' => '🙏 Spiritual',
-                                    'romance' => '💖 Hubungan Romantis',
-                                    'finance' => '📊 Finansial & Mandiri',
-                                    'other' => '🧩 Lainnya',
-                                ];
-                                $activityName = $activities[$stat->activity] ?? $stat->activity;
-                            @endphp
-                            {{ $activityName }}
-                        </div>
-                    </div>
-                @endforeach
+                    @endforeach
+                </div>
             @else
                 <div class="empty-entries">
                     <div class="empty-entries-icon">📝</div>
