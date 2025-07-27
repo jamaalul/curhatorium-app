@@ -77,6 +77,36 @@ class User extends Authenticatable implements FilamentUser
         return $this->hasMany(\App\Models\UserTicket::class, 'user_id');
     }
 
+    /**
+     * Get the user memberships.
+     */
+    public function userMemberships()
+    {
+        return $this->hasMany(\App\Models\UserMembership::class, 'user_id');
+    }
+
+    /**
+     * Get active memberships for the user.
+     */
+    public function activeMemberships()
+    {
+        return $this->userMemberships()
+            ->where('expires_at', '>', now())
+            ->with('membership');
+    }
+
+    /**
+     * Check if user has active Inner Peace membership.
+     */
+    public function hasActiveInnerPeaceMembership()
+    {
+        return $this->activeMemberships()
+            ->whereHas('membership', function($query) {
+                $query->where('name', 'Inner Peace');
+            })
+            ->exists();
+    }
+
      public function canAccessPanel(\Filament\Panel $panel): bool
     {
         return $this->is_admin;

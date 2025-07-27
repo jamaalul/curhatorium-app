@@ -455,8 +455,10 @@
         <!-- View Toggle -->
         <div class="view-toggle">
             <button class="toggle-btn active" data-view="daily">Harian</button>
-            <button class="toggle-btn" data-view="weekly">Mingguan</button>
-            <button class="toggle-btn" data-view="monthly">Bulanan</button>
+            @if(Auth::user()->hasActiveInnerPeaceMembership())
+                <button class="toggle-btn" data-view="weekly">Mingguan</button>
+                <button class="toggle-btn" data-view="monthly">Bulanan</button>
+            @endif
         </div>
 
         <!-- History Container -->
@@ -519,18 +521,44 @@
             dailyLastPage = data.last_page;
         }
         async function fetchWeeklyTracks(page = 1) {
-            const res = await fetch(`/api/tracker/weekly-stats?page=${page}`);
-            const data = await res.json();
-            weeklyTracks = data.data;
-            weeklyPage = data.current_page;
-            weeklyLastPage = data.last_page;
+            try {
+                const res = await fetch(`/api/tracker/weekly-stats?page=${page}`);
+                if (res.status === 403) {
+                    // User doesn't have Inner Peace membership
+                    weeklyTracks = [];
+                    weeklyPage = 1;
+                    weeklyLastPage = 1;
+                    return;
+                }
+                const data = await res.json();
+                weeklyTracks = data.data;
+                weeklyPage = data.current_page;
+                weeklyLastPage = data.last_page;
+            } catch (error) {
+                weeklyTracks = [];
+                weeklyPage = 1;
+                weeklyLastPage = 1;
+            }
         }
         async function fetchMonthlyTracks(page = 1) {
-            const res = await fetch(`/api/tracker/monthly-stats?page=${page}`);
-            const data = await res.json();
-            monthlyTracks = data.data;
-            monthlyPage = data.current_page;
-            monthlyLastPage = data.last_page;
+            try {
+                const res = await fetch(`/api/tracker/monthly-stats?page=${page}`);
+                if (res.status === 403) {
+                    // User doesn't have Inner Peace membership
+                    monthlyTracks = [];
+                    monthlyPage = 1;
+                    monthlyLastPage = 1;
+                    return;
+                }
+                const data = await res.json();
+                monthlyTracks = data.data;
+                monthlyPage = data.current_page;
+                monthlyLastPage = data.last_page;
+            } catch (error) {
+                monthlyTracks = [];
+                monthlyPage = 1;
+                monthlyLastPage = 1;
+            }
         }
 
         // Inisialisasi halaman
@@ -621,9 +649,9 @@
                 return `
                     <div class="empty-state">
                         <div class="empty-state-icon">📊</div>
-                        <h3>Tidak Ada Catatan Mingguan</h3>
-                        <p>Belum ada ringkasan mingguan yang tersedia.</p>
-                        <a href="mood-tracker.html" class="empty-state-btn">Lacak Mood Anda</a>
+                        <h3>Fitur Mingguan Hanya untuk Inner Peace</h3>
+                        <p>Upgrade ke membership Inner Peace untuk mengakses laporan mingguan dan analisis mendalam.</p>
+                        <a href="/membership" class="empty-state-btn">Lihat Membership</a>
                     </div>
                 `;
             }
@@ -666,9 +694,9 @@
                 return `
                     <div class="empty-state">
                         <div class="empty-state-icon">📈</div>
-                        <h3>Tidak Ada Catatan Bulanan</h3>
-                        <p>Belum ada ringkasan bulanan yang tersedia.</p>
-                        <a href="mood-tracker.html" class="empty-state-btn">Lacak Mood Anda</a>
+                        <h3>Fitur Bulanan Hanya untuk Inner Peace</h3>
+                        <p>Upgrade ke membership Inner Peace untuk mengakses laporan bulanan dan analisis mendalam.</p>
+                        <a href="/membership" class="empty-state-btn">Lihat Membership</a>
                     </div>
                 `;
             }

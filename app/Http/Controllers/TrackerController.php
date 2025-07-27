@@ -134,6 +134,12 @@ class TrackerController extends Controller
     }
 
     public function showWeeklyStat($id) {
+        // Check if user has active Inner Peace membership
+        if (!Auth::user()->hasActiveInnerPeaceMembership()) {
+            return redirect()->route('membership.index')
+                ->withErrors(['msg' => 'Fitur ini hanya tersedia untuk member Inner Peace. Silakan upgrade membership Anda untuk mengakses laporan mingguan dan bulanan.']);
+        }
+
         $weeklyStat = WeeklyStat::where('user_id', Auth::id())
             ->where('id', $id)
             ->firstOrFail();
@@ -148,6 +154,12 @@ class TrackerController extends Controller
     }
 
     public function showMonthlyStat($id) {
+        // Check if user has active Inner Peace membership
+        if (!Auth::user()->hasActiveInnerPeaceMembership()) {
+            return redirect()->route('membership.index')
+                ->withErrors(['msg' => 'Fitur ini hanya tersedia untuk member Inner Peace. Silakan upgrade membership Anda untuk mengakses laporan mingguan dan bulanan.']);
+        }
+
         $monthlyStat = MonthlyStat::where('user_id', Auth::id())
             ->where('id', $id)
             ->firstOrFail();
@@ -175,6 +187,11 @@ class TrackerController extends Controller
 
     // API: Get paginated weekly stats
     public function getWeeklyStats(Request $request) {
+        // Check if user has active Inner Peace membership
+        if (!Auth::user()->hasActiveInnerPeaceMembership()) {
+            return response()->json(['error' => 'Fitur ini hanya tersedia untuk member Inner Peace'], 403);
+        }
+
         $weeklyStats = WeeklyStat::where('user_id', Auth::id())
             ->orderByDesc('week_start')
             ->paginate(10);
@@ -183,6 +200,11 @@ class TrackerController extends Controller
 
     // API: Get paginated monthly stats
     public function getMonthlyStats(Request $request) {
+        // Check if user has active Inner Peace membership
+        if (!Auth::user()->hasActiveInnerPeaceMembership()) {
+            return response()->json(['error' => 'Fitur ini hanya tersedia untuk member Inner Peace'], 403);
+        }
+
         $monthlyStats = MonthlyStat::where('user_id', Auth::id())
             ->orderByDesc('month')
             ->paginate(10);

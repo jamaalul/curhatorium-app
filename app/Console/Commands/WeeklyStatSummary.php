@@ -39,7 +39,16 @@ class WeeklyStatSummary extends Command
         $weekEnd = $today;
         $weekStart = $today->copy()->subDays(6);
 
-        $users = User::all();
+        // Only get users with active Inner Peace membership
+        $users = User::whereHas('userMemberships', function($query) {
+            $query->where('expires_at', '>', now())
+                  ->whereHas('membership', function($q) {
+                      $q->where('name', 'Inner Peace');
+                  });
+        })->get();
+
+        $this->info("Found " . $users->count() . " users with active Inner Peace membership.");
+
         foreach ($users as $user) {
             $stats = Stat::where('user_id', $user->id)
                 ->whereDate('created_at', '>=', $weekStart->toDateString())
@@ -111,7 +120,7 @@ class WeeklyStatSummary extends Command
                 'feedback' => $feedback,
             ]);
         }
-        $this->info('WeeklyStat summary created for all users.');
+        $this->info('WeeklyStat summary created for Inner Peace members only.');
         return 0;
     }
 }

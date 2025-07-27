@@ -80,12 +80,20 @@ Route::middleware('auth')->group(function () {
     Route::get('/tracker/result', [TrackerController::class, 'result'])->name('tracker.result');
     Route::get('/tracker/history', [TrackerController::class,'history'])->name('tracker.history');
     Route::get('/tracker/stat/{id}', [TrackerController::class, 'showStat'])->name('tracker.stat.detail');
-    Route::get('/tracker/weekly-stat/{id}', [TrackerController::class, 'showWeeklyStat'])->name('tracker.weekly-stat.detail');
-    Route::get('/tracker/monthly-stat/{id}', [TrackerController::class, 'showMonthlyStat'])->name('tracker.monthly-stat.detail');
+    Route::get('/tracker/weekly-stat/{id}', [TrackerController::class, 'showWeeklyStat'])
+        ->middleware(\App\Http\Middleware\InnerPeaceMembershipMiddleware::class)
+        ->name('tracker.weekly-stat.detail');
+    Route::get('/tracker/monthly-stat/{id}', [TrackerController::class, 'showMonthlyStat'])
+        ->middleware(\App\Http\Middleware\InnerPeaceMembershipMiddleware::class)
+        ->name('tracker.monthly-stat.detail');
 
     Route::get('/api/tracker/stats', [TrackerController::class, 'getStats'])->name('api.tracker.stats');
-    Route::get('/api/tracker/weekly-stats', [TrackerController::class, 'getWeeklyStats'])->name('api.tracker.weekly-stats');
-    Route::get('/api/tracker/monthly-stats', [TrackerController::class, 'getMonthlyStats'])->name('api.tracker.monthly-stats');
+    Route::get('/api/tracker/weekly-stats', [TrackerController::class, 'getWeeklyStats'])
+        ->middleware(\App\Http\Middleware\InnerPeaceMembershipMiddleware::class)
+        ->name('api.tracker.weekly-stats');
+    Route::get('/api/tracker/monthly-stats', [TrackerController::class, 'getMonthlyStats'])
+        ->middleware(\App\Http\Middleware\InnerPeaceMembershipMiddleware::class)
+        ->name('api.tracker.monthly-stats');
 
     Route::get('mental-health-test', function () {
         return view('mental-test.form');
