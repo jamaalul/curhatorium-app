@@ -17,7 +17,7 @@ class GenerateInnerPeaceStats extends Command
      *
      * @var string
      */
-    protected $signature = 'inner-peace:generate-stats {--weeks=4 : Number of weeks to generate} {--months=3 : Number of months to generate}';
+    protected $signature = 'inner-peace:generate-stats {--weeks=4 : Number of weeks to generate} {--months=3 : Number of months to generate} {--regenerate : Regenerate existing stats}';
 
     /**
      * The console command description.
@@ -33,6 +33,7 @@ class GenerateInnerPeaceStats extends Command
     {
         $weeksToGenerate = $this->option('weeks');
         $monthsToGenerate = $this->option('months');
+        $regenerate = $this->option('regenerate');
 
         // Get users with active Inner Peace membership
         $users = User::whereHas('userMemberships', function($query) {
@@ -49,19 +50,27 @@ class GenerateInnerPeaceStats extends Command
             return 0;
         }
 
+        // Clean up invalid stats if regenerating
+        if ($regenerate) {
+            $this->info("Cleaning up invalid stats...");
+            WeeklyStat::where('best_mood', '<=', 0)->delete();
+            MonthlyStat::where('best_mood', '<=', 0)->delete();
+            $this->info("Invalid stats cleaned up.");
+        }
+
         // Generate weekly stats
         $this->info("Generating weekly stats for the last {$weeksToGenerate} weeks...");
-        $this->generateWeeklyStats($users, $weeksToGenerate);
+        $this->generateWeeklyStats($users, $weeksToGenerate, $regenerate);
 
         // Generate monthly stats
         $this->info("Generating monthly stats for the last {$monthsToGenerate} months...");
-        $this->generateMonthlyStats($users, $monthsToGenerate);
+        $this->generateMonthlyStats($users, $monthsToGenerate, $regenerate);
 
         $this->info('Stats generation completed successfully!');
         return 0;
     }
 
-    private function generateWeeklyStats($users, $weeksToGenerate)
+    private function generateWeeklyStats($users, $weeksToGenerate, $regenerate)
     {
         $today = Carbon::today();
         
@@ -78,7 +87,7 @@ class GenerateInnerPeaceStats extends Command
                     ->where('week_end', $weekEnd->toDateString())
                     ->first();
 
-                if ($existingStat) {
+                if ($existingStat && !$regenerate) {
                     $this->line("  - User {$user->name}: Weekly stat already exists, skipping...");
                     continue;
                 }
@@ -98,6 +107,12 @@ class GenerateInnerPeaceStats extends Command
                 $totalEntries = $stats->count();
                 $bestMood = $stats->max('mood');
 
+                // Validate data before creating
+                if ($avgMood <= 0 || $bestMood <= 0) {
+                    $this->line("  - User {$user->name}: Invalid mood data (avg: {$avgMood}, best: {$bestMood}), skipping...");
+                    continue;
+                }
+
                 // Generate AI feedback
                 $feedback = $this->generateAIFeedback($stats, $weekStart, $weekEnd, 'weekly');
 
@@ -105,19 +120,19 @@ class GenerateInnerPeaceStats extends Command
                     'user_id' => $user->id,
                     'week_start' => $weekStart->toDateString(),
                     'week_end' => $weekEnd->toDateString(),
-                    'avg_mood' => $avgMood,
-                    'avg_productivity' => $avgProductivity,
+                    'avg_mood' => round($avgMood, 2),
+                    'avg_productivity' => round($avgProductivity, 2),
                     'total_entries' => $totalEntries,
                     'best_mood' => $bestMood,
                     'feedback' => $feedback,
                 ]);
 
-                $this->line("  - User {$user->name}: Created weekly stat with {$totalEntries} entries");
+                $this->line("  - User {$user->name}: Created weekly stat with {$totalEntries} entries (avg_mood: {$avgMood}, best_mood: {$bestMood})");
             }
         }
     }
 
-    private function generateMonthlyStats($users, $monthsToGenerate)
+    private function generateMonthlyStats($users, $monthsToGenerate, $regenerate)
     {
         $today = Carbon::today();
         
@@ -134,7 +149,7 @@ class GenerateInnerPeaceStats extends Command
                     ->where('month', $monthLabel)
                     ->first();
 
-                if ($existingStat) {
+                if ($existingStat && !$regenerate) {
                     $this->line("  - User {$user->name}: Monthly stat already exists, skipping...");
                     continue;
                 }
@@ -154,20 +169,26 @@ class GenerateInnerPeaceStats extends Command
                 $totalEntries = $stats->count();
                 $bestMood = $stats->max('mood');
 
+                // Validate data before creating
+                if ($avgMood <= 0 || $bestMood <= 0) {
+                    $this->line("  - User {$user->name}: Invalid mood data (avg: {$avgMood}, best: {$bestMood}), skipping...");
+                    continue;
+                }
+
                 // Generate AI feedback
                 $feedback = $this->generateAIFeedback($stats, $monthStart, $monthEnd, 'monthly');
 
                 MonthlyStat::create([
                     'user_id' => $user->id,
                     'month' => $monthLabel,
-                    'avg_mood' => $avgMood,
-                    'avg_productivity' => $avgProductivity,
+                    'avg_mood' => round($avgMood, 2),
+                    'avg_productivity' => round($avgProductivity, 2),
                     'total_entries' => $totalEntries,
                     'best_mood' => $bestMood,
                     'feedback' => $feedback,
                 ]);
 
-                $this->line("  - User {$user->name}: Created monthly stat with {$totalEntries} entries");
+                $this->line("  - User {$user->name}: Created monthly stat with {$totalEntries} entries (avg_mood: {$avgMood}, best_mood: {$bestMood})");
             }
         }
     }

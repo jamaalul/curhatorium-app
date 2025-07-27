@@ -64,6 +64,15 @@ class MonthlyStatSummary extends Command
             
             // Calculate best mood (highest mood score)
             $bestMood = $stats->max('mood');
+            
+            // Debug information
+            $this->line("  - User {$user->name}: {$totalEntries} entries, avg_mood: {$avgMood}, best_mood: {$bestMood}");
+            
+            // Validate data before creating
+            if ($avgMood <= 0 || $bestMood <= 0) {
+                $this->warn("  - User {$user->name}: Invalid mood data (avg: {$avgMood}, best: {$bestMood}), skipping...");
+                continue;
+            }
 
             // Compose summary for Gemini
             $moods = $stats->pluck('mood')->implode(', ');
@@ -113,12 +122,14 @@ class MonthlyStatSummary extends Command
             MonthlyStat::create([
                 'user_id' => $user->id,
                 'month' => $monthLabel,
-                'avg_mood' => $avgMood,
-                'avg_productivity' => $avgProductivity,
+                'avg_mood' => round($avgMood, 2),
+                'avg_productivity' => round($avgProductivity, 2),
                 'total_entries' => $totalEntries,
                 'best_mood' => $bestMood,
                 'feedback' => $feedback,
             ]);
+            
+            $this->line("  - User {$user->name}: Created monthly stat successfully");
         }
         $this->info('MonthlyStat summary created for Inner Peace members only.');
         return 0;

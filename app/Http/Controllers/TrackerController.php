@@ -149,8 +149,261 @@ class TrackerController extends Controller
             ->whereBetween('created_at', [$weeklyStat->week_start, $weeklyStat->week_end])
             ->orderBy('created_at', 'asc')
             ->get();
+
+        // Enhanced analysis data
+        $analysis = $this->generateWeeklyAnalysis($stats, $weeklyStat);
         
-        return view('tracker.weekly-stat-detail', compact('weeklyStat', 'stats'));
+        return view('tracker.weekly-stat-detail', compact('weeklyStat', 'stats', 'analysis'));
+    }
+
+    private function generateWeeklyAnalysis($stats, $weeklyStat)
+    {
+        if ($stats->isEmpty()) {
+            return null;
+        }
+
+        // Mood Rating Analysis
+        $avgMood = $weeklyStat->avg_mood;
+        $moodDescription = $this->getMoodDescription($avgMood);
+        $moodRecommendation = $this->getMoodRecommendation($avgMood);
+        
+        // Mood Range Analysis
+        $moodRange = $stats->max('mood') - $stats->min('mood');
+        $moodRangeDescription = $this->getMoodRangeDescription($moodRange);
+        
+        // Activity Analysis
+        $activityAnalysis = $this->analyzeActivities($stats);
+        
+        // Productivity Analysis
+        $productivityAnalysis = $this->analyzeProductivity($stats);
+        
+        // Goal and Recommendation Table
+        $goalTable = $this->getGoalTable($avgMood);
+        
+        // Best Mood Activity Analysis
+        $bestMoodActivity = $this->getBestMoodActivity($stats);
+        
+        return [
+            'mood_rating' => [
+                'average' => $avgMood,
+                'description' => $moodDescription,
+                'recommendation' => $moodRecommendation,
+                'range' => $moodRange,
+                'range_description' => $moodRangeDescription,
+            ],
+            'activity_analysis' => $activityAnalysis,
+            'productivity_analysis' => $productivityAnalysis,
+            'goal_table' => $goalTable,
+            'best_mood_activity' => $bestMoodActivity,
+        ];
+    }
+
+    private function getMoodDescription($avgMood)
+    {
+        if ($avgMood <= 2) return 'Sangat Negatif';
+        if ($avgMood <= 4) return 'Negatif';
+        if ($avgMood <= 6) return 'Netral';
+        if ($avgMood <= 8) return 'Positif';
+        return 'Sangat Positif';
+    }
+
+    private function getMoodRecommendation($avgMood)
+    {
+        if ($avgMood <= 4) return 'Meningkatkan Mood';
+        if ($avgMood <= 6) return 'Menjaga Mood';
+        return 'Mempertahankan Mood';
+    }
+
+    private function getMoodRangeDescription($range)
+    {
+        if ($range <= 2) return 'Stabil';
+        if ($range <= 4) return 'Sedang';
+        return 'Fluktuatif';
+    }
+
+    private function analyzeActivities($stats)
+    {
+        $activityCounts = $stats->groupBy('activity')->map->count();
+        $activityMoods = $stats->groupBy('activity')->map(function($group) {
+            return [
+                'avg_mood' => $group->avg('mood'),
+                'avg_productivity' => $group->avg('productivity'),
+                'count' => $group->count(),
+                'entries' => $group
+            ];
+        });
+
+        $dominantActivity = $activityCounts->sortDesc()->first();
+        $dominantActivityKey = $activityCounts->sortDesc()->keys()->first();
+        
+        $analysis = [];
+        
+        // Scenario A: Dominant Activity
+        if ($dominantActivity >= 3) {
+            $activityData = $activityMoods[$dominantActivityKey];
+            $activityNames = [
+                'work' => 'Pekerjaan & Karir',
+                'exercise' => 'Aktivitas Fisik',
+                'social' => 'Sosialisasi',
+                'hobbies' => 'Kreativitas & Hobi',
+                'rest' => 'Hiburan & Santai',
+                'entertainment' => 'Perawatan Diri',
+                'nature' => 'Aktivitas Luar Ruangan',
+                'food' => 'Rumah Tangga',
+                'health' => 'Kesehatan Mental',
+                'study' => 'Belajar & Produktivitas',
+                'spiritual' => 'Spiritual',
+                'romance' => 'Hubungan Romantis',
+                'finance' => 'Finansial & Mandiri',
+                'other' => 'Lainnya',
+            ];
+            
+            $activityName = $activityNames[$dominantActivityKey] ?? $dominantActivityKey;
+            $moodContribution = $activityData['avg_mood'] - $stats->avg('mood');
+            $productivityStatus = $activityData['avg_productivity'] >= 5 ? 'baik' : 'buruk';
+            
+            $analysis['dominant'] = [
+                'activity' => $activityName,
+                'count' => $dominantActivity,
+                'mood_contribution' => round($moodContribution, 1),
+                'productivity_status' => $productivityStatus,
+                'avg_mood' => round($activityData['avg_mood'], 1),
+                'avg_productivity' => round($activityData['avg_productivity'], 1),
+            ];
+        } else {
+            // Scenario B: No dominant activity
+            $highestMoodActivity = $activityMoods->sortByDesc('avg_mood')->first();
+            $lowestMoodActivity = $activityMoods->sortBy('avg_mood')->first();
+            
+            $activityNames = [
+                'work' => 'Pekerjaan & Karir',
+                'exercise' => 'Aktivitas Fisik',
+                'social' => 'Sosialisasi',
+                'hobbies' => 'Kreativitas & Hobi',
+                'rest' => 'Hiburan & Santai',
+                'entertainment' => 'Perawatan Diri',
+                'nature' => 'Aktivitas Luar Ruangan',
+                'food' => 'Rumah Tangga',
+                'health' => 'Kesehatan Mental',
+                'study' => 'Belajar & Produktivitas',
+                'spiritual' => 'Spiritual',
+                'romance' => 'Hubungan Romantis',
+                'finance' => 'Finansial & Mandiri',
+                'other' => 'Lainnya',
+            ];
+            
+            $analysis['varied'] = [
+                'highest' => [
+                    'activity' => $activityNames[array_keys($activityMoods->toArray())[0]] ?? 'Unknown',
+                    'avg_mood' => round($highestMoodActivity['avg_mood'], 1),
+                    'avg_productivity' => round($highestMoodActivity['avg_productivity'], 1),
+                ],
+                'lowest' => [
+                    'activity' => $activityNames[array_keys($activityMoods->toArray())[count($activityMoods)-1]] ?? 'Unknown',
+                    'avg_mood' => round($lowestMoodActivity['avg_mood'], 1),
+                    'avg_productivity' => round($lowestMoodActivity['avg_productivity'], 1),
+                ]
+            ];
+        }
+        
+        return $analysis;
+    }
+
+    private function analyzeProductivity($stats)
+    {
+        $avgProductivity = $stats->avg('productivity');
+        
+        // Find most and least productive days
+        $dailyProductivity = $stats->groupBy(function($stat) {
+            return $stat->created_at->format('Y-m-d');
+        })->map(function($dayStats) {
+            return [
+                'avg_productivity' => $dayStats->avg('productivity'),
+                'date' => $dayStats->first()->created_at,
+                'activities' => $dayStats->pluck('activity')->toArray(),
+                'mood' => $dayStats->avg('mood'),
+            ];
+        });
+        
+        $mostProductiveDay = $dailyProductivity->sortByDesc('avg_productivity')->first();
+        $leastProductiveDay = $dailyProductivity->sortBy('avg_productivity')->first();
+        
+        return [
+            'average' => round($avgProductivity, 1),
+            'most_productive' => [
+                'date' => $mostProductiveDay['date'],
+                'productivity' => round($mostProductiveDay['avg_productivity'], 1),
+                'activities' => $mostProductiveDay['activities'],
+                'mood' => round($mostProductiveDay['mood'], 1),
+            ],
+            'least_productive' => [
+                'date' => $leastProductiveDay['date'],
+                'productivity' => round($leastProductiveDay['avg_productivity'], 1),
+                'activities' => $leastProductiveDay['activities'],
+                'mood' => round($leastProductiveDay['mood'], 1),
+            ]
+        ];
+    }
+
+    private function getGoalTable($avgMood)
+    {
+        if ($avgMood <= 4.0) {
+            return [
+                'pattern' => 'Low Mood Week',
+                'goal' => 'Increase Emotional Support & Energy',
+                'theoretical_backing' => 'Behavioral Activation (BA), Social Support Theory, CBT',
+                'how_it_helps' => 'Builds structure, increases perceived support, enhances self-awareness'
+            ];
+        } elseif ($avgMood <= 6.0) {
+            return [
+                'pattern' => 'Fluctuating Mood',
+                'goal' => 'Create Routine, Reduce Variability',
+                'theoretical_backing' => 'Chronobiology, Habit Formation, Affective Activation Theory',
+                'how_it_helps' => 'Stabilizes circadian rhythm, enhances positive affect, improves emotional regulation'
+            ];
+        } else {
+            return [
+                'pattern' => 'Good/Stable Mood',
+                'goal' => 'Reinforce Success, Growth Focus',
+                'theoretical_backing' => 'Self-Monitoring, Positive Psychology, Self-Determination Theory',
+                'how_it_helps' => 'Reinforces adaptive habits, increases purpose and engagement, boosts social bonding'
+            ];
+        }
+    }
+
+    private function getBestMoodActivity($stats)
+    {
+        if ($stats->isEmpty()) {
+            return null;
+        }
+
+        // Find the stat with the highest mood
+        $bestMoodStat = $stats->sortByDesc('mood')->first();
+        
+        $activityNames = [
+            'work' => 'Pekerjaan & Karir',
+            'exercise' => 'Aktivitas Fisik',
+            'social' => 'Sosialisasi',
+            'hobbies' => 'Kreativitas & Hobi',
+            'rest' => 'Hiburan & Santai',
+            'entertainment' => 'Perawatan Diri',
+            'nature' => 'Aktivitas Luar Ruangan',
+            'food' => 'Rumah Tangga',
+            'health' => 'Kesehatan Mental',
+            'study' => 'Belajar & Produktivitas',
+            'spiritual' => 'Spiritual',
+            'romance' => 'Hubungan Romantis',
+            'finance' => 'Finansial & Mandiri',
+            'other' => 'Lainnya',
+        ];
+
+        return [
+            'activity' => $activityNames[$bestMoodStat->activity] ?? $bestMoodStat->activity,
+            'mood_score' => $bestMoodStat->mood,
+            'productivity' => $bestMoodStat->productivity,
+            'date' => $bestMoodStat->created_at,
+            'explanation' => $bestMoodStat->explanation,
+        ];
     }
 
     public function showMonthlyStat($id) {
