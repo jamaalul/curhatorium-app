@@ -140,3 +140,17 @@ Route::get('/api/share-and-talk/session-status/{sessionId}', [ShareAndTalkContro
 Route::post('/api/share-and-talk/cancel-session/{sessionId}', [ShareAndTalkController::class, 'cancelSessionByUser']);
 Route::post('/api/share-and-talk/professional-online/{professionalId}', [ShareAndTalkController::class, 'setProfessionalOnline']);
 Route::get('/share-and-talk/activate-session/{sessionId}', [ShareAndTalkController::class, 'activateSession'])->name('share-and-talk.activate-session');
+
+// Professional Authentication Routes
+Route::get('/professional/login', [\App\Http\Controllers\Auth\ProfessionalAuthenticatedSessionController::class, 'create'])->name('professional.login');
+Route::post('/professional/login', [\App\Http\Controllers\Auth\ProfessionalAuthenticatedSessionController::class, 'store'])->name('professional.login');
+Route::post('/professional/logout', [\App\Http\Controllers\Auth\ProfessionalAuthenticatedSessionController::class, 'destroy'])->name('professional.logout');
+
+// Professional Dashboard Routes (Protected)
+Route::middleware([\App\Http\Middleware\AuthenticateProfessional::class])->group(function () {
+    Route::get('/professional/{professionalId}/dashboard', [\App\Http\Controllers\ProfessionalDashboardController::class, 'dashboard'])->name('professional.dashboard');
+    Route::post('/professional/{professionalId}/update-availability', [\App\Http\Controllers\ProfessionalDashboardController::class, 'updateAvailability'])->name('professional.update-availability');
+    Route::get('/professional/{professionalId}/availability', [\App\Http\Controllers\ProfessionalDashboardController::class, 'getAvailability'])->name('professional.get-availability');
+    Route::post('/professional/{professionalId}/change-password', [\App\Http\Controllers\ProfessionalDashboardController::class, 'changePassword'])->name('professional.change-password');
+    Route::post('/professional/logout', [\App\Http\Controllers\ProfessionalDashboardController::class, 'logout'])->name('professional.dashboard.logout');
+});

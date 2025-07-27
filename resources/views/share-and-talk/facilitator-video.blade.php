@@ -22,6 +22,16 @@
         <span id="timer-value" style="font-size:1.5em;font-family:'Courier New',monospace;font-weight:700;letter-spacing:1px;">{{ $interval }}:00</span>
       </div>
     </div>
+    <div id="dashboard-link" style="position:fixed;top:32px;right:32px;z-index:9999;">
+      <a href="{{ route('professional.dashboard', ['professionalId' => $professionalId]) }}" 
+         style="background:#222;color:#fff;padding:12px 16px;border-radius:8px;box-shadow:0 2px 12px #0002;text-decoration:none;font-family:'FigtreeReg', Figtree, Arial,sans-serif;font-size:0.9rem;margin-right:10px;">
+        📊 Dashboard
+      </a>
+      <a href="{{ route('professional.login') }}" 
+         style="background:#333;color:#fff;padding:12px 16px;border-radius:8px;box-shadow:0 2px 12px #0002;text-decoration:none;font-family:'FigtreeReg', Figtree, Arial,sans-serif;font-size:0.9rem;">
+        🔐 Login
+      </a>
+    </div>
     <div id="jaas-container" />
     <script>
     // --- Timer Logic for Professional ---

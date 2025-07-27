@@ -40,6 +40,10 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+        'professional' => [
+            'driver' => 'session',
+            'provider' => 'professionals',
+        ],
     ],
 
     /*
@@ -63,6 +67,10 @@ return [
         'users' => [
             'driver' => 'eloquent',
             'model' => env('AUTH_MODEL', App\Models\User::class),
+        ],
+        'professionals' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Professional::class,
         ],
 
         // 'users' => [
@@ -97,6 +105,7 @@ return [
             'expire' => 60,
             'throttle' => 60,
         ],
+
     ],
 
     /*

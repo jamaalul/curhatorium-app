@@ -118,6 +118,7 @@ class ShareAndTalkController extends Controller
 
         return view('share-and-talk.facilitator-video', [
             'sessionId' => $sessionId, 
+            'professionalId' => $session->professional_id,
             'interval' => $interval,
         ]);
     }

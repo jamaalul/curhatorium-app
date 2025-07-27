@@ -5,16 +5,25 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
-class Professional extends Model
+class Professional extends Authenticatable
 {
     protected $fillable = [
-        'name', 'title', 'avatar', 'specialties', 'availability', 'availabilityText', 'type', 'rating',
+        'name', 'password', 'title', 'avatar', 'specialties', 'availability', 'availabilityText', 'type', 'rating',
         'whatsapp_number', 'bank_account_number', 'bank_name'
+    ];
+
+    protected $hidden = [
+        'password',
+        'remember_token',
     ];
 
     protected $casts = [
         'specialties' => 'array',
+        'password' => 'hashed',
     ];
 
     protected static function booted()
