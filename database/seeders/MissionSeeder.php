@@ -558,8 +558,19 @@ class MissionSeeder extends Seeder
             ],
         ];
 
-        // Delete old data
-        Mission::truncate();
+        // Delete old data - handle foreign key constraints for different database types
+        $connection = \DB::connection()->getDriverName();
+        
+        if ($connection === 'mysql') {
+            // For MySQL, disable foreign key checks temporarily
+            \DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+            Mission::truncate();
+            \DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        } else {
+            // For SQLite and other databases, delete related records first
+            \DB::table('mission_completions')->delete();
+            Mission::truncate();
+        }
 
         foreach ($missions as $mission) {
             Mission::create($mission);
