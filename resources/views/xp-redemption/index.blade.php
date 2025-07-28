@@ -14,7 +14,7 @@
     
     <main class="redemption-main">
         <section class="redemption-section">
-            <h1 class="redemption-title">Skema Voucher XP</h1>
+            <h1 class="redemption-title">Tukarkan XP-mu dengan<br>reward yang kamu inginkan!</h1>
             
             <!-- User XP Display -->
             <div class="user-xp-display">
@@ -31,6 +31,20 @@
             </div>
 
             <!-- Redemption Table -->
+            @php
+                $featureNames = [
+                    'mental_test' => 'Tes Kesehatan Mental',
+                    'tracker' => 'Mood and Productivity Tracker',
+                    'mentai_chatbot' => 'Ment-AI Chatbot',
+                    'missions' => 'Missions of The Day',
+                    'support_group' => 'Support Group Discussion',
+                    'deep_cards' => 'Deep Cards',
+                    'mentai_deepcard_unlimited' => 'Ment-AI & Deep Cards',
+                    'share_talk_ranger_chat' => 'Share and Talk via Chat w/ Rangers',
+                    'share_talk_psy_chat' => 'Share and Talk via Chat w/ Psikolog',
+                    'share_talk_psy_video' => 'Share and Talk via Video Call w/ Psikiater',
+                ];
+            @endphp
             <div class="redemption-table-container">
                 <table class="redemption-table">
                     <thead>
@@ -46,9 +60,10 @@
                             @php
                                 $canAfford = $user->total_xp >= $item['xp_cost'];
                                 $xpShortage = $item['xp_cost'] - $user->total_xp;
+                                $displayName = $featureNames[$key] ?? ucfirst(str_replace(['_', '-'], ' ', $key));
                             @endphp
                             <tr class="{{ $canAfford ? 'affordable' : 'unaffordable' }}">
-                                <td class="item-name">{{ $item['name'] }}</td>
+                                <td class="item-name">{{ $displayName }}</td>
                                 <td class="xp-cost">{{ number_format($item['xp_cost']) }} XP</td>
                                 <td class="ticket-type">
                                     @if($item['is_unlimited'])
@@ -62,7 +77,7 @@
                                         <form method="POST" action="{{ route('xp-redemption.redeem') }}" class="redeem-form">
                                             @csrf
                                             <input type="hidden" name="ticket_type" value="{{ $key }}">
-                                            <button type="submit" class="redeem-btn" onclick="return confirm('Are you sure you want to redeem {{ $item['name'] }} for {{ number_format($item['xp_cost']) }} XP?')">
+                                            <button type="submit" class="redeem-btn" onclick="return confirm('Are you sure you want to redeem {{ $displayName }} for {{ number_format($item['xp_cost']) }} XP?')">
                                                 Redeem
                                             </button>
                                         </form>
@@ -97,7 +112,7 @@
                 <ul>
                     <li>Redeem your accumulated XP for various service tickets</li>
                     <li>Most tickets provide 1 session and expire after 30 days</li>
-                    <li>Mood & Productivity Tracker and Ment-AI & Deepcard are unlimited for 30 days</li>
+                    <li>Mood & Productivity Tracker and Ment-AI & Deep Cards are unlimited for 30 days</li>
                     <li>All tickets expire after 30 days from redemption</li>
                     <li>You can redeem multiple tickets if you have enough XP</li>
                 </ul>
