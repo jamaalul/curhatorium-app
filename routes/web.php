@@ -196,3 +196,11 @@ Route::middleware([\App\Http\Middleware\AuthenticateProfessional::class])->group
     Route::post('/professional/{professionalId}/change-password', [\App\Http\Controllers\ProfessionalDashboardController::class, 'changePassword'])->name('professional.change-password');
     Route::post('/professional/logout', [\App\Http\Controllers\ProfessionalDashboardController::class, 'logout'])->name('professional.dashboard.logout');
 });
+
+Route::post('/mark-onboarding-completed', function () {
+    if (auth()->check()) {
+        auth()->user()->update(['onboarding_completed' => true]);
+        return response()->json(['success' => true]);
+    }
+    return response()->json(['success' => false], 401);
+})->middleware('auth');

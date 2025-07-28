@@ -15,6 +15,7 @@
 
 * {
     font-family: FigtreeReg;
+    scroll-behavior: smooth;
 }
 
 *::selection {

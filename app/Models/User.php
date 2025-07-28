@@ -27,6 +27,7 @@ class User extends Authenticatable implements FilamentUser
         'group_id',
         'profile_picture',
         'total_xp',
+        'onboarding_completed',
     ];
 
     /**
