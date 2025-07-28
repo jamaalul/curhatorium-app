@@ -141,15 +141,14 @@ class XpService
      */
     public function getUserMembershipType(User $user): string
     {
-        // Check if user has any paid membership (not Calm Starter)
-        $hasPaidMembership = $user->activeMemberships()
+        // Check if user has Growth Path, Blossom, or Inner Peace membership
+        $hasPremiumMembership = $user->activeMemberships()
             ->whereHas('membership', function($query) {
-                $query->where('name', '!=', 'Calm Starter')
-                      ->where('price', '>', 0);
+                $query->whereIn('name', ['Growth Path', 'Blossom', 'Inner Peace']);
             })
             ->exists();
 
-        return $hasPaidMembership ? 'subscription' : 'free';
+        return $hasPremiumMembership ? 'subscription' : 'free';
     }
 
     /**
