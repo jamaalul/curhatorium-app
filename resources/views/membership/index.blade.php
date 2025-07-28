@@ -35,46 +35,41 @@
                         '(2 Jam) Ment-AI Chatbot',
                         '(7 Hari) Missions of The Day',
                         '(1x) Support Group Discussion',
-                        '(15x) Deep Cards',
+                        '(30x) Deep Cards',
                     ],
                 ],
                 'Growth Path' => [
                     'class' => '',
                     'svg' => '<svg width="42" height="42" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5.20248 8.5594C5.20248 12.2423 3.74772 15.7707 1.16512 18.3518L1.0405 18.4763C-0.346832 19.8628 -0.346832 22.1372 1.0405 23.5237L1.16512 23.6482C3.74772 26.2293 5.20248 29.7577 5.20248 33.4406C5.20248 35.336 6.71295 36.8725 8.5762 36.8725H8.69046C12.348 36.8725 15.8838 38.3581 18.4928 40.9655C19.863 42.3349 22.0739 42.3497 23.444 40.9804C26.0784 38.3477 29.6237 36.8725 33.3166 36.8725H33.5131C35.4204 36.8725 36.9665 35.2997 36.9665 33.3595V33.2084C36.9665 29.5352 38.4175 26.016 40.9933 23.4417C42.3356 22.1002 42.3356 19.8998 40.9933 18.5583C38.4175 15.984 36.9665 12.4648 36.9665 8.7916V8.64048C36.9665 6.70031 35.4204 5.1275 33.5131 5.1275H33.3166C29.6237 5.1275 26.0784 3.65232 23.444 1.01957C22.0739 -0.349742 19.863 -0.334852 18.4928 1.03446C15.8838 3.64193 12.348 5.1275 8.69046 5.1275H8.5762C6.71295 5.1275 5.20248 6.66401 5.20248 8.5594Z" fill="#FFCD2D"/></svg>',
                     'benefits' => [
-                        '(Unlimited) Tes Kesehatan Mental',
-                        '(1x) Share and Talk via Chat w/ Rangers',
-                        '(20x) Deep Cards',
-                        '(3 Jam) Ment-AI Chatbot',
-                        '(2x) Support Group Discussion',
-                        '(Unlimited) Missions of The Day',
+                        'Calm Starter',
                         '(Unlimited) Mood and Productivity Tracker',
+                        '(+1 Jam) Ment-AI Chatbot',
+                        '(Unlimited) Missions of The Day',
+                        '(+1x) Support Group Discussion',
+                        '(Unlimited) Deep Cards',
+                        '(1x) Share and Talk via Chat w/ Rangers',
+                        'Extra gain XP'
                     ],
                 ],
                 'Blossom' => [
                     'class' => '',
                     'svg' => '<svg width="42" height="42" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5.20248 8.5594C5.20248 12.2423 3.74772 15.7707 1.16512 18.3518L1.0405 18.4763C-0.346832 19.8628 -0.346832 22.1372 1.0405 23.5237L1.16512 23.6482C3.74772 26.2293 5.20248 29.7577 5.20248 33.4406C5.20248 35.336 6.71295 36.8725 8.5762 36.8725H8.69046C12.348 36.8725 15.8838 38.3581 18.4928 40.9655C19.863 42.3349 22.0739 42.3497 23.444 40.9804C26.0784 38.3477 29.6237 36.8725 33.3166 36.8725H33.5131C35.4204 36.8725 36.9665 35.2997 36.9665 33.3595V33.2084C36.9665 29.5352 38.4175 26.016 40.9933 23.4417C42.3356 22.1002 42.3356 19.8998 40.9933 18.5583C38.4175 15.984 36.9665 12.4648 36.9665 8.7916V8.64048C36.9665 6.70031 35.4204 5.1275 33.5131 5.1275H33.3166C29.6237 5.1275 26.0784 3.65232 23.444 1.01957C22.0739 -0.349742 19.863 -0.334852 18.4928 1.03446C15.8838 3.64193 12.348 5.1275 8.69046 5.1275H8.5762C6.71295 5.1275 5.20248 6.66401 5.20248 8.5594Z" fill="#FFCD2D"/></svg>',
                     'benefits' => [
-                        '(Unlimited) Tes Kesehatan Mental',
-                        '(1x) Share and Talk via Chat w/ Rangers',
-                        '(Unlimited) Mood and Productivity Tracker',
-                        '(3x) Support Group Discussion',
+                        'Growth Path',
+                        '(+1x) Share and Talk via Chat w/ Rangers',
+                        '(+2x) Support Group Discussion',
                         '(Unlimited) Ment-AI Chatbot',
-                        '(Unlimited) Missions of The Day',
-                        '(Unlimited) Deep Cards',
                     ],
                 ],
                 'Inner Peace' => [
                     'class' => '',
                     'svg' => '<svg width="42" height="42" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5.20248 8.5594C5.20248 12.2423 3.74772 15.7707 1.16512 18.3518L1.0405 18.4763C-0.346832 19.8628 -0.346832 22.1372 1.0405 23.5237L1.16512 23.6482C3.74772 26.2293 5.20248 29.7577 5.20248 33.4406C5.20248 35.336 6.71295 36.8725 8.5762 36.8725H8.69046C12.348 36.8725 15.8838 38.3581 18.4928 40.9655C19.863 42.3349 22.0739 42.3497 23.444 40.9804C26.0784 38.3477 29.6237 36.8725 33.3166 36.8725H33.5131C35.4204 36.8725 36.9665 35.2997 36.9665 33.3595V33.2084C36.9665 29.5352 38.4175 26.016 40.9933 23.4417C42.3356 22.1002 42.3356 19.8998 40.9933 18.5583C38.4175 15.984 36.9665 12.4648 36.9665 8.7916V8.64048C36.9665 6.70031 35.4204 5.1275 33.5131 5.1275H33.3166C29.6237 5.1275 26.0784 3.65232 23.444 1.01957C22.0739 -0.349742 19.863 -0.334852 18.4928 1.03446C15.8838 3.64193 12.348 5.1275 8.69046 5.1275H8.5762C6.71295 5.1275 5.20248 6.66401 5.20248 8.5594Z" fill="#FFCD2D"/></svg>',
                     'benefits' => [
-                        '(Unlimited) Tes Kesehatan Mental',
-                        '(3x) Share and Talk via Chat w/ Rangers',
-                        '(6x) Support Group Discussion',
-                        '(Unlimited) Mood and Productivity Tracker w/ Extended Report',
-                        '(Unlimited) Ment-AI Chatbot',
-                        '(Unlimited) Missions of The Day',
-                        '(Unlimited) Deep Cards',
+                        'Blossom',
+                        '(+1x) Share and Talk via Chat w/ Rangers',
+                        '(+4x) Support Group Discussion',
+                        'Extended Report untuk Mood and Productivity Tracker',
                     ],
                 ],
                 'Harmony' => [
@@ -82,6 +77,7 @@
                     'svg' => '<svg width="42" height="42" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5.20248 8.5594C5.20248 12.2423 3.74772 15.7707 1.16512 18.3518L1.0405 18.4763C-0.346832 19.8628 -0.346832 22.1372 1.0405 23.5237L1.16512 23.6482C3.74772 26.2293 5.20248 29.7577 5.20248 33.4406C5.20248 35.336 6.71295 36.8725 8.5762 36.8725H8.69046C12.348 36.8725 15.8838 38.3581 18.4928 40.9655C19.863 42.3348 22.0739 42.3497 23.444 40.9804C26.0784 38.3477 29.6237 36.8725 33.3166 36.8725H33.5131C35.4204 36.8725 36.9665 35.2997 36.9665 33.3595V33.2084C36.9665 29.5352 38.4175 26.016 40.9933 23.4417C42.3356 22.1002 42.3356 19.8998 40.9933 18.5583C38.4175 15.984 36.9665 12.4648 36.9665 8.7916V8.64048C36.9665 6.70031 35.4204 5.1275 33.5131 5.1275H33.3166C29.6237 5.1275 26.0784 3.65232 23.444 1.01957C22.0739 -0.349742 19.863 -0.334853 18.4928 1.03446C15.8838 3.64193 12.348 5.1275 8.69046 5.1275H8.5762C6.71295 5.1275 5.20248 6.66401 5.20248 8.5594Z" fill="#47A6A6"/></svg>',
                     'benefits' => [
                         '(1x) Support Group Discussion',
+                        '(Unlimited 1 bulan) Deep Cards',
                     ],
                 ],
                 'Serenity' => [
@@ -89,6 +85,7 @@
                     'svg' => '<svg width="42" height="42" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5.20248 8.5594C5.20248 12.2423 3.74772 15.7707 1.16512 18.3518L1.0405 18.4763C-0.346832 19.8628 -0.346832 22.1372 1.0405 23.5237L1.16512 23.6482C3.74772 26.2293 5.20248 29.7577 5.20248 33.4406C5.20248 35.336 6.71295 36.8725 8.5762 36.8725H8.69046C12.348 36.8725 15.8838 38.3581 18.4928 40.9655C19.863 42.3348 22.0739 42.3497 23.444 40.9804C26.0784 38.3477 29.6237 36.8725 33.3166 36.8725H33.5131C35.4204 36.8725 36.9665 35.2997 36.9665 33.3595V33.2084C36.9665 29.5352 38.4175 26.016 40.9933 23.4417C42.3356 22.1002 42.3356 19.8998 40.9933 18.5583C38.4175 15.984 36.9665 12.4648 36.9665 8.7916V8.64048C36.9665 6.70031 35.4204 5.1275 33.5131 5.1275H33.3166C29.6237 5.1275 26.0784 3.65232 23.444 1.01957C22.0739 -0.349742 19.863 -0.334853 18.4928 1.03446C15.8838 3.64193 12.348 5.1275 8.69046 5.1275H8.5762C6.71295 5.1275 5.20248 6.66401 5.20248 8.5594Z" fill="#47A6A6"/></svg>',
                     'benefits' => [
                         '(1x) Share and Talk via Chat w/ Rangers',
+                        '(Unlimited 1 bulan) Deep Cards',
                     ],
                 ],
                 "Chat with Sanny's Aid" => [
@@ -96,8 +93,8 @@
                     'svg' => '<svg width="42" height="42" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5.20248 8.5594C5.20248 12.2423 3.74772 15.7707 1.16512 18.3518L1.0405 18.4763C-0.346832 19.8628 -0.346832 22.1372 1.0405 23.5237L1.16512 23.6482C3.74772 26.2293 5.20248 29.7577 5.20248 33.4406C5.20248 35.336 6.71295 36.8725 8.5762 36.8725H8.69046C12.348 36.8725 15.8838 38.3581 18.4928 40.9655C19.863 42.3348 22.0739 42.3497 23.444 40.9804C26.0784 38.3477 29.6237 36.8725 33.3166 36.8725H33.5131C35.4204 36.8725 36.9665 35.2997 36.9665 33.3595V33.2084C36.9665 29.5352 38.4175 26.016 40.9933 23.4417C42.3356 22.1002 42.3356 19.8998 40.9933 18.5583C38.4175 15.984 36.9665 12.4648 36.9665 8.7916V8.64048C36.9665 6.70031 35.4204 5.1275 33.5131 5.1275H33.3166C29.6237 5.1275 26.0784 3.65232 23.444 1.01957C22.0739 -0.349742 19.863 -0.334853 18.4928 1.03446C15.8838 3.64193 12.348 5.1275 8.69046 5.1275H8.5762C6.71295 5.1275 5.20248 6.66401 5.20248 8.5594Z" fill="white"/></svg>',
                     'benefits' => [
                         '(1x) Share and Talk via Chat w/ Psikolog',
-                        '(30 Hari) Mood and Productivity Tracker',
-                        '(30 Hari) Deep Cards',
+                        '(Unlimited 1 bulan) Mood and Productivity Tracker',
+                        '(Unlimited 1 bulan) Deep Cards',
                     ],
                 ],
                 "Meet with Sanny's Aid" => [
@@ -105,8 +102,8 @@
                     'svg' => '<svg width="42" height="42" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5.20248 8.5594C5.20248 12.2423 3.74772 15.7707 1.16512 18.3518L1.0405 18.4763C-0.346832 19.8628 -0.346832 22.1372 1.0405 23.5237L1.16512 23.6482C3.74772 26.2293 5.20248 29.7577 5.20248 33.4406C5.20248 35.336 6.71295 36.8725 8.5762 36.8725H8.69046C12.348 36.8725 15.8838 38.3581 18.4928 40.9655C19.863 42.3348 22.0739 42.3497 23.444 40.9804C26.0784 38.3477 29.6237 36.8725 33.3166 36.8725H33.5131C35.4204 36.8725 36.9665 35.2997 36.9665 33.3595V33.2084C36.9665 29.5352 38.4175 26.016 40.9933 23.4417C42.3356 22.1002 42.3356 19.8998 40.9933 18.5583C38.4175 15.984 36.9665 12.4648 36.9665 8.7916V8.64048C36.9665 6.70031 35.4204 5.1275 33.5131 5.1275H33.3166C29.6237 5.1275 26.0784 3.65232 23.444 1.01957C22.0739 -0.349742 19.863 -0.334853 18.4928 1.03446C15.8838 3.64193 12.348 5.1275 8.69046 5.1275H8.5762C6.71295 5.1275 5.20248 6.66401 5.20248 8.5594Z" fill="white"/></svg>',
                     'benefits' => [
                         '(1x) Share and Talk via Video Call w/ Psikiater',
-                        '(30 Hari) Mood and Productivity Tracker',
-                        '(30 Hari) Deep Cards',
+                        '(Unlimited 1 bulan) Mood and Productivity Tracker w/ Extended Report',
+                        '(Unlimited 1 bulan) Deep Cards',
                     ],
                 ],
             ];
@@ -128,8 +125,40 @@
                         @endif
                     </div>
                     <ul class="benefits-list">
-                        @foreach($meta['benefits'] as $benefit)
-                            <li>{{ $benefit }}</li>
+                        @foreach($meta['benefits'] as $i => $benefit)
+                            @if(
+                                ($membership->name === 'Growth Path' && $i === 0)
+                            )
+                                <li style="list-style-type: none;">
+                                    <span class="inherited-label" style="color:#2d7a2d;font-weight:bold;">
+                                        <svg width="16" height="16" style="vertical-align:middle;margin-right:4px;" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="8" r="8" fill="#2d7a2d"/><path d="M5 8l2 2 4-4" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                        Termasuk:
+                                    </span>
+                                    <span style="font-weight:bold;">&nbsp;{{ $benefit }}</span>
+                                </li>
+                            @elseif(
+                                ($membership->name === 'Blossom' && $i === 0)
+                            )
+                                <li style="list-style-type: none;">
+                                    <span class="inherited-label" style="color:#a05bb7;font-weight:bold;">
+                                        <svg width="16" height="16" style="vertical-align:middle;margin-right:4px;" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="8" r="8" fill="#a05bb7"/><path d="M5 8l2 2 4-4" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                        Termasuk:
+                                    </span>
+                                    <span style="font-weight:bold;">&nbsp;{{ $benefit }}</span>
+                                </li>
+                            @elseif(
+                                ($membership->name === 'Inner Peace' && $i === 0)
+                            )
+                                <li style="list-style-type: none;">
+                                    <span class="inherited-label" style="color:#1e6e8c;font-weight:bold;">
+                                        <svg width="16" height="16" style="vertical-align:middle;margin-right:4px;" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="8" r="8" fill="#1e6e8c"/><path d="M5 8l2 2 4-4" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                        Termasuk:
+                                    </span>
+                                    <span style="font-weight:bold;">&nbsp;{{ $benefit }}</span>
+                                </li>
+                            @else
+                                <li>{{ $benefit }}</li>
+                            @endif
                         @endforeach
                     </ul>
                     @if($membership->name === 'Calm Starter')

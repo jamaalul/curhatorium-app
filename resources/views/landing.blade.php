@@ -223,12 +223,12 @@
                     <div class="pricing-title">Calm Starter</div>
                     <div class="pricing-price">Rp0</div>
                     <ul class="pricing-features">
-                        <li>Unlimited Tes Kesehatan Mental</li>
-                        <li>7 Hari Mood & Productivity Tracker</li>
-                        <li>2 Jam Ment-AI Chatbot</li>
-                        <li>7 Hari Missions of The Day</li>
-                        <li>1x Support Group Discussion</li>
-                        <li>15x Deep Cards</li>
+                        <li>(Unlimited) Tes Kesehatan Mental</li>
+                        <li>(7 Hari) Mood and Productivity Tracker</li>
+                        <li>(2 Jam) Ment-AI Chatbot</li>
+                        <li>(7 Hari) Missions of The Day</li>
+                        <li>(1x) Support Group Discussion</li>
+                        <li>(30x) Deep Cards</li>
                     </ul>
                 </div>
 
@@ -237,13 +237,20 @@
                     <div class="pricing-title">Growth Path</div>
                     <div class="pricing-price">Rp29.900</div>
                     <ul class="pricing-features">
-                        <li>Unlimited Tes Kesehatan Mental</li>
-                        <li>1x Share & Talk (Ranger)</li>
-                        <li>20x Deep Cards</li>
-                        <li>3 Jam Ment-AI Chatbot</li>
-                        <li>2x Support Group Discussion</li>
-                        <li>Unlimited Missions of The Day</li>
-                        <li>Unlimited Mood & Productivity Tracker</li>
+                        <li style="list-style-type: none;">
+                            <span class="inherited-label" style="color:#2d7a2d;font-weight:bold;">
+                                <svg width="16" height="16" style="vertical-align:middle;margin-right:4px;" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="8" r="8" fill="#2d7a2d"/><path d="M5 8l2 2 4-4" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                Termasuk:
+                            </span>
+                            <span style="font-weight:bold;">&nbsp;Calm Starter</span>
+                        </li>
+                        <li>(Unlimited) Mood and Productivity Tracker</li>
+                        <li>(+1 Jam) Ment-AI Chatbot</li>
+                        <li>(Unlimited) Missions of The Day</li>
+                        <li>(+1x) Support Group Discussion</li>
+                        <li>(Unlimited) Deep Cards</li>
+                        <li>(1x) Share and Talk via Chat w/ Rangers</li>
+                        <li>Extra gain XP</li>
                     </ul>
                 </div>
 
@@ -252,13 +259,16 @@
                     <div class="pricing-title">Blossom</div>
                     <div class="pricing-price">Rp58.900</div>
                     <ul class="pricing-features">
-                        <li>Unlimited Tes Kesehatan Mental</li>
-                        <li>1x Share & Talk (Ranger)</li>
-                        <li>Unlimited Mood & Productivity Tracker</li>
-                        <li>3x Support Group Discussion</li>
-                        <li>Unlimited Ment-AI Chatbot</li>
-                        <li>Unlimited Missions of The Day</li>
-                        <li>Unlimited Deep Cards</li>
+                        <li style="list-style-type: none;">
+                            <span class="inherited-label" style="color:#a05bb7;font-weight:bold;">
+                                <svg width="16" height="16" style="vertical-align:middle;margin-right:4px;" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="8" r="8" fill="#a05bb7"/><path d="M5 8l2 2 4-4" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                Termasuk:
+                            </span>
+                            <span style="font-weight:bold;">&nbsp;Growth Path</span>
+                        </li>
+                        <li>(+1x) Share and Talk via Chat w/ Rangers</li>
+                        <li>(+2x) Support Group Discussion</li>
+                        <li>(Unlimited) Ment-AI Chatbot</li>
                     </ul>
                 </div>
 
@@ -267,13 +277,16 @@
                     <div class="pricing-title">Inner Peace</div>
                     <div class="pricing-price">Rp89.900</div>
                     <ul class="pricing-features">
-                        <li>Unlimited Tes Kesehatan Mental</li>
-                        <li>3x Share & Talk (Ranger)</li>
-                        <li>6x Support Group Discussion</li>
-                        <li>Unlimited Mood & Productivity Tracker (Extended Report)</li>
-                        <li>Unlimited Ment-AI Chatbot</li>
-                        <li>Unlimited Missions of The Day</li>
-                        <li>Unlimited Deep Cards</li>
+                        <li style="list-style-type: none;">
+                            <span class="inherited-label" style="color:#1e6e8c;font-weight:bold;">
+                                <svg width="16" height="16" style="vertical-align:middle;margin-right:4px;" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="8" r="8" fill="#1e6e8c"/><path d="M5 8l2 2 4-4" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                Termasuk:
+                            </span>
+                            <span style="font-weight:bold;">&nbsp;Blossom</span>
+                        </li>
+                        <li>(+1x) Share and Talk via Chat w/ Rangers</li>
+                        <li>(+4x) Support Group Discussion</li>
+                        <li>Extended Report untuk Mood and Productivity Tracker</li>
                     </ul>
                 </div>
 
@@ -282,7 +295,8 @@
                     <div class="pricing-title">Harmony</div>
                     <div class="pricing-price">Rp11.900</div>
                     <ul class="pricing-features">
-                        <li>1x Support Group Discussion</li>
+                        <li>(1x) Support Group Discussion</li>
+                        <li>(Unlimited 1 bulan) Deep Cards</li>
                     </ul>
                 </div>
 
@@ -291,7 +305,8 @@
                     <div class="pricing-title">Serenity</div>
                     <div class="pricing-price">Rp24.900</div>
                     <ul class="pricing-features">
-                        <li>1x Share & Talk (Ranger)</li>
+                        <li>(1x) Share and Talk via Chat w/ Rangers</li>
+                        <li>(Unlimited 1 bulan) Deep Cards</li>
                     </ul>
                 </div>
 
@@ -300,9 +315,9 @@
                     <div class="pricing-title">Chat with Sanny's Aid</div>
                     <div class="pricing-price">Rp61.900</div>
                     <ul class="pricing-features">
-                        <li>1x Share & Talk (Psikolog)</li>
-                        <li>30 Hari Mood & Productivity Tracker</li>
-                        <li>30 Hari Deep Cards</li>
+                        <li>(1x) Share and Talk via Chat w/ Psikolog</li>
+                        <li>(Unlimited 1 bulan) Mood and Productivity Tracker</li>
+                        <li>(Unlimited 1 bulan) Deep Cards</li>
                     </ul>
                 </div>
 
@@ -311,9 +326,9 @@
                     <div class="pricing-title">Meet with Sanny's Aid</div>
                     <div class="pricing-price">Rp198.900</div>
                     <ul class="pricing-features">
-                        <li>1x Share & Talk Video (Psikiater)</li>
-                        <li>30 Hari Mood & Productivity Tracker</li>
-                        <li>30 Hari Deep Cards</li>
+                        <li>(1x) Share and Talk via Video Call w/ Psikiater</li>
+                        <li>(Unlimited 1 bulan) Mood and Productivity Tracker w/ Extended Report</li>
+                        <li>(Unlimited 1 bulan) Deep Cards</li>
                     </ul>
                 </div>
             </div>

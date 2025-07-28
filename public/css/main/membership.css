@@ -167,8 +167,8 @@ body {
         color: #70c0bb;
         font-weight: bold;
         margin-right: 10px;
-        font-size: 1.2em;
-        margin-top: 2px;
+        font-size: 1em;
+        padding-bottom: 0.6em;
         flex-shrink: 0;
     }
 
