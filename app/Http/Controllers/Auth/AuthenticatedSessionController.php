@@ -60,7 +60,7 @@ class AuthenticatedSessionController extends Controller
         
         return response()->json([
             'id' => $user->id,
-            'username' => $user->name,
+            'username' => $user->username,
             'total_xp' => $user->total_xp,
             'daily_xp_summary' => $dailyXpSummary
         ]);

@@ -61,6 +61,18 @@ nav #profile-box img {
     height: 40px;
 }
 
+.username {
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.9em;
+    margin: 0;
+    padding: 0 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 120px;
+}
+
 nav #profile-box #xp-box {
     height: 100%;
     width: fit-content;
@@ -81,11 +93,6 @@ nav #profile-box #xp-box #badge-box {
     align-items: center;
     gap: 10px;
     padding: 0px 20px 0px 10px;
-}
-
-/* Hide daily XP progress on mobile to save space */
-.daily-xp-circle {
-    display: none;
 }
 
 /* Daily XP Progress Circle */
