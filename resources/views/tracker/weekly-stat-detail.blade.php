@@ -13,6 +13,7 @@
             padding: 24px;
             margin-bottom: 24px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
         }
         
         .summary-header {
@@ -35,7 +36,7 @@
         
         .summary-metrics {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
             gap: 20px;
             margin-bottom: 24px;
         }
@@ -65,7 +66,7 @@
         
         .entries-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 16px;
         }
         
@@ -130,6 +131,7 @@
             padding: 24px;
             margin-bottom: 24px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
         }
         
         .chart-header {
@@ -160,6 +162,7 @@
             padding: 24px;
             margin-bottom: 24px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
         }
         
         .section-title {
@@ -215,9 +218,19 @@
             line-height: 1.5;
         }
         
-        /* Goal Table */
+        /* Desktop/Mobile Display Classes */
+        .desktop-only {
+            display: block;
+        }
+        
+        .mobile-only {
+            display: none !important;
+        }
+        
+        /* Goal Table (Desktop) */
         .goal-table {
             overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
         }
         
         .goal-table table {
@@ -242,6 +255,8 @@
             padding: 12px;
             border-bottom: 1px solid #f0f0f0;
             font-size: 0.9rem;
+            vertical-align: top;
+            line-height: 1.5;
         }
         
         .goal-table tr:last-child td {
@@ -261,8 +276,76 @@
             border-bottom: none;
         }
         
-        .goal-table td {
-            vertical-align: top;
+        /* Goal Cards (Mobile) */
+        .goal-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        
+        .goal-main-card {
+            background: linear-gradient(135deg, #48A6A6 0%, #3a8a8a 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .goal-info {
+            display: grid;
+            gap: 16px;
+        }
+        
+        .goal-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        
+        .goal-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            opacity: 0.9;
+        }
+        
+        .goal-value {
+            font-size: 1rem;
+            font-weight: 600;
+            line-height: 1.4;
+        }
+        
+        .goal-theory-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-left: 4px solid #48A6A6;
+        }
+        
+        .theory-item {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        
+        .theory-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .theory-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #48A6A6;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .theory-value {
+            font-size: 0.95rem;
+            color: #222;
             line-height: 1.5;
         }
         
@@ -524,16 +607,50 @@
         
         /* Responsive Design */
         @media (max-width: 768px) {
+            .container {
+                padding: 0 16px;
+            }
+            
+            .weekly-summary,
+            .analysis-section,
+            .weekly-chart,
+            .ai-analysis {
+                padding: 16px;
+                margin-bottom: 16px;
+            }
+            
+            .summary-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+            
+            .summary-metrics {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+            
+            .metric-card {
+                padding: 12px;
+            }
+            
+            .metric-value {
+                font-size: 1.5rem;
+            }
+            
             .analysis-content {
                 grid-template-columns: 1fr;
+                gap: 16px;
             }
             
             .varied-activities {
                 grid-template-columns: 1fr;
+                gap: 16px;
             }
             
             .productivity-days {
                 grid-template-columns: 1fr;
+                gap: 16px;
             }
             
             .activity-stats {
@@ -541,12 +658,169 @@
                 gap: 8px;
             }
             
-            .goal-table {
-                font-size: 0.8rem;
+            .activity-metrics {
+                flex-direction: column;
+                gap: 8px;
             }
             
-            .goal-table th, .goal-table td {
-                padding: 8px;
+            .best-mood-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+            
+            .best-mood-score {
+                font-size: 1.5rem;
+            }
+            
+            .entries-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+            
+            .entry-item {
+                padding: 12px;
+            }
+            
+            .entry-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+            
+            .section-title {
+                font-size: 1.25rem;
+                margin-bottom: 16px;
+            }
+            
+            .chart-container {
+                height: 250px;
+            }
+            
+            .daily-entries {
+                margin-top: 24px;
+            }
+            
+            .entries-title {
+                font-size: 1.1rem;
+                margin-bottom: 12px;
+            }
+            
+            /* Show mobile cards, hide desktop table */
+            .desktop-only {
+                display: none !important;
+            }
+            
+            .mobile-only {
+                display: block !important;
+            }
+            
+            /* Goal cards responsive */
+            .goal-cards {
+                gap: 20px;
+                margin-top: 16px;
+            }
+            
+            .goal-main-card,
+            .goal-theory-card {
+                padding: 16px;
+                margin-bottom: 8px;
+            }
+            
+            .goal-info {
+                gap: 12px;
+            }
+            
+            .theory-item {
+                gap: 6px;
+                margin-bottom: 12px;
+            }
+            
+            .goal-label,
+            .theory-label {
+                font-size: 0.7rem;
+            }
+            
+            .goal-value,
+            .theory-value {
+                font-size: 0.9rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 12px;
+            }
+            
+            .weekly-summary,
+            .analysis-section,
+            .weekly-chart,
+            .ai-analysis {
+                padding: 12px;
+                margin-bottom: 12px;
+            }
+            
+            .summary-metrics {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+            
+            .metric-card {
+                padding: 10px;
+            }
+            
+            .metric-value {
+                font-size: 1.25rem;
+            }
+            
+            .section-title {
+                font-size: 1.1rem;
+            }
+            
+            .chart-container {
+                height: 200px;
+            }
+            
+            .daily-entries {
+                margin-top: 20px;
+            }
+            
+            .entries-title {
+                font-size: 1rem;
+                margin-bottom: 10px;
+            }
+            
+            .entry-item {
+                padding: 10px;
+            }
+            
+            .mood-display {
+                font-size: 2.5rem;
+            }
+            
+            .goal-main-card,
+            .goal-theory-card {
+                padding: 12px;
+                margin-bottom: 6px;
+            }
+            
+            .goal-info {
+                gap: 10px;
+            }
+            
+            .theory-item {
+                gap: 4px;
+                margin-bottom: 10px;
+            }
+            
+            .goal-label,
+            .theory-label {
+                font-size: 0.65rem;
+            }
+            
+            .goal-value,
+            .theory-value {
+                font-size: 0.85rem;
             }
         }
     </style>
@@ -619,6 +893,17 @@
             </div>
         </div>
 
+        <!-- Weekly Chart Section -->
+        <div class="weekly-chart">
+            <div class="chart-header">
+                <h2 class="chart-title">Grafik Mingguan</h2>
+                <p class="chart-subtitle">Perkembangan mood dan produktivitas selama minggu ini</p>
+            </div>
+            <div class="chart-container">
+                <canvas id="weeklyChart"></canvas>
+            </div>
+        </div>
+
         @if($analysis)
         <!-- Mood Rating Analysis -->
         <div class="analysis-section">
@@ -648,10 +933,64 @@
             </div>
         </div>
 
-        <!-- Goal and Recommendation Table -->
+        <!-- Activity Analysis -->
+        <div class="analysis-section">
+            <h2 class="section-title">📝 Analisis Aktivitas</h2>
+            <div class="activity-analysis-content">
+                @if(isset($analysis['activity_analysis']['dominant']))
+                    <div class="dominant-activity-card">
+                        <h3>🏆 Aktivitas Dominan</h3>
+                        <div class="activity-info">
+                            <div class="activity-name">{{ $analysis['activity_analysis']['dominant']['activity'] }}</div>
+                            <div class="activity-stats">
+                                <span class="stat-item">Dilakukan {{ $analysis['activity_analysis']['dominant']['count'] }}x</span>
+                                <span class="stat-item">Mood: {{ $analysis['activity_analysis']['dominant']['avg_mood'] }}/10</span>
+                                <span class="stat-item">Produktivitas: {{ $analysis['activity_analysis']['dominant']['avg_productivity'] }}/10</span>
+                            </div>
+                            <div class="activity-impact">
+                                Kegiatan {{ $analysis['activity_analysis']['dominant']['activity'] }} 
+                                @if($analysis['activity_analysis']['dominant']['mood_contribution'] > 0)
+                                    menaikkan
+                                @else
+                                    menurunkan
+                                @endif
+                                rata-rata mood mingguanmu sebanyak {{ abs($analysis['activity_analysis']['dominant']['mood_contribution']) }} poin! 
+                                Produktivitasmu juga {{ $analysis['activity_analysis']['dominant']['productivity_status'] }} saat melakukan aktivitas ini!
+                            </div>
+                        </div>
+                    </div>
+                @else
+                    <div class="varied-activities-card">
+                        <h3>🔄 Aktivitas Bervariasi</h3>
+                        <div class="varied-activities">
+                            <div class="best-activity">
+                                <h4>🎯 Aktivitas Terbaik</h4>
+                                <div class="activity-name">{{ $analysis['activity_analysis']['varied']['highest']['activity'] }}</div>
+                                <div class="activity-stats">
+                                    <span>Mood: {{ $analysis['activity_analysis']['varied']['highest']['avg_mood'] }}/10</span>
+                                    <span>Produktivitas: {{ $analysis['activity_analysis']['varied']['highest']['avg_productivity'] }}/10</span>
+                                </div>
+                            </div>
+                            <div class="worst-activity">
+                                <h4>⚠️ Aktivitas Terendah</h4>
+                                <div class="activity-name">{{ $analysis['activity_analysis']['varied']['lowest']['activity'] }}</div>
+                                <div class="activity-stats">
+                                    <span>Mood: {{ $analysis['activity_analysis']['varied']['lowest']['avg_mood'] }}/10</span>
+                                    <span>Produktivitas: {{ $analysis['activity_analysis']['varied']['lowest']['avg_productivity'] }}/10</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endif
+            </div>
+        </div>
+
+        <!-- Goal and Recommendation Table/Cards -->
         <div class="analysis-section">
             <h2 class="section-title">🎯 Tujuan & Rekomendasi</h2>
-            <div class="goal-table">
+            
+            <!-- Desktop Table -->
+            <div class="goal-table desktop-only">
                 <table>
                     <thead>
                         <tr>
@@ -715,54 +1054,165 @@
                     </tbody>
                 </table>
             </div>
-        </div>
-
-        <!-- Activity Analysis -->
-        <div class="analysis-section">
-            <h2 class="section-title">📝 Analisis Aktivitas</h2>
-            <div class="activity-analysis-content">
-                @if(isset($analysis['activity_analysis']['dominant']))
-                    <div class="dominant-activity-card">
-                        <h3>🏆 Aktivitas Dominan</h3>
-                        <div class="activity-info">
-                            <div class="activity-name">{{ $analysis['activity_analysis']['dominant']['activity'] }}</div>
-                            <div class="activity-stats">
-                                <span class="stat-item">Dilakukan {{ $analysis['activity_analysis']['dominant']['count'] }}x</span>
-                                <span class="stat-item">Mood: {{ $analysis['activity_analysis']['dominant']['avg_mood'] }}/10</span>
-                                <span class="stat-item">Produktivitas: {{ $analysis['activity_analysis']['dominant']['avg_productivity'] }}/10</span>
+            
+            <!-- Mobile Cards -->
+            <div class="goal-cards mobile-only">
+                @if($analysis['mood_rating']['average'] <= 5.0)
+                    <!-- Main Info Card -->
+                    <div class="goal-main-card">
+                        <div class="goal-info">
+                            <div class="goal-item">
+                                <span class="goal-label">Weekly Avg Score</span>
+                                <span class="goal-value">≤ 5</span>
                             </div>
-                            <div class="activity-impact">
-                                Kegiatan {{ $analysis['activity_analysis']['dominant']['activity'] }} 
-                                @if($analysis['activity_analysis']['dominant']['mood_contribution'] > 0)
-                                    menaikkan
-                                @else
-                                    menurunkan
-                                @endif
-                                rata-rata mood mingguanmu sebanyak {{ abs($analysis['activity_analysis']['dominant']['mood_contribution']) }} poin! 
-                                Produktivitasmu juga {{ $analysis['activity_analysis']['dominant']['productivity_status'] }} saat melakukan aktivitas ini!
+                            <div class="goal-item">
+                                <span class="goal-label">Mood Pattern</span>
+                                <span class="goal-value">Low Mood Week</span>
+                            </div>
+                            <div class="goal-item">
+                                <span class="goal-label">Goal</span>
+                                <span class="goal-value">Increase Emotional Support & Energy</span>
                             </div>
                         </div>
                     </div>
+                    
+                    <!-- Theory Cards -->
+                    <div class="goal-theory-card">
+                        <div class="theory-item">
+                            <span class="theory-label">Theoretical Backing</span>
+                            <span class="theory-value">Behavioral Activation (BA)</span>
+                        </div>
+                        <div class="theory-item">
+                            <span class="theory-label">How It Helps</span>
+                            <span class="theory-value">Builds structure and reintroduces behavioral engagement</span>
+                        </div>
+                    </div>
+                    
+                    <div class="goal-theory-card">
+                        <div class="theory-item">
+                            <span class="theory-label">Theoretical Backing</span>
+                            <span class="theory-value">Social Support Theory</span>
+                        </div>
+                        <div class="theory-item">
+                            <span class="theory-label">How It Helps</span>
+                            <span class="theory-value">Increases perceived support and emotional validation</span>
+                        </div>
+                    </div>
+                    
+                    <div class="goal-theory-card">
+                        <div class="theory-item">
+                            <span class="theory-label">Theoretical Backing</span>
+                            <span class="theory-value">CBT, Self-Monitoring</span>
+                        </div>
+                        <div class="theory-item">
+                            <span class="theory-label">How It Helps</span>
+                            <span class="theory-value">Enhances self-awareness of triggers and mood patterns</span>
+                        </div>
+                    </div>
+                    
+                @elseif($analysis['mood_rating']['average'] <= 6.0)
+                    <!-- Main Info Card -->
+                    <div class="goal-main-card">
+                        <div class="goal-info">
+                            <div class="goal-item">
+                                <span class="goal-label">Weekly Avg Score</span>
+                                <span class="goal-value">5–6</span>
+                            </div>
+                            <div class="goal-item">
+                                <span class="goal-label">Mood Pattern</span>
+                                <span class="goal-value">Fluctuating Mood</span>
+                            </div>
+                            <div class="goal-item">
+                                <span class="goal-label">Goal</span>
+                                <span class="goal-value">Create Routine, Reduce Variability</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Theory Cards -->
+                    <div class="goal-theory-card">
+                        <div class="theory-item">
+                            <span class="theory-label">Theoretical Backing</span>
+                            <span class="theory-value">Chronobiology, Habit Formation</span>
+                        </div>
+                        <div class="theory-item">
+                            <span class="theory-label">How It Helps</span>
+                            <span class="theory-value">Stabilizes circadian rhythm and reduces emotional lability</span>
+                        </div>
+                    </div>
+                    
+                    <div class="goal-theory-card">
+                        <div class="theory-item">
+                            <span class="theory-label">Theoretical Backing</span>
+                            <span class="theory-value">Affective Activation Theory</span>
+                        </div>
+                        <div class="theory-item">
+                            <span class="theory-label">How It Helps</span>
+                            <span class="theory-value">Enhances positive affect and physiological arousal</span>
+                        </div>
+                    </div>
+                    
+                    <div class="goal-theory-card">
+                        <div class="theory-item">
+                            <span class="theory-label">Theoretical Backing</span>
+                            <span class="theory-value">Expressive Writing Theory</span>
+                        </div>
+                        <div class="theory-item">
+                            <span class="theory-label">How It Helps</span>
+                            <span class="theory-value">Improves emotional regulation and resilience</span>
+                        </div>
+                    </div>
+                    
                 @else
-                    <div class="varied-activities-card">
-                        <h3>🔄 Aktivitas Bervariasi</h3>
-                        <div class="varied-activities">
-                            <div class="best-activity">
-                                <h4>🎯 Aktivitas Terbaik</h4>
-                                <div class="activity-name">{{ $analysis['activity_analysis']['varied']['highest']['activity'] }}</div>
-                                <div class="activity-stats">
-                                    <span>Mood: {{ $analysis['activity_analysis']['varied']['highest']['avg_mood'] }}/10</span>
-                                    <span>Produktivitas: {{ $analysis['activity_analysis']['varied']['highest']['avg_productivity'] }}/10</span>
-                                </div>
+                    <!-- Main Info Card -->
+                    <div class="goal-main-card">
+                        <div class="goal-info">
+                            <div class="goal-item">
+                                <span class="goal-label">Weekly Avg Score</span>
+                                <span class="goal-value">> 6</span>
                             </div>
-                            <div class="worst-activity">
-                                <h4>⚠️ Aktivitas Terendah</h4>
-                                <div class="activity-name">{{ $analysis['activity_analysis']['varied']['lowest']['activity'] }}</div>
-                                <div class="activity-stats">
-                                    <span>Mood: {{ $analysis['activity_analysis']['varied']['lowest']['avg_mood'] }}/10</span>
-                                    <span>Produktivitas: {{ $analysis['activity_analysis']['varied']['lowest']['avg_productivity'] }}/10</span>
-                                </div>
+                            <div class="goal-item">
+                                <span class="goal-label">Mood Pattern</span>
+                                <span class="goal-value">Good/Stable Mood</span>
                             </div>
+                            <div class="goal-item">
+                                <span class="goal-label">Goal</span>
+                                <span class="goal-value">Reinforce Success, Growth Focus</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Theory Cards -->
+                    <div class="goal-theory-card">
+                        <div class="theory-item">
+                            <span class="theory-label">Theoretical Backing</span>
+                            <span class="theory-value">Self-Monitoring, Positive Psychology</span>
+                        </div>
+                        <div class="theory-item">
+                            <span class="theory-label">How It Helps</span>
+                            <span class="theory-value">Reinforces adaptive habits and builds intentional living</span>
+                        </div>
+                    </div>
+                    
+                    <div class="goal-theory-card">
+                        <div class="theory-item">
+                            <span class="theory-label">Theoretical Backing</span>
+                            <span class="theory-value">Self-Determination Theory (SDT), Flow Theory</span>
+                        </div>
+                        <div class="theory-item">
+                            <span class="theory-label">How It Helps</span>
+                            <span class="theory-value">Increases purpose and engagement through mastery</span>
+                        </div>
+                    </div>
+                    
+                    <div class="goal-theory-card">
+                        <div class="theory-item">
+                            <span class="theory-label">Theoretical Backing</span>
+                            <span class="theory-value">Altruism Theory, Broaden-and-Build</span>
+                        </div>
+                        <div class="theory-item">
+                            <span class="theory-label">How It Helps</span>
+                            <span class="theory-value">Boosts sense of purpose and social bonding</span>
                         </div>
                     </div>
                 @endif
@@ -881,17 +1331,6 @@
         </div>
         @endif
         @endif
-
-        <!-- Weekly Chart Section -->
-        <div class="weekly-chart">
-            <div class="chart-header">
-                <h2 class="chart-title">Grafik Mingguan</h2>
-                <p class="chart-subtitle">Perkembangan mood dan produktivitas selama minggu ini</p>
-            </div>
-            <div class="chart-container">
-                <canvas id="weeklyChart"></canvas>
-            </div>
-        </div>
 
         <!-- AI Feedback Section -->
         @if($weeklyStat->feedback)
