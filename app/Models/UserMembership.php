@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class UserMembership extends Model
 {
@@ -15,13 +16,29 @@ class UserMembership extends Model
         'expires_at' => 'datetime',
     ];
 
-    public function membership()
+    public function membership(): BelongsTo
     {
         return $this->belongsTo(Membership::class);
     }
 
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Check if the membership is active
+     */
+    public function isActive(): bool
+    {
+        return $this->expires_at === null || $this->expires_at->isFuture();
+    }
+
+    /**
+     * Get the status of the membership
+     */
+    public function getStatusAttribute(): string
+    {
+        return $this->isActive() ? 'Active' : 'Expired';
     }
 }

@@ -68,6 +68,7 @@ class ManualMembershipResource extends Resource
                             ->numeric()
                             ->placeholder('Enter user ID...')
                             ->live(onBlur: true)
+                            ->rules(['exists:users,id'])
                             ->afterStateUpdated(function ($state, Forms\Set $set) {
                                 if ($state) {
                                     $user = User::find($state);
@@ -107,6 +108,7 @@ class ManualMembershipResource extends Resource
                             ->required()
                             ->searchable()
                             ->live(onBlur: true)
+                            ->rules(['exists:memberships,id'])
                             ->afterStateUpdated(function ($state, Forms\Set $set) {
                                 if ($state) {
                                     $membership = Membership::find($state);
@@ -198,7 +200,8 @@ class ManualMembershipResource extends Resource
             ->bulkActions([
                 // No bulk actions needed for this use case
             ])
-            ->defaultSort('started_at', 'desc');
+            ->defaultSort('started_at', 'desc')
+            ->poll('10s'); // Refresh table every 10 seconds to show updates
     }
 
     public static function getRelations(): array

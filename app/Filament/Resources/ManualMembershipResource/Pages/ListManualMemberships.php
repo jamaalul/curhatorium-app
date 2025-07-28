@@ -14,7 +14,16 @@ class ListManualMemberships extends ListRecords
     {
         return [
             Actions\CreateAction::make()
-                ->label('Grant New Membership'),
+                ->label('Grant New Membership')
+                ->icon('heroicon-o-gift')
+                ->color('primary'),
+        ];
+    }
+
+    protected function getHeaderWidgets(): array
+    {
+        return [
+            // You can add widgets here if needed
         ];
     }
 } 
