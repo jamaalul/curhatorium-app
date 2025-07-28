@@ -58,6 +58,16 @@ class MissionController extends Controller
             'feeling' => $request->feeling,
             'completed_at' => now(),
         ]);
-        return back()->with('success', 'Mission completed!');
+
+        // Award XP based on mission difficulty
+        $activity = 'mission_' . $mission->difficulty;
+        $xpResult = $user->awardXp($activity);
+
+        $message = 'Mission completed!';
+        if ($xpResult['success'] && $xpResult['xp_awarded'] > 0) {
+            $message .= " +{$xpResult['xp_awarded']} XP earned!";
+        }
+
+        return back()->with('success', $message);
     }
 } 

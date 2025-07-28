@@ -83,6 +83,42 @@ nav #profile-box #xp-box #badge-box {
     padding: 0px 20px 0px 10px;
 }
 
+/* Hide daily XP progress on mobile to save space */
+.daily-xp-circle {
+    display: none;
+}
+
+/* Daily XP Progress Circle */
+.daily-xp-circle {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    cursor: help;
+}
+
+.daily-xp-circle svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.daily-xp-circle #daily-xp-circle {
+    transition: stroke-dashoffset 0.3s ease, stroke 0.3s ease;
+}
+
+.daily-xp-circle #daily-xp-text {
+    position: absolute;
+    font-size: 8px;
+    font-weight: 600;
+    color: #333;
+    text-align: center;
+    line-height: 1;
+    pointer-events: none;
+}
+
 /* Mobile menu button */
 .mobile-menu-button {
     display: none;

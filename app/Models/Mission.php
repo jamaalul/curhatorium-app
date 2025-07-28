@@ -12,7 +12,6 @@ class Mission extends Model
     protected $fillable = [
         'title',
         'description',
-        'points',
         'difficulty',
     ];
 

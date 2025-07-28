@@ -109,6 +109,10 @@ class TrackerController extends Controller
 
         Log::info('Mood entry created successfully', ['stat_id' => $stat->id]);
 
+        // Award XP for completing mood tracker
+        $user = Auth::user();
+        $xpResult = $user->awardXp('mood_tracker');
+
         // Return success response
         return redirect()->route('tracker.result');
     }

@@ -87,7 +87,15 @@ class SgdController extends Controller
         // Join the group
         $user->sgdGroups()->attach($groupId);
         
-        return redirect()->route('sgd')->with('success', 'Successfully joined the group. You will get notification when the SGD is about to start');
+        // Award XP for joining support group discussion
+        $xpResult = $user->awardXp('support_group');
+        
+        $message = 'Successfully joined the group. You will get notification when the SGD is about to start';
+        if ($xpResult['success'] && $xpResult['xp_awarded'] > 0) {
+            $message .= " +{$xpResult['xp_awarded']} XP earned!";
+        }
+        
+        return redirect()->route('sgd')->with('success', $message);
     }
 
     public function enterMeetingRoom(Request $request) {

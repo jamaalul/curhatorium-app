@@ -69,6 +69,43 @@
           </div>
           <span class="xp-profile" id="xp-profile">{{ $xp }} XP</span>
         </div>
+        
+        <!-- Daily XP Progress Section -->
+        @php
+          $dailyXpSummary = $user->getDailyXpSummary();
+          $xpService = app(\App\Services\XpService::class);
+          $membershipType = $xpService->getUserMembershipType($user);
+        @endphp
+        <div class="daily-xp-section">
+          <div class="daily-xp-container">
+            <div class="daily-xp-progress-circle">
+              <svg width="80" height="80" viewBox="0 0 80 80">
+                <circle cx="40" cy="40" r="35" stroke="#e5e7eb" stroke-width="6" fill="none"/>
+                <circle id="profile-daily-xp-circle" cx="40" cy="40" r="35" stroke="#10b981" stroke-width="6" fill="none" 
+                        stroke-dasharray="219.91" stroke-dashoffset="219.91" transform="rotate(-90 40 40)"/>
+              </svg>
+              <div class="daily-xp-text">
+                <span id="profile-daily-xp-current">{{ $dailyXpSummary['daily_xp_gained'] }}</span>
+                <span class="daily-xp-separator">/</span>
+                <span id="profile-daily-xp-max">{{ $dailyXpSummary['max_daily_xp'] }}</span>
+              </div>
+              <div class="daily-xp-label">XP Today</div>
+            </div>
+            <div class="daily-xp-info">
+              <div class="membership-type">
+                <span class="membership-label">Membership:</span>
+                <span class="membership-value">{{ $membershipType === 'subscription' ? 'Paid' : 'Free' }} ({{ $membershipType === 'subscription' ? 'Paid' : 'Calm Starter' }})</span>
+              </div>
+              <div class="daily-limit-info">
+                <span class="limit-label">Daily Limit:</span>
+                <span class="limit-value">{{ $dailyXpSummary['max_daily_xp'] }} XP per day</span>
+              </div>
+              <div class="progress-percentage">
+                <span id="profile-daily-xp-percentage">{{ number_format($dailyXpSummary['daily_progress_percentage'], 1) }}%</span> Complete
+              </div>
+            </div>
+          </div>
+        </div>
         <!-- Cinema-style Tickets Section -->
         <div class="cinema-tickets-section">
           <h3 class="cinema-tickets-title">Tiket Anda</h3>
@@ -182,6 +219,34 @@
             }
           });
         }
+        
+        // Update daily XP progress circle color
+        document.addEventListener('DOMContentLoaded', function() {
+          const dailyXpCircle = document.getElementById('profile-daily-xp-circle');
+          const dailyXpCurrent = document.getElementById('profile-daily-xp-current');
+          const dailyXpMax = document.getElementById('profile-daily-xp-max');
+          const dailyXpPercentage = document.getElementById('profile-daily-xp-percentage');
+          
+          if (dailyXpCircle && dailyXpCurrent && dailyXpMax && dailyXpPercentage) {
+            const current = parseInt(dailyXpCurrent.textContent);
+            const max = parseInt(dailyXpMax.textContent);
+            const progress = (current / max) * 100;
+            
+            // Update circle progress
+            const circumference = 219.91; // 2 * π * radius (35)
+            const offset = circumference - (progress / 100) * circumference;
+            dailyXpCircle.style.strokeDashoffset = offset;
+            
+            // Update color based on progress
+            if (progress >= 90) {
+              dailyXpCircle.style.stroke = "#ef4444"; // Red when near limit
+            } else if (progress >= 70) {
+              dailyXpCircle.style.stroke = "#f59e0b"; // Orange when getting close
+            } else {
+              dailyXpCircle.style.stroke = "#10b981"; // Green for normal progress
+            }
+          }
+        });
       </script>
 </body>
 </html>

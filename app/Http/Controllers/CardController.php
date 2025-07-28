@@ -14,6 +14,10 @@ public function index()
     $pertanyaanCards = Card::where('category', 'pertanyaan')->inRandomOrder()->limit(3)->get();
     $cards = $pernyataanCards->concat($pertanyaanCards);
 
-    return view('cards', compact('cards'));
+    // Award XP for using deep cards
+    $user = auth()->user();
+    $xpResult = $user->awardXp('deep_cards');
+
+    return view('cards', compact('cards', 'xpResult'));
 }
 }

@@ -11,7 +11,6 @@
       <div class="card-content">
         <div class="card-title">
           <h3>Mental Health Test</h3>
-          <span>+10 XP</span>
         </div>
         <p class="card-description">Tes kesehatan mental kamu dengan standar yang teruji</p>
       </div>
@@ -25,7 +24,6 @@
       <div class="card-content">
         <div class="card-title">
           <h3>Share and Talk</h3>
-          <span>+10 XP</span>
         </div>
         <p class="card-description">Temukan professional atau teman untuk bercerita</p>
       </div>
@@ -39,7 +37,6 @@
       <div class="card-content">
         <div class="card-title">
           <h3>Ment-AI</h3>
-          <span>+10 XP</span>
         </div>
         <p class="card-description">Chatbot AI yang siap mendengar ceritamu 24/7</p>
       </div>
@@ -53,7 +50,6 @@
       <div class="card-content">
         <div class="card-title">
           <h3>Missions of The Day</h3>
-          <span>+10 XP</span>
         </div>
         <p class="card-description">Selesaikan tugas harian untuk mental yang lebih sehat</p>
       </div>
@@ -67,7 +63,6 @@
       <div class="card-content">
         <div class="card-title">
           <h3>Support Group Discussion</h3>
-          <span>+10 XP</span>
         </div>
         <p class="card-description">Gabung dan saling bercerita secara anonim dalam grup</p>
       </div>
@@ -81,7 +76,6 @@
       <div class="card-content">
         <div class="card-title">
           <h3>Deep Cards</h3>
-          <span>+10 XP</span>
         </div>
         <p class="card-description">Gunakan Deep Card untuk membantumu bercerita</p>
       </div>

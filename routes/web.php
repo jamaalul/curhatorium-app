@@ -12,6 +12,7 @@ use App\Http\Controllers\ChatbotController;
 use App\Http\Controllers\TrackerController;
 use App\Http\Controllers\MentalTestController;
 use App\Http\Controllers\MissionController;
+use App\Http\Controllers\XpController;
 
 
 Route::get('/', function () {
@@ -109,6 +110,30 @@ Route::middleware('auth')->group(function () {
     Route::get('/membership', [\App\Http\Controllers\MembershipController::class, 'index'])->name('membership.index');
     Route::post('/membership/buy/{id}', [\App\Http\Controllers\MembershipController::class, 'buy'])->name('membership.buy');
     
+    // XP System Routes
+    Route::post('/api/xp/award', [XpController::class, 'awardXp'])->name('xp.award');
+    Route::get('/api/xp/progress', [XpController::class, 'getXpProgress'])->name('xp.progress');
+    Route::get('/api/xp/daily-summary', [XpController::class, 'getDailyXpSummary'])->name('xp.daily-summary');
+    Route::get('/api/xp/breakdown', [XpController::class, 'getXpBreakdown'])->name('xp.breakdown');
+    Route::get('/api/xp/can-access-psychologist', [XpController::class, 'canAccessPsychologist'])->name('xp.can-access-psychologist');
+    Route::get('/api/xp/history', [XpController::class, 'getXpHistory'])->name('xp.history');
+
+    // Test route for XP system (remove in production)
+    Route::get('/test-xp', function() {
+        $user = auth()->user();
+        $xpService = app(\App\Services\XpService::class);
+        
+        return response()->json([
+            'user_id' => $user->id,
+            'total_xp' => $user->total_xp,
+            'xp_progress' => $user->getXpProgress(),
+            'daily_summary' => $user->getDailyXpSummary(),
+            'xp_breakdown' => $user->getXpBreakdown(),
+            'can_access_psychologist' => $user->canAccessPsychologist(),
+            'membership_type' => $xpService->getUserMembershipType($user),
+            'max_daily_xp' => $xpService->getMaxDailyXp($user)
+        ]);
+    })->name('test.xp');
 
 });
 

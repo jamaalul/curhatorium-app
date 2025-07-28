@@ -171,11 +171,17 @@ class ChatbotController extends Controller
             if (!$session->title || $session->title === 'New Chat') {
                 $session->update(['title' => Str::limit($request->message, 50)]);
             }
+
+            // Award XP for using Ment-AI chatbot (only on first message of the day)
+            $user = Auth::user();
+            $xpResult = $user->awardXp('mentai_chatbot');
             
             // Kembalikan respons ke frontend
             return response()->json([
                 'message' => $responseText,
-                'session' => $session->fresh()
+                'session' => $session->fresh(),
+                'xp_awarded' => $xpResult['xp_awarded'] ?? 0,
+                'xp_message' => $xpResult['message'] ?? ''
             ]);
 
         } catch (\Exception $e) {

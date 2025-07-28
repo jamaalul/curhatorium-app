@@ -54,6 +54,15 @@ class AuthenticatedSessionController extends Controller
     public function getUser()
     {
         $user = Auth::user();
-        return response()->json($user);
+        
+        // Get daily XP summary for the navbar progress indicator
+        $dailyXpSummary = $user->getDailyXpSummary();
+        
+        return response()->json([
+            'id' => $user->id,
+            'username' => $user->name,
+            'total_xp' => $user->total_xp,
+            'daily_xp_summary' => $dailyXpSummary
+        ]);
     }
 }

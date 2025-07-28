@@ -402,9 +402,23 @@ class ShareAndTalkController extends Controller
             $session->end = now('Asia/Jakarta');
             $session->save();
 
+            // Award XP based on professional type
+            $user = Auth::user();
+            $professional = Professional::find($session->professional_id);
+            
+            if ($professional) {
+                if ($professional->type === 'psychiatrist') {
+                    $xpResult = $user->awardXp('share_talk_psychiatrist');
+                } else {
+                    $xpResult = $user->awardXp('share_talk_ranger');
+                }
+            }
+
             return response()->json([
                 'success' => true,
-                'message' => 'Session ended successfully.'
+                'message' => 'Session ended successfully.',
+                'xp_awarded' => $xpResult['xp_awarded'] ?? 0,
+                'xp_message' => $xpResult['message'] ?? ''
             ]);
 
         } catch (\Exception $e) {

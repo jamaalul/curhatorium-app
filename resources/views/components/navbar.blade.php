@@ -22,6 +22,15 @@
                         <p class="badge-text">Kindle</p>
                     </div>
                     <p id="xp"></p>
+                    <!-- Daily XP Progress Circle -->
+                    <div id="daily-xp-progress" class="daily-xp-circle" title="Daily XP Progress">
+                        <svg width="24" height="24" viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="10" stroke="#e5e7eb" stroke-width="2" fill="none"/>
+                            <circle id="daily-xp-circle" cx="12" cy="12" r="10" stroke="#10b981" stroke-width="2" fill="none" 
+                                    stroke-dasharray="62.83" stroke-dashoffset="62.83" transform="rotate(-90 12 12)"/>
+                        </svg>
+                        <span id="daily-xp-text">0/0</span>
+                    </div>
                 </div>
                 <p class="username">Loading...</p>
                 <img src="{{ $navUser && $navUser->profile_picture ? asset('storage/' . $navUser->profile_picture) : asset('assets/profile_pict.svg') }}" alt="pict" id="pict">
@@ -66,6 +75,29 @@
                     const xp = document.querySelector("#xp");
                     if (xp) {
                         xp.textContent = data.total_xp + " XP";
+                    }
+
+                    // Update daily XP progress
+                    const dailyXpCircle = document.querySelector("#daily-xp-circle");
+                    const dailyXpText = document.querySelector("#daily-xp-text");
+                    
+                    if (dailyXpCircle && dailyXpText && data.daily_xp_summary) {
+                        const { daily_xp_gained, max_daily_xp, daily_progress_percentage } = data.daily_xp_summary;
+                        const progress = Math.min(100, daily_progress_percentage);
+                        const circumference = 62.83; // 2 * π * radius (10)
+                        const offset = circumference - (progress / 100) * circumference;
+                        
+                        dailyXpCircle.style.strokeDashoffset = offset;
+                        dailyXpText.textContent = `${daily_xp_gained}/${max_daily_xp}`;
+                        
+                        // Change color based on progress
+                        if (progress >= 90) {
+                            dailyXpCircle.style.stroke = "#ef4444"; // Red when near limit
+                        } else if (progress >= 70) {
+                            dailyXpCircle.style.stroke = "#f59e0b"; // Orange when getting close
+                        } else {
+                            dailyXpCircle.style.stroke = "#10b981"; // Green for normal progress
+                        }
                     }
 
                     const badgeBox = document.querySelector("#badge-box");

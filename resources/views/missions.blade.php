@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Misssions of The Day | Curhatorium</title>
     <link rel="stylesheet" href="{{ asset('css/global.css') }}">
     <link rel="stylesheet" href="{{ asset('css/missions.css') }}">
@@ -19,6 +20,8 @@
                 <p>Selesaikan tantangan harian untuk meningkatkan kesejahteraan mental dan membangun kebiasaan sehat</p>
             </div>
         </div>
+
+
 
         <!-- Main Content -->
         <div class="missions-container">
@@ -49,8 +52,20 @@
                         $missionsList = $missions[$difficulty] ?? collect();
                         $completedCount = $missionsList->whereIn('id', $completedMissions)->count();
                         $totalCount = $missionsList->count();
-                        $totalPoints = $missionsList->sum('points');
                         $progress = $totalCount > 0 ? round(($completedCount / $totalCount) * 100) : 0;
+                        
+                        // Get XP values based on user's membership type
+                        $user = auth()->user();
+                        $xpService = app(\App\Services\XpService::class);
+                        $membershipType = $xpService->getUserMembershipType($user);
+                        
+                        $xpValues = [
+                            'easy' => $membershipType === 'subscription' ? 40 : 30,
+                            'medium' => $membershipType === 'subscription' ? 50 : 40,
+                            'hard' => $membershipType === 'subscription' ? 90 : 80
+                        ];
+                        
+                        $totalXp = $xpValues[$difficulty] * $totalCount;
                     @endphp
 
                 <div class="stats">
@@ -62,9 +77,9 @@
                     </div>
                     <div class="stat-item">
                             <div class="stat-number" style="color: var(--{{ $difficulty == 'easy' ? 'success' : ($difficulty == 'medium' ? 'warning' : 'error') }});">
-                                {{ $totalPoints }}
+                                {{ $totalXp }}
                             </div>
-                        <div class="stat-label">Total Poin</div>
+                        <div class="stat-label">Total XP</div>
                     </div>
                 </div>
 
@@ -84,7 +99,7 @@
                         </div>
                         <div class="mission-footer">
                                     <div class="mission-points {{ $difficulty }}">
-                                        {{ $mission->points }} poin
+                                        {{ $xpValues[$difficulty] }} XP
                             </div>
                             <div class="completion-toggle">
                                         @if($isCompleted)
@@ -122,6 +137,19 @@
         </div>
     </div>
 
+    <!-- XP Notification -->
+    @if(session('success'))
+        @php
+            $message = session('success');
+            $xpAwarded = 0;
+            if (strpos($message, '+') !== false && strpos($message, 'XP') !== false) {
+                preg_match('/\+(\d+)\s*XP/', $message, $matches);
+                $xpAwarded = $matches[1] ?? 0;
+            }
+        @endphp
+        <x-xp-notification :xp-awarded="$xpAwarded" :message="$message" />
+    @endif
+
     <script>
         function switchTab(difficulty) {
             document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
@@ -147,6 +175,34 @@
         // Close modal on outside click
         document.getElementById('completion-modal').addEventListener('click', function(e) {
             if (e.target === this) closeCompletionModal();
+        });
+
+        // Handle form submission
+        document.getElementById('completion-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const missionId = currentMissionId;
+            
+            fetch(this.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                }
+            })
+            .then(response => response.text())
+            .then(html => {
+                // Close modal
+                closeCompletionModal();
+                
+                // Reload page to show updated state
+                window.location.reload();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Terjadi kesalahan saat menyelesaikan misi. Silakan coba lagi.');
+            });
         });
     </script>
 </body>

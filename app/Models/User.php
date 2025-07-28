@@ -26,6 +26,7 @@ class User extends Authenticatable implements FilamentUser
         'password',
         'group_id',
         'profile_picture',
+        'total_xp',
     ];
 
     /**
@@ -110,5 +111,58 @@ class User extends Authenticatable implements FilamentUser
      public function canAccessPanel(\Filament\Panel $panel): bool
     {
         return $this->is_admin;
+    }
+
+    /**
+     * Get the daily XP logs for the user.
+     */
+    public function dailyXpLogs()
+    {
+        return $this->hasMany(\App\Models\DailyXpLog::class);
+    }
+
+    /**
+     * Award XP to the user for a specific activity.
+     */
+    public function awardXp(string $activity, int $quantity = 1): array
+    {
+        $xpService = app(\App\Services\XpService::class);
+        return $xpService->awardXp($this, $activity, $quantity);
+    }
+
+    /**
+     * Get XP progress towards psychologist access.
+     */
+    public function getXpProgress(): array
+    {
+        $xpService = app(\App\Services\XpService::class);
+        return $xpService->getXpProgress($this);
+    }
+
+    /**
+     * Check if user can access psychologist.
+     */
+    public function canAccessPsychologist(): bool
+    {
+        $xpService = app(\App\Services\XpService::class);
+        return $xpService->canAccessPsychologist($this);
+    }
+
+    /**
+     * Get daily XP summary.
+     */
+    public function getDailyXpSummary(): array
+    {
+        $xpService = app(\App\Services\XpService::class);
+        return $xpService->getDailyXpSummary($this);
+    }
+
+    /**
+     * Get XP breakdown for all activities.
+     */
+    public function getXpBreakdown(): array
+    {
+        $xpService = app(\App\Services\XpService::class);
+        return $xpService->getXpBreakdown($this);
     }
 }
