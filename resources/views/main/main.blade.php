@@ -24,6 +24,7 @@
     @include('main.qotd')
     @include('main.stats')
     @include('main.cta')
+    @include('main.xp-redemption')
     @include('main.features')
     @include('main.agenda')
     @include('components.footer')

@@ -1,0 +1,350 @@
+/* XP Redemption Page Styles */
+
+.redemption-main {
+    min-height: 100vh;
+    background: #f5f1eb;
+    padding-top: 80px;
+    padding-left: 40px;
+    padding-right: 40px;
+}
+
+@media (max-width: 600px) {
+    .redemption-main {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+}
+
+.redemption-section {
+    max-width: 800px;
+    margin: auto;
+    padding: 40px 0;
+}
+
+.redemption-title {
+    font-family: FigtreeBold;
+    font-size: 2.5em;
+    color: #333;
+    margin-bottom: 32px;
+    text-align: center;
+}
+
+/* User XP Display */
+.user-xp-display {
+    background: #fff;
+    padding: 24px;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    margin-bottom: 32px;
+}
+
+.xp-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.xp-label {
+    font-size: 1.1em;
+    color: #666;
+    font-weight: 500;
+}
+
+.xp-value {
+    font-family: FigtreeBold;
+    font-size: 1.5em;
+    color: #10b981;
+}
+
+.xp-progress {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background: #e5e7eb;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #10b981, #059669);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.progress-text {
+    font-size: 0.9em;
+    color: #666;
+    text-align: center;
+}
+
+/* Redemption Table */
+.redemption-table-container {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    overflow: hidden;
+    margin-bottom: 32px;
+}
+
+.redemption-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.redemption-table th {
+    background: #f8f9fa;
+    padding: 16px;
+    text-align: left;
+    font-family: FigtreeBold;
+    color: #333;
+    border-bottom: 2px solid #e5e7eb;
+}
+
+.redemption-table td {
+    padding: 16px;
+    border-bottom: 1px solid #f1f3f4;
+    vertical-align: middle;
+}
+
+.redemption-table tr:last-child td {
+    border-bottom: none;
+}
+
+.redemption-table tr:hover {
+    background: #f8f9fa;
+}
+
+.item-name {
+    font-weight: 600;
+    color: #333;
+    font-size: 1em;
+}
+
+.xp-cost {
+    font-family: FigtreeBold;
+    color: #10b981;
+    font-size: 1.1em;
+    text-align: center;
+}
+
+.ticket-type {
+    text-align: center;
+    width: 140px;
+}
+
+.unlimited-badge {
+    background: #10b981;
+    color: #fff;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8em;
+    font-weight: 600;
+}
+
+.single-badge {
+    background: #6b7280;
+    color: #fff;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8em;
+    font-weight: 600;
+}
+
+.action-cell {
+    text-align: center;
+    width: 120px;
+}
+
+/* Button Styles */
+.redeem-btn {
+    background: #10b981;
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9em;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.redeem-btn:hover {
+    background: #059669;
+}
+
+.redeem-btn:active {
+    transform: translateY(1px);
+}
+
+/* Affordability States */
+.affordable {
+    opacity: 1;
+}
+
+.unaffordable {
+    opacity: 0.6;
+}
+
+.unaffordable .item-name {
+    color: #666;
+}
+
+.unaffordable .xp-cost {
+    color: #999;
+}
+
+.insufficient-xp {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.shortage-text {
+    font-size: 0.8em;
+    color: #ef4444;
+    font-weight: 500;
+}
+
+/* Alert Messages */
+.alert {
+    padding: 16px;
+    border-radius: 8px;
+    margin-bottom: 24px;
+    font-weight: 500;
+    transition: opacity 0.3s ease;
+}
+
+.alert-success {
+    background: #d1fae5;
+    color: #065f46;
+    border: 1px solid #a7f3d0;
+}
+
+.alert-error {
+    background: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fca5a5;
+}
+
+/* Info Section */
+.info-section {
+    background: #fff;
+    padding: 24px;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.info-section h3 {
+    font-family: FigtreeBold;
+    color: #333;
+    margin-bottom: 16px;
+    font-size: 1.2em;
+}
+
+.info-section ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.info-section li {
+    padding: 8px 0;
+    color: #666;
+    position: relative;
+    padding-left: 20px;
+}
+
+.info-section li:before {
+    content: "•";
+    color: #10b981;
+    font-weight: bold;
+    position: absolute;
+    left: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .redemption-title {
+        font-size: 2em;
+    }
+
+    .redemption-table th,
+    .redemption-table td {
+        padding: 12px 8px;
+        font-size: 0.9em;
+    }
+
+    .item-name {
+        font-size: 0.9em;
+    }
+
+    .xp-cost {
+        font-size: 1em;
+    }
+
+    .ticket-type {
+        width: 120px;
+    }
+
+    .unlimited-badge,
+    .single-badge {
+        font-size: 0.7em;
+        padding: 3px 6px;
+    }
+
+    .action-cell {
+        width: 100px;
+    }
+
+    .redeem-btn {
+        padding: 6px 12px;
+        font-size: 0.8em;
+    }
+
+    .xp-info {
+        flex-direction: column;
+        gap: 8px;
+        text-align: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .redemption-table {
+        font-size: 0.8em;
+    }
+
+    .redemption-table th,
+    .redemption-table td {
+        padding: 8px 4px;
+    }
+
+    .ticket-type {
+        width: 100px;
+    }
+
+    .unlimited-badge,
+    .single-badge {
+        font-size: 0.6em;
+        padding: 2px 4px;
+    }
+
+    .action-cell {
+        width: 80px;
+    }
+
+    .redeem-btn {
+        padding: 4px 8px;
+        font-size: 0.7em;
+    }
+
+    .shortage-text {
+        font-size: 0.7em;
+    }
+}

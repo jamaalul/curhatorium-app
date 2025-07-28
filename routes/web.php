@@ -13,6 +13,7 @@ use App\Http\Controllers\TrackerController;
 use App\Http\Controllers\MentalTestController;
 use App\Http\Controllers\MissionController;
 use App\Http\Controllers\XpController;
+use App\Http\Controllers\XpRedemptionController;
 
 
 Route::get('/', function () {
@@ -134,6 +135,10 @@ Route::middleware('auth')->group(function () {
             'max_daily_xp' => $xpService->getMaxDailyXp($user)
         ]);
     })->name('test.xp');
+
+    // XP Redemption Routes
+    Route::get('/xp-redemption', [XpRedemptionController::class, 'index'])->name('xp-redemption.index');
+    Route::post('/xp-redemption/redeem', [XpRedemptionController::class, 'redeem'])->name('xp-redemption.redeem');
 
 });
 
