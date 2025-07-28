@@ -17,6 +17,10 @@ use App\Http\Controllers\XpRedemptionController;
 
 
 Route::get('/', function () {
+    return view('landing');
+})->name('land');
+
+Route::get('/portal', function () {
     return view('auth.login');
 })->name('start');
 

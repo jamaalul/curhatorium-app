@@ -14,7 +14,6 @@
     .footer {
         background: var(--bg-dark);
         color: white;
-        margin-top: 2rem;
     }
 
     .footer-container {
