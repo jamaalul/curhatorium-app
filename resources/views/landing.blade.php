@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Your Safest Place | Curhatorium</title>
-    <link rel="stylesheet" href="{{ asset('css/global.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/landing.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/global.css') }}?v={{ time() }}">
+    <link rel="stylesheet" href="{{ asset('css/components/navbar.css') }}?v={{ time() }}">
+    <link rel="stylesheet" href="{{ asset('css/landing.css') }}?v={{ time() }}">
 </head>
 <body>
     <!-- Navigation -->
-    <link rel="stylesheet" href="{{ asset('css/components/navbar.css') }}">
     <nav>
         <div id="logo-box" onclick="window.location.href = '/'">
             <img src="{{ asset('assets/mini_logo.png') }}" alt="mini_logo" id="mini-logo">
