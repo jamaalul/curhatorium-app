@@ -621,9 +621,8 @@ body {
 
 .landing-pricing-price .period {
     font-size: 0.95rem;
-    font-weight: 400;
-    color: #000;
     font-weight: 800;
+    color: #000;
     vertical-align: baseline;
     opacity: 0.7;
     margin-left: 2px;
@@ -718,8 +717,6 @@ body {
     color: #8ecbcf;
     font-size: 1.1em;
 }
-
-
 
 /* CTA Section */
 .cta {

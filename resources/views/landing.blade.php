@@ -319,7 +319,7 @@
                             $badge = 'Terpopuler';
                         }
                     @endphp
-                    <div class="landing-pricing-card fade-in{{ $isHarmony ? ' landing-pricing-card--highlight' : '' }}">
+                    <div class="{{ 'landing-pricing-card' . ($isHarmony ? ' landing-pricing-card--highlight' : '') }} fade-in">
                         <div class="landing-pricing-card__top"></div>
                         @if($badge)
                             <div class="landing-pricing-card__badge">{{ $badge }}</div>
