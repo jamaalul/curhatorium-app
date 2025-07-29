@@ -51,6 +51,7 @@ class AdminprivilegePanelProvider extends PanelProvider
             ->widgets([
                 Widgets\AccountWidget::class,
                 Widgets\FilamentInfoWidget::class,
+                \App\Filament\Widgets\SgdPaymentOverview::class,
             ])
             ->middleware([
                 EncryptCookies::class,

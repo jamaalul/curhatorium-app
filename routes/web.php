@@ -165,6 +165,11 @@ Route::middleware('auth')->group(function () {
     Route::post('/support-group-discussion/enter-meeting', [SgdController::class, 'enterMeetingRoom'])->name('group.enter-meeting');
     Route::post('/support-group-discussion/leave', [SgdController::class, 'leaveGroup'])->name('group.leave');
 
+    // SGD Payment Routes (Admin only)
+    Route::get('/support-group-discussion/{groupId}/payment-data', [SgdController::class, 'getPaymentData'])->name('group.payment-data');
+    Route::get('/support-group-discussion/{groupId}/consumption-details', [SgdController::class, 'getConsumptionDetails'])->name('group.consumption-details');
+    Route::post('/support-group-discussion/payment-summary', [SgdController::class, 'getPaymentSummary'])->name('group.payment-summary');
+
     Route::get('/share-and-talk/messages/{sessionId}', [ShareAndTalkController::class, 'getMessages'])->name('share-and-talk.messages');
 });
 

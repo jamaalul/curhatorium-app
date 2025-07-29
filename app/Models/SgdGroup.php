@@ -14,7 +14,8 @@ class SgdGroup extends Model
         'meeting_address',
         'schedule',
         'is_done',
-        'category'
+        'category',
+        'host_id'
     ];
 
     protected $casts = [
@@ -69,6 +70,22 @@ class SgdGroup extends Model
     public function isUpcoming()
     {
         return now()->lt($this->schedule);
+    }
+
+    /**
+     * Get the ticket consumptions for this SGD group.
+     */
+    public function sgdTicketConsumptions()
+    {
+        return $this->hasMany(\App\Models\SgdTicketConsumption::class);
+    }
+
+    /**
+     * Get the host (professional) for this SGD group.
+     */
+    public function host()
+    {
+        return $this->belongsTo(\App\Models\Professional::class, 'host_id');
     }
 
     /**
