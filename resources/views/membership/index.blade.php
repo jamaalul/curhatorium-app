@@ -147,7 +147,7 @@
                             <button class="subscribe-btn" type="submit">Langganan Sekarang</button>
                         </form>
                     @else
-                        <button class="subscribe-btn" onclick="redirectToWhatsApp('{{ $membership->name }}', {{ $membership->price }}, {{ Auth::user()->id }})" type="button">Beli via WhatsApp</button>
+                        <button class="subscribe-btn" onclick="redirectToWhatsApp('{{ $membership->name }}', {{ $membership->price }}, {{ Auth::user()->id }})" type="button">Beli Sekarang</button>
                     @endif
                 </div>
             @endforeach

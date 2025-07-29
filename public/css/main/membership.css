@@ -42,30 +42,48 @@ body {
 
     .pricing-card {
         background: #fff;
-        border-radius: 20px;
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08),
-            0 1.5px 8px rgba(0, 0, 0, 0.06);
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
         padding: 32px 24px 24px 24px;
         display: flex;
         flex-direction: column;
         align-items: flex-start;
         min-height: 420px;
-        border: 1.5px solid #eaeaea;
-        transition: box-shadow 0.2s, transform 0.2s;
+        border: 2px solid rgba(255, 205, 45, 0.1);
+        transition: all 0.3s ease;
         position: relative;
+        overflow: hidden;
+    }
+
+    .pricing-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #8ecbcf, #ffcd2d, #8ecbcf);
+        border-top-left-radius: 16px;
+        border-top-right-radius: 16px;
+    }
+
+    .pricing-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(255, 205, 45, 0.1);
     }
 
     .popular-badge {
         position: absolute;
-        top: -12px;
-        right: 20px;
-        background: #fff;
-        color: #222;
-        padding: 6px 16px;
-        border-radius: 20px;
-        font-size: 0.8rem;
-        font-weight: 700;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        top: 15px;
+        right: 15px;
+        background: linear-gradient(135deg, #8ecbcf, #7bb8bc);
+        color: white;
+        padding: 5px 12px;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        box-shadow: 0 2px 8px rgba(142, 203, 207, 0.3), 0 0 0 1px rgba(255, 205, 45, 0.1);
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         z-index: 10;
         animation: badgePulse 2s ease-in-out infinite;
     }
@@ -73,11 +91,11 @@ body {
     @keyframes badgePulse {
         0%, 100% { 
             transform: scale(1);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 2px 8px rgba(142, 203, 207, 0.3), 0 0 0 1px rgba(255, 205, 45, 0.1);
         }
         50% { 
             transform: scale(1.05);
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+            box-shadow: 0 4px 15px rgba(142, 203, 207, 0.4), 0 0 0 1px rgba(255, 205, 45, 0.2);
         }
     }
 
@@ -92,9 +110,9 @@ body {
         color: #222;
         border: 3px solid #ffcd2d;
         transform: scale(1.05);
-        box-shadow: 0 8px 32px rgba(255, 205, 45, 0.3), 0 4px 16px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 12px 40px rgba(255, 255, 255, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.2);
         position: relative;
-        z-index: 5;
+        z-index: 2;
     }
 
     .pricing-card.harmony-popular::before {
@@ -117,35 +135,56 @@ body {
         border: none;
     }
 
-    .pricing-card:hover {
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.13),
-            0 2px 12px rgba(0, 0, 0, 0.09);
-        transform: translateY(-4px) scale(1.01);
-    }
-
     .pricing-card.harmony-popular:hover {
         transform: translateY(-8px) scale(1.08);
-        box-shadow: 0 12px 40px rgba(255, 205, 45, 0.4), 0 6px 20px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 20px 60px rgba(255, 255, 255, 0.4), 0 0 0 3px rgba(255, 255, 255, 0.3);
     }
 
     .card-header {
         display: flex;
         align-items: center;
         gap: 16px;
-        margin-bottom: 12px;
+        margin-bottom: 20px;
+        width: 100%;
     }
 
     .card-icon {
         width: 48px;
         height: 48px;
-        border-radius: 50%;
-        background: #f8c932;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #8ecbcf, #ffcd2d);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 2rem;
-        color: #fff;
+        font-size: 1.5rem;
+        color: white;
         flex-shrink: 0;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(142, 203, 207, 0.3), 0 0 0 2px rgba(255, 205, 45, 0.2);
+        position: relative;
+    }
+
+    .card-icon::after {
+        content: '';
+        position: absolute;
+        top: -2px;
+        left: -2px;
+        right: -2px;
+        bottom: -2px;
+        background: linear-gradient(135deg, #ffcd2d, #8ecbcf);
+        border-radius: 14px;
+        z-index: -1;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .card-icon:hover {
+        transform: scale(1.1);
+        box-shadow: 0 6px 20px rgba(142, 203, 207, 0.4), 0 0 0 3px rgba(255, 205, 45, 0.3);
+    }
+
+    .card-icon:hover::after {
+        opacity: 1;
     }
 
     .pricing-card.yellow .card-icon {
@@ -162,31 +201,83 @@ body {
     }
 
     .card-title {
-        font-size: 1.25rem;
-        font-weight: 700;
+        font-size: 1.3rem;
+        font-weight: 600;
         margin: 0;
-        color: inherit;
+        color: #333;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .pricing-card.yellow .card-title {
+        color: #222;
+    }
+
+    .pricing-card.black .card-title,
+    .pricing-card.dark .card-title {
+        color: #fff;
     }
 
     .pricing-card.harmony-popular .card-title {
-        font-size: 1.5rem;
-        font-weight: 800;
         color: #222;
+        font-weight: 800;
+        font-size: 1.4rem;
         text-shadow: 0 2px 4px rgba(255, 205, 45, 0.3);
+    }
+
+    .pricing-card:hover .card-title {
+        color: #ffcd2d;
+        transform: scale(1.08) translateY(-5px);
+        text-shadow: 0 2px 8px rgba(255, 205, 45, 0.3);
+    }
+
+    .pricing-card.yellow:hover .card-title,
+    .pricing-card.harmony-popular:hover .card-title {
+        color: #222;
+    }
+
+    .pricing-card.black:hover .card-title,
+    .pricing-card.dark:hover .card-title {
+        color: #fff;
     }
 
     .card-price {
         font-size: 2rem;
-        font-weight: 800;
-        margin-bottom: 8px;
-        color: inherit;
+        font-weight: 700;
+        margin-bottom: 20px;
+        color: #333;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .pricing-card.yellow .card-price {
+        color: #222;
+    }
+
+    .pricing-card.black .card-price,
+    .pricing-card.dark .card-price {
+        color: #fff;
     }
 
     .pricing-card.harmony-popular .card-price {
-        font-size: 2.3rem;
-        font-weight: 900;
         color: #222;
+        font-weight: 900;
+        font-size: 2.3rem;
         text-shadow: 0 2px 6px rgba(255, 205, 45, 0.4);
+    }
+
+    .pricing-card:hover .card-price {
+        color: #ffcd2d;
+        transform: scale(1.15) translateY(-8px);
+        text-shadow: 0 4px 12px rgba(255, 205, 45, 0.4);
+    }
+
+    .pricing-card.yellow:hover .card-price,
+    .pricing-card.harmony-popular:hover .card-price {
+        color: #222;
+    }
+
+    .pricing-card.black:hover .card-price,
+    .pricing-card.dark:hover .card-price {
+        color: #fff;
     }
 
     .card-price .currency {
@@ -220,25 +311,38 @@ body {
         margin-bottom: 32px;
         flex-grow: 1;
         padding-left: 0;
+        text-align: left;
     }
 
     .benefits-list li {
         display: flex;
         align-items: flex-start;
-        margin-bottom: 4px;
+        margin-bottom: 12px;
         font-size: 1rem;
-        line-height: 1.5;
-        color: inherit;
+        line-height: 1.6;
+        color: #666;
+        position: relative;
+        padding-left: 1.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .pricing-card.yellow .benefits-list li {
+        color: #222;
+    }
+
+    .pricing-card.black .benefits-list li,
+    .pricing-card.dark .benefits-list li {
+        color: #fff;
     }
 
     .benefits-list li::before {
-        content: "\2022";
-        color: #70c0bb;
+        content: "✓";
+        position: absolute;
+        left: 0;
+        color: #8ecbcf;
         font-weight: bold;
-        margin-right: 10px;
-        font-size: 1em;
-        padding-bottom: 0.6em;
-        flex-shrink: 0;
+        text-shadow: 0 1px 2px rgba(255, 205, 45, 0.2);
+        transition: all 0.3s ease;
     }
 
     .pricing-card.yellow .benefits-list li::before {
@@ -247,6 +351,35 @@ body {
 
     .pricing-card.black .benefits-list li::before,
     .pricing-card.dark .benefits-list li::before {
+        color: #f8c932;
+    }
+
+    .pricing-card:hover .benefits-list li {
+        transform: translateX(5px);
+        color: #555;
+    }
+
+    .pricing-card.yellow:hover .benefits-list li {
+        color: #222;
+    }
+
+    .pricing-card.black:hover .benefits-list li,
+    .pricing-card.dark:hover .benefits-list li {
+        color: #fff;
+    }
+
+    .pricing-card:hover .benefits-list li::before {
+        color: #ffcd2d;
+        transform: scale(1.3) rotate(15deg);
+        text-shadow: 0 2px 4px rgba(255, 205, 45, 0.3);
+    }
+
+    .pricing-card.yellow:hover .benefits-list li::before {
+        color: #fff;
+    }
+
+    .pricing-card.black:hover .benefits-list li::before,
+    .pricing-card.dark:hover .benefits-list li::before {
         color: #f8c932;
     }
 
@@ -266,20 +399,43 @@ body {
     }
 
     .subscribe-btn {
-        background: #fff;
-        color: #222;
-        border: 2px solid #eaeaea;
+        background: linear-gradient(135deg, #8ecbcf, #7bb8bc);
+        color: white;
+        border: none;
         padding: 16px 0 16px 0;
-        border-radius: 12px;
+        border-radius: 8px;
         font-size: 1.08rem;
-        font-weight: 700;
+        font-weight: 600;
         cursor: pointer;
         width: 100%;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-        transition: background 0.2s, color 0.2s, border 0.2s, box-shadow 0.2s;
+        box-shadow: 0 4px 15px rgba(142, 203, 207, 0.3);
+        transition: all 0.3s ease;
         margin-top: auto;
         letter-spacing: 0.02em;
         display: block;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .subscribe-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 205, 45, 0.3), transparent);
+        transition: left 0.5s;
+    }
+
+    .subscribe-btn:hover::before {
+        left: 100%;
+    }
+
+    .pricing-card.yellow .subscribe-btn {
+        background: #222;
+        color: #ffcd2d;
+        border: none;
     }
 
     .pricing-card.harmony-popular .subscribe-btn {
@@ -293,15 +449,20 @@ body {
 
     .pricing-card.dark .subscribe-btn,
     .pricing-card.black .subscribe-btn {
-        background: #222;
-        color: #fff;
+        background: #fff;
+        color: #222;
         border: none;
     }
 
     .subscribe-btn:hover {
-        background: #ffd84d;
-        color: #222;
-        border: 2px solid #ffd84d;
+        background: linear-gradient(135deg, #7bb8bc, #6aa5a9);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(142, 203, 207, 0.4);
+    }
+
+    .pricing-card.yellow .subscribe-btn:hover {
+        background: #333;
+        color: #ffcd2d;
     }
 
     .pricing-card.harmony-popular .subscribe-btn:hover {
@@ -313,8 +474,8 @@ body {
 
     .pricing-card.dark .subscribe-btn:hover,
     .pricing-card.black .subscribe-btn:hover {
-        background: #333;
-        color: #fff;
+        background: #f5f5f5;
+        color: #222;
     }
 
     .subscribe-form {
@@ -349,7 +510,7 @@ body {
             font-size: 1.5rem;
         }
         .pricing-card {
-            padding: 18px 10px 16px 10px;
+            padding: 24px 16px 20px 16px;
             min-height: 320px;
         }
         .card-title {

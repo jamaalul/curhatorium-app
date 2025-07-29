@@ -651,16 +651,6 @@ body {
     background: linear-gradient(135deg, #ffffff 0%, #f8fffe 100%);
 }
 
-.pricing-card--highlight::after {
-    content: '🔥';
-    position: absolute;
-    top: -15px;
-    right: -15px;
-    font-size: 2rem;
-    animation: bounce 2s ease-in-out infinite;
-    z-index: 3;
-}
-
 .pricing-card--highlight .pricing-card__badge {
     background: linear-gradient(135deg, #8ecbcf, #7bb8bc);
     color: white;
