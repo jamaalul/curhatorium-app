@@ -223,7 +223,7 @@
                 </p>
             </div>
 
-            <div class="pricing-grid">
+            <div class="landing-pricing-grid">
                 @php
                     $membershipMeta = [
                         'Calm Starter' => [
@@ -302,7 +302,7 @@
                         "Meet with Sanny's Aid" => [
                             'price' => 199000,
                             'benefits' => [
-                                '(1x) Share and Talk via Video Call w/ Psikiater',
+                                '(1x) Share and Talk via Video Call w/ Psikolog',
                                 '(Unlimited 1 bulan) Mood and Productivity Tracker w/ Extended Report',
                                 '(Unlimited 1 bulan) Deep Cards',
                             ],
@@ -319,14 +319,19 @@
                             $badge = 'Terpopuler';
                         }
                     @endphp
-                    <div class="pricing-card fade-in{{ $isHarmony ? ' pricing-card--highlight' : '' }}">
-                        <div class="pricing-card__top"></div>
+                    <div class="landing-pricing-card fade-in{{ $isHarmony ? ' landing-pricing-card--highlight' : '' }}">
+                        <div class="landing-pricing-card__top"></div>
                         @if($badge)
-                            <div class="pricing-card__badge">{{ $badge }}</div>
+                            <div class="landing-pricing-card__badge">{{ $badge }}</div>
                         @endif
-                        <div class="pricing-title">{{ $name }}</div>
-                        <div class="pricing-price">Rp{{ number_format($meta['price'], 0, ',', '.') }}</div>
-                        <ul class="pricing-features">
+                        <div class="landing-pricing-title">{{ $name }}</div>
+                        <div class="landing-pricing-price">
+                            Rp{{ number_format($meta['price'], 0, ',', '.') }}
+                            @if(isset($meta['period']))
+                                <span class="period">/{{ $meta['period'] }}</span>
+                            @endif
+                        </div>
+                        <ul class="landing-pricing-features">
                             @foreach($meta['benefits'] as $benefit)
                                 <li>{{ $benefit }}</li>
                             @endforeach

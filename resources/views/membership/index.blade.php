@@ -4,8 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Membership Fleksibel</title>
-    <link rel="stylesheet" href="{{ asset('css/global.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/main/membership.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/global.css') }}?v={{ time() }}">
+    <link rel="stylesheet" href="{{ asset('css/components/navbar.css') }}?v={{ time() }}">
+    <link rel="stylesheet" href="{{ asset('css/main/membership.css') }}?v={{ time() }}">
     <!-- Styles will be added externally -->
 </head>
 <body>
@@ -110,7 +111,7 @@
                     'class' => 'dark',
                     'svg' => '<svg width="42" height="42" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5.20248 8.5594C5.20248 12.2423 3.74772 15.7707 1.16512 18.3518L1.0405 18.4763C-0.346832 19.8628 -0.346832 22.1372 1.0405 23.5237L1.16512 23.6482C3.74772 26.2293 5.20248 29.7577 5.20248 33.4406C5.20248 35.336 6.71295 36.8725 8.5762 36.8725H8.69046C12.348 36.8725 15.8838 38.3581 18.4928 40.9655C19.863 42.3348 22.0739 42.3497 23.444 40.9804C26.0784 38.3477 29.6237 36.8725 33.3166 36.8725H33.5131C35.4204 36.8725 36.9665 35.2997 36.9665 33.3595V33.2084C36.9665 29.5352 38.4175 26.016 40.9933 23.4417C42.3356 22.1002 42.3356 19.8998 40.9933 18.5583C38.4175 15.984 36.9665 12.4648 36.9665 8.7916V8.64048C36.9665 6.70031 35.4204 5.1275 33.5131 5.1275H33.3166C29.6237 5.1275 26.0784 3.65232 23.444 1.01957C22.0739 -0.349742 19.863 -0.334853 18.4928 1.03446C15.8838 3.64193 12.348 5.1275 8.69046 5.1275H8.5762C6.71295 5.1275 5.20248 6.66401 5.20248 8.5594Z" fill="white"/></svg>',
                     'benefits' => [
-                        '(1x) Share and Talk via Video Call w/ Psikiater',
+                        '(1x) Share and Talk via Video Call w/ Psikolog',
                         '(Unlimited 1 bulan) Mood and Productivity Tracker w/ Extended Report',
                         '(Unlimited 1 bulan) Deep Cards',
                     ],
