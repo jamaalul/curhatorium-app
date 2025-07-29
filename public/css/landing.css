@@ -614,6 +614,19 @@ body {
     color: #333;
     margin-bottom: 1.5rem;
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+.landing-pricing-price .period {
+    font-size: 0.95rem;
+    font-weight: 400;
+    color: #000;
+    font-weight: 800;
+    vertical-align: baseline;
+    opacity: 0.7;
+    margin-left: 2px;
 }
 
 .landing-pricing-features {
@@ -686,6 +699,14 @@ body {
     font-size: 2.3rem;
     text-shadow: 0 2px 4px rgba(142, 203, 207, 0.15);
     margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+.landing-pricing-card--highlight .landing-pricing-price .period {
+    color: #7bb8bc;
+    opacity: 0.8;
 }
 
 .landing-pricing-card--highlight .landing-pricing-features li {
