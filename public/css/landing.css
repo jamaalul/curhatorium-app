@@ -644,11 +644,24 @@ body {
 /* Enhanced highlighting for Harmony card */
 .pricing-card--highlight {
     transform: scale(1.05);
-    border: 3px solid #8ecbcf;
-    box-shadow: 0 12px 40px rgba(142, 203, 207, 0.25), 0 0 0 1px rgba(142, 203, 207, 0.1);
+    border: 3px solid #ffcd2d;
+    box-shadow: 0 12px 40px rgba(255, 255, 255, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.2);
     position: relative;
     z-index: 2;
-    background: linear-gradient(135deg, #ffffff 0%, #f8fffe 100%);
+    background: linear-gradient(135deg, #f8c932 0%, #ffcd2d 100%);
+}
+
+.pricing-card--highlight::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    left: -8px;
+    right: -8px;
+    bottom: -8px;
+    background: linear-gradient(135deg, #ffcd2d, #e4af00);
+    border-radius: 24px;
+    z-index: -1;
+    opacity: 0.3;
 }
 
 .pricing-card--highlight .pricing-card__badge {
@@ -656,44 +669,33 @@ body {
     color: white;
     font-weight: 700;
     box-shadow: 0 4px 15px rgba(142, 203, 207, 0.4);
-    animation: glowPulse 2s ease-in-out infinite;
+    animation: badgePulse 2s ease-in-out infinite;
     transform: scale(1.1);
 }
 
 .pricing-card--highlight .pricing-title {
-    color: #7bb8bc;
+    color: #222;
     font-weight: 800;
     font-size: 1.4rem;
-    text-shadow: 0 1px 2px rgba(142, 203, 207, 0.1);
+    text-shadow: 0 2px 4px rgba(255, 205, 45, 0.3);
 }
 
 .pricing-card--highlight .pricing-price {
-    color: #7bb8bc;
+    color: #222;
     font-weight: 900;
     font-size: 2.3rem;
-    text-shadow: 0 2px 4px rgba(142, 203, 207, 0.15);
+    text-shadow: 0 2px 6px rgba(255, 205, 45, 0.4);
     margin-bottom: 2rem;
 }
 
 .pricing-card--highlight .pricing-features li {
-    color: #555;
+    color: #222;
     font-weight: 500;
 }
 
 .pricing-card--highlight .pricing-features li::before {
-    color: #8ecbcf;
+    color: #fff;
     font-size: 1.1em;
-}
-
-@keyframes glowPulse {
-    0%, 100% {
-        box-shadow: 0 4px 15px rgba(142, 203, 207, 0.4);
-        transform: scale(1.1);
-    }
-    50% {
-        box-shadow: 0 6px 25px rgba(142, 203, 207, 0.6);
-        transform: scale(1.15);
-    }
 }
 
 @keyframes bounce {
