@@ -70,4 +70,15 @@ class SgdGroup extends Model
     {
         return now()->lt($this->schedule);
     }
+
+    /**
+     * Check if the group can be entered (within 5 minutes before or after start).
+     */
+    public function canEnterRoom()
+    {
+        $now = now();
+        $startTime = $this->schedule;
+        $fiveMinutesBefore = $startTime->copy()->subMinutes(5);
+        return $now->gte($fiveMinutesBefore);
+    }
 }

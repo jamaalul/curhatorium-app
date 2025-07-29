@@ -103,24 +103,29 @@
                                     @auth
                                         @if($hasJoined)
                                             @if($isUpcoming || $hasStarted)
-                                                <div class="button-group">
-                                                    <form action="{{ route('group.enter-meeting') }}" method="POST" style="display: inline;">
-                                                        @csrf
-                                                        <input type="hidden" name="group_id" value="{{ $group->id }}">
-                                                        <button type="submit" class="join-button meeting-button">
-                                                            Go to Room
-                                                        </button>
-                                                    </form>
+                                                <div class="button-group" style="justify-content: space-between; align-items: flex-start; width: 100%;">
                                                     @if($isUpcoming)
-                                                        <form action="{{ route('group.leave') }}" method="POST" style="display: inline;" onsubmit="return confirm('Are you sure you want to leave this group?')">
+                                                        <form action="{{ route('group.leave') }}" method="POST" style="display: inline;">
                                                             @csrf
                                                             <input type="hidden" name="group_id" value="{{ $group->id }}">
-                                                            <button type="submit" class="join-button leave-button" style="">
+                                                            <button type="submit" class="join-button leave-button">
                                                                 Leave Group
                                                             </button>
                                                         </form>
                                                     @endif
+                                                    <div style="display: flex; flex-direction: column; align-items: flex-end; flex: 1;">
+                                                        <form action="{{ route('group.enter-meeting') }}" method="POST" style="display: inline;">
+                                                            @csrf
+                                                            <input type="hidden" name="group_id" value="{{ $group->id }}">
+                                                            <button type="submit" class="join-button meeting-button" @if(!$group->canEnterRoom()) disabled title="You can enter the room 5 minutes before the meeting starts." @endif>
+                                                                Go to Room
+                                                            </button>
+                                                        </form>
+                                                    </div>
                                                 </div>
+                                                @if(!$group->canEnterRoom())
+                                                <span class="disabled-info">Anda dapat masuk ke ruangan 5 menit sebelum pertemuan dimulai.</span>
+                                            @endif
                                             @else
                                                 <button class="join-button past-button" disabled>
                                                     Past Event

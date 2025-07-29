@@ -116,6 +116,12 @@ class SgdController extends Controller
             return redirect()->route('sgd')->with('error', 'You must join the group first before entering the meeting room.');
         }
 
+        // If the meeting has started and is_done is not set, mark as done
+        if ($group->hasStarted() && !$group->is_done) {
+            $group->is_done = true;
+            $group->save();
+        }
+
         // Redirect directly to the external meeting address (e.g., YouTube URL)
         return redirect()->away($group->meeting_address);
     }
