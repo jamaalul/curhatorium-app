@@ -85,116 +85,112 @@
             @if(auth()->check() && !auth()->user()->onboarding_completed)
             // Use conditions based on screen width to adjust the steps
             var stepsDesktop = [
-                // {
-                // element: document.querySelector('.icon-block'),
-                // intro: "Selamat datang di Curhatorium!" // Step 1 (no element)
-                // },
                 {
                     element: document.querySelector('#profile-box'),
-                    intro: "Ini statistik kamu. Jumlah XP, Badge, dan Username kamu dapat dilihat di sini. Klik ini untuk ke menu profil"
+                    intro: "Semua perjalananmu terekam di sini: XP, badge, username, dan jumlah tiket yang kamu miliki. Beberapa fitur Curhatorium memerlukan tiket untuk diakses, jadi pastikan kamu memantau stok tiketmu melalui halaman profil dengan mengklik ini."
                 },
                 {
                     element: document.querySelector('.quote-carousel'),
-                    intro: "Ini adalah quote hari ini. Geser untuk melihat quote selanjutnya."
+                    intro: "Kumpulan kutipan harian yang bisa kamu geser. Selalu ada kalimat yang tepat untuk menemani harimu."
                 },
                 {
                     element: document.querySelector('.container'),
-                    intro: "Ini adalah fitur Mood and Productivity Tracker. Ceritakan hari-mu di sini."
+                    intro: "Ruang untuk mencurahkan suasana hati dan menilai produktivitasmu hari ini. Satu langkah kecil untuk mengenal diri."
                 },
                 {
                     element: document.querySelector('.membership-btn'),
-                    intro: "Dapatkan akses lebih Curhatorium dengan membeli membership!"
+                    intro: "Tombol menuju pengalaman premium—akses fitur tambahan untuk dukungan mental yang lebih menyeluruh."
                 },
                 {
                     element: document.querySelector('.xp-redemption-button'),
-                    intro: "Tukarkan XP kamu dengan reward yang kamu inginkan di sini!"
+                    intro: "Setiap pencapaian punya nilai. Gunakan XP yang kamu kumpulkan untuk reward yang kamu pilih sendiri."
                 },
                 {
                     element: document.querySelector('#to-mental-test'),
-                    intro: "Tes kesehatan mental kamu dengan standar yang teruji"
+                    intro: "Tes valid secara psikologis untuk membantumu memahami kondisi mental dengan lebih dalam dan terukur."
                 },
                 {
                     element: document.querySelector('#to-share-talk'),
-                    intro: "Cari teman untuk berbagi pengalaman dan mendapatkan dukungan di sini"
+                    intro: "Ruang hangat untuk berbagi pengalaman. Temukan dukungan dan teman yang mengerti."
                 },
                 {
                     element: document.querySelector('#to-chatbot'),
-                    intro: "Ceritakan harimu dengan AI yang hadir kapan pun di mana pun"
+                    intro: "Partner bercerita berbasis AI yang selalu siap mendengarkan, kapan pun kamu butuh tempat bercerita."
                 },
                 {
                     element: document.querySelector('#to-missions'),
-                    intro: "Selesaikan tugas harian untuk menjaga kesejahteraan psikologis dan mental"
+                    intro: "Kumpulan misi harian yang membantumu tetap terhubung dengan diri sendiri, secara ringan namun bermakna."
                 },
                 {
                     element: document.querySelector('#to-sgd'),
-                    intro: "Cari kelompok untuk saling berbagi cerita secara anonim"
+                    intro: "Forum diskusi anonim—tempat di mana kamu bisa menjadi diri sendiri tanpa takut dihakimi."
                 },
                 {
                     element: document.querySelector('#to-deep-cards'),
-                    intro: "Gunakan Deep Card untuk membantumu refleksi diri"
+                    intro: "Kartu refleksi untuk memperdalam pemahaman diri. Terkadang, satu pertanyaan bisa mengubah banyak hal."
                 },
                 {
                     element: document.querySelector('.agenda-section'),
-                    intro: "Lihat agenda mendatang Curhatorium di sini"
+                    intro: "Jadwal kegiatan mendatang dari Curhatorium, agar kamu selalu terinformasi dan bisa ikut ambil bagian."
                 },
                 {
                     element: document.querySelector('.footer-social'),
-                    intro: "Kenal lebih dekat dengan Curhatorium di sini"
+                    intro: "Jalan pintas untuk mengenal Curhatorium lebih dekat lewat media sosial resmi kami."
                 },
                 {
                     element: document.querySelector('.contact-info'),
-                    intro: "Hubungi kami di sini"
+                    intro: "Butuh bantuan atau ingin menyampaikan sesuatu? Kami bisa dihubungi dengan mudah dari sini."
                 },
             ];
 
             var stepsMobile = [
                 {
                     element: document.querySelector('.mobile-menu-button'),
-                    intro: "Klik ini untuk ke menu profil."
+                    intro: "Semua detailmu terekam di sini: XP, badge, username, dan jumlah tiket yang kamu miliki. Beberapa fitur Curhatorium memerlukan tiket untuk diakses, jadi pastikan kamu memantau stok tiketmu melalui halaman profil dengan mengklik ini."
                 },
                 {
                     element: document.querySelector('.quote-carousel'),
-                    intro: "Quote hari ini. Swipe untuk melihat lainnya."
+                    intro: "Kutipan inspirasional yang bisa kamu geser setiap hari. Selalu ada kata yang tepat untukmu."
                 },
                 {
                     element: document.querySelector('.container'),
-                    intro: "Mood & Productivity Tracker. Ceritakan hari-mu di sini."
+                    intro: "Tempat mencatat perasaan dan produktivitas harian—untuk dirimu yang lebih sadar dan seimbang."
                 },
                 {
                     element: document.querySelector('.membership-btn'),
-                    intro: "Akses lebih Curhatorium dengan membership!"
+                    intro: "Tingkatkan pengalamanmu dengan keanggotaan premium dan nikmati fitur lebih lengkap."
                 },
                 {
                     element: document.querySelector('.xp-redemption-button'),
-                    intro: "Tukarkan XP dengan reward di sini!"
+                    intro: "Reward menanti! Tukarkan XP yang kamu kumpulkan dengan pilihan hadiah menarik."
                 },
                 {
                     element: document.querySelector('#to-mental-test'),
-                    intro: "Tes kesehatan mental kamu di sini"
+                    intro: "Evaluasi kondisi mental secara objektif dengan alat ukur yang kredibel dan mudah digunakan."
                 },
                 {
                     element: document.querySelector('#to-share-talk'),
-                    intro: "Cari teman untuk berbagi pengalaman"
+                    intro: "Temukan tempat yang aman untuk berbagi cerita dan menjalin koneksi bermakna."
                 },
                 {
                     element: document.querySelector('#to-chatbot'),
-                    intro: "Ceritakan harimu dengan AI"
+                    intro: "AI Curhatorium selalu ada—siap menemani, mendengar, dan memahami tanpa batas waktu."
                 },
                 {
                     element: document.querySelector('#to-missions'),
-                    intro: "Selesaikan tugas harian untuk kesejahteraan mental"
+                    intro: "Misi harian yang sederhana namun mampu menjaga keseimbangan mentalmu setiap hari."
                 },
                 {
                     element: document.querySelector('.agenda-section'),
-                    intro: "Agenda mendatang Curhatorium"
+                    intro: "Kegiatan dan event terbaru yang bisa kamu ikuti untuk terus tumbuh bersama komunitas."
                 },
                 {
                     element: document.querySelector('.footer-social'),
-                    intro: "Kenal lebih dekat dengan Curhatorium"
+                    intro: "Ikuti kami di media sosial untuk terhubung lebih dekat dan dapatkan konten eksklusif."
                 },
                 {
                     element: document.querySelector('.contact-info'),
-                    intro: "Hubungi kami di sini"
+                    intro: "Kanal untuk menghubungi kami langsung jika kamu membutuhkan bantuan atau ingin berbagi."
                 },
             ];
 
