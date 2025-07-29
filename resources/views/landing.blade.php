@@ -9,19 +9,26 @@
 </head>
 <body>
     <!-- Navigation -->
-    <nav class="landing-nav">
-        <div class="nav-container">
-            <div class="logo-section">
-                <img src="assets/mini_logo.png" alt="Curhatorium Logo" class="logo-image">
-                <span class="logo-text">Curhatorium</span>
-            </div>
-            <div class="nav-links">
-                <a href="#features" class="nav-link">Fitur</a>
-                <a href="#testimonials" class="nav-link">Cerita</a>
-                <a href="#pricing" class="nav-link">Harga</a>
-                <a href="/login" class="nav-btn">Masuk</a>
-            </div>
+    <link rel="stylesheet" href="{{ asset('css/components/navbar.css') }}">
+    <nav>
+        <div id="logo-box" onclick="window.location.href = '/'">
+            <img src="{{ asset('assets/mini_logo.png') }}" alt="mini_logo" id="mini-logo">
+            <h1>Curhatorium</h1>
         </div>
+        
+        <div class="nav-links">
+            <a href="#features" class="nav-link">Fitur</a>
+            <a href="#testimonials" class="nav-link">Cerita</a>
+            <a href="#pricing" class="nav-link">Harga</a>
+            <a href="/login" class="nav-btn">Masuk</a>
+        </div>
+        
+        <!-- Mobile menu button -->
+        <button class="mobile-menu-button" aria-label="Toggle menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
     </nav>
 
     <!-- Hero Section -->
@@ -217,120 +224,115 @@
             </div>
 
             <div class="pricing-grid">
-                <div class="pricing-card fade-in">
-                    <div class="pricing-card__top"></div>
-                    <div class="pricing-card__badge">Gratis</div>
-                    <div class="pricing-title">Calm Starter</div>
-                    <div class="pricing-price">Rp0</div>
-                    <ul class="pricing-features">
-                        <li>(Unlimited) Tes Kesehatan Mental</li>
-                        <li>(7 Hari) Mood and Productivity Tracker</li>
-                        <li>(2 Jam) Ment-AI Chatbot</li>
-                        <li>(7 Hari) Missions of The Day</li>
-                        <li>(1x) Support Group Discussion</li>
-                        <li>(30x) Deep Cards</li>
-                    </ul>
-                </div>
+                @php
+                    $membershipMeta = [
+                        'Calm Starter' => [
+                            'price' => 0,
+                            'badge' => 'Gratis',
+                            'benefits' => [
+                                '(Unlimited) Tes Kesehatan Mental',
+                                '(7 Hari) Mood and Productivity Tracker',
+                                '(2 Jam) Ment-AI Chatbot',
+                                '(7 Hari) Missions of The Day',
+                                '(1x) Support Group Discussion',
+                                '(30x) Deep Cards',
+                            ],
+                        ],
+                        'Growth Path' => [
+                            'price' => 23900,
+                            'benefits' => [
+                                '(Unlimited) Tes Kesehatan Mental',
+                                '(Unlimited) Mood and Productivity Tracker',
+                                '(1 Jam) Ment-AI Chatbot',
+                                '(Unlimited) Missions of The Day',
+                                '(1x) Support Group Discussion',
+                                '(Unlimited) Deep Cards',
+                                '(1x) Share and Talk via Chat w/ Rangers',
+                                'Extra gain XP',
+                            ],
+                        ],
+                        'Blossom' => [
+                            'price' => 59900,
+                            'benefits' => [
+                                '(Unlimited) Tes Kesehatan Mental',
+                                '(Unlimited) Mood and Productivity Tracker',
+                                '(Unlimited) Ment-AI Chatbot',
+                                '(Unlimited) Missions of The Day',
+                                '(3x) Support Group Discussion',
+                                '(Unlimited) Deep Cards',
+                                '(2x) Share and Talk via Chat w/ Rangers',
+                                'Extra gain XP',
+                            ],
+                        ],
+                        'Inner Peace' => [
+                            'price' => 86900,
+                            'benefits' => [
+                                '(Unlimited) Tes Kesehatan Mental',
+                                '(Unlimited) Mood and Productivity Tracker w/ Extended Report',
+                                '(Unlimited) Ment-AI Chatbot',
+                                '(Unlimited) Missions of The Day',
+                                '(5x) Support Group Discussion',
+                                '(Unlimited) Deep Cards',
+                                '(3x) Share and Talk via Chat w/ Rangers',
+                                'Extra gain XP',
+                            ],
+                        ],
+                        'Harmony' => [
+                            'price' => 19900,
+                            'benefits' => [
+                                '(1x) Support Group Discussion',
+                                '(Unlimited 1 bulan) Deep Cards',
+                            ],
+                        ],
+                        'Serenity' => [
+                            'price' => 15000,
+                            'benefits' => [
+                                '(1x) Share and Talk via Chat w/ Rangers',
+                                '(Unlimited 1 bulan) Deep Cards',
+                            ],
+                        ],
+                        "Chat with Sanny's Aid" => [
+                            'price' => 77900,
+                            'benefits' => [
+                                '(1x) Share and Talk via Chat w/ Psikolog',
+                                '(Unlimited 1 bulan) Mood and Productivity Tracker',
+                                '(Unlimited 1 bulan) Deep Cards',
+                            ],
+                        ],
+                        "Meet with Sanny's Aid" => [
+                            'price' => 199000,
+                            'benefits' => [
+                                '(1x) Share and Talk via Video Call w/ Psikiater',
+                                '(Unlimited 1 bulan) Mood and Productivity Tracker w/ Extended Report',
+                                '(Unlimited 1 bulan) Deep Cards',
+                            ],
+                        ],
+                    ];
+                @endphp
 
-                <div class="pricing-card fade-in">
-                    <div class="pricing-card__top"></div>
-                    <div class="pricing-title">Growth Path</div>
-                    <div class="pricing-price">Rp29.900</div>
-                    <ul class="pricing-features">
-                        <li style="list-style-type: none;">
-                            <span class="inherited-label" style="color:#2d7a2d;font-weight:bold;">
-                                <svg width="16" height="16" style="vertical-align:middle;margin-right:4px;" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="8" r="8" fill="#2d7a2d"/><path d="M5 8l2 2 4-4" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                                Termasuk:
-                            </span>
-                            <span style="font-weight:bold;">&nbsp;Calm Starter</span>
-                        </li>
-                        <li>(Unlimited) Mood and Productivity Tracker</li>
-                        <li>(+1 Jam) Ment-AI Chatbot</li>
-                        <li>(Unlimited) Missions of The Day</li>
-                        <li>(+1x) Support Group Discussion</li>
-                        <li>(Unlimited) Deep Cards</li>
-                        <li>(1x) Share and Talk via Chat w/ Rangers</li>
-                        <li>Extra gain XP</li>
-                    </ul>
-                </div>
-
-                <div class="pricing-card fade-in">
-                    <div class="pricing-card__top"></div>
-                    <div class="pricing-title">Blossom</div>
-                    <div class="pricing-price">Rp58.900</div>
-                    <ul class="pricing-features">
-                        <li style="list-style-type: none;">
-                            <span class="inherited-label" style="color:#a05bb7;font-weight:bold;">
-                                <svg width="16" height="16" style="vertical-align:middle;margin-right:4px;" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="8" r="8" fill="#a05bb7"/><path d="M5 8l2 2 4-4" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                                Termasuk:
-                            </span>
-                            <span style="font-weight:bold;">&nbsp;Growth Path</span>
-                        </li>
-                        <li>(+1x) Share and Talk via Chat w/ Rangers</li>
-                        <li>(+2x) Support Group Discussion</li>
-                        <li>(Unlimited) Ment-AI Chatbot</li>
-                    </ul>
-                </div>
-
-                <div class="pricing-card fade-in">
-                    <div class="pricing-card__top"></div>
-                    <div class="pricing-title">Inner Peace</div>
-                    <div class="pricing-price">Rp89.900</div>
-                    <ul class="pricing-features">
-                        <li style="list-style-type: none;">
-                            <span class="inherited-label" style="color:#1e6e8c;font-weight:bold;">
-                                <svg width="16" height="16" style="vertical-align:middle;margin-right:4px;" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="8" r="8" fill="#1e6e8c"/><path d="M5 8l2 2 4-4" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                                Termasuk:
-                            </span>
-                            <span style="font-weight:bold;">&nbsp;Blossom</span>
-                        </li>
-                        <li>(+1x) Share and Talk via Chat w/ Rangers</li>
-                        <li>(+4x) Support Group Discussion</li>
-                        <li>Extended Report untuk Mood and Productivity Tracker</li>
-                    </ul>
-                </div>
-
-                <div class="pricing-card fade-in">
-                    <div class="pricing-card__top"></div>
-                    <div class="pricing-title">Harmony</div>
-                    <div class="pricing-price">Rp11.900</div>
-                    <ul class="pricing-features">
-                        <li>(1x) Support Group Discussion</li>
-                        <li>(Unlimited 1 bulan) Deep Cards</li>
-                    </ul>
-                </div>
-
-                <div class="pricing-card fade-in">
-                    <div class="pricing-card__top"></div>
-                    <div class="pricing-title">Serenity</div>
-                    <div class="pricing-price">Rp24.900</div>
-                    <ul class="pricing-features">
-                        <li>(1x) Share and Talk via Chat w/ Rangers</li>
-                        <li>(Unlimited 1 bulan) Deep Cards</li>
-                    </ul>
-                </div>
-
-                <div class="pricing-card fade-in">
-                    <div class="pricing-card__top"></div>
-                    <div class="pricing-title">Chat with Sanny's Aid</div>
-                    <div class="pricing-price">Rp61.900</div>
-                    <ul class="pricing-features">
-                        <li>(1x) Share and Talk via Chat w/ Psikolog</li>
-                        <li>(Unlimited 1 bulan) Mood and Productivity Tracker</li>
-                        <li>(Unlimited 1 bulan) Deep Cards</li>
-                    </ul>
-                </div>
-
-                <div class="pricing-card fade-in">
-                    <div class="pricing-card__top"></div>
-                    <div class="pricing-title">Meet with Sanny's Aid</div>
-                    <div class="pricing-price">Rp198.900</div>
-                    <ul class="pricing-features">
-                        <li>(1x) Share and Talk via Video Call w/ Psikiater</li>
-                        <li>(Unlimited 1 bulan) Mood and Productivity Tracker w/ Extended Report</li>
-                        <li>(Unlimited 1 bulan) Deep Cards</li>
-                    </ul>
-                </div>
+                @foreach($membershipMeta as $name => $meta)
+                    @php
+                        // Add "Terpopuler" badge to Harmony
+                        $isHarmony = strtolower($name) === 'harmony';
+                        $badge = $meta['badge'] ?? null;
+                        if ($isHarmony) {
+                            $badge = 'Terpopuler';
+                        }
+                    @endphp
+                    <div class="pricing-card fade-in{{ $isHarmony ? ' pricing-card--highlight' : '' }}">
+                        <div class="pricing-card__top"></div>
+                        @if($badge)
+                            <div class="pricing-card__badge">{{ $badge }}</div>
+                        @endif
+                        <div class="pricing-title">{{ $name }}</div>
+                        <div class="pricing-price">Rp{{ number_format($meta['price'], 0, ',', '.') }}</div>
+                        <ul class="pricing-features">
+                            @foreach($meta['benefits'] as $benefit)
+                                <li>{{ $benefit }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endforeach
             </div>
         </div>
     </section>
@@ -374,6 +376,25 @@
     @include('components.footer')
 
     <script>
+        // Mobile menu functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuButton = document.querySelector('.mobile-menu-button');
+            const navLinks = document.querySelector('.nav-links');
+            
+            if (mobileMenuButton && navLinks) {
+                mobileMenuButton.addEventListener('click', function() {
+                    navLinks.classList.toggle('active');
+                });
+                
+                // Close menu when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!mobileMenuButton.contains(e.target) && !navLinks.contains(e.target)) {
+                        navLinks.classList.remove('active');
+                    }
+                });
+            }
+        });
+
         // Fade in animation on scroll
         const observerOptions = {
             threshold: 0.1,
@@ -409,12 +430,17 @@
                         block: 'start'
                     });
                 }
+                // Close mobile menu after clicking a link
+                const navLinks = document.querySelector('.nav-links');
+                if (navLinks) {
+                    navLinks.classList.remove('active');
+                }
             });
         });
 
         // Navigation background on scroll
         window.addEventListener('scroll', () => {
-            const nav = document.querySelector('.landing-nav');
+            const nav = document.querySelector('nav');
             if (window.scrollY > 50) {
                 nav.style.background = 'rgba(255, 255, 255, 0.98)';
                 nav.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.1)';

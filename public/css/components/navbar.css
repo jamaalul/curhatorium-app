@@ -17,10 +17,13 @@ nav {
     align-items: center;
     padding-inline: 20px;
     padding-top: 1px;
-    z-index: 5;
+    z-index: 9999;
     justify-content: space-between;
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
     box-sizing: border-box;
+    /* Ensure navbar stays on top in all scenarios */
+    transform: translateZ(0);
+    will-change: transform;
 }
 
 nav #logo-box {

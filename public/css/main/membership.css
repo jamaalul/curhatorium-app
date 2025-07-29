@@ -52,12 +52,62 @@ body {
         min-height: 420px;
         border: 1.5px solid #eaeaea;
         transition: box-shadow 0.2s, transform 0.2s;
+        position: relative;
+    }
+
+    .popular-badge {
+        position: absolute;
+        top: -12px;
+        right: 20px;
+        background: #fff;
+        color: #222;
+        padding: 6px 16px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        z-index: 10;
+        animation: badgePulse 2s ease-in-out infinite;
+    }
+
+    @keyframes badgePulse {
+        0%, 100% { 
+            transform: scale(1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        50% { 
+            transform: scale(1.05);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+        }
     }
 
     .pricing-card.yellow {
         background: #f8c932;
         color: #222;
         border: none;
+    }
+
+    .pricing-card.harmony-popular {
+        background: linear-gradient(135deg, #f8c932 0%, #ffcd2d 100%);
+        color: #222;
+        border: 3px solid #ffcd2d;
+        transform: scale(1.05);
+        box-shadow: 0 8px 32px rgba(255, 205, 45, 0.3), 0 4px 16px rgba(0, 0, 0, 0.1);
+        position: relative;
+        z-index: 5;
+    }
+
+    .pricing-card.harmony-popular::before {
+        content: '';
+        position: absolute;
+        top: -8px;
+        left: -8px;
+        right: -8px;
+        bottom: -8px;
+        background: linear-gradient(135deg, #ffcd2d, #e4af00);
+        border-radius: 24px;
+        z-index: -1;
+        opacity: 0.3;
     }
 
     .pricing-card.black,
@@ -71,6 +121,11 @@ body {
         box-shadow: 0 8px 32px rgba(0, 0, 0, 0.13),
             0 2px 12px rgba(0, 0, 0, 0.09);
         transform: translateY(-4px) scale(1.01);
+    }
+
+    .pricing-card.harmony-popular:hover {
+        transform: translateY(-8px) scale(1.08);
+        box-shadow: 0 12px 40px rgba(255, 205, 45, 0.4), 0 6px 20px rgba(0, 0, 0, 0.15);
     }
 
     .card-header {
@@ -113,11 +168,25 @@ body {
         color: inherit;
     }
 
+    .pricing-card.harmony-popular .card-title {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: #222;
+        text-shadow: 0 2px 4px rgba(255, 205, 45, 0.3);
+    }
+
     .card-price {
         font-size: 2rem;
         font-weight: 800;
         margin-bottom: 8px;
         color: inherit;
+    }
+
+    .pricing-card.harmony-popular .card-price {
+        font-size: 2.3rem;
+        font-weight: 900;
+        color: #222;
+        text-shadow: 0 2px 6px rgba(255, 205, 45, 0.4);
     }
 
     .card-price .currency {
@@ -213,10 +282,13 @@ body {
         display: block;
     }
 
-    .pricing-card.yellow .subscribe-btn {
-        background: #f8c932;
-        color: #fff;
-        border: none;
+    .pricing-card.harmony-popular .subscribe-btn {
+        background: linear-gradient(135deg, #222, #333);
+        color: #ffcd2d;
+        border: 2px solid #222;
+        font-weight: 700;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        transform: scale(1.05);
     }
 
     .pricing-card.dark .subscribe-btn,
@@ -232,9 +304,11 @@ body {
         border: 2px solid #ffd84d;
     }
 
-    .pricing-card.yellow .subscribe-btn:hover {
-        background: #ffe066;
-        color: #222;
+    .pricing-card.harmony-popular .subscribe-btn:hover {
+        background: linear-gradient(135deg, #333, #444);
+        color: #ffcd2d;
+        transform: scale(1.1);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
     }
 
     .pricing-card.dark .subscribe-btn:hover,
