@@ -613,7 +613,7 @@ section {
 }
 
 .landing-pricing-card:hover {
-    transform: translateY(-12px) scale(1.03) rotateX(5deg);
+    transform: translateY(-8px) scale(1.02);
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2), 0 0 0 3px rgba(255, 205, 45, 0.3);
     border-color: rgba(255, 205, 45, 0.5);
     background: linear-gradient(135deg, #ffffff 0%, #fff8dc 100%);

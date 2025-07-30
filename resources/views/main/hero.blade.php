@@ -8,9 +8,9 @@
     </div>
     <div class="text-block">
       <p>
-        Curhatorium is your go-to platform for open conversations, mental health support, and personal growth.
-        Designed with students in mind, it's a place where you can share your thoughts, seek advice, and connect
-        with others who understands your journey.
+        Curhatorium adalah ruang aman untuk berbagi cerita, mendapatkan dukungan kesehatan mental, dan bertumbuh bersama. 
+        Didesain khusus untuk pelajar, di sini kamu bisa mengekspresikan pikiran, mencari saran,
+        dan terhubung dengan mereka yang memahami perjalananmu.
       </p>
     </div>
   </section>
