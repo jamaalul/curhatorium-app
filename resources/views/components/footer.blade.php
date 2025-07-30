@@ -14,6 +14,10 @@
     .footer {
         background: var(--bg-dark);
         color: white;
+        width: 100%;
+        max-width: 100vw;
+        overflow-x: hidden;
+        box-sizing: border-box;
     }
 
     .footer-container {
@@ -22,6 +26,8 @@
         padding: 0 1.5rem;
         display: flex;
         width: 100%;
+        box-sizing: border-box;
+        overflow-x: hidden;
     }
 
     .footer-main {
