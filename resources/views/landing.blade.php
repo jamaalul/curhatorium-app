@@ -17,6 +17,7 @@
         </div>
         
         <div class="nav-links">
+            <a href="#about" class="nav-link">Tentang</a>
             <a href="#features" class="nav-link">Fitur</a>
             <a href="#testimonials" class="nav-link">Cerita</a>
             <a href="#pricing" class="nav-link">Harga</a>
@@ -72,6 +73,82 @@
                     <div class="stat-item">
                         <div class="stat-number">100%</div>
                         <div class="stat-label">Anonim & Aman</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Us Section -->
+    <section id="about" class="about">
+        <div class="about-container">
+            <div class="about-main-content fade-in">
+                <!-- Left Side - Quote and Description -->
+                <div class="about-left">
+                    <div class="about-quote">
+                        <div class="quote-icon">"</div>
+                        <p class="quote-text">
+                            Curhatorium hadir sebagai ruang aman untuk generasi muda di seluruh Indonesia dalam merawat kesehatan mentalnya. Kami berkomitmen menyediakan layanan yang terjangkau, ramah, dan efektif didukung oleh teknologi inovatif serta pendekatan yang manusiawi. Di Curhatorium, setiap perjalanan emosional layak dihargai, didengar, dan didampingi.
+                        </p>
+                    </div>
+                    <div class="about-decoration">
+                        <!-- Abstract wave decoration -->
+                    </div>
+                </div>
+
+                <!-- Right Side - About Content -->
+                <div class="about-right">
+                    <div class="about-content-box">   
+                        <div class="about-description">
+                            <div class="vision-mission-section">
+                                <div class="vm-item">
+                                    <h4>Visi Kami</h4>
+                                    <p>Menjadi ekosistem digital kesehatan mental berbasis komunitas dan gamifikasi terdepan yang inklusif, solutif, dan berkelanjutan untuk Indonesia.</p>
+                                </div>
+                                <div class="vm-item">
+                                    <h4>Misi Kami</h4>
+                                    <ul class="mission-list">
+                                        <li>Menyediakan ruang aman dan anonim bagi generasi muda untuk berbagi cerita, pengalaman, dan dukungan psikologis berbasis peer-support</li>
+                                        <li>Meningkatkan kesadaran dan literasi kesehatan mental melalui edukasi interaktif, fitur self-assesment, dan motivasi harian</li>
+                                        <li>Mengembangkan layanan konsultasi terjangkau dengan dukungan mitra profesional, mahasiswa psikologi, dan komunitas</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Section -->
+            <div class="about-stats-container fade-in">
+                <div class="values-title">
+                    <h3>Nilai Utama Kami</h3>
+                    <p>Prinsip yang memandu setiap langkah kami</p>
+                </div>
+                <div class="stats-box">
+                    <div class="values-item">
+                        <div class="values-icon">🤝</div>
+                        <div class="values-label">Kolaborasi</div>
+                    </div>
+                    <div class="values-divider"></div>
+                    <div class="values-item">
+                        <div class="values-icon">💖</div>
+                        <div class="values-label">Emosi Tanpa Syarat</div>
+                    </div>
+                    <div class="values-divider"></div>
+                    <div class="values-item">
+                        <div class="values-icon">🔒</div>
+                        <div class="values-label">Ruang Aman</div>
+                    </div>
+                    <div class="values-divider"></div>
+                    <div class="values-item">
+                        <div class="values-icon">🫂</div>
+                        <div class="values-label">Inklusivitas</div>
+                    </div>
+                    <div class="values-divider"></div>
+                    <div class="values-item">
+                        <div class="values-icon">💪</div>
+                        <div class="values-label">Pemberdayaan</div>
                     </div>
                 </div>
             </div>
@@ -156,7 +233,7 @@
         <div class="testimonials-container">
             <div class="testimonials-header fade-in">
                 <h2 class="testimonials-title">
-                    Cerita Nyata,<br>
+                    Cerita Nyata,
                     <span class="highlight">Dampak Nyata</span>
                 </h2>
                 <p class="features-subtitle">
@@ -346,8 +423,8 @@
     <section class="cta">
         <div class="cta-container">
             <h2 class="cta-title">
-                Siap Mengubah<br>
-                Kesehatan Mental Anda?
+                Siap Memulai<br>
+                Perjalanan Kesejahteraan Mental?
             </h2>
             <p class="cta-subtitle">
                 Bergabunglah dengan ribuan mahasiswa yang sudah memulai perjalanan menuju kesehatan mental yang lebih baik.

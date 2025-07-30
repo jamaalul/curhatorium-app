@@ -106,28 +106,8 @@
                     intro: "Setiap pencapaian punya nilai. Gunakan XP yang kamu kumpulkan untuk reward yang kamu pilih sendiri."
                 },
                 {
-                    element: document.querySelector('#to-mental-test'),
-                    intro: "Tes valid secara psikologis untuk membantumu memahami kondisi mental dengan lebih dalam dan terukur."
-                },
-                {
-                    element: document.querySelector('#to-share-talk'),
-                    intro: "Ruang hangat untuk berbagi pengalaman. Temukan dukungan dan teman yang mengerti."
-                },
-                {
-                    element: document.querySelector('#to-chatbot'),
-                    intro: "Partner bercerita berbasis AI yang selalu siap mendengarkan, kapan pun kamu butuh tempat bercerita."
-                },
-                {
-                    element: document.querySelector('#to-missions'),
-                    intro: "Kumpulan misi harian yang membantumu tetap terhubung dengan diri sendiri, secara ringan namun bermakna."
-                },
-                {
-                    element: document.querySelector('#to-sgd'),
-                    intro: "Forum diskusi anonim—tempat di mana kamu bisa menjadi diri sendiri tanpa takut dihakimi."
-                },
-                {
-                    element: document.querySelector('#to-deep-cards'),
-                    intro: "Kartu refleksi untuk memperdalam pemahaman diri. Terkadang, satu pertanyaan bisa mengubah banyak hal."
+                    element: document.querySelector('.grid-container'),
+                    intro: "Akses fitur-fitur Curhatorium lainnya di sini."
                 },
                 {
                     element: document.querySelector('.agenda-section'),
@@ -165,20 +145,8 @@
                     intro: "Reward menanti! Tukarkan XP yang kamu kumpulkan dengan pilihan hadiah menarik."
                 },
                 {
-                    element: document.querySelector('#to-mental-test'),
-                    intro: "Evaluasi kondisi mental secara objektif dengan alat ukur yang kredibel dan mudah digunakan."
-                },
-                {
-                    element: document.querySelector('#to-share-talk'),
-                    intro: "Temukan tempat yang aman untuk berbagi cerita dan menjalin koneksi bermakna."
-                },
-                {
-                    element: document.querySelector('#to-chatbot'),
-                    intro: "AI Curhatorium selalu ada—siap menemani, mendengar, dan memahami tanpa batas waktu."
-                },
-                {
-                    element: document.querySelector('#to-missions'),
-                    intro: "Misi harian yang sederhana namun mampu menjaga keseimbangan mentalmu setiap hari."
+                    element: document.querySelector('.grid-container'),
+                    intro: "Akses fitur-fitur Curhatorium lainnya di sini."
                 },
                 {
                     element: document.querySelector('.agenda-section'),

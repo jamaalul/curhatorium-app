@@ -16,7 +16,7 @@
         color: white;
         width: 100%;
         max-width: 100vw;
-        overflow-x: hidden;
+        overflow: visible;
         box-sizing: border-box;
     }
 
@@ -27,7 +27,7 @@
         display: flex;
         width: 100%;
         box-sizing: border-box;
-        overflow-x: hidden;
+        overflow: visible;
     }
 
     .footer-main {
@@ -71,6 +71,8 @@
         display: flex;
         gap: 1rem;
         margin-bottom: 1.5rem;
+        padding: 1rem 0;
+        overflow: visible;
     }
 
     .social-link {
@@ -84,11 +86,14 @@
         color: white;
         text-decoration: none;
         transition: var(--transition);
+        position: relative;
+        z-index: 1;
     }
 
     .social-link:hover {
         background: var(--primary-color);
         transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(142, 203, 207, 0.3);
     }
 
     .footer-section h4 {
@@ -226,7 +231,7 @@
                         <h3>curhatorium</h3>
                     </div>
                     <p class="footer-description">
-                        Tempat tepercaya Anda untuk dukungan kesehatan mental dan koneksi komunitas.
+                        Mulai perjalanan kesehatan mental Anda dengan Curhatorium. Daftar gratis dan temukan dukungan yang Anda butuhkan.
                     </p>
                     <div class="footer-social">
                         <a href="https://instagram.com/curhatorium_" class="social-link" aria-label="Instagram">
@@ -247,19 +252,25 @@
                             </svg>
                             <span>hello@curhatorium.com</span>
                         </div>
+                        <div class="contact-item">
+                            <svg class="contact-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                            </svg>
+                            <span>Baca FAQ kami</span>
+                        </div>
                     </div>
                 </div>
                 
-                <!-- Features -->
+                <!-- Quick Links -->
                 <div class="footer-section">
-                    <h4 class="ftr">Fitur & Layanan</h4>
+                    <h4 class="ftr">Tautan Cepat</h4>
                     <ul class="footer-links">
-                        <li><a href="#">Mental Health Test</a></li>
-                        <li><a href="#">Ment-AI</a></li>
-                        <li><a href="#">Support Group Discussion</a></li>
-                        <li><a href="#">Share and Talk</a></li>
-                        <li><a href="#">Missions of The Day</a></li>
-                        <li><a href="#">Deep Cards</a></li>
+                        <li><a href="#about">Tentang Kami</a></li>
+                        <li><a href="#features">Fitur</a></li>
+                        <li><a href="#testimonials">Cerita</a></li>
+                        <li><a href="#pricing">Harga</a></li>
+                        <li><a href="/register">Daftar</a></li>
+                        <li><a href="/login">Masuk</a></li>
                     </ul>
                 </div>
 
@@ -273,8 +284,8 @@
                 <p>&copy; 2025 Curhatorium. All rights reserved.</p>
             </div>
             <div class="footer-legal">
-                <a href="#">Privacy Policy</a>
-                <a href="#">Terms of Service</a>
+                <a href="/privacy-policy">Kebijakan Privasi</a>
+                <a href="/terms-and-conditions">Syarat dan Ketentuan</a>
             </div>
         </div>
     </div>
