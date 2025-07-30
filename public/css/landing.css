@@ -1,10 +1,16 @@
 /* --- LANDING PAGE STYLES --- */
 
 /* Landing page specific overrides for navbar */
+body nav {
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
 body .nav-links {
     display: flex;
     align-items: center;
     gap: 2rem;
+    box-sizing: border-box;
 }
 
 body .nav-link {
@@ -41,15 +47,17 @@ body .nav-btn:hover {
     body .nav-links {
         position: absolute;
         top: 61px;
-        right: -300px;
+        right: -100vw;
         flex-direction: column;
         background: white;
-        width: 250px;
+        width: 100vw;
+        max-width: 300px;
         padding: 20px;
         box-shadow: -2px 2px 5px rgba(0, 0, 0, 0.1);
         transition: right 0.3s ease;
         border-radius: 0 0 0 10px;
         z-index: 9998 !important;
+        box-sizing: border-box;
     }
 
     body .nav-links.active {
@@ -61,6 +69,7 @@ body .nav-btn:hover {
         border-bottom: 1px solid #eee;
         width: 100%;
         text-align: center;
+        box-sizing: border-box;
     }
 
     body .nav-links a:last-child {
@@ -73,6 +82,9 @@ body {
     background-color: #f5f1eb;
     color: #444;
     line-height: 1.6;
+    overflow-x: hidden;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 /* Hero Section */
@@ -861,5 +873,32 @@ body {
     .testimonials-grid,
     .landing-pricing-grid {
         grid-template-columns: 1fr;
+    }
+}
+
+/* Extra small screens */
+@media (max-width: 480px) {
+    body .nav-links {
+        max-width: 280px;
+        padding: 15px;
+    }
+    
+    .hero-title,
+    .features-title,
+    .testimonials-title,
+    .pricing-title,
+    .cta-title {
+        font-size: 1.8rem;
+    }
+    
+    .hero-section {
+        padding: 100px 1rem 60px;
+    }
+    
+    .features,
+    .testimonials,
+    .pricing,
+    .cta {
+        padding: 4rem 1rem;
     }
 }
