@@ -37,7 +37,7 @@
         </label>
         @error('terms') <div>{{ $message }}</div> @enderror
         <div class="links">
-          <a href="/">Sudah Punya Akun</a>
+          <a href="/login">Sudah Punya Akun</a>
         </div>
         <button type="submit">Sign Up</button>
       </form>
