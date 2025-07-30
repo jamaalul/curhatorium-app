@@ -98,6 +98,17 @@ body {
     box-sizing: border-box;
 }
 
+/* Universal overflow prevention */
+* {
+    max-width: 100vw;
+    box-sizing: border-box;
+}
+
+img, video, iframe, canvas, svg {
+    max-width: 100%;
+    height: auto;
+}
+
 section {
     width: 100%;
     max-width: 100vw;
@@ -255,6 +266,9 @@ section {
     gap: 2rem;
     max-width: 600px;
     margin: 0 auto;
+    width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
 }
 
 .stat-item {
@@ -320,6 +334,10 @@ section {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
     gap: 2rem;
+    width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
+    min-width: 0;
 }
 
 .feature-card {
@@ -438,6 +456,10 @@ section {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
     gap: 2rem;
+    width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
+    min-width: 0;
 }
 
 .testimonial-card {
@@ -542,6 +564,7 @@ section {
     max-width: 100%;
     box-sizing: border-box;
     overflow-x: hidden;
+    min-width: 0;
 }
 
 .landing-pricing-card {
@@ -555,6 +578,9 @@ section {
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     cursor: pointer;
     overflow: hidden;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 .landing-pricing-card::before {
@@ -913,6 +939,13 @@ section {
     .testimonials-grid,
     .landing-pricing-grid {
         grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .feature-card,
+    .testimonial-card,
+    .landing-pricing-card {
+        padding: 1.5rem;
     }
 }
 
@@ -940,5 +973,14 @@ section {
     .pricing,
     .cta {
         padding: 4rem 1rem;
+    }
+    
+    .landing-pricing-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .landing-pricing-card {
+        padding: 1.5rem;
     }
 }
