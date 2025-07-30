@@ -2,10 +2,11 @@
 
 /* Landing page specific overrides for navbar */
 body nav {
-    overflow: hidden;
-    max-width: 100vw;
+    overflow: hidden !important;
+    max-width: 100vw !important;
     box-sizing: border-box;
-    width: 100%;
+    width: 100% !important;
+    position: relative;
 }
 
 body .nav-links {
@@ -60,7 +61,8 @@ body .nav-btn:hover {
         border-radius: 0 0 0 10px;
         z-index: 9998 !important;
         box-sizing: border-box;
-        overflow-x: hidden;
+        overflow-x: hidden !important;
+        max-width: 100vw !important;
     }
 
     body .nav-links.active {
@@ -104,9 +106,21 @@ body {
     box-sizing: border-box;
 }
 
+html, body {
+    overflow-x: hidden !important;
+    width: 100% !important;
+    max-width: 100vw !important;
+}
+
 img, video, iframe, canvas, svg {
     max-width: 100%;
     height: auto;
+}
+
+/* Prevent any element from causing horizontal overflow */
+div, section, article, aside, header, footer, nav, main {
+    max-width: 100vw;
+    overflow-x: hidden;
 }
 
 section {

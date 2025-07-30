@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
     <title>Your Safest Place | Curhatorium</title>
     <link rel="stylesheet" href="{{ asset('css/global.css') }}?v={{ time() }}">
     <link rel="stylesheet" href="{{ asset('css/components/navbar.css') }}?v={{ time() }}">
