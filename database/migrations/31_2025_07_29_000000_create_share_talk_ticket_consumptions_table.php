@@ -19,10 +19,10 @@ return new class extends Migration
             $table->timestamp('consumed_at');
             $table->timestamps();
 
-            // Indexes for better query performance
-            $table->index(['user_id', 'consumed_at']);
-            $table->index(['chat_session_id', 'ticket_source']);
-            $table->index('ticket_source');
+            // Indexes with shorter names to avoid MySQL limit
+            $table->index(['user_id', 'consumed_at'], 'sttc_user_consumed_idx');
+            $table->index(['chat_session_id', 'ticket_source'], 'sttc_session_source_idx');
+            $table->index('ticket_source', 'sttc_source_idx');
         });
     }
 
