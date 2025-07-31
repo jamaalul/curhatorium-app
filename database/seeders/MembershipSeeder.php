@@ -24,7 +24,7 @@ class MembershipSeeder extends Seeder
                 'is_active' => true,
                 'tickets' => [
                     ['ticket_type' => 'mental_test', 'limit_type' => 'unlimited', 'limit_value' => null],
-                    ['ticket_type' => 'share_talk_ranger_chat', 'limit_type' => 'count', 'limit_value' => 2],
+                    ['ticket_type' => 'share_talk_ranger_chat', 'limit_type' => 'count', 'limit_value' => 1],
                     ['ticket_type' => 'tracker', 'limit_type' => 'day', 'limit_value' => 7],
                     ['ticket_type' => 'mentai_chatbot', 'limit_type' => 'hour', 'limit_value' => 2],
                     ['ticket_type' => 'missions', 'limit_type' => 'day', 'limit_value' => 7],
