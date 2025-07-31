@@ -16,15 +16,10 @@
   <div class="container">
     <div class="top-box">
       <canvas id="myChart"></canvas>
+      <a href="/info/mood-tracker" class="info-button-stats" title="Info Mood Tracker">
+        ℹ️
+      </a>
     </div>
-    
-    <a href="/info/mood-tracker" class="info-button-stats" title="Info Mood Tracker">
-      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="pointer-events: none;">
-        <circle cx="12" cy="12" r="10" stroke="#70c0bb" stroke-width="1.5"></circle>
-        <path d="M12 17V11" stroke="#70c0bb" stroke-width="1.5" stroke-linecap="round"></path>
-        <circle cx="11" cy="9" r="1" fill="#70c0bb"></circle>
-      </svg>
-    </a>
 
     <div class="bottom-boxes">
       <div class="box mental">
@@ -131,6 +126,16 @@
         console.error('Invalid chart data format:', { labels, moodData, productivityData });
         return;
       }
+      
+      // Debug: Log the actual data
+      console.log('Chart data received:', {
+        labels: labels,
+        moodData: moodData,
+        productivityData: productivityData,
+        labelsLength: labels.length,
+        moodDataLength: moodData.length,
+        productivityDataLength: productivityData.length
+      });
       
       try {
         ctx.height = 250;
