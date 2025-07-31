@@ -181,20 +181,6 @@
         color: var(--primary-color);
     }
 
-    .info-link {
-        color: #9ca3af !important;
-        text-decoration: none;
-        font-size: 0.75rem;
-        margin-left: 0.5rem;
-        opacity: 0.7;
-        transition: var(--transition);
-    }
-
-    .info-link:hover {
-        color: var(--primary-color) !important;
-        opacity: 1;
-    }
-
     .footer-links li {
         display: flex;
         align-items: center;
@@ -302,34 +288,13 @@
                             <h4 class="ftr">Fitur & Layanan</h4>
                             <ul class="footer-links">
                                 <!-- Authenticated menu for other pages -->
-                                <li>
-                                    <a href="/tracker">Mental and Productivity Tracker</a>
-                                    <a href="/info/mood-tracker" class="info-link" title="Info Mood Tracker">ⓘ</a>
-                                </li>
-                                <li>
-                                    <a href="/mental-health-test">Mental Health Test</a>
-                                    <a href="/info/mental-health-test" class="info-link" title="Info Mental Health Test">ⓘ</a>
-                                </li>
-                                <li>
-                                    <a href="/share-and-talk">Share and Talk</a>
-                                    <a href="/info/share-and-talk" class="info-link" title="Info Share and Talk">ⓘ</a>
-                                </li>
-                                <li>
-                                    <a href="/mental-support-chatbot">Ment-AI</a>
-                                    <a href="/info/ment-ai" class="info-link" title="Info Ment-AI">ⓘ</a>
-                                </li>
-                                <li>
-                                    <a href="/missions-of-the-day">Missions of The Day</a>
-                                    <a href="/info/missions" class="info-link" title="Info Missions">ⓘ</a>
-                                </li>
-                                <li>
-                                    <a href="/support-group-discussion">Support Group Discussion</a>
-                                    <a href="/info/support-group" class="info-link" title="Info Support Group">ⓘ</a>
-                                </li>
-                                <li>
-                                    <a href="/deep-cards">Deep Cards</a>
-                                    <a href="/info/deep-cards" class="info-link" title="Info Deep Cards">ⓘ</a>
-                                </li>
+                                <li><a href="/tracker">Mental and Productivity Tracker</a></li>
+                                <li><a href="/mental-health-test">Mental Health Test</a></li>
+                                <li><a href="/share-and-talk">Share and Talk</a></li>
+                                <li><a href="/mental-support-chatbot">Ment-AI</a></li>
+                                <li><a href="/missions-of-the-day">Missions of The Day</a></li>
+                                <li><a href="/support-group-discussion">Support Group Discussion</a></li>
+                                <li><a href="/deep-cards">Deep Cards</a></li>
                             </ul>
                         @endif
                 </div>
