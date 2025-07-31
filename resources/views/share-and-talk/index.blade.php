@@ -36,7 +36,7 @@
         <div class="hero">
             <div class="hero-content">
                 <h1>Share and Talk</h1>
-                <p>Terhubung dengan psikiater berlisensi atau mitra kesehatan mental terlatih untuk dukungan dan bimbingan profesional.</p>
+                <p>Terhubung dengan psikolog berlisensi atau mitra kesehatan mental terlatih untuk dukungan dan bimbingan profesional.</p>
             </div>
         </div>
 
@@ -56,8 +56,7 @@
                             </div>
                         </div>
                         <p class="type-description">
-                            Dapatkan konsultasi medis profesional dari psikiater berlisensi yang dapat memberikan diagnosis, 
-                            rencana perawatan, dan pengelolaan obat untuk berbagai kondisi kesehatan mental.
+                            Dapatkan layanan konsultasi dari psikolog berlisensi yang siap membantumu memahami kondisi emosional, memberikan pendampingan psikologis, serta menyusun strategi pemulihan dan perawatan non-medis sesuai kebutuhanmu.
                         </p>
                         <div class="consultation-options">
                             <p class="options-title">Pilihan Tersedia:</p>
@@ -86,8 +85,7 @@
                             </div>
                         </div>
                         <p class="type-description">
-                            Terhubung dengan mitra kesehatan mental terlatih yang memberikan konseling suportif, 
-                            bimbingan emosional, dan percakapan terapeutik untuk membantu Anda menghadapi tantangan hidup.
+                            Terhubung dengan mitra kesehatan mental terlatih yang memberikan peer support, bimbingan emosional, dan percakapan saling mendukung untuk membantu Anda menghadapi tantangan hidup.
                         </p>
                         <div class="consultation-options">
                             <p class="options-title">Pilihan Tersedia:</p>

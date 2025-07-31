@@ -44,24 +44,31 @@
                             Pilih emoji yang paling menggambarkan suasana hatimu hari ini. Ini membantu kami memahami keadaan emosimu.
                         </p>
                         <div class="mood-scale">
+                            @php
+                                $moods = [
+                                    1 => ['label' => 'Sangat sedih'],
+                                    2 => ['label' => 'Sedih'],
+                                    3 => ['label' => 'Murung'],
+                                    4 => ['label' => 'Biasa'],
+                                    5 => ['label' => 'Netral'],
+                                    6 => ['label' => 'Positif'],
+                                    7 => ['label' => 'Senang'],
+                                    8 => ['label' => 'Sangat senang'],
+                                    9 => ['label' => 'Bahagia'],
+                                    10 => ['label' => 'Gembira'],
+                                ];
+                            @endphp
                             @for ($i = 1; $i <= 10; $i++)
-                                @php
-                                    $moods = [
-                                        1 => ['emoji' => '😢', 'label' => 'Sangat sedih'],
-                                        2 => ['emoji' => '😞', 'label' => 'Sedih'],
-                                        3 => ['emoji' => '😔', 'label' => 'Murung'],
-                                        4 => ['emoji' => '😐', 'label' => 'Biasa'],
-                                        5 => ['emoji' => '🙂', 'label' => 'Netral'],
-                                        6 => ['emoji' => '😊', 'label' => 'Positif'],
-                                        7 => ['emoji' => '😄', 'label' => 'Senang'],
-                                        8 => ['emoji' => '😁', 'label' => 'Sangat senang'],
-                                        9 => ['emoji' => '🤩', 'label' => 'Bahagia'],
-                                        10 => ['emoji' => '🥳', 'label' => 'Gembira'],
-                                    ];
-                                @endphp
                                 <label class="mood-option" data-mood="{{ $i }}">
                                     <input type="radio" name="mood" value="{{ $i }}">
-                                    <div class="mood-emoji">{{ $moods[$i]['emoji'] }}</div>
+                                    <div class="mood-emoji">
+                                        <img 
+                                            src="{{ asset('assets/emoji/' . $i . '.png') }}" 
+                                            alt="{{ $moods[$i]['label'] }}" 
+                                            style="width: 2.5rem; height: 2.5rem; object-fit: contain; display: block; margin: 0 auto;"
+                                            class="mood-emoji-img"
+                                        >
+                                    </div>
                                     <div class="mood-label">{{ $moods[$i]['label'] }}</div>
                                     <div class="mood-number">{{ $i }}</div>
                                 </label>

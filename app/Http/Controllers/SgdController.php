@@ -49,13 +49,13 @@ class SgdController extends Controller
         
         // Sort functionality
         $sortBy = $request->get('sort', 'schedule');
-        $sortOrder = $request->get('order', 'asc');
+        $sortOrder = $request->get('order', 'desc'); // Default to desc for newest first
         
         if (in_array($sortBy, ['title', 'category', 'schedule', 'created_at'])) {
             $query->orderBy($sortBy, $sortOrder);
         }
         
-        $groups = $query->get();
+        $groups = $query->with('host')->get();
         
         // Get unique categories for filter dropdown
         $categories = SgdGroup::distinct()->pluck('category')->sort()->values();

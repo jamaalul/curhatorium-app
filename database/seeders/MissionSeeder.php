@@ -13,7 +13,7 @@ class MissionSeeder extends Seeder
     public function run(): void
     {
         $missions = [
-            // Easy missions (30 XP free / 40 XP subscription)
+            // Easy missions (6 XP free / 6 XP subscription)
             [
                 'title' => 'Syukuri Hari Ini',
                 'description' => 'Tulis 3 hal yang kamu syukuri hari ini.',
@@ -164,7 +164,7 @@ class MissionSeeder extends Seeder
                 'description' => 'Pijat lembut tanganmu sendiri selama beberapa detik.',
                 'difficulty' => 'easy',
             ],
-            // Medium missions (40 XP free / 50 XP subscription)
+            // Medium missions (8 XP free / 8 XP subscription)
             [
                 'title' => 'Jurnal Perasaan Hari Ini',
                 'description' => 'Tulis jurnal bebas tentang apa yang kamu rasakan hari ini, tanpa batas panjang atau pendek.',
@@ -315,7 +315,7 @@ class MissionSeeder extends Seeder
                 'description' => 'Kerjakan sebagian kecil dari tugas/proyek yang kamu tangguhkan hari ini.',
                 'difficulty' => 'medium',
             ],
-            // Hard missions (80 XP free / 90 XP subscription)
+            // Hard missions (16 XP free / 16 XP subscription)
             [
                 'title' => 'Ikut Sesi Curhatorium',
                 'description' => 'Ikuti 1 sesi SGD atau Share and Talk Curhatorium hari ini.',

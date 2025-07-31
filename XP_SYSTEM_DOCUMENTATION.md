@@ -17,9 +17,9 @@ The XP (Experience Points) system has been implemented based on the specificatio
 -   Mental Health Test: 10 XP
 -   Share and Talk (Rangers): 5 XP
 -   Share and Talk (Psychiatrist): 0 XP (not available)
--   Mission Easy: 30 XP
--   Mission Medium: 40 XP
--   Mission Hard: 80 XP
+-   Mission Easy: 6 XP
+-   Mission Medium: 8 XP
+-   Mission Hard: 16 XP
 -   Ment-AI Chatbot: 10 XP
 -   Deep Cards: 5 XP
 -   Support Group Discussion: 27 XP
@@ -30,9 +30,9 @@ The XP (Experience Points) system has been implemented based on the specificatio
 -   Mental Health Test: 10 XP
 -   Share and Talk (Rangers): 25 XP
 -   Share and Talk (Psychiatrist): 80 XP
--   Mission Easy: 40 XP
--   Mission Medium: 50 XP
--   Mission Hard: 90 XP
+-   Mission Easy: 6 XP
+-   Mission Medium: 8 XP
+-   Mission Hard: 16 XP
 -   Ment-AI Chatbot: 10 XP
 -   Deep Cards: 5 XP
 -   Support Group Discussion: 28 XP
@@ -121,5 +121,5 @@ Use the test route `/test-xp` (when authenticated) to view current XP status and
 -   Daily limits prevent XP farming
 -   The system tracks all XP gains for audit purposes
 -   Users with 10,000+ XP can access psychologist consultations
--   Mission XP is calculated based on difficulty level (easy: 30/40 XP, medium: 40/50 XP, hard: 80/90 XP)
+-   Mission XP is calculated based on difficulty level (easy: 6/6 XP, medium: 8/8 XP, hard: 16/16 XP)
 -   The `points` field has been removed from the missions table as XP is now handled by the XP system

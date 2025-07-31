@@ -29,16 +29,16 @@ class XpService
             'subscription' => 80
         ],
         'mission_easy' => [
-            'free' => 30,
-            'subscription' => 40
+            'free' => 6,
+            'subscription' => 6
         ],
         'mission_medium' => [
-            'free' => 40,
-            'subscription' => 50
+            'free' => 8,
+            'subscription' => 8
         ],
         'mission_hard' => [
-            'free' => 80,
-            'subscription' => 90
+            'free' => 16,
+            'subscription' => 16
         ],
         'mentai_chatbot' => [
             'free' => 10,

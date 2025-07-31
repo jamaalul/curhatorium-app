@@ -60,9 +60,9 @@
                         $membershipType = $xpService->getUserMembershipType($user);
                         
                         $xpValues = [
-                            'easy' => $membershipType === 'subscription' ? 40 : 30,
-                            'medium' => $membershipType === 'subscription' ? 50 : 40,
-                            'hard' => $membershipType === 'subscription' ? 90 : 80
+                            'easy' => $membershipType === 'subscription' ? 6 : 6,
+                            'medium' => $membershipType === 'subscription' ? 8 : 8,
+                            'hard' => $membershipType === 'subscription' ? 16 : 16
                         ];
                         
                         $totalXp = $xpValues[$difficulty] * $totalCount;

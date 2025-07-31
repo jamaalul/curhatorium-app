@@ -9,7 +9,7 @@
     <div class="text-block">
       <p>
         Curhatorium adalah ruang aman untuk berbagi cerita, mendapatkan dukungan kesehatan mental, dan bertumbuh bersama. 
-        Didesain khusus untuk pelajar, di sini kamu bisa mengekspresikan pikiran, mencari saran,
+        Didesain khusus untuk kamu, di sini kamu bisa mengekspresikan pikiran, mencari saran,
         dan terhubung dengan mereka yang memahami perjalananmu.
       </p>
     </div>

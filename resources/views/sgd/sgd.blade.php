@@ -38,7 +38,7 @@
                    </select>
                    
                    <select name="sort" class="filter-select">
-                       <option value="schedule">Sort by Schedule</option>
+                       <option value="schedule" {{ request('sort') == 'schedule' || !request('sort') ? 'selected' : '' }}>Sort by Schedule (Newest First)</option>
                        <option value="title" {{ request('sort') == 'title' ? 'selected' : '' }}>Sort by Title</option>
                        <option value="category" {{ request('sort') == 'category' ? 'selected' : '' }}>Sort by Category</option>
                    </select>
@@ -98,7 +98,14 @@
                                         <span>{{ ucfirst(str_replace('-', ' ', $group->category)) }}</span>
                                         <span>Scheduled: {{ \Carbon\Carbon::parse($group->schedule)->format('M d, Y g:i A') }}</span>
                                     </div>
-                                    <p class="card-text">{{ $group->topic }}</p>
+                                    <p class="card-text">
+                                        <strong>Host:</strong> 
+                                        @if($group->host)
+                                            {{ $group->host->name }}
+                                        @else
+                                            <span style="color: #999; font-style: italic;">No host assigned</span>
+                                        @endif
+                                    </p>
                                     
                                     @auth
                                         @if($hasJoined)

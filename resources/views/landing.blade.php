@@ -233,436 +233,76 @@
                     <span class="highlight">Dampak Nyata</span>
                 </h2>
                 <p class="features-subtitle">
-                    Lihat bagaimana Curhatorium telah mengubah hidup mahasiswa seperti Anda.
+                    Lihat bagaimana Curhatorium telah mengubah hidup orang seperti Anda.
                 </p>
             </div>
 
             <div class="testimonials-carousel-container">
                 <div class="testimonials-carousel">
-                    <!-- Original set of 7 testimonials -->
-                    <div class="testimonial-card fade-in">
-                        <div class="stars">
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                        </div>
-                        <p class="testimonial-text">
-                            "Curhatorium dari dulu pas aku joinnya masih sebagai komunitas adalah tempat yang enak buat berbagi cerita, sih. Kayak kita tuh bisa ngomong masalah kita apa sama orang yang nggak kita kenal, nggak harus takut bakal disebar atau gimana. Selain cerita, kita juga bisa dapet saran penyelesaian, juga bisa denger cerita atau sudut pandang orang lain. Jadi lebih netral aja gitu..."
-                        </p>
-                        <div class="testimonial-author">Adam</div>
-                        <div class="testimonial-role">Mahasiswa Universitas Airlangga</div>
-                    </div>
-
-                    <div class="testimonial-card fade-in">
-                        <div class="stars">
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                        </div>
-                        <p class="testimonial-text">
-                            "Curhatorium memberikan aku ruang nyaman sebagai introvert buat cerita, belajar saling memahami, dan saling mendukung antar sesama yang sekiranya bisa dibilang punya tantangan emosional yang serupa. Dari diskusi dan pertemuan yang dilakuin, aku merasa lega karena keluh kesah yang selama ini aku pendam akhirnya keluar. Di Curhatorium, aku merasa didengar, dipahami, dan terus termotivasi buat jaga kewarasanku selama aku masih jadi manusia."
-                        </p>
-                        <div class="testimonial-author">Almira</div>
-                        <div class="testimonial-role">Mahasiswa Universitas Airlangga</div>
-                    </div>
-
-                    <div class="testimonial-card fade-in">
-                        <div class="stars">
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                        </div>
-                        <p class="testimonial-text">
-                            "Sebagai pengguna lama, Curhatorium jadi tempat pelarian paling nyaman waktu aku stres berat karena masalah keluarga. Di sini aku bisa cerita tanpa takut dinilai, dan respons dari komunitasnya selalu hangat. Perlahan-lahan, aku merasa lebih lega dan bisa hadapin semuanya dengan lebih tenang."
-                        </p>
-                        <div class="testimonial-author">Mutmainnah F.</div>
-                        <div class="testimonial-role">Mahasiswa Psikologi Universitas Airlangga</div>
-                    </div>
-
-                    <div class="testimonial-card fade-in">
-                        <div class="stars">
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                        </div>
-                        <p class="testimonial-text">
-                            "Curhatorium jadi titik balik buatku kenal lebih jauh sama diri sendiri. Awalnya cuma ikut iseng, tapi ternyata cerita bareng orang lain bikin aku sadar: aku nggak sendirian. Tempat ini bukan cuma soal curhat, tapi tentang pulih pelan-pelan.."
-                        </p>
-                        <div class="testimonial-author">Basmah</div>
-                        <div class="testimonial-role">Mahasiswa Gizi Universitas Negeri Surabaya</div>
-                    </div>
-
-                    <div class="testimonial-card fade-in">
-                        <div class="stars">
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                        </div>
-                        <p class="testimonial-text">
-                            "Sebagai mahasiswa yang cukup skeptis soal layanan kesehatan mental online, jujur aku nggak berekspektasi banyak. Tapi Curhatorium berhasil nunjukin pendekatan yang aman, sistematis, dan nyaman buat kami yang mungkin belum siap ke profesional."
-                        </p>
-                        <div class="testimonial-author">Abdul Aziz</div>
-                        <div class="testimonial-role">Mahasiswa Teknik Universitas Negeri Surabaya</div>
-                    </div>
-
-                    <div class="testimonial-card fade-in">
-                        <div class="stars">
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                        </div>
-                        <p class="testimonial-text">
-                            "Saya tipe orang yang sering mikir sendiri, dan susah banget cerita. Di Curhatorium, saya ketemu ruang yang nggak maksa, tapi justru ngebantu saya pelan-pelan terbuka. Nggak ada tuntutan harus 'baik-baik aja'. Buatku, itu yang terpenting."
-                        </p>
-                        <div class="testimonial-author">Ali Ridho</div>
-                        <div class="testimonial-role">Mahasiswa Teknik Universitas Negeri Surabaya</div>
-                    </div>
-
-                    <div class="testimonial-card fade-in">
-                        <div class="stars">
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                        </div>
-                        <p class="testimonial-text">
-                            "Dari segi tampilan, platform Curhatorium clean banget, nggak ribet, dan gampang dipakai. Semua fitur gampang diakses, bahkan buat orang yang baru pertama kali buka. Warnanya juga bikin tenang, nggak 'ngegas' kayak platform lain. Buatku, ini penting karena pas lagi down, aku butuh sesuatu yang sederhana, tapi tetap nyaman."
-                        </p>
-                        <div class="testimonial-author">Rohim</div>
-                        <div class="testimonial-role">HoD Campaign & Branding Digimarly</div>
-                    </div>
-
-                    <!-- Multiple duplicate sets for a proper long scroll -->
-                    <!-- Set 2 -->
-                    <div class="testimonial-card fade-in">
-                        <div class="stars">
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                        </div>
-                        <p class="testimonial-text">
-                            "Curhatorium dari dulu pas aku joinnya masih sebagai komunitas adalah tempat yang enak buat berbagi cerita, sih. Kayak kita tuh bisa ngomong masalah kita apa sama orang yang nggak kita kenal, nggak harus takut bakal disebar atau gimana. Selain cerita, kita juga bisa dapet saran penyelesaian, juga bisa denger cerita atau sudut pandang orang lain. Jadi lebih netral aja gitu..."
-                        </p>
-                        <div class="testimonial-author">Adam</div>
-                        <div class="testimonial-role">Mahasiswa Universitas Airlangga</div>
-                    </div>
-
-                    <div class="testimonial-card fade-in">
-                        <div class="stars">
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                        </div>
-                        <p class="testimonial-text">
-                            "Curhatorium memberikan aku ruang nyaman sebagai introvert buat cerita, belajar saling memahami, dan saling mendukung antar sesama yang sekiranya bisa dibilang punya tantangan emosional yang serupa. Dari diskusi dan pertemuan yang dilakuin, aku merasa lega karena keluh kesah yang selama ini aku pendam akhirnya keluar. Di Curhatorium, aku merasa didengar, dipahami, dan terus termotivasi buat jaga kewarasanku selama aku masih jadi manusia."
-                        </p>
-                        <div class="testimonial-author">Almira</div>
-                        <div class="testimonial-role">Mahasiswa Universitas Airlangga</div>
-                    </div>
-
-                    <div class="testimonial-card fade-in">
-                        <div class="stars">
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                        </div>
-                        <p class="testimonial-text">
-                            "Sebagai pengguna lama, Curhatorium jadi tempat pelarian paling nyaman waktu aku stres berat karena masalah keluarga. Di sini aku bisa cerita tanpa takut dinilai, dan respons dari komunitasnya selalu hangat. Perlahan-lahan, aku merasa lebih lega dan bisa hadapin semuanya dengan lebih tenang."
-                        </p>
-                        <div class="testimonial-author">Mutmainnah F.</div>
-                        <div class="testimonial-role">Mahasiswa Psikologi Universitas Airlangga</div>
-                    </div>
-
-                    <div class="testimonial-card fade-in">
-                        <div class="stars">
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                        </div>
-                        <p class="testimonial-text">
-                            "Curhatorium jadi titik balik buatku kenal lebih jauh sama diri sendiri. Awalnya cuma ikut iseng, tapi ternyata cerita bareng orang lain bikin aku sadar: aku nggak sendirian. Tempat ini bukan cuma soal curhat, tapi tentang pulih pelan-pelan.."
-                        </p>
-                        <div class="testimonial-author">Basmah</div>
-                        <div class="testimonial-role">Mahasiswa Gizi Universitas Negeri Surabaya</div>
-                    </div>
-
-                    <div class="testimonial-card fade-in">
-                        <div class="stars">
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                        </div>
-                        <p class="testimonial-text">
-                            "Sebagai mahasiswa yang cukup skeptis soal layanan kesehatan mental online, jujur aku nggak berekspektasi banyak. Tapi Curhatorium berhasil nunjukin pendekatan yang aman, sistematis, dan nyaman buat kami yang mungkin belum siap ke profesional."
-                        </p>
-                        <div class="testimonial-author">Abdul Aziz</div>
-                        <div class="testimonial-role">Mahasiswa Teknik Universitas Negeri Surabaya</div>
-                    </div>
-
-                    <div class="testimonial-card fade-in">
-                        <div class="stars">
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                        </div>
-                        <p class="testimonial-text">
-                            "Saya tipe orang yang sering mikir sendiri, dan susah banget cerita. Di Curhatorium, saya ketemu ruang yang nggak maksa, tapi justru ngebantu saya pelan-pelan terbuka. Nggak ada tuntutan harus 'baik-baik aja'. Buatku, itu yang terpenting."
-                        </p>
-                        <div class="testimonial-author">Ali Ridho</div>
-                        <div class="testimonial-role">Mahasiswa Teknik Universitas Negeri Surabaya</div>
-                    </div>
-
-                    <div class="testimonial-card fade-in">
-                        <div class="stars">
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                        </div>
-                        <p class="testimonial-text">
-                            "Dari segi tampilan, platform Curhatorium clean banget, nggak ribet, dan gampang dipakai. Semua fitur gampang diakses, bahkan buat orang yang baru pertama kali buka. Warnanya juga bikin tenang, nggak 'ngegas' kayak platform lain. Buatku, ini penting karena pas lagi down, aku butuh sesuatu yang sederhana, tapi tetap nyaman."
-                        </p>
-                        <div class="testimonial-author">Rohim</div>
-                        <div class="testimonial-role">HoD Campaign & Branding Digimarly</div>
-                    </div>
-
-                    <!-- Set 3 -->
-                    <div class="testimonial-card fade-in">
-                        <div class="stars">
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                        </div>
-                        <p class="testimonial-text">
-                            "Curhatorium dari dulu pas aku joinnya masih sebagai komunitas adalah tempat yang enak buat berbagi cerita, sih. Kayak kita tuh bisa ngomong masalah kita apa sama orang yang nggak kita kenal, nggak harus takut bakal disebar atau gimana. Selain cerita, kita juga bisa dapet saran penyelesaian, juga bisa denger cerita atau sudut pandang orang lain. Jadi lebih netral aja gitu..."
-                        </p>
-                        <div class="testimonial-author">Adam</div>
-                        <div class="testimonial-role">Mahasiswa Universitas Airlangga</div>
-                    </div>
-
-                    <div class="testimonial-card fade-in">
-                        <div class="stars">
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                        </div>
-                        <p class="testimonial-text">
-                            "Curhatorium memberikan aku ruang nyaman sebagai introvert buat cerita, belajar saling memahami, dan saling mendukung antar sesama yang sekiranya bisa dibilang punya tantangan emosional yang serupa. Dari diskusi dan pertemuan yang dilakuin, aku merasa lega karena keluh kesah yang selama ini aku pendam akhirnya keluar. Di Curhatorium, aku merasa didengar, dipahami, dan terus termotivasi buat jaga kewarasanku selama aku masih jadi manusia."
-                        </p>
-                        <div class="testimonial-author">Almira</div>
-                        <div class="testimonial-role">Mahasiswa Universitas Airlangga</div>
-                    </div>
-
-                    <div class="testimonial-card fade-in">
-                        <div class="stars">
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                        </div>
-                        <p class="testimonial-text">
-                            "Sebagai pengguna lama, Curhatorium jadi tempat pelarian paling nyaman waktu aku stres berat karena masalah keluarga. Di sini aku bisa cerita tanpa takut dinilai, dan respons dari komunitasnya selalu hangat. Perlahan-lahan, aku merasa lebih lega dan bisa hadapin semuanya dengan lebih tenang."
-                        </p>
-                        <div class="testimonial-author">Mutmainnah F.</div>
-                        <div class="testimonial-role">Mahasiswa Psikologi Universitas Airlangga</div>
-                    </div>
-
-                    <div class="testimonial-card fade-in">
-                        <div class="stars">
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                        </div>
-                        <p class="testimonial-text">
-                            "Curhatorium jadi titik balik buatku kenal lebih jauh sama diri sendiri. Awalnya cuma ikut iseng, tapi ternyata cerita bareng orang lain bikin aku sadar: aku nggak sendirian. Tempat ini bukan cuma soal curhat, tapi tentang pulih pelan-pelan.."
-                        </p>
-                        <div class="testimonial-author">Basmah</div>
-                        <div class="testimonial-role">Mahasiswa Gizi Universitas Negeri Surabaya</div>
-                    </div>
-
-                    <div class="testimonial-card fade-in">
-                        <div class="stars">
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                        </div>
-                        <p class="testimonial-text">
-                            "Sebagai mahasiswa yang cukup skeptis soal layanan kesehatan mental online, jujur aku nggak berekspektasi banyak. Tapi Curhatorium berhasil nunjukin pendekatan yang aman, sistematis, dan nyaman buat kami yang mungkin belum siap ke profesional."
-                        </p>
-                        <div class="testimonial-author">Abdul Aziz</div>
-                        <div class="testimonial-role">Mahasiswa Teknik Universitas Negeri Surabaya</div>
-                    </div>
-
-                    <div class="testimonial-card fade-in">
-                        <div class="stars">
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                        </div>
-                        <p class="testimonial-text">
-                            "Saya tipe orang yang sering mikir sendiri, dan susah banget cerita. Di Curhatorium, saya ketemu ruang yang nggak maksa, tapi justru ngebantu saya pelan-pelan terbuka. Nggak ada tuntutan harus 'baik-baik aja'. Buatku, itu yang terpenting."
-                        </p>
-                        <div class="testimonial-author">Ali Ridho</div>
-                        <div class="testimonial-role">Mahasiswa Teknik Universitas Negeri Surabaya</div>
-                    </div>
-
-                    <div class="testimonial-card fade-in">
-                        <div class="stars">
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                        </div>
-                        <p class="testimonial-text">
-                            "Dari segi tampilan, platform Curhatorium clean banget, nggak ribet, dan gampang dipakai. Semua fitur gampang diakses, bahkan buat orang yang baru pertama kali buka. Warnanya juga bikin tenang, nggak 'ngegas' kayak platform lain. Buatku, ini penting karena pas lagi down, aku butuh sesuatu yang sederhana, tapi tetap nyaman."
-                        </p>
-                        <div class="testimonial-author">Rohim</div>
-                        <div class="testimonial-role">HoD Campaign & Branding Digimarly</div>
-                    </div>
-
-                    <!-- Set 4 -->
-                    <div class="testimonial-card fade-in">
-                        <div class="stars">
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                        </div>
-                        <p class="testimonial-text">
-                            "Curhatorium dari dulu pas aku joinnya masih sebagai komunitas adalah tempat yang enak buat berbagi cerita, sih. Kayak kita tuh bisa ngomong masalah kita apa sama orang yang nggak kita kenal, nggak harus takut bakal disebar atau gimana. Selain cerita, kita juga bisa dapet saran penyelesaian, juga bisa denger cerita atau sudut pandang orang lain. Jadi lebih netral aja gitu..."
-                        </p>
-                        <div class="testimonial-author">Adam</div>
-                        <div class="testimonial-role">Mahasiswa Universitas Airlangga</div>
-                    </div>
-
-                    <div class="testimonial-card fade-in">
-                        <div class="stars">
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                        </div>
-                        <p class="testimonial-text">
-                            "Curhatorium memberikan aku ruang nyaman sebagai introvert buat cerita, belajar saling memahami, dan saling mendukung antar sesama yang sekiranya bisa dibilang punya tantangan emosional yang serupa. Dari diskusi dan pertemuan yang dilakuin, aku merasa lega karena keluh kesah yang selama ini aku pendam akhirnya keluar. Di Curhatorium, aku merasa didengar, dipahami, dan terus termotivasi buat jaga kewarasanku selama aku masih jadi manusia."
-                        </p>
-                        <div class="testimonial-author">Almira</div>
-                        <div class="testimonial-role">Mahasiswa Universitas Airlangga</div>
-                    </div>
-
-                    <div class="testimonial-card fade-in">
-                        <div class="stars">
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                        </div>
-                        <p class="testimonial-text">
-                            "Sebagai pengguna lama, Curhatorium jadi tempat pelarian paling nyaman waktu aku stres berat karena masalah keluarga. Di sini aku bisa cerita tanpa takut dinilai, dan respons dari komunitasnya selalu hangat. Perlahan-lahan, aku merasa lebih lega dan bisa hadapin semuanya dengan lebih tenang."
-                        </p>
-                        <div class="testimonial-author">Mutmainnah F.</div>
-                        <div class="testimonial-role">Mahasiswa Psikologi Universitas Airlangga</div>
-                    </div>
-
-                    <div class="testimonial-card fade-in">
-                        <div class="stars">
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                        </div>
-                        <p class="testimonial-text">
-                            "Curhatorium jadi titik balik buatku kenal lebih jauh sama diri sendiri. Awalnya cuma ikut iseng, tapi ternyata cerita bareng orang lain bikin aku sadar: aku nggak sendirian. Tempat ini bukan cuma soal curhat, tapi tentang pulih pelan-pelan.."
-                        </p>
-                        <div class="testimonial-author">Basmah</div>
-                        <div class="testimonial-role">Mahasiswa Gizi Universitas Negeri Surabaya</div>
-                    </div>
-
-                    <div class="testimonial-card fade-in">
-                        <div class="stars">
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                        </div>
-                        <p class="testimonial-text">
-                            "Sebagai mahasiswa yang cukup skeptis soal layanan kesehatan mental online, jujur aku nggak berekspektasi banyak. Tapi Curhatorium berhasil nunjukin pendekatan yang aman, sistematis, dan nyaman buat kami yang mungkin belum siap ke profesional."
-                        </p>
-                        <div class="testimonial-author">Abdul Aziz</div>
-                        <div class="testimonial-role">Mahasiswa Teknik Universitas Negeri Surabaya</div>
-                    </div>
-
-                    <div class="testimonial-card fade-in">
-                        <div class="stars">
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                        </div>
-                        <p class="testimonial-text">
-                            "Saya tipe orang yang sering mikir sendiri, dan susah banget cerita. Di Curhatorium, saya ketemu ruang yang nggak maksa, tapi justru ngebantu saya pelan-pelan terbuka. Nggak ada tuntutan harus 'baik-baik aja'. Buatku, itu yang terpenting."
-                        </p>
-                        <div class="testimonial-author">Ali Ridho</div>
-                        <div class="testimonial-role">Mahasiswa Teknik Universitas Negeri Surabaya</div>
-                    </div>
-
-                    <div class="testimonial-card fade-in">
-                        <div class="stars">
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                        </div>
-                        <p class="testimonial-text">
-                            "Dari segi tampilan, platform Curhatorium clean banget, nggak ribet, dan gampang dipakai. Semua fitur gampang diakses, bahkan buat orang yang baru pertama kali buka. Warnanya juga bikin tenang, nggak 'ngegas' kayak platform lain. Buatku, ini penting karena pas lagi down, aku butuh sesuatu yang sederhana, tapi tetap nyaman."
-                        </p>
-                        <div class="testimonial-author">Rohim</div>
-                        <div class="testimonial-role">HoD Campaign & Branding Digimarly</div>
-                    </div>
+                    @php
+                        $testimonials = [
+                            [
+                                'text' => 'Curhatorium dari dulu pas aku joinnya masih sebagai komunitas adalah tempat yang enak buat berbagi cerita, sih. Kayak kita tuh bisa ngomong masalah kita apa sama orang yang nggak kita kenal, nggak harus takut bakal disebar atau gimana. Selain cerita, kita juga bisa dapet saran penyelesaian, juga bisa denger cerita atau sudut pandang orang lain. Jadi lebih netral aja gitu...',
+                                'author' => 'Adam',
+                                'role' => 'Mahasiswa Universitas Airlangga',
+                            ],
+                            [
+                                'text' => 'Curhatorium memberikan aku ruang nyaman sebagai introvert buat cerita, belajar saling memahami, dan saling mendukung antar sesama yang sekiranya bisa dibilang punya tantangan emosional yang serupa. Dari diskusi dan pertemuan yang dilakuin, aku merasa lega karena keluh kesah yang selama ini aku pendam akhirnya keluar. Di Curhatorium, aku merasa didengar, dipahami, dan terus termotivasi buat jaga kewarasanku selama aku masih jadi manusia.',
+                                'author' => 'Almira',
+                                'role' => 'Mahasiswa Universitas Airlangga',
+                            ],
+                            [
+                                'text' => 'Sebagai pengguna lama, Curhatorium jadi tempat pelarian paling nyaman waktu aku stres berat karena masalah keluarga. Di sini aku bisa cerita tanpa takut dinilai, dan respons dari komunitasnya selalu hangat. Perlahan-lahan, aku merasa lebih lega dan bisa hadapin semuanya dengan lebih tenang.',
+                                'author' => 'Mutmainnah F.',
+                                'role' => 'Mahasiswa Psikologi Universitas Airlangga',
+                            ],
+                            [
+                                'text' => 'Curhatorium jadi titik balik buatku kenal lebih jauh sama diri sendiri. Awalnya cuma ikut iseng, tapi ternyata cerita bareng orang lain bikin aku sadar: aku nggak sendirian. Tempat ini bukan cuma soal curhat, tapi tentang pulih pelan-pelan..',
+                                'author' => 'Basmah',
+                                'role' => 'Mahasiswa Gizi Universitas Negeri Surabaya',
+                            ],
+                            [
+                                'text' => 'Sebagai mahasiswa yang cukup skeptis soal layanan kesehatan mental online, jujur aku nggak berekspektasi banyak. Tapi Curhatorium berhasil nunjukin pendekatan yang aman, sistematis, dan nyaman buat kami yang mungkin belum siap ke profesional.',
+                                'author' => 'Abdul Aziz',
+                                'role' => 'Mahasiswa Teknik Universitas Negeri Surabaya',
+                            ],
+                            [
+                                'text' => 'Saya tipe orang yang sering mikir sendiri, dan susah banget cerita. Di Curhatorium, saya ketemu ruang yang nggak maksa, tapi justru ngebantu saya pelan-pelan terbuka. Nggak ada tuntutan harus \'baik-baik aja\'. Buatku, itu yang terpenting.',
+                                'author' => 'Ali Ridho',
+                                'role' => 'Mahasiswa Teknik Universitas Negeri Surabaya',
+                            ],
+                            [
+                                'text' => 'Dari segi tampilan, platform Curhatorium clean banget, nggak ribet, dan gampang dipakai. Semua fitur gampang diakses, bahkan buat orang yang baru pertama kali buka. Warnanya juga bikin tenang, nggak \'ngegas\' kayak platform lain. Buatku, ini penting karena pas lagi down, aku butuh sesuatu yang sederhana, tapi tetap nyaman.',
+                                'author' => 'Rohim',
+                                'role' => 'HoD Campaign & Branding Digimarly',
+                            ],
+                            [
+                                'text' => 'Komunitas ini sangat nyaman dan supportif untuk saya yang sulit berbaur, disini saya bisa berbagi cerita tanpa dihakimi dan merasa lebih diterima. Cocok banget buat yang butuh ruang seperti saya.',
+                                'author' => 'Usaratus Sakinah',
+                                'role' => 'Mahasiswa Universitas Airlangga',
+                            ],
+                        ];
+                        // Number of times to repeat the testimonials for marquee effect
+                        $repeat = 4;
+                    @endphp
+                    @for($i = 0; $i < $repeat; $i++)
+                        @foreach($testimonials as $testimonial)
+                            <div class="testimonial-card fade-in">
+                                <div class="stars">
+                                    <span class="star">★</span>
+                                    <span class="star">★</span>
+                                    <span class="star">★</span>
+                                    <span class="star">★</span>
+                                    <span class="star">★</span>
+                                </div>
+                                <p class="testimonial-text">
+                                    "{{ $testimonial['text'] }}"
+                                </p>
+                                <div class="testimonial-author">{{ $testimonial['author'] }}</div>
+                                <div class="testimonial-role">{{ $testimonial['role'] }}</div>
+                            </div>
+                        @endforeach
+                    @endfor
                 </div>
             </div>
         </div>
@@ -801,8 +441,8 @@
     <section class="cta">
         <div class="cta-container">
             <h2 class="cta-title">
-                Siap Memulai<br>
-                Perjalanan Kesejahteraan Mental?
+                Ratusan Mahasiswa Telah Memulai<br>
+                Perjalanan Kesejahteraan Mental
             </h2>
             <p class="cta-subtitle">
                 Bergabunglah dengan ribuan mahasiswa yang sudah memulai perjalanan menuju kesehatan mental yang lebih baik.

@@ -336,7 +336,7 @@
                      </a>
                  </li>
                  <li class="nav-item">
-                     <a href="#" class="nav-link {{ $feature['title'] == 'Missions of The Day Easy' ? 'active' : '' }}" data-feature="missions">
+                     <a href="#" class="nav-link {{ $feature['title'] == 'Missions of the Day' ? 'active' : '' }}" data-feature="missions">
                          Missions of the Day
                      </a>
                  </li>
@@ -435,7 +435,7 @@
                  </div>
 
                                    <!-- Missions Content -->
-                  <div class="feature-content {{ $feature['title'] == 'Missions of the Day Easy' ? 'active' : '' }}" id="missions">
+                  <div class="feature-content {{ $feature['title'] == 'Missions of the Day' ? 'active' : '' }}" id="missions">
                      <h1 class="page-title">Missions of the Day</h1>
                    
                      <div class="document-section">

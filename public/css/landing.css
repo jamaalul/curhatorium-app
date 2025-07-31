@@ -506,7 +506,7 @@ section {
 .testimonials-carousel {
     display: flex;
     gap: 2rem;
-    animation: marquee 180s linear infinite;
+    animation: marquee 40s linear infinite;
     width: max-content;
     padding: 2rem 100px;
     margin: 0 -100px;
