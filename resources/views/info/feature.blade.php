@@ -393,6 +393,11 @@
                      </div>
 
                      <div class="document-section">
+                         <h2>Tipe Limit Tiket</h2>
+                         <p>Fitur ini menggunakan tiket dengan sistem gratis, artinya kamu dapat mengakses tes ini kapan saja tanpa batas jumlah penggunaan. Sangat cocok bagi kamu yang ingin melakukan refleksi secara berkala tanpa khawatir kehabisan kuota akses.</p>
+                     </div>
+
+                     <div class="document-section">
                          <h2>Mulai Sekarang</h2>
                          <p>Kenali dirimu, bukan untuk menilai, tapi untuk lebih merawat dan memahami diri.</p>
                          <a href="/mental-test" class="cta-button">Mulai Tes</a>
@@ -418,6 +423,11 @@
                      </div>
 
                      <div class="document-section">
+                         <h2>Tipe Limit Tiket</h2>
+                         <p>Fitur ini menggunakan tiket dengan sistem per kali akses. Setiap sesi, baik itu melalui chat maupun video call, akan mengurangi satu tiket akses. Ini memberi keleluasaan untuk mengatur kapan kamu ingin berbicara, tanpa kewajiban menggunakannya setiap hari.</p>
+                     </div>
+
+                     <div class="document-section">
                          <h2>Mulai Sekarang</h2>
                          <p>Cerita itu butuh ruang. Temukan ruangmu, dan biarkan dirimu didengar.</p>
                          <a href="/share-and-talk" class="cta-button">Mulai Bercerita</a>
@@ -425,7 +435,7 @@
                  </div>
 
                                    <!-- Missions Content -->
-                  <div class="feature-content {{ $feature['title'] == 'Missions of The Day Easy' ? 'active' : '' }}" id="missions">
+                  <div class="feature-content {{ $feature['title'] == 'Missions of the Day Easy' ? 'active' : '' }}" id="missions">
                      <h1 class="page-title">Missions of the Day</h1>
                    
                      <div class="document-section">
@@ -440,6 +450,11 @@
                              <li>Ingin membentuk kebiasaan sehat secara perlahan.</li>
                              <li>Butuh dorongan kecil untuk tetap hadir dan bertumbuh.</li>
                          </ul>
+                     </div>
+
+                     <div class="document-section">
+                         <h2>Tipe Limit Tiket</h2>
+                         <p>Fitur ini menggunakan tiket berbasis harian. Setiap harinya kamu bisa menyelesaikan lebih dari satu misi, dan sistem akan menghitung tiket berdasarkan hari aktif. Ini mendukung proses bertumbuh secara konsisten namun fleksibel.</p>
                      </div>
 
                      <div class="document-section">
@@ -468,6 +483,11 @@
                      </div>
 
                      <div class="document-section">
+                         <h2>Tipe Limit Tiket</h2>
+                         <p>Fitur ini menggunakan tiket berbasis waktu. Setiap sesi interaksi dengan Sanny akan menggunakan tiket tergantung dari durasi kamu berinteraksi. Cocok untuk kamu yang butuh fleksibilitas dalam menemani waktu-waktu sulit.</p>
+                     </div>
+
+                     <div class="document-section">
                          <h2>Mulai Sekarang</h2>
                          <p>Tak harus selalu bicara pada orang. Kadang, kehadiran virtual pun bisa menguatkan.</p>
                          <a href="/chatbot" class="cta-button">Mulai Chat</a>
@@ -490,6 +510,11 @@
                              <li>Butuh alat sederhana untuk menyelami pikiran dan perasaan.</li>
                              <li>Ingin merasa lebih dekat dengan dirimu sendiri.</li>
                          </ul>
+                     </div>
+
+                     <div class="document-section">
+                         <h2>Tipe Limit Tiket</h2>
+                         <p>Fitur ini menggunakan tiket berbasis jumlah akses. Setiap kali kamu mengakses Deep Cards, satu tiket akan digunakan. Dengan sistem ini, kamu bisa menentukan kapan waktu yang paling tepat untuk menggunakannya tanpa paksaan.</p>
                      </div>
 
                      <div class="document-section">
@@ -518,14 +543,19 @@
                      </div>
 
                      <div class="document-section">
+                         <h2>Tipe Limit Tiket</h2>
+                         <p>Fitur ini menggunakan tiket berbasis jumlah sesi. Setiap kali kamu bergabung dalam sebuah grup, satu tiket akan digunakan. Ini memberikan kamu fleksibilitas untuk memilih topik atau waktu yang paling sesuai dengan kondisimu.</p>
+                     </div>
+
+                     <div class="document-section">
                          <h2>Mulai Sekarang</h2>
                          <p>Kamu tidak sendiri. Ada suara lain yang ingin memahami dan menemanimu.</p>
                          <a href="/sgd" class="cta-button">Gabung Grup</a>
                      </div>
                  </div>
 
-                                   <!-- Mood Tracker Content -->
-                  <div class="feature-content {{ $feature['title'] == 'Mood and Productivity Tracker' ? 'active' : '' }}" id="mood-tracker">
+                <!-- Mood Tracker Content -->
+                <div class="feature-content {{ $feature['title'] == 'Mood and Productivity Tracker' ? 'active' : '' }}" id="mood-tracker">
                      <h1 class="page-title">Mood and Productivity Tracker</h1>
                    
                      <div class="document-section">
@@ -543,6 +573,11 @@
                      </div>
 
                      <div class="document-section">
+                         <h2>Tipe Limit Tiket</h2>
+                         <p>Fitur ini menggunakan tiket berbasis harian, di mana kamu bisa mencatat satu kali dalam sehari. Pendekatan ini mendorong kebiasaan reflektif yang konsisten tanpa menimbulkan tekanan.</p>
+                     </div>
+
+                     <div class="document-section">
                          <h2>Mulai Sekarang</h2>
                          <p>Satu menit untuk jujur pada diri sendiri bisa jadi langkah awal pulih.</p>
                          <a href="/tracker" class="cta-button">Mulai Tracking</a>
@@ -554,8 +589,9 @@
             <div class="right-sidebar">
                 <div class="sidebar-section">
                     <h3>Di halaman ini</h3>
-                    <p class="sidebar-link" data-section="what-is">Deskripsi</p>
+                    <p class="sidebar-link" data-section="what-is">Apa Itu?</p>
                     <p class="sidebar-link" data-section="why-choose">Kenapa Pilih Fitur Ini</p>
+                    <p class="sidebar-link" data-section="ticket-info">Tipe Limit Tiket</p>
                     <p class="sidebar-link" data-section="get-started">Mulai Sekarang</p>
                 </div>
              </div>

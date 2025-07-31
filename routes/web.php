@@ -228,7 +228,7 @@ Route::get('/info/{feature}', function ($feature) {
             'cta_link' => '/tracker'
         ],
         'mental-health-test' => [
-            'title' => 'Tes Kesehatan Mental (Mental Health Test)',
+            'title' => 'Mental Health Test',
             'description' => 'A reflective test based on the Mental Health Continuum - Short Form (MHC-SF), designed to help you recognize your emotional, psychological, and social well-being. The results will provide a complete picture of your mental condition. Not for judgment, but for understanding.',
             'why_choose' => 'Gain insights into your mental health status and understand your emotional, psychological, and social well-being.',
             'cta' => 'Take the Test',
@@ -249,7 +249,7 @@ Route::get('/info/{feature}', function ($feature) {
             'cta_link' => '/chatbot'
         ],
         'missions' => [
-            'title' => 'Missions of The Day Easy',
+            'title' => 'Missions of the Day',
             'description' => 'Simple daily missions that help you reconnect with yourself. Each mission can be a reflection, a small action, or a light exercise. Choose the level that suits your daily rhythm.',
             'why_choose' => 'Stay motivated with simple daily activities that help you reconnect with yourself and maintain mental wellness.',
             'cta' => 'View Missions',
