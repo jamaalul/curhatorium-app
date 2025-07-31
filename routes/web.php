@@ -209,3 +209,11 @@ Route::post('/mark-onboarding-completed', function () {
     }
     return response()->json(['success' => false], 401);
 })->middleware('auth');
+
+Route::post('/reset-onboarding', function () {
+    if (auth()->check()) {
+        auth()->user()->update(['onboarding_completed' => false]);
+        return response()->json(['success' => true]);
+    }
+    return response()->json(['success' => false], 401);
+})->middleware('auth');

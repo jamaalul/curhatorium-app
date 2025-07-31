@@ -118,40 +118,93 @@
                 ],
             ];
         @endphp
-        <div class="pricing-grid">
-            @foreach($memberships as $membership)
-                @php
-                    $meta = $membershipMeta[$membership->name] ?? ['class' => '', 'svg' => '', 'benefits' => []];
-                @endphp
-                <div class="pricing-card{{ $meta['class'] ? ' ' . $meta['class'] : '' }}">
-                    @if(isset($meta['badge']))
-                        <div class="popular-badge">{{ $meta['badge'] }}</div>
+        <!-- Basic Memberships Section -->
+        <div class="membership-section">
+            <h2 class="section-title">Basic Membership</h2>
+            <div class="pricing-grid basic-memberships">
+                @foreach($memberships as $membership)
+                    @php
+                        $meta = $membershipMeta[$membership->name] ?? ['class' => '', 'svg' => '', 'benefits' => []];
+                        $isBasic = in_array($membership->name, ['Calm Starter', 'Growth Path', 'Harmony', 'Serenity']);
+                    @endphp
+                    @if($isBasic)
+                        <div class="pricing-card{{ $meta['class'] ? ' ' . $meta['class'] : '' }}">
+                            @if(isset($meta['badge']))
+                                <div class="popular-badge">{{ $meta['badge'] }}</div>
+                            @endif
+                            <div class="card-header">
+                                {!! $meta['svg'] !!}
+                                <h3 class="card-title">{{ $membership->name }}</h3>
+                            </div>
+                            <div class="card-price">
+                                Rp{{ number_format($membership->price, 0, ',', '.') }}
+                                @if($membership->duration_days > 0)
+                                    <span class="period">/{{ $membership->duration_days >= 30 ? 'bulan' : $membership->duration_days . ' hari' }}</span>
+                                @endif
+                            </div>
+                            <ul class="benefits-list">
+                                @foreach($meta['benefits'] as $i => $benefit)
+                                        <li>{{ $benefit }}</li>
+                                @endforeach
+                            </ul>
+                            @if($membership->name === 'Calm Starter')
+                                <form class="subscribe-form" method="POST" action="{{ route('membership.buy', $membership->id) }}" onsubmit="return confirm('Yakin ingin membeli {{ $membership->name }}?');" style="display:none;">
+                                    @csrf
+                                    <button class="subscribe-btn" type="submit">Langganan Sekarang</button>
+                                </form>
+                            @else
+                                <button class="subscribe-btn" onclick="redirectToWhatsApp('{{ $membership->name }}', {{ $membership->price }}, {{ Auth::user()->id }})" type="button">Beli Sekarang</button>
+                            @endif
+                        </div>
                     @endif
-                    <div class="card-header">
-                        {!! $meta['svg'] !!}
-                        <h3 class="card-title">{{ $membership->name }}</h3>
-                    </div>
-                    <div class="card-price">
-                        Rp{{ number_format($membership->price, 0, ',', '.') }}
-                        @if($membership->duration_days > 0)
-                            <span class="period">/{{ $membership->duration_days >= 30 ? 'bulan' : $membership->duration_days . ' hari' }}</span>
-                        @endif
-                    </div>
-                    <ul class="benefits-list">
-                        @foreach($meta['benefits'] as $i => $benefit)
-                                <li>{{ $benefit }}</li>
-                        @endforeach
-                    </ul>
-                    @if($membership->name === 'Calm Starter')
-                        <form class="subscribe-form" method="POST" action="{{ route('membership.buy', $membership->id) }}" onsubmit="return confirm('Yakin ingin membeli {{ $membership->name }}?');" style="display:none;">
-                            @csrf
-                            <button class="subscribe-btn" type="submit">Langganan Sekarang</button>
-                        </form>
-                    @else
-                        <button class="subscribe-btn" onclick="redirectToWhatsApp('{{ $membership->name }}', {{ $membership->price }}, {{ Auth::user()->id }})" type="button">Beli Sekarang</button>
+                @endforeach
+            </div>
+        </div>
+
+        <!-- See More Button -->
+        <div class="see-more-container">
+            <button class="see-more-btn" onclick="togglePremiumMemberships()">
+                <span class="see-more-text">Lihat Premium Membership</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-down see-more-icon" viewBox="0 0 16 16">
+                    <path d="M3.204 5h9.592L8 10.481zm-.753.659 4.796 5.48a1 1 0 0 0 1.506 0l4.796-5.48c.566-.647.106-1.659-.753-1.659H3.204a1 1 0 0 0-.753 1.659"/>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Premium Memberships Section -->
+        <div class="membership-section premium-memberships" id="premium-memberships" style="display: none;">
+            <h2 class="section-title">Premium Membership</h2>
+            <div class="pricing-grid">
+                @foreach($memberships as $membership)
+                    @php
+                        $meta = $membershipMeta[$membership->name] ?? ['class' => '', 'svg' => '', 'benefits' => []];
+                        $isPremium = in_array($membership->name, ['Blossom', 'Inner Peace', "Chat with Sanny's Aid", "Meet with Sanny's Aid"]);
+                    @endphp
+                    @if($isPremium)
+                        <div class="pricing-card{{ $meta['class'] ? ' ' . $meta['class'] : '' }}">
+                            @if(isset($meta['badge']))
+                                <div class="popular-badge">{{ $meta['badge'] }}</div>
+                            @endif
+                            <div class="card-header">
+                                {!! $meta['svg'] !!}
+                                <h3 class="card-title">{{ $membership->name }}</h3>
+                            </div>
+                            <div class="card-price">
+                                Rp{{ number_format($membership->price, 0, ',', '.') }}
+                                @if($membership->duration_days > 0)
+                                    <span class="period">/{{ $membership->duration_days >= 30 ? 'bulan' : $membership->duration_days . ' hari' }}</span>
+                                @endif
+                            </div>
+                            <ul class="benefits-list">
+                                @foreach($meta['benefits'] as $i => $benefit)
+                                        <li>{{ $benefit }}</li>
+                                @endforeach
+                            </ul>
+                            <button class="subscribe-btn" onclick="redirectToWhatsApp('{{ $membership->name }}', {{ $membership->price }}, {{ Auth::user()->id }})" type="button">Beli Sekarang</button>
+                        </div>
                     @endif
-                </div>
-            @endforeach
+                @endforeach
+            </div>
         </div>
     </div>
 
@@ -169,6 +222,26 @@
             const message = `Halo! Saya ingin membeli membership "${membershipName}" seharga Rp${price.toLocaleString('id-ID')}.\n\n> Payment ID: ${paymentId}\n\nMohon informasi lebih lanjut untuk proses pembayaran.`;
             const whatsappUrl = `https://wa.me/6288989406047?text=${encodeURIComponent(message)}`;
             window.open(whatsappUrl, '_blank');
+        }
+
+        function togglePremiumMemberships() {
+            const premiumSection = document.getElementById('premium-memberships');
+            const seeMoreBtn = document.querySelector('.see-more-btn');
+            const seeMoreText = document.querySelector('.see-more-text');
+            const seeMoreIcon = document.querySelector('.see-more-icon');
+            
+            if (premiumSection.style.display === 'none') {
+                premiumSection.style.display = 'block';
+                seeMoreText.textContent = 'Sembunyikan Premium Membership';
+                seeMoreIcon.style.transform = 'rotate(180deg)';
+                
+                // Smooth scroll to premium section
+                premiumSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } else {
+                premiumSection.style.display = 'none';
+                seeMoreText.textContent = 'Lihat Premium Membership';
+                seeMoreIcon.style.transform = 'rotate(0deg)';
+            }
         }
     </script>
 </body>

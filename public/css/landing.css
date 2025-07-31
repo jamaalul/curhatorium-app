@@ -50,40 +50,35 @@ body .nav-btn:hover {
     box-shadow: 0 4px 15px rgba(142, 203, 207, 0.4), 0 0 0 1px rgba(255, 205, 45, 0.1);
 }
 
+/* Mobile login button - hidden by default */
+.mobile-login-btn {
+    display: none;
+}
+
 /* Mobile responsive for landing navbar */
 @media (max-width: 768px) {
     body .nav-links {
-        position: absolute;
-        top: 61px;
-        right: -100vw;
-        flex-direction: column;
-        background: white;
-        width: 100vw;
-        max-width: 300px;
-        padding: 20px;
-        box-shadow: -2px 2px 5px rgba(0, 0, 0, 0.1);
-        transition: right 0.3s ease;
-        border-radius: 0 0 0 10px;
-        z-index: 9998 !important;
-        box-sizing: border-box;
-        overflow-x: hidden !important;
-        max-width: 100vw !important;
+        display: none;
     }
 
-    body .nav-links.active {
-        right: 0;
+    .mobile-login-btn {
+        display: block;
+        padding: 8px 16px;
+        background: transparent;
+        color: #8ecbcf;
+        border: 1.5px solid #8ecbcf;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 0.85rem;
+        transition: all 0.3s ease;
     }
 
-    body .nav-links a {
-        padding: 10px 0;
-        border-bottom: 1px solid #eee;
-        width: 100%;
-        text-align: center;
-        box-sizing: border-box;
-    }
-
-    body .nav-links a:last-child {
-        border-bottom: none;
+    .mobile-login-btn:hover {
+        background: #8ecbcf;
+        color: white;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(142, 203, 207, 0.2);
     }
 }
 

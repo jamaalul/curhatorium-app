@@ -24,12 +24,8 @@
             <a href="/login" class="nav-btn">Masuk</a>
         </div>
         
-        <!-- Mobile menu button -->
-        <button class="mobile-menu-button" aria-label="Toggle menu">
-            <span></span>
-            <span></span>
-            <span></span>
-        </button>
+        <!-- Mobile login button -->
+        <a href="/login" class="mobile-login-btn">Masuk</a>
     </nav>
 
     <!-- Hero Section -->
@@ -458,23 +454,9 @@
     @include('components.footer')
 
     <script>
-        // Mobile menu functionality
+        // Landing page functionality
         document.addEventListener('DOMContentLoaded', function() {
-            const mobileMenuButton = document.querySelector('.mobile-menu-button');
-            const navLinks = document.querySelector('.nav-links');
-            
-            if (mobileMenuButton && navLinks) {
-                mobileMenuButton.addEventListener('click', function() {
-                    navLinks.classList.toggle('active');
-                });
-                
-                // Close menu when clicking outside
-                document.addEventListener('click', function(e) {
-                    if (!mobileMenuButton.contains(e.target) && !navLinks.contains(e.target)) {
-                        navLinks.classList.remove('active');
-                    }
-                });
-            }
+            // Smooth scrolling and other functionality
         });
 
         // Fade in animation on scroll
@@ -511,11 +493,6 @@
                         behavior: 'smooth',
                         block: 'start'
                     });
-                }
-                // Close mobile menu after clicking a link
-                const navLinks = document.querySelector('.nav-links');
-                if (navLinks) {
-                    navLinks.classList.remove('active');
                 }
             });
         });

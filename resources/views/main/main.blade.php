@@ -193,6 +193,59 @@
                 });
             }).start();
             @endif
+            
+            // Replay onboarding functionality
+            const replayButton = document.getElementById('replay-onboarding-btn');
+            if (replayButton) {
+                replayButton.addEventListener('click', function() {
+                    // Reset onboarding status first
+                    fetch('/reset-onboarding', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        }
+                    }).then(() => {
+                        // Start the onboarding tour
+                        startOnboardingTour();
+                    });
+                });
+            }
+            
+            // Function to start onboarding tour
+            function startOnboardingTour() {
+                var isMobile = window.innerWidth <= 600;
+                var steps = isMobile ? stepsMobile : stepsDesktop;
+                
+                introJs().setOptions({
+                    steps: steps,
+                    showProgress: true,
+                    showBullets: false,
+                    nextLabel: 'Selanjutnya',
+                    prevLabel: 'Sebelumnya',
+                    doneLabel: 'Selesai',
+                    exitOnOverlayClick: false,
+                    exitOnEsc: false,
+                }).oncomplete(function() {
+                    // Mark onboarding as completed when tour is finished
+                    fetch('/mark-onboarding-completed', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        }
+                    });
+                }).onexit(function() {
+                    // Also mark as completed if user exits the tour
+                    fetch('/mark-onboarding-completed', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        }
+                    });
+                }).start();
+            }
         });
     </script>
 </body>
