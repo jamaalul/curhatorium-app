@@ -466,11 +466,22 @@ class ShareAndTalkController extends Controller
             $session->end = now('Asia/Jakarta')->addMinutes(60); // 60 minutes for video
             $session->pending_end = null;
             $session->save();
-            // Redirect to the video page for the professional
-            return redirect()->route('share-and-talk.facilitator-video', ['sessionId' => $sessionId]);
+            
+            // Redirect based on session type
+            if ($session->type === 'chat') {
+                return redirect()->route('share-and-talk.facilitator', ['sessionId' => $sessionId]);
+            } else {
+                // video session
+                return redirect()->route('share-and-talk.facilitator-video', ['sessionId' => $sessionId]);
+            }
         } elseif ($session->status === 'active') {
-            // Already active, just redirect
-            return redirect()->route('share-and-talk.facilitator-video', ['sessionId' => $sessionId]);
+            // Already active, redirect based on session type
+            if ($session->type === 'chat') {
+                return redirect()->route('share-and-talk.facilitator', ['sessionId' => $sessionId]);
+            } else {
+                // video session
+                return redirect()->route('share-and-talk.facilitator-video', ['sessionId' => $sessionId]);
+            }
         } else {
             return response('Session is not in a state that can be activated.', 400);
         }

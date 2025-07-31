@@ -28,7 +28,7 @@
         Menunggu fasilitator... (<span id="waiting-countdown">05:00</span>)
       </div>
       <div id="cancel-warning" style="font-size:0.95em;color:#b97c00;margin-bottom:0.5em;display:none;">
-        Sesi akan dibatalkan otomatis jika fasilitator tidak merespons dalam 5 menit. Jangan khawatir, tiketmu akan dikembalikan.
+        Sesi akan dibatalkan otomatis jika fasilitator tidak merespons dalam 5 menit. Jangan khawatir, tiketmu akan dikembalikan.<br>Tolong jangan berpindah dari halaman ini.
       </div>
       <div id="cancelled-redirect" style="display:none;text-align:center;margin-top:1em;">
         <button onclick="window.location.href='/dashboard'" style="padding:0.7em 1.5em;font-size:1em;background:#b97c00;color:#fff;border:none;border-radius:6px;cursor:pointer;">Kembali ke Dashboard</button>
