@@ -174,7 +174,9 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('/missions-of-the-day', [MissionController::class, 'index'])->name('missions.index');
+    Route::get('/missions-of-the-day', [MissionController::class, 'index'])
+        ->middleware(\App\Http\Middleware\TicketGateMiddleware::class . ':missions')
+        ->name('missions.index');
     Route::post('/missions-of-the-day/{mission}/complete', [MissionController::class, 'complete'])->name('missions.complete');
 });
 
