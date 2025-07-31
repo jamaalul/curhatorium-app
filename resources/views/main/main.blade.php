@@ -248,5 +248,6 @@
             }
         });
     </script>
+    <script src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.6.2/dist/dotlottie-wc.js" type="module"></script>
 </body>
 </html>

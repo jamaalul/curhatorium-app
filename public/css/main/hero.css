@@ -20,6 +20,7 @@ body {
     height: 100vh;
     background-color: #f5f1eb;
     color: #444;
+    position: relative;
 }
 
 .text-block {
@@ -86,4 +87,19 @@ body {
     .hero-sect {
         padding-top: 90px;
     }
+}
+
+.sanny-hero {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 300px;
+    height: 300px;
+    border: none;
+}
+
+@media (max-width: 768px) {
+  .sanny-hero {
+    display: none !important;
+  }
 }

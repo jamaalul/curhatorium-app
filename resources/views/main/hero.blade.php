@@ -13,5 +13,6 @@
         dan terhubung dengan mereka yang memahami perjalananmu.
       </p>
     </div>
+    <dotlottie-wc class="sanny-hero" src="https://lottie.host/956c946a-ed98-4aee-a058-b14a48da71f2/sxvSOHmIkl.lottie" style="width: 300px;height: 300px" speed="1" autoplay loop></dotlottie-wc>
   </section>
 </body>

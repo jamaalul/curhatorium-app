@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline';">
     <title>Profil Saya</title>
     <link rel="stylesheet" href="{{ asset('css/global.css') }}">
     <link rel="stylesheet" href="{{ asset('css/main/stats.css') }}">
@@ -18,7 +20,7 @@
       <h2 class="profile-title">Profil Saya</h2>
       <!-- Ringkasan Profil -->
       <div class="profile-overview">
-        <form id="profilePicForm" method="POST" action="{{ route('profile.update') }}" enctype="multipart/form-data" style="display:inline;">
+        <form id="profilePicForm" method="POST" action="{{ route('profile.update') }}" enctype="multipart/form-data" style="display:inline;" onsubmit="return validateFormSubmission(event);">
           @csrf
           @method('PATCH')
           <input type="hidden" name="username" value="{{ $user->username }}">
@@ -31,7 +33,7 @@
                  onerror="this.onerror=null;this.src='{{ asset('assets/profile_pict.svg') }}';">
             <label class="change-pic-label">
               Ganti
-              <input id="profilePicInput" name="profile_picture" type="file" class="hidden" accept="image/*" style="display:none;">
+              <input id="profilePicInput" name="profile_picture" type="file" class="hidden" accept="image/jpeg,image/jpg,image/png,image/webp" style="display:none;">
             </label>
           </div>
         </form>
@@ -204,19 +206,177 @@
       </main>
       @include('components.footer')
       
+      @if ($errors->any())
+        <script>
+          document.addEventListener('DOMContentLoaded', function() {
+            @foreach ($errors->all() as $error)
+              showError('{{ addslashes($error) }}');
+            @endforeach
+          });
+        </script>
+      @endif
+      
       <script>
-        // Pratinjau foto profil dan auto-submit
+        // Pratinjau foto profil dan auto-submit dengan validasi keamanan
         const input = document.getElementById('profilePicInput');
         const preview = document.getElementById('profilePicPreview');
+        
+        // Konstanta untuk validasi
+        const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
+        const ALLOWED_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+        const MAX_DIMENSIONS = { width: 2048, height: 2048 };
+        
+        function showError(message) {
+          // Create a more user-friendly error display
+          const errorDiv = document.createElement('div');
+          errorDiv.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #ef4444;
+            color: white;
+            padding: 12px 16px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 10000;
+            font-family: inherit;
+            max-width: 300px;
+          `;
+          errorDiv.textContent = 'Error: ' + message;
+          document.body.appendChild(errorDiv);
+          
+          // Auto-remove after 5 seconds
+          setTimeout(() => {
+            if (errorDiv.parentNode) {
+              errorDiv.parentNode.removeChild(errorDiv);
+            }
+          }, 5000);
+          
+          input.value = ''; // Reset input
+        }
+        
+        function showLoading() {
+          const loadingDiv = document.createElement('div');
+          loadingDiv.id = 'upload-loading';
+          loadingDiv.style.cssText = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            z-index: 10000;
+            font-family: inherit;
+          `;
+          loadingDiv.textContent = 'Uploading profile picture...';
+          document.body.appendChild(loadingDiv);
+        }
+        
+        function hideLoading() {
+          const loadingDiv = document.getElementById('upload-loading');
+          if (loadingDiv && loadingDiv.parentNode) {
+            loadingDiv.parentNode.removeChild(loadingDiv);
+          }
+        }
+        
+        function validateFormSubmission(event) {
+          const form = event.target;
+          const fileInput = form.querySelector('input[type="file"]');
+          
+          if (fileInput && fileInput.files.length > 0) {
+            const file = fileInput.files[0];
+            if (!validateFile(file)) {
+              event.preventDefault();
+              return false;
+            }
+          }
+          
+          return true;
+        }
+        
+        function validateFile(file) {
+          // Validasi tipe file
+          if (!ALLOWED_TYPES.includes(file.type)) {
+            showError('Hanya file JPEG, PNG, atau WebP yang diperbolehkan.');
+            return false;
+          }
+          
+          // Validasi ukuran file
+          if (file.size > MAX_FILE_SIZE) {
+            showError('Ukuran file tidak boleh lebih dari 2MB.');
+            return false;
+          }
+          
+          // Validasi nama file (mencegah path traversal)
+          const fileName = file.name.toLowerCase();
+          if (fileName.includes('..') || fileName.includes('/') || fileName.includes('\\')) {
+            showError('Nama file tidak valid.');
+            return false;
+          }
+          
+          // Validasi ekstensi file
+          const allowedExtensions = ['.jpg', '.jpeg', '.png', '.webp'];
+          const fileExtension = fileName.substring(fileName.lastIndexOf('.'));
+          if (!allowedExtensions.includes(fileExtension)) {
+            showError('Ekstensi file tidak diperbolehkan.');
+            return false;
+          }
+          
+          return true;
+        }
+        
+        function validateImageDimensions(file) {
+          return new Promise((resolve, reject) => {
+            const img = new Image();
+            const url = URL.createObjectURL(file);
+            
+            img.onload = function() {
+              URL.revokeObjectURL(url);
+              if (img.width > MAX_DIMENSIONS.width || img.height > MAX_DIMENSIONS.height) {
+                reject('Dimensi gambar tidak boleh lebih dari 2048x2048 pixel.');
+              } else {
+                resolve(true);
+              }
+            };
+            
+            img.onerror = function() {
+              URL.revokeObjectURL(url);
+              reject('File tidak dapat dibaca sebagai gambar.');
+            };
+            
+            img.src = url;
+          });
+        }
+        
         if(input && preview) {
-          input.addEventListener('change', () => {
+          input.addEventListener('change', async () => {
             const file = input.files[0];
             if (file) {
-              const reader = new FileReader();
-              reader.onload = e => preview.src = e.target.result;
-              reader.readAsDataURL(file);
-              // Otomatis submit form saat file baru dipilih
-              document.getElementById('profilePicForm').submit();
+              // Validasi dasar file
+              if (!validateFile(file)) {
+                return;
+              }
+              
+              try {
+                // Validasi dimensi gambar
+                await validateImageDimensions(file);
+                
+                // Tampilkan loading
+                showLoading();
+                
+                // Jika semua validasi berhasil, tampilkan preview dan submit
+                const reader = new FileReader();
+                reader.onload = e => preview.src = e.target.result;
+                reader.readAsDataURL(file);
+                
+                // Otomatis submit form saat file baru dipilih
+                document.getElementById('profilePicForm').submit();
+              } catch (error) {
+                hideLoading();
+                showError(error);
+              }
             }
           });
         }
