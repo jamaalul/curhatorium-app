@@ -16,14 +16,15 @@
   <div class="container">
     <div class="top-box">
       <canvas id="myChart"></canvas>
-      <a href="/info/mood-tracker" class="info-button-stats" title="Info Mood Tracker">
-        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="pointer-events: none;">
-          <circle cx="12" cy="12" r="10" stroke="#70c0bb" stroke-width="1.5"></circle>
-          <path d="M12 17V11" stroke="#70c0bb" stroke-width="1.5" stroke-linecap="round"></path>
-          <circle cx="11" cy="9" r="1" fill="#70c0bb"></circle>
-        </svg>
-      </a>
     </div>
+    
+    <a href="/info/mood-tracker" class="info-button-stats" title="Info Mood Tracker">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="pointer-events: none;">
+        <circle cx="12" cy="12" r="10" stroke="#70c0bb" stroke-width="1.5"></circle>
+        <path d="M12 17V11" stroke="#70c0bb" stroke-width="1.5" stroke-linecap="round"></path>
+        <circle cx="11" cy="9" r="1" fill="#70c0bb"></circle>
+      </svg>
+    </a>
 
     <div class="bottom-boxes">
       <div class="box mental">
@@ -65,68 +66,98 @@
     </div>
   </div>
 
-  <!-- Chart.js with fallback CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Chart data for JavaScript -->
   <script>
-    // Fallback if primary CDN fails
-    if (typeof Chart === 'undefined') {
-      document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.js"><\/script>');
-    }
+    window.chartData = {
+      labels: @json($labels->toArray()),
+      moodData: @json($moodData->toArray()),
+      productivityData: @json($productivityData->toArray())
+    };
   </script>
 
+  <!-- Load Chart.js with multiple fallbacks -->
   <script>
-    // Wait for both DOM and Chart.js to be ready
+    function loadChartJS() {
+      return new Promise((resolve, reject) => {
+        // Try multiple CDNs
+        const cdnUrls = [
+          'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js',
+          'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.js',
+          'https://unpkg.com/chart.js@4.4.0/dist/chart.umd.js'
+        ];
+        
+        let currentIndex = 0;
+        
+        function tryLoadCDN() {
+          if (currentIndex >= cdnUrls.length) {
+            reject(new Error('All CDNs failed'));
+            return;
+          }
+          
+          const script = document.createElement('script');
+          script.src = cdnUrls[currentIndex];
+          script.onload = () => {
+            console.log('Chart.js loaded from:', cdnUrls[currentIndex]);
+            resolve();
+          };
+          script.onerror = () => {
+            console.warn('Failed to load from:', cdnUrls[currentIndex]);
+            currentIndex++;
+            tryLoadCDN();
+          };
+          document.head.appendChild(script);
+        }
+        
+        tryLoadCDN();
+      });
+    }
+    
     function initializeChart() {
-      if (typeof Chart === 'undefined') {
-        console.error('Chart.js not loaded');
-        return;
-      }
-
       const ctx = document.getElementById('myChart');
       if (!ctx) {
         console.error('Canvas element not found');
         return;
       }
-
-      // Safely get data with fallbacks
-      const chartData = {
-        labels: @json($labels->toArray()),
-        moodData: @json($moodData->toArray()),
-        productivityData: @json($productivityData->toArray())
-      };
-
-      // Validate data
-      if (!Array.isArray(chartData.labels) || !Array.isArray(chartData.moodData) || !Array.isArray(chartData.productivityData)) {
-        console.error('Invalid chart data format');
+      
+      if (!window.chartData) {
+        console.error('Chart data not available');
         return;
       }
-
+      
+      const { labels, moodData, productivityData } = window.chartData;
+      
+      // Validate data
+      if (!Array.isArray(labels) || !Array.isArray(moodData) || !Array.isArray(productivityData)) {
+        console.error('Invalid chart data format:', { labels, moodData, productivityData });
+        return;
+      }
+      
       try {
         ctx.height = 250;
-
+        
         new Chart(ctx, {
           type: 'line',
           data: {
-            labels: chartData.labels,
+            labels: labels,
             datasets: [
               {
                 label: 'Mood',
-                data: chartData.moodData,
+                data: moodData,
                 borderWidth: 2,
                 tension: 0.3,
                 borderColor: '#48A6A6',
-                backgroundColor: 'rgba(54,162,235,0.08)',
+                backgroundColor: 'rgba(72, 166, 166, 0.1)',
                 pointBackgroundColor: '#48A6A6',
                 pointRadius: 4,
                 fill: true,
               },
               {
                 label: 'Productivity',
-                data: chartData.productivityData,
+                data: productivityData,
                 borderWidth: 2,
                 tension: 0.3,
                 borderColor: '#FFCD2D',
-                backgroundColor: 'rgba(253,215,91,0.08)',
+                backgroundColor: 'rgba(255, 205, 45, 0.1)',
                 pointBackgroundColor: '#FFCD2D',
                 pointRadius: 4,
                 fill: true,
@@ -197,20 +228,23 @@
             }
           }
         });
+        
+        console.log('Chart initialized successfully');
       } catch (error) {
         console.error('Error initializing chart:', error);
       }
     }
-
-    // Initialize chart when everything is ready
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', function() {
-        // Give Chart.js a moment to load if it's still loading
-        setTimeout(initializeChart, 100);
-      });
-    } else {
-      // DOM is already ready, but wait a bit for Chart.js
-      setTimeout(initializeChart, 100);
-    }
+    
+    // Initialize when everything is ready
+    document.addEventListener('DOMContentLoaded', function() {
+      loadChartJS()
+        .then(() => {
+          // Give a small delay to ensure Chart.js is fully initialized
+          setTimeout(initializeChart, 50);
+        })
+        .catch(error => {
+          console.error('Failed to load Chart.js:', error);
+        });
+    });
   </script>
 </body>
