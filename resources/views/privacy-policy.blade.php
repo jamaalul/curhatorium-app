@@ -438,7 +438,7 @@
           <li><strong>Hak Hapus:</strong> Menghapus akun dan seluruh data pribadi secara permanen.</li>
           <li><strong>Hak Penarikan Persetujuan:</strong> Menolak penggunaan data opsional sewaktu-waktu.</li>
         </ul>
-        <p>Permintaan dapat diajukan melalui email ke: curhatorium@gmail.com. Waktu pemrosesan maksimal: 14 hari kerja.</p>
+        <p>Permintaan dapat diajukan melalui email ke: hello@curhatorium.com. Waktu pemrosesan maksimal: 14 hari kerja.</p>
       </div>
 
       <div class="section">
@@ -484,7 +484,7 @@
       <div class="section">
         <h2>14. KONTAK DAN PERNYATAAN</h2>
         <p>Untuk pertanyaan, permintaan, atau laporan pelanggaran terkait data pribadi, silakan hubungi:</p>
-        <p><strong>curhatorium@gmail.com</strong> (Email)</p>
+        <p><strong>hello@curhatorium.com</strong> (Email)</p>
         <p><strong>Jam operasional:</strong> Setiap hari, pukul 08.00 – 17.00 WIB</p>
       </div>
 
@@ -511,11 +511,11 @@
       <h2>KONTAK RESMI</h2>
       <p>Untuk pertanyaan atau klarifikasi tentang kebijakan privasi, silakan hubungi kami:</p>
       <div class="contact-links">
-        <a href="mailto:curhatorium@gmail.com" class="contact-link">
+        <a href="mailto:hello@curhatorium.com" class="contact-link">
           <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
             <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4Zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1H2Zm13 2.383-4.708 2.825L15 11.105V5.383Zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741ZM1 11.105l4.708-2.897L1 5.383v5.722Z"/>
           </svg>
-          curhatorium@gmail.com
+          hello.curhatorium.com
         </a>
         <a href="https://instagram.com/curhatorium_" target="_blank" class="contact-link">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-instagram" viewBox="0 0 16 16">
