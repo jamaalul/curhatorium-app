@@ -16,9 +16,6 @@
   <div class="container">
     <div class="top-box">
       <canvas id="myChart"></canvas>
-      <a href="/info/mood-tracker" class="info-button-stats" title="Info Mood Tracker">
-        ℹ️
-      </a>
     </div>
 
     <div class="bottom-boxes">
