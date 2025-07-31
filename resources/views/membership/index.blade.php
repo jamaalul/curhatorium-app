@@ -33,6 +33,7 @@
                     'benefits' => [
                         '(Unlimited) Tes Kesehatan Mental',
                         '(7 Hari) Mood and Productivity Tracker',
+                        '(1x) Share and Talk via Chat w/ Rangers (Special Launching Bonus)',
                         '(2 Jam) Ment-AI Chatbot',
                         '(7 Hari) Missions of The Day',
                         '(1x) Support Group Discussion',
@@ -220,7 +221,7 @@
             const paymentId = `CURH-${dateStr}-${userId.toString().padStart(4, '0')}`;
             
             const message = `Halo! Saya ingin membeli membership "${membershipName}" seharga Rp${price.toLocaleString('id-ID')}.\n\n> Payment ID: ${paymentId}\n\nMohon informasi lebih lanjut untuk proses pembayaran.`;
-            const whatsappUrl = `https://wa.me/6288989406047?text=${encodeURIComponent(message)}`;
+            const whatsappUrl = `https://wa.me/6285117593233?text=${encodeURIComponent(message)}`;
             window.open(whatsappUrl, '_blank');
         }
 
