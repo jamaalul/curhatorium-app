@@ -473,6 +473,73 @@ section {
     text-shadow: 0 2px 4px rgba(255, 205, 45, 0.15);
 }
 
+/* Testimonials Marquee Styles */
+.testimonials-carousel-container {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    margin: 0 auto;
+    max-width: 1200px;
+}
+
+.testimonials-carousel-container::before,
+.testimonials-carousel-container::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 100px;
+    z-index: 2;
+    pointer-events: none;
+}
+
+.testimonials-carousel-container::before {
+    left: 0;
+    background: linear-gradient(to right, #f5f1eb 0%, rgba(245, 241, 235, 0.8) 50%, transparent 100%);
+}
+
+.testimonials-carousel-container::after {
+    right: 0;
+    background: linear-gradient(to left, #fff8dc 0%, rgba(255, 248, 220, 0.8) 50%, transparent 100%);
+}
+
+.testimonials-carousel {
+    display: flex;
+    gap: 2rem;
+    animation: marquee 180s linear infinite;
+    width: max-content;
+    padding: 2rem 100px;
+    margin: 0 -100px;
+}
+
+.testimonials-carousel:hover {
+    animation-play-state: paused;
+}
+
+.testimonials-carousel .testimonial-card {
+    min-width: 400px;
+    max-width: 400px;
+    width: 400px;
+    flex-shrink: 0;
+    margin: 0;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+@keyframes marquee {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-75%);
+    }
+}
+
+
+
+/* Original testimonials grid (fallback) */
 .testimonials-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
@@ -486,11 +553,13 @@ section {
 .testimonial-card {
     background: linear-gradient(135deg, #ffffff 0%, #fffef7 100%);
     border-radius: 16px;
-    padding: 2.5rem;
+    padding: 1.5rem;
     border: 2px solid rgba(255, 205, 45, 0.1);
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
     transition: all 0.3s ease;
     position: relative;
+    overflow: hidden;
+    margin: 0.5rem 0;
 }
 
 .testimonial-card::before {
@@ -512,32 +581,35 @@ section {
 .stars {
     display: flex;
     gap: 0.25rem;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
 }
 
 .star {
     color: #ffcd2d;
-    font-size: 1.2rem;
+    font-size: 1rem;
     text-shadow: 0 1px 3px rgba(255, 205, 45, 0.3);
 }
 
 .testimonial-text {
     color: #333;
-    font-size: 1.1rem;
-    line-height: 1.6;
-    margin-bottom: 2rem;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin-bottom: 1rem;
+    flex-grow: 1;
+    text-align: justify;
 }
 
 .testimonial-author {
     font-weight: 600;
     color: #333;
-    font-size: 1rem;
+    font-size: 0.9rem;
+    margin-bottom: 0.25rem;
 }
 
 .testimonial-role {
     color: #8ecbcf;
-    font-size: 0.9rem;
-    margin-top: 0.25rem;
+    font-size: 0.8rem;
+    margin-top: 0;
 }
 
 /* About Us Section */
@@ -1213,6 +1285,36 @@ section {
         gap: 1.5rem;
     }
     
+    /* Carousel mobile adjustments */
+    .testimonials-carousel-container {
+        max-width: 100%;
+        padding: 0 1rem;
+    }
+    
+    .testimonials-carousel-container::before,
+    .testimonials-carousel-container::after {
+        width: 50px;
+    }
+    
+    .testimonials-carousel-container::before {
+        background: linear-gradient(to right, #f5f1eb 0%, rgba(245, 241, 235, 0.8) 50%, transparent 100%);
+    }
+    
+    .testimonials-carousel-container::after {
+        background: linear-gradient(to left, #fff8dc 0%, rgba(255, 248, 220, 0.8) 50%, transparent 100%);
+    }
+    
+    .testimonials-carousel {
+        padding: 1.5rem 50px;
+        margin: 0 -50px;
+    }
+    
+    .testimonials-carousel .testimonial-card {
+        padding: 1.5rem;
+    }
+    
+
+    
     .feature-card,
     .testimonial-card,
     .landing-pricing-card {
@@ -1295,6 +1397,35 @@ section {
         grid-template-columns: 1fr;
         gap: 1rem;
     }
+    
+    /* Carousel extra small screen adjustments */
+    .testimonials-carousel-container {
+        padding: 0 0.5rem;
+    }
+    
+    .testimonials-carousel-container::before,
+    .testimonials-carousel-container::after {
+        width: 30px;
+    }
+    
+    .testimonials-carousel-container::before {
+        background: linear-gradient(to right, #f5f1eb 0%, rgba(245, 241, 235, 0.8) 50%, transparent 100%);
+    }
+    
+    .testimonials-carousel-container::after {
+        background: linear-gradient(to left, #fff8dc 0%, rgba(255, 248, 220, 0.8) 50%, transparent 100%);
+    }
+    
+    .testimonials-carousel {
+        padding: 1rem 30px;
+        margin: 0 -30px;
+    }
+    
+    .testimonials-carousel .testimonial-card {
+        padding: 1rem;
+    }
+    
+
     
     .landing-pricing-card {
         padding: 1.5rem;
