@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="{{ asset('css/share-and-talk/chat.css') }}">
 </head>
 <body style="height: 100vh; overflow: hidden; margin: 0; padding: 0;">
-  <div class="app" style="height: 100vh;">
+  <div class="app">
     <!-- Sidebar -->
     <div class="sidebar">
       <h2>Lunar</h2>
@@ -35,7 +35,7 @@
         </div>
       </div>
 
-      <div id="activation-section" style="text-align: center; padding: 20px; background: #f8f9fa; border-radius: 8px; display: {{ $sessionStatus === 'waiting' || $sessionStatus === 'pending' ? 'block' : 'none' }};">
+      <div id="activation-section" style="text-align: center; display: {{ $sessionStatus === 'waiting' || $sessionStatus === 'pending' ? 'block' : 'none' }};">
         <h3 style="margin: 0 0 15px 0; color: #333;">Sesi Menunggu Aktivasi</h3>
         <p style="margin: 0 0 15px 0; color: #666;">Klik tombol di bawah untuk memulai sesi konsultasi</p>
         <button id="activate-session-btn" style="padding: 12px 24px; background: #007bff; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 16px;">

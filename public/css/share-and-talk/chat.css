@@ -29,6 +29,7 @@ body {
 .app {
     display: flex;
     height: 100vh;
+    overflow: hidden;
 }
 
 .sidebar {
@@ -58,7 +59,6 @@ body {
     display: flex;
     flex-direction: column;
     background-color: var(--surface);
-    height: 100vh;
     overflow: hidden;
 }
 
@@ -71,6 +71,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-shrink: 0;
 }
 
 .chat-body {
@@ -141,11 +142,9 @@ body {
 #activation-section {
     flex-shrink: 0; /* Prevent activation section from shrinking */
     margin: 10px 24px;
-}
-
-/* Ensure chat header doesn't shrink */
-.chat-header {
-    flex-shrink: 0;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
 }
 
 @media (max-width: 768px) {
@@ -154,7 +153,7 @@ body {
     }
 
     .chat-header {
-        padding-left: 16px;
+        padding: 12px 16px;
     }
 
     .chat-input {
@@ -167,13 +166,6 @@ body {
     
     #activation-section {
         margin: 10px 16px;
-    }
-    
-    .app {
-        height: 100vh !important;
-    }
-    
-    .chat-area {
-        height: 100vh !important;
+        padding: 16px;
     }
 }

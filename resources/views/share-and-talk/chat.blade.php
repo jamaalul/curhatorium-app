@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="{{ asset('css/share-and-talk/chat.css') }}">
 </head>
 <body style="height: 100vh; overflow: hidden; margin: 0; padding: 0;">
-  <div class="app" data-session-end="{{ now()->addMinutes($interval)->toIso8601String() }}" data-session-id="{{ $session_id }}" style="height: 100vh;">
+  <div class="app" data-session-end="{{ now()->addMinutes($interval)->toIso8601String() }}" data-session-id="{{ $session_id }}">
     <!-- Sidebar -->
     <div class="sidebar">
       <h2>Psikolog</h2>
