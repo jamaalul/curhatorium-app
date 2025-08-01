@@ -105,10 +105,8 @@ class TicketGateMiddleware
                     $this->trackSgdTicketConsumption($user, $consumedTicket);
                 }
                 
-                // Track Share and Talk ticket consumption for payment purposes
-                if ($ticketType === 'share_talk_ranger_chat' && $consumedTicket) {
-                    $this->trackShareTalkTicketConsumption($user, $consumedTicket);
-                }
+                // Share and Talk ticket consumption is now handled in the controller
+                // when the session is created, not here in the middleware
                 
                 // Clean up any tickets that should be deleted
                 \App\Models\UserTicket::cleanupAfterConsumption();
@@ -227,53 +225,5 @@ class TicketGateMiddleware
         return !$hasPreviousSgdThisCycle; // First SGD in this Calm Starter cycle = true, subsequent = false
     }
 
-    private function trackShareTalkTicketConsumption($user, $consumedTicket)
-    {
-        // Determine if this is the user's first Share and Talk while having active Calm Starter membership
-        $isFirstShareTalkWithCalmStarter = $this->isFirstShareTalkWithCalmStarter($user);
-        
-        // Determine ticket source
-        $ticketSource = $isFirstShareTalkWithCalmStarter ? 'calm_starter' : 'paid';
-        
-        // Get chat session ID from request (assuming it's passed as session_id)
-        $chatSessionId = request('session_id');
-        
-        if ($chatSessionId) {
-            \App\Models\ShareTalkTicketConsumption::create([
-                'user_id' => $user->id,
-                'chat_session_id' => $chatSessionId,
-                'ticket_source' => $ticketSource,
-                'consumed_at' => Carbon::now(),
-            ]);
-        }
-    }
-    
-    private function isFirstShareTalkWithCalmStarter($user)
-    {
-        $now = Carbon::now();
-        
-        // Find the user's current Calm Starter cycle
-        // Get the most recent Calm Starter membership for this user
-        $currentCalmStarter = $user->userMemberships()
-            ->whereHas('membership', function($query) {
-                $query->where('name', 'Calm Starter');
-            })
-            ->where('started_at', '<=', $now)
-            ->where('expires_at', '>=', $now)
-            ->orderBy('started_at', 'desc')
-            ->first();
-            
-        if (!$currentCalmStarter) {
-            return false; // No active Calm Starter, so it's a paid ticket
-        }
-        
-        // Check if this is the user's first Share and Talk participation in this Calm Starter cycle
-        $hasPreviousShareTalkThisCycle = \App\Models\ShareTalkTicketConsumption::where('user_id', $user->id)
-            ->where('ticket_source', 'calm_starter')
-            ->where('consumed_at', '>=', $currentCalmStarter->started_at)
-            ->where('consumed_at', '<=', $currentCalmStarter->expires_at)
-            ->exists();
-        
-        return !$hasPreviousShareTalkThisCycle; // First Share and Talk in this Calm Starter cycle = true, subsequent = false
-    }
+
 } 
