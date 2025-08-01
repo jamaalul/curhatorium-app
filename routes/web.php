@@ -191,6 +191,7 @@ Route::get('/api/share-and-talk/session-status/{sessionId}', [ShareAndTalkContro
 Route::post('/api/share-and-talk/cancel-session/{sessionId}', [ShareAndTalkController::class, 'cancelSessionByUser']);
 Route::post('/api/share-and-talk/professional-online/{professionalId}', [ShareAndTalkController::class, 'setProfessionalOnline']);
 Route::get('/share-and-talk/activate-session/{sessionId}', [ShareAndTalkController::class, 'activateSession'])->name('share-and-talk.activate-session');
+Route::post('/api/share-and-talk/manual-activate/{sessionId}', [ShareAndTalkController::class, 'manualActivateSession'])->name('share-and-talk.manual-activate');
 
 // Professional Authentication Routes
 Route::get('/professional/login', [\App\Http\Controllers\Auth\ProfessionalAuthenticatedSessionController::class, 'create'])->name('professional.login');

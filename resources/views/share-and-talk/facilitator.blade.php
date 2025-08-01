@@ -74,6 +74,68 @@
       }
     }
 
+    // Check session status and control UI
+    async function checkSessionStatus() {
+      try {
+        const response = await fetch(`/api/share-and-talk/session-status/${sessionId}`);
+        if (!response.ok) return;
+        const data = await response.json();
+        sessionStatus = data.status;
+        
+        if (sessionStatus === 'waiting' || sessionStatus === 'pending') {
+          // Show activation section
+          activationSection.style.display = 'block';
+          input.disabled = true;
+          btn.disabled = true;
+          timerEl.innerText = 'Menunggu aktivasi...';
+          timerEl.style.color = 'orange';
+        } else if (sessionStatus === 'active') {
+          // Hide activation section and enable chat
+          activationSection.style.display = 'none';
+          input.disabled = false;
+          btn.disabled = false;
+          timerEl.style.color = 'var(--text-muted)';
+          updateTimer();
+        } else if (sessionStatus === 'cancelled') {
+          // Session was cancelled
+          activationSection.style.display = 'none';
+          input.disabled = true;
+          btn.disabled = true;
+          timerEl.innerText = 'Sesi dibatalkan';
+          timerEl.style.color = 'red';
+        }
+      } catch (error) {
+        console.error('Error checking session status:', error);
+      }
+    }
+
+    // Handle session activation
+    activateBtn.addEventListener('click', async function() {
+      try {
+        const response = await fetch(`/api/share-and-talk/manual-activate/${sessionId}`, {
+          method: 'POST',
+          headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        if (response.ok) {
+          // Session activated, refresh the page to show the chat interface
+          window.location.reload();
+        } else {
+          alert('Gagal mengaktifkan sesi. Silakan coba lagi.');
+        }
+      } catch (error) {
+        console.error('Error activating session:', error);
+        alert('Gagal mengaktifkan sesi. Silakan coba lagi.');
+      }
+    });
+
+    // Check session status every 2 seconds
+    setInterval(checkSessionStatus, 2000);
+    checkSessionStatus(); // Initial check
+
     setInterval(updateTimer, 1000);
     updateTimer();
 

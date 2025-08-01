@@ -64,6 +64,8 @@ class ShareAndTalkController extends Controller
             'start' => now(),
             'end' => now()->addMinutes(65), // 65 minutes
             'status' => 'waiting', // Set initial status
+            'type' => 'chat', // Explicitly set type
+            'pending_end' => now()->addMinutes(5), // 5 minutes pending timeout
         ]);
 
         $interval = now()->diffInMinutes($session->end);
@@ -97,18 +99,18 @@ class ShareAndTalkController extends Controller
         
         $user = User::where('id', $session->user_id)->first();
 
-        // Only activate if session is still waiting or pending (not already active)
-        if (in_array($session->status, ['waiting', 'pending'])) {
-            $session->status = 'active';
-            $session->start = now();
-            $session->end = now()->addMinutes(65); // 65 minutes
-            $session->pending_end = null; // Clear pending end
-            $session->save();
-        }
+        // Don't automatically activate the session - let the facilitator do it manually
+        // The session should stay in 'waiting' status until explicitly activated
 
         $interval = now()->diffInMinutes($session->end);
 
-        return view('share-and-talk.facilitator', ['sessionId' => $sessionId, 'professionalId' => $session->professional_id, 'user' => $user, 'interval' => $interval]);
+        return view('share-and-talk.facilitator', [
+            'sessionId' => $sessionId, 
+            'professionalId' => $session->professional_id, 
+            'user' => $user, 
+            'interval' => $interval,
+            'sessionStatus' => $session->status
+        ]);
     }
 
     public function facilitatorVideo($sessionId) {
@@ -454,19 +456,16 @@ class ShareAndTalkController extends Controller
         }
     }
 
-    // Route for professional to activate the session (e.g., from WhatsApp link)
+    // Route for professional to access the session (e.g., from WhatsApp link)
     public function activateSession($sessionId) {
         $session = ChatSession::where('session_id', $sessionId)->first();
         if (!$session) {
             return response('Session not found', 404);
         }
+        
+        // Don't automatically activate - just redirect to facilitator interface
+        // The facilitator will manually activate the session when ready
         if ($session->status === 'waiting' || $session->status === 'pending') {
-            $session->status = 'active';
-            $session->start = now('Asia/Jakarta');
-            $session->end = now('Asia/Jakarta')->addMinutes(60); // 60 minutes for video
-            $session->pending_end = null;
-            $session->save();
-            
             // Redirect based on session type
             if ($session->type === 'chat') {
                 return redirect()->route('share-and-talk.facilitator', ['sessionId' => $sessionId]);
@@ -544,6 +543,26 @@ class ShareAndTalkController extends Controller
             'jitsi_room' => $session->jitsi_room,
             'user_display_name' => $user->name,
         ]);
+    }
+
+    // Manual activation endpoint for facilitators
+    public function manualActivateSession($sessionId) {
+        $session = ChatSession::where('session_id', $sessionId)->first();
+        if (!$session) {
+            return response()->json(['error' => 'Session not found'], 404);
+        }
+        
+        if ($session->status === 'waiting' || $session->status === 'pending') {
+            $session->status = 'active';
+            $session->start = now();
+            $session->end = now()->addMinutes(65); // 65 minutes for chat sessions
+            $session->pending_end = null;
+            $session->save();
+            
+            return response()->json(['success' => true, 'message' => 'Session activated']);
+        } else {
+            return response()->json(['error' => 'Session cannot be activated'], 400);
+        }
     }
 
     // First step: Validate chat session and redirect to chat session
