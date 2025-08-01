@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="{{ asset('css/global.css') }}">
   <link rel="stylesheet" href="{{ asset('css/share-and-talk/chat.css') }}">
 </head>
-<body>
+<body style="max-height: 100vh; overflow: hidden;">
   <div class="app">
     <!-- Sidebar -->
     <div class="sidebar">
@@ -35,6 +35,14 @@
         </div>
       </div>
 
+      <div id="activation-section" style="text-align: center; padding: 20px; background: #f8f9fa; margin: 10px 0; border-radius: 8px; display: {{ $sessionStatus === 'waiting' || $sessionStatus === 'pending' ? 'block' : 'none' }};">
+        <h3 style="margin: 0 0 15px 0; color: #333;">Sesi Menunggu Aktivasi</h3>
+        <p style="margin: 0 0 15px 0; color: #666;">Klik tombol di bawah untuk memulai sesi konsultasi</p>
+        <button id="activate-session-btn" style="padding: 12px 24px; background: #007bff; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 16px;">
+          🚀 Mulai Sesi
+        </button>
+      </div>
+
       <div class="chat-body" id="chat-body">
         <div style="height: 100%; width: 100%; display: flex; justify-content: center; align-items: center; color: #b9b9b9;">Waiting...</div>
       </div>
@@ -54,8 +62,12 @@
     const btn = document.getElementById('send-btn');
     const chatBody = document.getElementById('chat-body');
     const timerEl = document.getElementById('session-timer');
+    const activationSection = document.getElementById('activation-section');
+    const activateBtn = document.getElementById('activate-session-btn');
     const interval = {{ $interval }};
     let sessionStart = new Date();
+    let sessionStatus = '{{ $sessionStatus ?? "waiting" }}';
+    const sessionId = '{{ $sessionId }}';
 
     function updateTimer() {
       const now = new Date();
