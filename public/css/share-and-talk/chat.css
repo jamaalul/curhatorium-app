@@ -65,7 +65,7 @@ body {
     background-color: var(--surface);
     overflow: hidden;
     height: 100vh;
-    height: -webkit-fill-available;
+    position: relative;
 }
 
 .chat-header {
@@ -83,6 +83,7 @@ body {
 .chat-body {
     flex: 1;
     padding: 24px;
+    padding-bottom: 80px; /* Space for absolute positioned input */
     overflow-y: auto;
     display: flex;
     flex-direction: column;
@@ -116,9 +117,10 @@ body {
     border-top: 1px solid var(--border);
     padding: 16px 24px;
     background-color: var(--surface);
-    flex-shrink: 0; /* Prevent input from shrinking */
-    position: sticky;
+    position: absolute;
     bottom: 0;
+    left: 0;
+    right: 0;
     z-index: 10;
 }
 
@@ -167,50 +169,15 @@ body {
 
     .chat-input {
         padding: 12px 16px;
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        width: 100%;
-        z-index: 1000;
     }
 
     .chat-body {
         padding: 16px;
-        padding-bottom: 80px; /* Space for fixed input */
+        padding-bottom: 80px;
     }
     
     #activation-section {
         margin: 10px 16px;
         padding: 16px;
-    }
-    
-    /* Ensure proper mobile viewport */
-    html, body {
-        height: 100vh;
-        height: -webkit-fill-available;
-        overflow: hidden;
-    }
-    
-    .app {
-        height: 100vh;
-        height: -webkit-fill-available;
-    }
-    
-    .chat-area {
-        height: 100vh;
-        height: -webkit-fill-available;
-    }
-    
-    /* Handle mobile keyboard */
-    @media screen and (max-height: 500px) {
-        .chat-input {
-            position: relative;
-            bottom: auto;
-        }
-        
-        .chat-body {
-            padding-bottom: 16px;
-        }
     }
 }
