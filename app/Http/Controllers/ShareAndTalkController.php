@@ -68,8 +68,8 @@ class ShareAndTalkController extends Controller
             'pending_end' => now()->addMinutes(5), // 5 minutes pending timeout
         ]);
 
-        // Record ticket consumption for payment tracking
-        $this->recordShareTalkTicketConsumption($user, $session->id);
+        // Track ticket consumption for payment purposes
+        $this->trackShareTalkTicketConsumption($user, $session->id, $professional->type);
 
         $interval = now()->diffInMinutes($session->end);
 
@@ -334,9 +334,6 @@ class ShareAndTalkController extends Controller
                 'type' => 'video',
                 'pending_end' => now()->addMinutes(5), // 5 minutes pending timeout
             ]);
-
-            // Record ticket consumption for payment tracking
-            $this->recordShareTalkTicketConsumption($user, $session->id);
     
             $interval = now()->diffInMinutes($session->end);
     
@@ -474,59 +471,6 @@ class ShareAndTalkController extends Controller
         } else {
             \Log::warning("No ticket found to refund for user {$user->id}, ticket type: {$ticketType}");
         }
-    }
-
-    /**
-     * Record Share and Talk ticket consumption for payment tracking
-     */
-    private function recordShareTalkTicketConsumption($user, $chatSessionId)
-    {
-        // Determine if this is the user's first Share and Talk while having active Calm Starter membership
-        $isFirstShareTalkWithCalmStarter = $this->isFirstShareTalkWithCalmStarter($user);
-        
-        // Determine ticket source
-        $ticketSource = $isFirstShareTalkWithCalmStarter ? 'calm_starter' : 'paid';
-        
-        // Record the consumption
-        \App\Models\ShareTalkTicketConsumption::create([
-            'user_id' => $user->id,
-            'chat_session_id' => $chatSessionId,
-            'ticket_source' => $ticketSource,
-            'consumed_at' => now(),
-        ]);
-        
-        \Log::info("Share and Talk ticket consumption recorded for user {$user->id}, session {$chatSessionId}, source: {$ticketSource}");
-    }
-    
-    /**
-     * Check if this is the user's first Share and Talk while having active Calm Starter membership
-     */
-    private function isFirstShareTalkWithCalmStarter($user)
-    {
-        $now = now();
-        
-        // Find the user's current Calm Starter cycle
-        $currentCalmStarter = $user->userMemberships()
-            ->whereHas('membership', function($query) {
-                $query->where('name', 'Calm Starter');
-            })
-            ->where('started_at', '<=', $now)
-            ->where('expires_at', '>=', $now)
-            ->orderBy('started_at', 'desc')
-            ->first();
-            
-        if (!$currentCalmStarter) {
-            return false; // No active Calm Starter, so it's a paid ticket
-        }
-        
-        // Check if this is the user's first Share and Talk participation in this Calm Starter cycle
-        $hasPreviousShareTalkThisCycle = \App\Models\ShareTalkTicketConsumption::where('user_id', $user->id)
-            ->where('ticket_source', 'calm_starter')
-            ->where('consumed_at', '>=', $currentCalmStarter->started_at)
-            ->where('consumed_at', '<=', $currentCalmStarter->expires_at)
-            ->exists();
-        
-        return !$hasPreviousShareTalkThisCycle; // First Share and Talk in this Calm Starter cycle = true, subsequent = false
     }
 
     // Route for professional to access the session (e.g., from WhatsApp link)
@@ -693,6 +637,57 @@ class ShareAndTalkController extends Controller
             'session_id' => $sessionId, 
             'interval' => $interval,
         ]);
+    }
+
+    /**
+     * Track Share and Talk ticket consumption for payment purposes
+     */
+    private function trackShareTalkTicketConsumption($user, $chatSessionId, $professionalType)
+    {
+        // Determine if this is the user's first Share and Talk while having active Calm Starter membership
+        $isFirstShareTalkWithCalmStarter = $this->isFirstShareTalkWithCalmStarter($user);
+        
+        // Determine ticket source
+        $ticketSource = $isFirstShareTalkWithCalmStarter ? 'calm_starter' : 'paid';
+        
+        // Create the consumption record
+        \App\Models\ShareTalkTicketConsumption::create([
+            'user_id' => $user->id,
+            'chat_session_id' => $chatSessionId,
+            'ticket_source' => $ticketSource,
+            'consumed_at' => now(),
+        ]);
+    }
+    
+    /**
+     * Check if this is the user's first Share and Talk with Calm Starter membership
+     */
+    private function isFirstShareTalkWithCalmStarter($user)
+    {
+        $now = now();
+        
+        // Find the user's current Calm Starter cycle
+        $currentCalmStarter = $user->userMemberships()
+            ->whereHas('membership', function($query) {
+                $query->where('name', 'Calm Starter');
+            })
+            ->where('started_at', '<=', $now)
+            ->where('expires_at', '>=', $now)
+            ->orderBy('started_at', 'desc')
+            ->first();
+            
+        if (!$currentCalmStarter) {
+            return false; // No active Calm Starter, so it's a paid ticket
+        }
+        
+        // Check if this is the user's first Share and Talk participation in this Calm Starter cycle
+        $hasPreviousShareTalkThisCycle = \App\Models\ShareTalkTicketConsumption::where('user_id', $user->id)
+            ->where('ticket_source', 'calm_starter')
+            ->where('consumed_at', '>=', $currentCalmStarter->started_at)
+            ->where('consumed_at', '<=', $currentCalmStarter->expires_at)
+            ->exists();
+        
+        return !$hasPreviousShareTalkThisCycle; // First Share and Talk in this Calm Starter cycle = true, subsequent = false
     }
 
 

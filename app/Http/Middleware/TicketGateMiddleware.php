@@ -105,8 +105,7 @@ class TicketGateMiddleware
                     $this->trackSgdTicketConsumption($user, $consumedTicket);
                 }
                 
-                // Share and Talk ticket consumption is now handled in the controller
-                // when the session is created, not here in the middleware
+                // Note: Share and Talk ticket consumption is now tracked in the controller after session creation
                 
                 // Clean up any tickets that should be deleted
                 \App\Models\UserTicket::cleanupAfterConsumption();

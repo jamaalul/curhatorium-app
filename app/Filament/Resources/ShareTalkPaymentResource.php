@@ -3,7 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\ShareTalkPaymentResource\Pages;
-use App\Models\ChatSession;
+use App\Models\ShareTalkTicketConsumption;
 use App\Services\ShareTalkPaymentService;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Auth;
 
 class ShareTalkPaymentResource extends Resource
 {
-    protected static ?string $model = ChatSession::class;
+    protected static ?string $model = ShareTalkTicketConsumption::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-chat-bubble-left-right';
     
@@ -28,191 +28,43 @@ class ShareTalkPaymentResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->query(ShareTalkTicketConsumption::query()->with(['user', 'chatSession.professional']))
             ->columns([
-                Tables\Columns\TextColumn::make('session_id')
-                    ->searchable()
-                    ->sortable()
-                    ->label('Session ID')
-                    ->limit(20),
-                    
-                Tables\Columns\TextColumn::make('type')
-                    ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        'chat' => 'info',
-                        'video' => 'warning',
-                        default => 'gray',
-                    })
-                    ->formatStateUsing(fn (string $state): string => ucfirst($state))
+                Tables\Columns\TextColumn::make('id')
+                    ->label('ID')
                     ->sortable(),
                     
-                Tables\Columns\TextColumn::make('professional.name')
-                    ->label('Professional')
-                    ->sortable()
-                    ->searchable()
-                    ->placeholder('No professional assigned'),
-                    
-                Tables\Columns\TextColumn::make('professional.type')
-                    ->label('Professional Type')
+                Tables\Columns\TextColumn::make('ticket_source')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
-                        'psychiatrist' => 'danger',
-                        'partner' => 'success',
+                        'paid' => 'danger',
+                        'calm_starter' => 'success',
                         default => 'gray',
                     })
-                    ->formatStateUsing(fn (string $state): string => ucfirst($state))
+                    ->formatStateUsing(fn (string $state): string => ucfirst(str_replace('_', ' ', $state)))
                     ->sortable(),
                     
-                Tables\Columns\TextColumn::make('status')
-                    ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        'waiting' => 'warning',
-                        'active' => 'success',
-                        'completed' => 'info',
-                        'cancelled' => 'danger',
-                        default => 'gray',
-                    })
-                    ->sortable(),
-                    
-                Tables\Columns\TextColumn::make('created_at')
+                Tables\Columns\TextColumn::make('consumed_at')
                     ->dateTime()
                     ->sortable()
-                    ->label('Created'),
+                    ->label('Consumed At'),
                     
-                Tables\Columns\TextColumn::make('paid_tickets_consumed')
-                    ->label('Paid Tickets')
-                    ->getStateUsing(function (ChatSession $record): int {
-                        $paymentService = app(ShareTalkPaymentService::class);
-                        $paymentData = $paymentService->calculateProfessionalPayment($record->id);
-                        return $paymentData['payment_data']['paid_tickets_consumed'] ?? 0;
-                    })
+                Tables\Columns\TextColumn::make('user.name')
+                    ->label('User')
                     ->sortable()
-                    ->alignCenter(),
-                    
-                Tables\Columns\TextColumn::make('calm_starter_tickets_consumed')
-                    ->label('Calm Starter Tickets')
-                    ->getStateUsing(function (ChatSession $record): int {
-                        $paymentService = app(ShareTalkPaymentService::class);
-                        $paymentData = $paymentService->calculateProfessionalPayment($record->id);
-                        return $paymentData['payment_data']['calm_starter_tickets_consumed'] ?? 0;
-                    })
-                    ->sortable()
-                    ->alignCenter(),
-                    
-                Tables\Columns\TextColumn::make('total_tickets_consumed')
-                    ->label('Total Tickets')
-                    ->getStateUsing(function (ChatSession $record): int {
-                        $paymentService = app(ShareTalkPaymentService::class);
-                        $paymentData = $paymentService->calculateProfessionalPayment($record->id);
-                        return $paymentData['payment_data']['total_tickets_consumed'] ?? 0;
-                    })
-                    ->sortable()
-                    ->alignCenter(),
-                    
-                Tables\Columns\TextColumn::make('payment_amount')
-                    ->label('Payment Amount')
-                    ->getStateUsing(function (ChatSession $record): string {
-                        $paymentService = app(ShareTalkPaymentService::class);
-                        $paymentData = $paymentService->calculateProfessionalPayment($record->id);
-                        $amount = $paymentData['payment_data']['payment_amount'] ?? 0;
-                        return 'Rp ' . number_format($amount, 0, ',', '.');
-                    })
-                    ->sortable()
-                    ->alignCenter()
-                    ->color('success')
-                    ->weight('bold'),
+                    ->searchable(),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('type')
+                Tables\Filters\SelectFilter::make('ticket_source')
                     ->options([
-                        'chat' => 'Chat',
-                        'video' => 'Video',
+                        'paid' => 'Paid',
+                        'calm_starter' => 'Calm Starter',
                     ]),
-                    
-                Tables\Filters\SelectFilter::make('professional_type')
-                    ->options([
-                        'psychiatrist' => 'Psychiatrist',
-                        'partner' => 'Partner/Ranger',
-                    ])
-                    ->query(function (Builder $query, array $data): Builder {
-                        return $query->whereHas('professional', function ($q) use ($data) {
-                            $q->where('type', $data['value']);
-                        });
-                    }),
-                    
-                Tables\Filters\SelectFilter::make('status')
-                    ->options([
-                        'waiting' => 'Waiting',
-                        'active' => 'Active',
-                        'completed' => 'Completed',
-                        'cancelled' => 'Cancelled',
-                    ]),
-                    
-                Tables\Filters\Filter::make('has_payments')
-                    ->label('Has Payments')
-                    ->query(fn (Builder $query): Builder => $query->whereHas('shareTalkTicketConsumptions', function ($q) {
-                        $q->where('ticket_source', 'paid');
-                    }))
-                    ->indicateUsing(function (array $data): array {
-                        $indicators = [];
-                        if ($data['has_payments'] ?? false) {
-                            $indicators['has_payments'] = 'Has Paid Tickets';
-                        }
-                        return $indicators;
-                    }),
             ])
             ->actions([
-                Tables\Actions\Action::make('view_details')
-                    ->label('View Details')
-                    ->icon('heroicon-o-eye')
-                    ->url(fn (ChatSession $record): string => route('filament.admin.resources.share-talk-payments.view', $record))
-                    ->openUrlInNewTab(),
-                    
-                Tables\Actions\Action::make('export_payment_data')
-                    ->label('Export Payment Data')
-                    ->icon('heroicon-o-document-arrow-down')
-                    ->action(function (ChatSession $record) {
-                        $paymentService = app(ShareTalkPaymentService::class);
-                        $paymentData = $paymentService->calculateProfessionalPayment($record->id);
-                        $details = $paymentService->getSessionConsumptionDetails($record->id);
-                        
-                        return response()->json([
-                            'payment_data' => $paymentData,
-                            'consumption_details' => $details
-                        ]);
-                    })
-                    ->requiresConfirmation()
-                    ->modalHeading('Export Payment Data')
-                    ->modalDescription('This will export detailed payment and consumption data for this chat session.')
-                    ->modalSubmitActionLabel('Export'),
+                Tables\Actions\ViewAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkAction::make('export_selected')
-                    ->label('Export Selected')
-                    ->icon('heroicon-o-document-arrow-down')
-                    ->action(function ($records) {
-                        $paymentService = app(ShareTalkPaymentService::class);
-                        $exportData = [];
-                        
-                        foreach ($records as $record) {
-                            $paymentData = $paymentService->calculateProfessionalPayment($record->id);
-                            $exportData[] = [
-                                'session_id' => $record->session_id,
-                                'type' => $record->type,
-                                'professional_name' => $record->professional?->name ?? 'N/A',
-                                'professional_type' => $record->professional?->type ?? 'N/A',
-                                'paid_tickets' => $paymentData['payment_data']['paid_tickets_consumed'],
-                                'payment_amount' => $paymentData['payment_data']['payment_amount'],
-                            ];
-                        }
-                        
-                        return response()->json($exportData);
-                    })
-                    ->requiresConfirmation()
-                    ->modalHeading('Export Selected Payments')
-                    ->modalDescription('This will export payment data for all selected chat sessions.')
-                    ->modalSubmitActionLabel('Export'),
-            ])
-            ->defaultSort('created_at', 'desc');
+            ->defaultSort('consumed_at', 'desc');
     }
 
     public static function getRelations(): array
