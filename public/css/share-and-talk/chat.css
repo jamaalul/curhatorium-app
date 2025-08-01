@@ -220,3 +220,35 @@ body {
         height: calc(var(--vh, 1vh) * 100) !important;
     }
 }
+
+/* Chrome-specific mobile fix */
+@media screen and (max-width: 768px) {
+    /* Chrome mobile viewport fix */
+    @supports (-webkit-appearance: none) {
+        .chat-input {
+            position: fixed !important;
+            bottom: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            width: 100vw !important;
+            z-index: 9999 !important;
+            background-color: var(--surface) !important;
+            border-top: 1px solid var(--border) !important;
+            padding-bottom: env(safe-area-inset-bottom) !important;
+        }
+        
+        .chat-body {
+            padding-bottom: 140px !important;
+        }
+        
+        .chat-area {
+            height: 100vh !important;
+            height: calc(var(--vh, 1vh) * 100) !important;
+            overflow: hidden !important;
+        }
+        
+        .app {
+            height: calc(var(--vh, 1vh) * 100) !important;
+        }
+    }
+}

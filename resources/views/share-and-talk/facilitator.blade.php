@@ -64,9 +64,38 @@
       document.documentElement.style.setProperty('--vh', `${vh}px`);
     }
     
+    // Chrome mobile specific fix
+    function isChromeMobile() {
+      return /Chrome/.test(navigator.userAgent) && /Mobile/.test(navigator.userAgent);
+    }
+    
+    function fixChromeMobile() {
+      if (isChromeMobile()) {
+        const input = document.querySelector('.chat-input');
+        if (input) {
+          input.style.position = 'fixed';
+          input.style.bottom = '0';
+          input.style.left = '0';
+          input.style.right = '0';
+          input.style.width = '100vw';
+          input.style.zIndex = '9999';
+          input.style.paddingBottom = '20px';
+        }
+        
+        const chatBody = document.querySelector('.chat-body');
+        if (chatBody) {
+          chatBody.style.paddingBottom = '150px';
+        }
+      }
+    }
+    
     setViewportHeight();
     window.addEventListener('resize', setViewportHeight);
     window.addEventListener('orientationchange', setViewportHeight);
+    
+    // Apply Chrome fix
+    fixChromeMobile();
+    window.addEventListener('load', fixChromeMobile);
     
     const input = document.getElementById('chat-input-field');
     const btn = document.getElementById('send-btn');
