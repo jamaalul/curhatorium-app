@@ -79,9 +79,11 @@
             parsed = new Date(parts[0], parts[1]-1, parts[2], parts[3], parts[4], parts[5]).getTime();
           }
           createdAt = new Date(parsed);
+          console.log('Session created at:', createdAt);
         }
         return data.status;
-      } catch {
+      } catch (error) {
+        console.error('Error fetching session status:', error);
         return 'waiting';
       }
     }
@@ -107,6 +109,17 @@
         const mins = String(Math.floor(diff / 60000)).padStart(2, '0');
         const secs = String(Math.floor((diff % 60000) / 1000)).padStart(2, '0');
         timerEl.innerText = `Menunggu fasilitator: ${mins}:${secs}`;
+        
+        // Update waiting countdown display
+        const waitingCountdown = document.getElementById('waiting-countdown');
+        if (waitingCountdown) {
+          waitingCountdown.innerText = `${mins}:${secs}`;
+        }
+        
+        // Debug logging
+        if (diff < 60000) { // Log when less than 1 minute remaining
+          console.log('Waiting countdown:', `${mins}:${secs}`, 'Status:', sessionStatus);
+        }
       } else if (sessionStatus === 'active') {
         // Session period based on interval from backend
         end = new Date(startTime.getTime() + interval * 60 * 1000);
@@ -129,8 +142,17 @@
 
     async function setProfessionalOnline() {
       try {
-        await fetch(`/api/share-and-talk/professional-online/${selectedProfessional ? selectedProfessional.id : ''}`, { method: 'POST', headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content') } });
-      } catch {}
+        // Get professional ID from the session data
+        const professionalId = '{{ $professional["id"] }}';
+        if (professionalId) {
+          await fetch(`/api/share-and-talk/professional-online/${professionalId}`, { 
+            method: 'POST', 
+            headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content') } 
+          });
+        }
+      } catch (error) {
+        console.error('Error setting professional online:', error);
+      }
     }
 
     function stopWaitingCountdown() {
@@ -143,20 +165,29 @@
       // Call API to cancel session
       try {
         await fetch(`/api/share-and-talk/cancel-session/${sessionId}`, { method: 'POST', headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content') } });
-      } catch {}
+      } catch (error) {
+        console.error('Error cancelling session:', error);
+      }
       cancelledByTimeout = true;
       input.disabled = true;
       btn.disabled = true;
       timerEl.innerText = 'Sesi dibatalkan (fasilitator tidak merespons)';
       timerEl.style.color = 'red';
       stopWaitingCountdown();
-      warning.style.display = 'none';
+      
+      // Hide warning elements
+      const warning = document.getElementById('cancel-warning');
+      const waitingTimer = document.getElementById('waiting-timer');
+      if (warning) warning.style.display = 'none';
+      if (waitingTimer) waitingTimer.style.display = 'none';
+      
       document.getElementById('cancelled-redirect').style.display = '';
     }
 
     async function pollStatusAndControlUI() {
       sessionStatus = await fetchSessionStatus();
       const warning = document.getElementById('cancel-warning');
+      const waitingTimer = document.getElementById('waiting-timer');
       
       if (sessionStatus === 'waiting' || sessionStatus === 'pending') {
         input.disabled = true;
@@ -164,6 +195,7 @@
         timerEl.style.color = 'orange';
         if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
         warning.style.display = '';
+        waitingTimer.style.display = '';
         updateTimer();
         if (!timerInterval) {
           timerInterval = setInterval(updateTimer, 1000);
@@ -177,6 +209,7 @@
           timerInterval = setInterval(updateTimer, 1000);
         }
         warning.style.display = 'none';
+        waitingTimer.style.display = 'none';
         stopWaitingCountdown();
       } else if (sessionStatus === 'cancelled') {
         input.disabled = true;
@@ -185,11 +218,18 @@
         timerEl.style.color = 'red';
         if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
         warning.style.display = 'none';
+        waitingTimer.style.display = 'none';
         stopWaitingCountdown();
         document.getElementById('cancelled-redirect').style.display = '';
       }
     }
 
+    // Initial setup
+    console.log('Share and Talk Chat initialized');
+    console.log('Session ID:', sessionId);
+    console.log('Interval:', interval);
+    console.log('Fallback start time:', fallbackStart);
+    
     setInterval(pollStatusAndControlUI, 2000);
     pollStatusAndControlUI();
     updateTimer(); // Initial timer update

@@ -15,6 +15,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('sessions:cleanup-expired')->everyMinute();
         $schedule->command('tickets:cleanup-expired')->daily()->at('02:00');
         $schedule->command('sgd:mark-done')->everyFiveMinutes();
+        $schedule->command('share-and-talk:cancel-expired-sessions')->everyMinute();
     }
 
     protected function commands()

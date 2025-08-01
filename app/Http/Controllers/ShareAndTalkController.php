@@ -61,8 +61,8 @@ class ShareAndTalkController extends Controller
             'session_id' => $session_id,
             'user_id' => $user->id,
             'professional_id' => $professional->id,
-            'start' => now('Asia/Jakarta'),
-            'end' => now('Asia/Jakarta')->addMinutes(65), // 65 minutes
+            'start' => now(),
+            'end' => now()->addMinutes(65), // 65 minutes
             'status' => 'waiting', // Set initial status
         ]);
 
@@ -100,8 +100,8 @@ class ShareAndTalkController extends Controller
         // Only activate if session is still waiting or pending (not already active)
         if (in_array($session->status, ['waiting', 'pending'])) {
             $session->status = 'active';
-            $session->start = now('Asia/Jakarta');
-            $session->end = now('Asia/Jakarta')->addMinutes(65); // 65 minutes
+            $session->start = now();
+            $session->end = now()->addMinutes(65); // 65 minutes
             $session->pending_end = null; // Clear pending end
             $session->save();
         }
@@ -114,7 +114,7 @@ class ShareAndTalkController extends Controller
     public function facilitatorVideo($sessionId) {
         $session = ChatSession::where('session_id', $sessionId)->first();
     
-        $interval = now('Asia/Jakarta')->diffInMinutes($session->end);
+        $interval = now()->diffInMinutes($session->end);
 
         return view('share-and-talk.facilitator-video', [
             'sessionId' => $sessionId, 
@@ -190,7 +190,7 @@ class ShareAndTalkController extends Controller
         }
         return response()->json([
             'status' => $session->status,
-            'created_at' => $session->created_at,
+            'created_at' => $session->created_at->format('Y-m-d H:i:s'),
         ]);
     }
 
@@ -233,8 +233,8 @@ class ShareAndTalkController extends Controller
     {
         $expiredSessions = ChatSession::whereIn('status', ['waiting', 'pending'])
             ->where(function($query) {
-                $query->where('start', '<', now('Asia/Jakarta')->subMinutes(5))
-                      ->orWhere('pending_end', '<', now('Asia/Jakarta'));
+                $query->where('start', '<', now()->subMinutes(5))
+                      ->orWhere('pending_end', '<', now());
             })
             ->get();
             
@@ -309,14 +309,14 @@ class ShareAndTalkController extends Controller
                 'session_id' => $session_id,
                 'user_id' => $user->id,
                 'professional_id' => $professional->id,
-                'start' => now('Asia/Jakarta'),
-                'end' => now('Asia/Jakarta')->addMinutes(60), // 65 minutes
+                'start' => now(),
+                'end' => now()->addMinutes(60), // 65 minutes
                 'status' => 'pending', // Changed from 'waiting' to 'pending'
                 'type' => 'video',
-                'pending_end' => now('Asia/Jakarta')->addMinutes(5), // 5 minutes pending timeout
+                'pending_end' => now()->addMinutes(5), // 5 minutes pending timeout
             ]);
     
-            $interval = now('Asia/Jakarta')->diffInMinutes($session->end);
+            $interval = now()->diffInMinutes($session->end);
     
             // Generate a more unique Jitsi room name to avoid authentication issues
             $jitsiRoom = 'curhatorium_video_' . Str::random(16) . '_' . $session_id;
@@ -365,7 +365,7 @@ class ShareAndTalkController extends Controller
         try {
             $session = ChatSession::where('session_id', $sessionId)
                 ->where('user_id', Auth::id())
-                ->where('status', 'waiting')
+                ->whereIn('status', ['waiting', 'pending'])
                 ->firstOrFail();
 
             // Update session status to cancelled
@@ -399,7 +399,7 @@ class ShareAndTalkController extends Controller
 
             // Update session status to completed
             $session->status = 'completed';
-            $session->end = now('Asia/Jakarta');
+            $session->end = now();
             $session->save();
 
             // Award XP based on professional type
@@ -534,7 +534,7 @@ class ShareAndTalkController extends Controller
             return redirect()->route('share-and-talk')->with('error', 'Session data is invalid.');
         }
         
-        $interval = now('Asia/Jakarta')->diffInMinutes($session->end);
+        $interval = now()->diffInMinutes($session->end);
         
         return view('share-and-talk.video', [
             'professional' => $professional, 
@@ -593,7 +593,7 @@ class ShareAndTalkController extends Controller
             return redirect()->route('share-and-talk')->with('error', 'Session data is invalid.');
         }
         
-        $interval = now('Asia/Jakarta')->diffInMinutes($session->end);
+        $interval = now()->diffInMinutes($session->end);
         
         return view('share-and-talk.chat', [
             'professional' => $professional, 
