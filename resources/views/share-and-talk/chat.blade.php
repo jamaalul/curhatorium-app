@@ -8,8 +8,8 @@
   <link rel="stylesheet" href="{{ asset('css/global.css') }}">
   <link rel="stylesheet" href="{{ asset('css/share-and-talk/chat.css') }}">
 </head>
-<body>
-  <div class="app" data-session-end="{{ now()->addMinutes($interval)->toIso8601String() }}" data-session-id="{{ $session_id }}">
+<body style="height: 100vh; overflow: hidden; margin: 0; padding: 0;">
+  <div class="app" data-session-end="{{ now()->addMinutes($interval)->toIso8601String() }}" data-session-id="{{ $session_id }}" style="height: 100vh;">
     <!-- Sidebar -->
     <div class="sidebar">
       <h2>Psikolog</h2>

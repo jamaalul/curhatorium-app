@@ -58,6 +58,8 @@ body {
     display: flex;
     flex-direction: column;
     background-color: var(--surface);
+    height: 100vh;
+    overflow: hidden;
 }
 
 .chat-header {
@@ -78,6 +80,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 16px;
+    min-height: 0; /* Important for flex child */
 }
 
 .message {
@@ -106,6 +109,7 @@ body {
     border-top: 1px solid var(--border);
     padding: 16px 24px;
     background-color: var(--surface);
+    flex-shrink: 0; /* Prevent input from shrinking */
 }
 
 .chat-input input {
@@ -133,6 +137,17 @@ body {
     background-color: var(--primary-dark);
 }
 
+/* Activation section styles */
+#activation-section {
+    flex-shrink: 0; /* Prevent activation section from shrinking */
+    margin: 10px 24px;
+}
+
+/* Ensure chat header doesn't shrink */
+.chat-header {
+    flex-shrink: 0;
+}
+
 @media (max-width: 768px) {
     .sidebar {
         display: none;
@@ -148,5 +163,17 @@ body {
 
     .chat-body {
         padding: 16px;
+    }
+    
+    #activation-section {
+        margin: 10px 16px;
+    }
+    
+    .app {
+        height: 100vh !important;
+    }
+    
+    .chat-area {
+        height: 100vh !important;
     }
 }
