@@ -127,7 +127,7 @@ class ShareAndTalkController extends Controller
 
     public function userSend(Request $request)
     {
-        // try {
+        try {
             $validated = $request->validate([
                 'session_id' => 'required|string',
                 'message' => 'required|string',
@@ -145,11 +145,18 @@ class ShareAndTalkController extends Controller
                 'status' => 'success',
                 'data' => $validated,
             ]);
+        } catch (\Exception $e) {
+            \Log::error('User send message error: ' . $e->getMessage());
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to send message'
+            ], 500);
+        }
     }
 
     public function facilitatorSend(Request $request)
     {
-        // try {
+        try {
             $validated = $request->validate([
                 'session_id' => 'required|string',
                 'message' => 'required|string',
@@ -177,6 +184,13 @@ class ShareAndTalkController extends Controller
                 'status' => 'success',
                 'data' => $validated,
             ]);
+        } catch (\Exception $e) {
+            \Log::error('Facilitator send message error: ' . $e->getMessage());
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to send message'
+            ], 500);
+        }
     }
 
     public function getMessages($sessionId) {

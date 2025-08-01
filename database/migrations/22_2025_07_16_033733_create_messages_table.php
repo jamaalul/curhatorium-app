@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('sender_id')->nullable();
             $table->string('sender_type')->nullable();
-            $table->integer('session_id');
+            $table->string('session_id'); // Changed from integer to string for UUID
             $table->text('message')->nullable();
             $table->timestamps();
         });
