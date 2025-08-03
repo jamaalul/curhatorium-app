@@ -4,123 +4,58 @@ namespace App\Services;
 
 use App\Models\User;
 use App\Models\DailyXpLog;
+use App\Events\XpAwarded;
+use App\Repositories\XpRepository;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class XpService
 {
-    // XP Constants based on the image
-    const TOTAL_XP_FOR_PSYCHOLOGIST = 10000; // Monthly target
-    const MAX_DAILY_XP_PAID_MEMBERSHIP = 333;
-    const MAX_DAILY_XP_CALM_STARTER = 222;
-
-    // XP Values for activities
-    const XP_VALUES = [
-        'mental_test' => [
-            'free' => 10,
-            'subscription' => 10
-        ],
-        'share_talk_ranger' => [
-            'free' => 5,
-            'subscription' => 25
-        ],
-        'share_talk_psychiatrist' => [
-            'free' => 0,
-            'subscription' => 80
-        ],
-        'mission_easy' => [
-            'free' => 6,
-            'subscription' => 6
-        ],
-        'mission_medium' => [
-            'free' => 8,
-            'subscription' => 8
-        ],
-        'mission_hard' => [
-            'free' => 16,
-            'subscription' => 16
-        ],
-        'mentai_chatbot' => [
-            'free' => 10,
-            'subscription' => 10
-        ],
-        'deep_cards' => [
-            'free' => 5,
-            'subscription' => 5
-        ],
-        'support_group' => [
-            'free' => 27,
-            'subscription' => 28
-        ],
-        'mood_tracker' => [
-            'free' => 15,
-            'subscription' => 25
-        ]
-    ];
+    public function __construct(
+        private XpRepository $xpRepository
+    ) {}
 
     /**
      * Award XP to a user for a specific activity
      */
     public function awardXp(User $user, string $activity, int $quantity = 1): array
     {
-        // Check if user has already reached daily limit
-        $dailyXpGained = $this->getDailyXpGained($user);
-        $maxDailyXp = $this->getMaxDailyXp($user);
-        
-        if ($dailyXpGained >= $maxDailyXp) {
-            return [
-                'success' => false,
-                'message' => 'Daily XP limit reached',
-                'xp_awarded' => 0,
-                'daily_xp_gained' => $dailyXpGained,
-                'max_daily_xp' => $maxDailyXp
-            ];
+        try {
+            // Validate activity
+            if (!$this->isValidActivity($activity)) {
+                return $this->createErrorResponse('Invalid activity', 0);
+            }
+
+            // Check daily limit
+            $dailyLimitCheck = $this->checkDailyLimit($user, $activity, $quantity);
+            if (!$dailyLimitCheck['can_award']) {
+                return $dailyLimitCheck;
+            }
+
+            $xpToAward = $dailyLimitCheck['xp_to_award'];
+
+            // Award XP in a transaction
+            DB::transaction(function () use ($user, $xpToAward, $activity) {
+                $this->updateUserXp($user, $xpToAward);
+                $this->logDailyXp($user, $xpToAward, $activity);
+            });
+
+            // Dispatch event for XP award
+            $progress = $this->getXpProgress($user);
+            event(new XpAwarded($user, $xpToAward, $activity, $progress));
+
+            return $this->createSuccessResponse($user, $xpToAward);
+
+        } catch (\Exception $e) {
+            Log::error('XP award failed', [
+                'user_id' => $user->id,
+                'activity' => $activity,
+                'error' => $e->getMessage()
+            ]);
+
+            return $this->createErrorResponse('Failed to award XP', 0);
         }
-
-        // Get XP value for the activity
-        $xpValue = $this->getXpValue($user, $activity);
-        if ($xpValue === null) {
-            return [
-                'success' => false,
-                'message' => 'Invalid activity',
-                'xp_awarded' => 0
-            ];
-        }
-
-        $totalXpToAward = $xpValue * $quantity;
-        
-        // Check if awarding this XP would exceed daily limit
-        if ($dailyXpGained + $totalXpToAward > $maxDailyXp) {
-            $totalXpToAward = $maxDailyXp - $dailyXpGained;
-        }
-
-        if ($totalXpToAward <= 0) {
-            return [
-                'success' => false,
-                'message' => 'Daily XP limit reached',
-                'xp_awarded' => 0,
-                'daily_xp_gained' => $dailyXpGained,
-                'max_daily_xp' => $maxDailyXp
-            ];
-        }
-
-        // Award XP in a transaction
-        DB::transaction(function () use ($user, $totalXpToAward, $activity) {
-            // Update user's total XP
-            $user->increment('total_xp', $totalXpToAward);
-            
-            // Log daily XP
-            $this->logDailyXp($user, $totalXpToAward, $activity);
-        });
-
-        return [
-            'success' => true,
-            'message' => 'XP awarded successfully',
-            'xp_awarded' => $totalXpToAward,
-            'new_total_xp' => $user->fresh()->total_xp,
-            'daily_xp_gained' => $this->getDailyXpGained($user),
-            'max_daily_xp' => $maxDailyXp
-        ];
     }
 
     /**
@@ -128,12 +63,12 @@ class XpService
      */
     public function getXpValue(User $user, string $activity): ?int
     {
-        if (!isset(self::XP_VALUES[$activity])) {
+        if (!$this->isValidActivity($activity)) {
             return null;
         }
 
         $membershipType = $this->getUserMembershipType($user);
-        return self::XP_VALUES[$activity][$membershipType];
+        return config("xp.activities.{$activity}.{$membershipType}");
     }
 
     /**
@@ -141,10 +76,9 @@ class XpService
      */
     public function getUserMembershipType(User $user): string
     {
-        // Check if user has Growth Path, Blossom, or Inner Peace membership
         $hasPremiumMembership = $user->activeMemberships()
             ->whereHas('membership', function($query) {
-                $query->whereIn('name', ['Growth Path', 'Blossom', 'Inner Peace']);
+                $query->whereIn('name', config('xp.subscription_memberships'));
             })
             ->exists();
 
@@ -157,9 +91,7 @@ class XpService
     public function getMaxDailyXp(User $user): int
     {
         $membershipType = $this->getUserMembershipType($user);
-        return $membershipType === 'subscription' 
-            ? self::MAX_DAILY_XP_PAID_MEMBERSHIP 
-            : self::MAX_DAILY_XP_CALM_STARTER;
+        return config("xp.daily_limits.{$membershipType}");
     }
 
     /**
@@ -167,22 +99,7 @@ class XpService
      */
     public function getDailyXpGained(User $user): int
     {
-        return DailyXpLog::where('user_id', $user->id)
-            ->whereDate('created_at', Carbon::today())
-            ->sum('xp_gained');
-    }
-
-    /**
-     * Log daily XP gain
-     */
-    private function logDailyXp(User $user, int $xpGained, string $activity): void
-    {
-        DailyXpLog::create([
-            'user_id' => $user->id,
-            'xp_gained' => $xpGained,
-            'activity' => $activity,
-            'created_at' => now()
-        ]);
+        return $this->xpRepository->getDailyXpGained($user);
     }
 
     /**
@@ -191,13 +108,14 @@ class XpService
     public function getXpProgress(User $user): array
     {
         $totalXp = $user->total_xp;
-        $progress = ($totalXp / self::TOTAL_XP_FOR_PSYCHOLOGIST) * 100;
+        $targetXp = config('xp.targets.psychologist_access');
+        $progress = ($totalXp / $targetXp) * 100;
         
         return [
             'current_xp' => $totalXp,
-            'target_xp' => self::TOTAL_XP_FOR_PSYCHOLOGIST,
+            'target_xp' => $targetXp,
             'progress_percentage' => min(100, $progress),
-            'xp_remaining' => max(0, self::TOTAL_XP_FOR_PSYCHOLOGIST - $totalXp)
+            'xp_remaining' => max(0, $targetXp - $totalXp)
         ];
     }
 
@@ -206,7 +124,7 @@ class XpService
      */
     public function canAccessPsychologist(User $user): bool
     {
-        return $user->total_xp >= self::TOTAL_XP_FOR_PSYCHOLOGIST;
+        return $user->total_xp >= config('xp.targets.psychologist_access');
     }
 
     /**
@@ -217,9 +135,10 @@ class XpService
         $membershipType = $this->getUserMembershipType($user);
         $breakdown = [];
 
-        foreach (self::XP_VALUES as $activity => $values) {
+        foreach (config('xp.activities') as $activity => $config) {
             $breakdown[$activity] = [
-                'xp_value' => $values[$membershipType],
+                'xp_value' => $config[$membershipType],
+                'description' => $config['description'],
                 'membership_type' => $membershipType
             ];
         }
@@ -241,5 +160,123 @@ class XpService
             'remaining_daily_xp' => max(0, $maxDailyXp - $dailyXpGained),
             'daily_progress_percentage' => ($dailyXpGained / $maxDailyXp) * 100
         ];
+    }
+
+    /**
+     * Get XP history for a user
+     */
+    public function getXpHistory(User $user, int $days = 30): array
+    {
+        $logs = $this->xpRepository->getXpHistory($user, $days);
+        
+        return $logs->groupBy(function ($log) {
+            return $log->created_at->format('Y-m-d');
+        })
+        ->map(function ($dayLogs) {
+            return [
+                'total_xp' => $dayLogs->sum('xp_gained'),
+                'activities' => $dayLogs->groupBy('activity')
+                    ->map(function ($activityLogs) {
+                        return [
+                            'count' => $activityLogs->count(),
+                            'total_xp' => $activityLogs->sum('xp_gained')
+                        ];
+                    })
+            ];
+        })
+        ->toArray();
+    }
+
+    /**
+     * Check if activity is valid
+     */
+    private function isValidActivity(string $activity): bool
+    {
+        return config("xp.activities.{$activity}") !== null;
+    }
+
+    /**
+     * Check daily limit and calculate XP to award
+     */
+    private function checkDailyLimit(User $user, string $activity, int $quantity): array
+    {
+        $dailyXpGained = $this->getDailyXpGained($user);
+        $maxDailyXp = $this->getMaxDailyXp($user);
+        
+        if ($dailyXpGained >= $maxDailyXp) {
+            return $this->createErrorResponse('Daily XP limit reached', 0, $dailyXpGained, $maxDailyXp);
+        }
+
+        $xpValue = $this->getXpValue($user, $activity);
+        $totalXpToAward = $xpValue * $quantity;
+        
+        // Check if awarding this XP would exceed daily limit
+        if ($dailyXpGained + $totalXpToAward > $maxDailyXp) {
+            $totalXpToAward = $maxDailyXp - $dailyXpGained;
+        }
+
+        if ($totalXpToAward <= 0) {
+            return $this->createErrorResponse('Daily XP limit reached', 0, $dailyXpGained, $maxDailyXp);
+        }
+
+        return [
+            'can_award' => true,
+            'xp_to_award' => $totalXpToAward
+        ];
+    }
+
+    /**
+     * Update user's total XP
+     */
+    private function updateUserXp(User $user, int $xpGained): void
+    {
+        $user->increment('total_xp', $xpGained);
+    }
+
+    /**
+     * Log daily XP gain
+     */
+    private function logDailyXp(User $user, int $xpGained, string $activity): void
+    {
+        DailyXpLog::create([
+            'user_id' => $user->id,
+            'xp_gained' => $xpGained,
+            'activity' => $activity,
+            'created_at' => now()
+        ]);
+    }
+
+    /**
+     * Create success response
+     */
+    private function createSuccessResponse(User $user, int $xpAwarded): array
+    {
+        return [
+            'success' => true,
+            'message' => 'XP awarded successfully',
+            'xp_awarded' => $xpAwarded,
+            'new_total_xp' => $user->fresh()->total_xp,
+            'daily_xp_gained' => $this->getDailyXpGained($user),
+            'max_daily_xp' => $this->getMaxDailyXp($user)
+        ];
+    }
+
+    /**
+     * Create error response
+     */
+    private function createErrorResponse(string $message, int $xpAwarded, int $dailyXpGained = 0, int $maxDailyXp = 0): array
+    {
+        $response = [
+            'success' => false,
+            'message' => $message,
+            'xp_awarded' => $xpAwarded
+        ];
+
+        if ($dailyXpGained > 0 || $maxDailyXp > 0) {
+            $response['daily_xp_gained'] = $dailyXpGained;
+            $response['max_daily_xp'] = $maxDailyXp;
+        }
+
+        return $response;
     }
 } 

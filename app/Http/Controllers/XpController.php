@@ -5,63 +5,83 @@ namespace App\Http\Controllers;
 use App\Services\XpService;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 class XpController extends Controller
 {
-    protected $xpService;
-
-    public function __construct(XpService $xpService)
-    {
-        $this->xpService = $xpService;
-    }
+    public function __construct(
+        private XpService $xpService
+    ) {}
 
     /**
      * Award XP to the authenticated user
      */
     public function awardXp(Request $request): JsonResponse
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'activity' => 'required|string',
-            'quantity' => 'integer|min:1'
+            'quantity' => 'integer|min:1|max:10'
         ]);
 
-        $user = auth()->user();
-        $result = $user->awardXp($request->activity, $request->quantity ?? 1);
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 422);
+        }
 
-        return response()->json($result);
+        $user = Auth::user();
+        $result = $this->xpService->awardXp(
+            $user, 
+            $request->activity, 
+            $request->quantity ?? 1
+        );
+
+        return response()->json($result, $result['success'] ? 200 : 400);
     }
 
     /**
-     * Get user's XP progress
+     * Get XP progress for the authenticated user
      */
     public function getXpProgress(): JsonResponse
     {
-        $user = auth()->user();
-        $progress = $user->getXpProgress();
+        $user = Auth::user();
+        $progress = $this->xpService->getXpProgress($user);
 
-        return response()->json($progress);
+        return response()->json([
+            'success' => true,
+            'data' => $progress
+        ]);
     }
 
     /**
-     * Get daily XP summary
+     * Get daily XP summary for the authenticated user
      */
     public function getDailyXpSummary(): JsonResponse
     {
-        $user = auth()->user();
-        $summary = $user->getDailyXpSummary();
+        $user = Auth::user();
+        $summary = $this->xpService->getDailyXpSummary($user);
 
-        return response()->json($summary);
+        return response()->json([
+            'success' => true,
+            'data' => $summary
+        ]);
     }
 
     /**
-     * Get XP breakdown for all activities
+     * Get XP breakdown for the authenticated user
      */
     public function getXpBreakdown(): JsonResponse
     {
-        $user = auth()->user();
-        $breakdown = $user->getXpBreakdown();
+        $user = Auth::user();
+        $breakdown = $this->xpService->getXpBreakdown($user);
 
-        return response()->json($breakdown);
+        return response()->json([
+            'success' => true,
+            'data' => $breakdown
+        ]);
     }
 
     /**
@@ -69,27 +89,42 @@ class XpController extends Controller
      */
     public function canAccessPsychologist(): JsonResponse
     {
-        $user = auth()->user();
-        $canAccess = $user->canAccessPsychologist();
+        $user = Auth::user();
+        $canAccess = $this->xpService->canAccessPsychologist($user);
 
         return response()->json([
-            'can_access' => $canAccess,
-            'total_xp' => $user->total_xp,
-            'required_xp' => XpService::TOTAL_XP_FOR_PSYCHOLOGIST
+            'success' => true,
+            'data' => [
+                'can_access' => $canAccess,
+                'current_xp' => $user->total_xp,
+                'required_xp' => config('xp.targets.psychologist_access')
+            ]
         ]);
     }
 
     /**
-     * Get user's XP history
+     * Get XP history for the authenticated user
      */
-    public function getXpHistory(): JsonResponse
+    public function getXpHistory(Request $request): JsonResponse
     {
-        $user = auth()->user();
-        $history = $user->dailyXpLogs()
-            ->orderBy('created_at', 'desc')
-            ->limit(50)
-            ->get();
+        $validator = Validator::make($request->all(), [
+            'days' => 'integer|min:1|max:365'
+        ]);
 
-        return response()->json($history);
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $user = Auth::user();
+        $history = $this->xpService->getXpHistory($user, $request->days ?? 30);
+
+        return response()->json([
+            'success' => true,
+            'data' => $history
+        ]);
     }
 } 

@@ -3,15 +3,22 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
+use App\Services\ShareAndTalkService;
+use App\Services\TicketService;
+use App\Http\Requests\ChatMessageRequest;
 use App\Models\Professional;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Str;
 use App\Models\ChatSession;
 use App\Models\Message;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+
 class ShareAndTalkController extends Controller
 {
+    public function __construct(
+        private ShareAndTalkService $shareAndTalkService,
+        private TicketService $ticketService
+    ) {}
     public function index() {
         return view('share-and-talk.index');
     }
@@ -19,73 +26,21 @@ class ShareAndTalkController extends Controller
     public function getProfessionals(Request $request)
     {
         $type = $request->query('type');
-        $query = Professional::query();
-        if ($type) {
-            $query->where('type', $type);
-        }
-        $professionals = $query->get()->map(function ($professional) {
-            return [
-                'id' => $professional->id,
-                'name' => $professional->name,
-                'title' => $professional->title,
-                'avatar' => $professional->avatar,
-                'specialties' => $professional->specialties,
-                'type' => $professional->type,
-                'rating' => $professional->rating,
-                'status' => $professional->getEffectiveAvailability(),
-                'statusText' => $professional->getEffectiveAvailabilityText(),
-            ];
-        });
+        $professionals = $this->shareAndTalkService->getProfessionals($type);
+        
         return response()->json($professionals);
     }
 
     public function chatConsultation($professionalId) {
-        $professional = Professional::findOrFail($professionalId);
-        $user = Auth::user();
-        
-        // Check if user already has an active session with this professional
-        $existingSession = ChatSession::where('user_id', $user->id)
-            ->where('professional_id', $professional->id)
-            ->whereIn('status', ['waiting', 'pending', 'active'])
-            ->first();
+        try {
+            $user = Auth::user();
+            $session = $this->shareAndTalkService->createChatSession($professionalId, $user);
             
-        if ($existingSession) {
-            // Redirect to existing session instead of creating a new one
-            return redirect()->route('share-and-talk.start-chat-session', ['sessionId' => $existingSession->session_id]);
+            return redirect()->route('share-and-talk.start-chat-session', ['sessionId' => $session->session_id]);
+        } catch (\Exception $e) {
+            Log::error('Chat consultation error: ' . $e->getMessage());
+            return redirect()->route('share-and-talk')->with('error', 'An error occurred while creating the chat consultation. Please try again.');
         }
-        
-        $session_id = Str::uuid();
-        
-
-        $session = ChatSession::create([
-            'session_id' => $session_id,
-            'user_id' => $user->id,
-            'professional_id' => $professional->id,
-            'start' => now(),
-            'end' => now()->addMinutes(65), // 65 minutes
-            'status' => 'waiting', // Set initial status
-            'type' => 'chat', // Explicitly set type
-            'pending_end' => now()->addMinutes(5), // 5 minutes pending timeout
-        ]);
-
-        // Track ticket consumption for payment purposes
-        $this->trackShareTalkTicketConsumption($user, $session->id, $professional->type);
-
-        $interval = now()->diffInMinutes($session->end);
-
-        $response = Http::withHeaders([
-            'Authorization' => env('FONNTE_TOKEN'),
-        ])->post('https://api.fonnte.com/send', [
-            'target' => $professional->whatsapp_number,
-            'message' => 
-                "Kamu mendapat pesanan konsultasi baru.\n" .
-                "Akses URL berikut sebelum " . $session->start->addMinutes(5)->format('H:i') . " agar pesanannya tidak dibatalkan.\n\n" .
-                "https://curhatorium.com/share-and-talk/activate-session/" . $session_id,
-        ]);
-
-        
-
-        return redirect()->route('share-and-talk.start-chat-session', ['sessionId' => $session_id]);
     }
 
     public function facilitatorChat($sessionId) {
@@ -128,28 +83,23 @@ class ShareAndTalkController extends Controller
         ]);
     }
 
-    public function userSend(Request $request)
+    public function userSend(ChatMessageRequest $request)
     {
         try {
-            $validated = $request->validate([
-                'session_id' => 'required|string',
-                'message' => 'required|string',
-            ]);
-    
-            Message::create([
-                'sender_id' => Auth::user()->id,
-                'sender_type' => 'user',
-                'session_id' => $validated['session_id'],
-                'message' => $validated['message'],
-            ]);
-    
-            // Process the message here
+            $user = Auth::user();
+            $message = $this->shareAndTalkService->sendMessage(
+                $request->session_id,
+                $request->message,
+                'user',
+                $user->id
+            );
+
             return response()->json([
                 'status' => 'success',
-                'data' => $validated,
+                'data' => $message,
             ]);
         } catch (\Exception $e) {
-            \Log::error('User send message error: ' . $e->getMessage());
+            Log::error('User send message error: ' . $e->getMessage());
             return response()->json([
                 'status' => 'error',
                 'message' => 'Failed to send message'
@@ -157,16 +107,10 @@ class ShareAndTalkController extends Controller
         }
     }
 
-    public function facilitatorSend(Request $request)
+    public function facilitatorSend(ChatMessageRequest $request)
     {
         try {
-            $validated = $request->validate([
-                'session_id' => 'required|string',
-                'message' => 'required|string',
-            ]);
-    
-            // Get the chat session to find the professional_id
-            $session = ChatSession::where('session_id', $validated['session_id'])->first();
+            $session = ChatSession::where('session_id', $request->session_id)->first();
             
             if (!$session) {
                 return response()->json([
@@ -174,21 +118,20 @@ class ShareAndTalkController extends Controller
                     'message' => 'Session not found'
                 ], 404);
             }
-    
-            Message::create([
-                'sender_id' => $session->professional_id,
-                'sender_type' => 'professional',
-                'session_id' => $validated['session_id'],
-                'message' => $validated['message'],
-            ]);
-    
-            // Process the message here
+
+            $message = $this->shareAndTalkService->sendMessage(
+                $request->session_id,
+                $request->message,
+                'professional',
+                $session->professional_id
+            );
+
             return response()->json([
                 'status' => 'success',
-                'data' => $validated,
+                'data' => $message,
             ]);
         } catch (\Exception $e) {
-            \Log::error('Facilitator send message error: ' . $e->getMessage());
+            Log::error('Facilitator send message error: ' . $e->getMessage());
             return response()->json([
                 'status' => 'error',
                 'message' => 'Failed to send message'
@@ -197,203 +140,77 @@ class ShareAndTalkController extends Controller
     }
 
     public function getMessages($sessionId) {
-        $messages = Message::where('session_id', $sessionId)->orderBy('created_at', 'asc')->get();
+        $messages = $this->shareAndTalkService->getSessionMessages($sessionId);
         return response()->json($messages);
     }
 
     // API endpoint to get session status
     public function getSessionStatus($sessionId) {
-        $session = ChatSession::where('session_id', $sessionId)->first();
-        if (!$session) {
+        $status = $this->shareAndTalkService->getSessionStatus($sessionId);
+        
+        if (!$status) {
             return response()->json(['status' => 'not_found'], 404);
         }
-        return response()->json([
-            'status' => $session->status,
-            'created_at' => $session->created_at->format('Y-m-d H:i:s'),
-        ]);
+        
+        return response()->json($status);
     }
 
     // API endpoint to cancel a session by sessionId (for frontend timeout)
     public function cancelSessionByUser($sessionId) {
-        $session = ChatSession::where('session_id', $sessionId)->first();
-        if (!$session || !in_array($session->status, ['waiting', 'pending'])) {
+        $user = Auth::user();
+        $success = $this->shareAndTalkService->cancelSessionByUser($sessionId, $user);
+        
+        if (!$success) {
             return response()->json(['status' => 'not_found_or_not_cancellable'], 404);
         }
-        $session->status = 'cancelled';
-        $session->save();
-        // Return ticket to user based on session type
-        $user = $session->user;
         
-        if ($session->type === 'video') {
-            // Video session - refund video ticket
-            $ticketType = 'share_talk_psy_video';
-        } else {
-            // Chat session - determine ticket type based on professional type
-            $ticketType = $session->professional->type === 'psychiatrist' ? 'share_talk_psy_chat' : 'share_talk_ranger_chat';
-        }
-        
-        $ticket = $user->userTickets()->where('ticket_type', $ticketType)->where(function($q) {
-            $q->whereNull('limit_type')->orWhere('limit_type', '!=', 'unlimited');
-        })->orderByDesc('expires_at')->first();
-        if ($ticket && $ticket->remaining_value !== null) {
-            $ticket->remaining_value += 1;
-            $ticket->save();
-        }
-        // Set professional back to online
-        $professional = $session->professional;
-        $professional->availability = 'online';
-        $professional->availabilityText = 'Tersedia';
-        $professional->save();
         return response()->json(['status' => 'cancelled']);
     }
 
     // Cancel sessions that are still 'waiting' or 'pending' after timeout and return user's ticket
     public function cancelExpiredWaitingSessions()
     {
-        $expiredSessions = ChatSession::whereIn('status', ['waiting', 'pending'])
-            ->where(function($query) {
-                $query->where('start', '<', now()->subMinutes(5))
-                      ->orWhere('pending_end', '<', now());
-            })
-            ->get();
-            
-        foreach ($expiredSessions as $session) {
-            $session->status = 'cancelled';
-            $session->save();
-            
-            // Return ticket to user based on session type
-            $user = $session->user;
-            
-            if ($session->type === 'video') {
-                // Video session - refund video ticket
-                $ticketType = 'share_talk_psy_video';
-            } else {
-                // Chat session - determine ticket type based on professional type
-                $ticketType = $session->professional->type === 'psychiatrist' ? 'share_talk_psy_chat' : 'share_talk_ranger_chat';
-            }
-            
-            $ticket = $user->userTickets()->where('ticket_type', $ticketType)->where(function($q) {
-                $q->whereNull('limit_type')->orWhere('limit_type', '!=', 'unlimited');
-            })->orderByDesc('expires_at')->first();
-            if ($ticket && $ticket->remaining_value !== null) {
-                $ticket->remaining_value += 1;
-                $ticket->save();
-            }
-        }
+        $cancelledCount = $this->shareAndTalkService->cancelExpiredSessions();
+        
+        Log::info("Cancelled {$cancelledCount} expired sessions");
     }
 
     // API endpoint to set professional online (after session ends)
     public function setProfessionalOnline($professionalId) {
-        $professional = Professional::find($professionalId);
-        if ($professional) {
-            $professional->availability = 'online';
-            $professional->availabilityText = 'Tersedia';
-            $professional->save();
-            return response()->json(['status' => 'online']);
+        $success = $this->shareAndTalkService->setProfessionalOnline($professionalId);
+        
+        if (!$success) {
+            return response()->json(['status' => 'not_found'], 404);
         }
-        return response()->json(['status' => 'not_found'], 404);
+        
+        return response()->json(['status' => 'online']);
     }
 
     public function videoConsultation($professionalId) {
         try {
-            $professional = Professional::findOrFail($professionalId);
             $user = Auth::user();
+            $session = $this->shareAndTalkService->createVideoSession($professionalId, $user);
             
-            // Validate that the professional is a psychiatrist
-            if ($professional->type !== 'psychiatrist') {
-                return redirect()->route('share-and-talk')->with('error', 'Video consultations are only available with psychiatrists.');
-            }
-            
-            // Check if professional is available
-            if ($professional->getEffectiveAvailability() !== 'online') {
-                return redirect()->route('share-and-talk')->with('error', 'This professional is currently not available for video consultations.');
-            }
-            
-            // Check if user already has an active video session with this professional
-            $existingSession = ChatSession::where('user_id', $user->id)
-                ->where('professional_id', $professional->id)
-                ->where('type', 'video')
-                ->whereIn('status', ['waiting', 'pending', 'active'])
-                ->first();
-                
-            if ($existingSession) {
-                // Redirect to existing session instead of creating a new one
-                return redirect()->route('share-and-talk.start-video-session', ['sessionId' => $existingSession->session_id]);
-            }
-            
-            $session_id = Str::uuid();
-            
-            // Create video session with pending status
-            $session = ChatSession::create([
-                'session_id' => $session_id,
-                'user_id' => $user->id,
-                'professional_id' => $professional->id,
-                'start' => now(),
-                'end' => now()->addMinutes(60), // 65 minutes
-                'status' => 'pending', // Changed from 'waiting' to 'pending'
-                'type' => 'video',
-                'pending_end' => now()->addMinutes(5), // 5 minutes pending timeout
-            ]);
-    
-            $interval = now()->diffInMinutes($session->end);
-    
-            // Generate a more unique Jitsi room name to avoid authentication issues
-            $jitsiRoom = 'curhatorium_video_' . Str::random(16) . '_' . $session_id;
-            
-            // Store the room name in the session for the facilitator to use
-            $session->update(['jitsi_room' => $jitsiRoom]);
-    
-            // Send WhatsApp notification to professional
-            try {
-                $response = Http::withHeaders([
-                    'Authorization' => env('FONNTE_TOKEN'),
-                ])->post('https://api.fonnte.com/send', [
-                    'target' => $professional->whatsapp_number,
-                    'message' => 
-                        "Kamu mendapat pesanan konsultasi VIDEO baru.\n" .
-                        "Akses URL berikut sebelum " . $session->start->addMinutes(5)->format('H:i') . " agar pesanannya tidak dibatalkan.\n\n" .
-                        "Dashboard: https://curhatorium.com/share-and-talk/activate-session/" . $session_id,
-                ]);
-            } catch (\Exception $e) {
-                // Log the error but don't fail the session creation
-                \Log::error('Failed to send WhatsApp notification: ' . $e->getMessage());
-            }
-    
-            return redirect()->route('share-and-talk.start-video-session', ['sessionId' => $session_id]);
-            
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            return redirect()->route('share-and-talk')->with('error', 'Professional not found.');
+            return redirect()->route('share-and-talk.start-video-session', ['sessionId' => $session->session_id]);
         } catch (\Exception $e) {
-            \Log::error('Video consultation error: ' . $e->getMessage());
-            return redirect()->route('share-and-talk')->with('error', 'An error occurred while creating the video consultation. Please try again.');
+            Log::error('Video consultation error: ' . $e->getMessage());
+            return redirect()->route('share-and-talk')->with('error', $e->getMessage());
         }
     }
     
-    private function createGoogleMeetLink($sessionId, $professional, $user) {
-        // For now, create a simple Google Meet link
-        // In production, you'd use Google Calendar API to create actual meetings
-        $meetingId = Str::random(10);
-        return "https://meet.google.com/" . $meetingId;
-        
-        // TODO: Implement Google Calendar API integration
-        // This would create a proper calendar event with Meet link
-        // and send invites to both parties
-    }
+
 
     public function cancelSession($sessionId) {
         try {
-            $session = ChatSession::where('session_id', $sessionId)
-                ->where('user_id', Auth::id())
-                ->whereIn('status', ['waiting', 'pending'])
-                ->firstOrFail();
+            $user = Auth::user();
+            $success = $this->shareAndTalkService->cancelSession($sessionId, $user);
 
-            // Update session status to cancelled
-            $session->status = 'cancelled';
-            $session->save();
-
-            // Refund the ticket based on session type
-            $ticketType = $session->type === 'video' ? 'share_talk_psy_video' : 'share_talk_psy_chat';
-            $this->refundTicket(Auth::user(), $ticketType);
+            if (!$success) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Session not found or cannot be cancelled.'
+                ], 404);
+            }
 
             return response()->json([
                 'success' => true,
@@ -401,7 +218,7 @@ class ShareAndTalkController extends Controller
             ]);
 
         } catch (\Exception $e) {
-            \Log::error('Session cancellation error: ' . $e->getMessage());
+            Log::error('Session cancellation error: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to cancel session.'
@@ -411,37 +228,20 @@ class ShareAndTalkController extends Controller
 
     public function endSession($sessionId) {
         try {
-            $session = ChatSession::where('session_id', $sessionId)
-                ->where('user_id', Auth::id())
-                ->where('status', 'active')
-                ->firstOrFail();
-
-            // Update session status to completed
-            $session->status = 'completed';
-            $session->end = now();
-            $session->save();
-
-            // Award XP based on professional type
             $user = Auth::user();
-            $professional = Professional::find($session->professional_id);
-            
-            if ($professional) {
-                if ($professional->type === 'psychiatrist') {
-                    $xpResult = $user->awardXp('share_talk_psychiatrist');
-                } else {
-                    $xpResult = $user->awardXp('share_talk_ranger');
-                }
+            $result = $this->shareAndTalkService->endSession($sessionId, $user);
+
+            if (!$result['success']) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $result['message']
+                ], 404);
             }
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Session ended successfully.',
-                'xp_awarded' => $xpResult['xp_awarded'] ?? 0,
-                'xp_message' => $xpResult['message'] ?? ''
-            ]);
+            return response()->json($result);
 
         } catch (\Exception $e) {
-            \Log::error('Session end error: ' . $e->getMessage());
+            Log::error('Session end error: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to end session.'
@@ -449,29 +249,7 @@ class ShareAndTalkController extends Controller
         }
     }
 
-    private function refundTicket($user, $ticketType) {
-        // Find the most recently used ticket for this type
-        $ticket = $user->userTickets()
-            ->where('ticket_type', $ticketType)
-            ->where(function($q) {
-                $q->where('limit_type', 'hour')
-                  ->orWhere('limit_type', 'count');
-            })
-            ->where('remaining_value', '<', 1.0) // Assuming 1 unit was consumed
-            ->orderBy('updated_at', 'desc')
-            ->first();
 
-        if ($ticket) {
-            // Refund 1 unit back to the ticket (1 hour for hour-based, 1 count for count-based)
-            $refundAmount = $ticket->limit_type === 'hour' ? 1.0 : 1;
-            $ticket->remaining_value += $refundAmount;
-            $ticket->save();
-            
-            \Log::info("Ticket refunded for user {$user->id}, ticket type: {$ticketType}, refund amount: {$refundAmount}");
-        } else {
-            \Log::warning("No ticket found to refund for user {$user->id}, ticket type: {$ticketType}");
-        }
-    }
 
     // Route for professional to access the session (e.g., from WhatsApp link)
     public function activateSession($sessionId) {
@@ -564,22 +342,13 @@ class ShareAndTalkController extends Controller
 
     // Manual activation endpoint for facilitators
     public function manualActivateSession($sessionId) {
-        $session = ChatSession::where('session_id', $sessionId)->first();
-        if (!$session) {
-            return response()->json(['error' => 'Session not found'], 404);
+        $success = $this->shareAndTalkService->activateSession($sessionId);
+        
+        if (!$success) {
+            return response()->json(['error' => 'Session not found or cannot be activated'], 400);
         }
         
-        if ($session->status === 'waiting' || $session->status === 'pending') {
-            $session->status = 'active';
-            $session->start = now();
-            $session->end = now()->addMinutes(65); // 65 minutes for chat sessions
-            $session->pending_end = null;
-            $session->save();
-            
-            return response()->json(['success' => true, 'message' => 'Session activated']);
-        } else {
-            return response()->json(['error' => 'Session cannot be activated'], 400);
-        }
+        return response()->json(['success' => true, 'message' => 'Session activated']);
     }
 
     // First step: Validate chat session and redirect to chat session
@@ -639,56 +408,7 @@ class ShareAndTalkController extends Controller
         ]);
     }
 
-    /**
-     * Track Share and Talk ticket consumption for payment purposes
-     */
-    private function trackShareTalkTicketConsumption($user, $chatSessionId, $professionalType)
-    {
-        // Determine if this is the user's first Share and Talk while having active Calm Starter membership
-        $isFirstShareTalkWithCalmStarter = $this->isFirstShareTalkWithCalmStarter($user);
-        
-        // Determine ticket source
-        $ticketSource = $isFirstShareTalkWithCalmStarter ? 'calm_starter' : 'paid';
-        
-        // Create the consumption record
-        \App\Models\ShareTalkTicketConsumption::create([
-            'user_id' => $user->id,
-            'chat_session_id' => $chatSessionId,
-            'ticket_source' => $ticketSource,
-            'consumed_at' => now(),
-        ]);
-    }
-    
-    /**
-     * Check if this is the user's first Share and Talk with Calm Starter membership
-     */
-    private function isFirstShareTalkWithCalmStarter($user)
-    {
-        $now = now();
-        
-        // Find the user's current Calm Starter cycle
-        $currentCalmStarter = $user->userMemberships()
-            ->whereHas('membership', function($query) {
-                $query->where('name', 'Calm Starter');
-            })
-            ->where('started_at', '<=', $now)
-            ->where('expires_at', '>=', $now)
-            ->orderBy('started_at', 'desc')
-            ->first();
-            
-        if (!$currentCalmStarter) {
-            return false; // No active Calm Starter, so it's a paid ticket
-        }
-        
-        // Check if this is the user's first Share and Talk participation in this Calm Starter cycle
-        $hasPreviousShareTalkThisCycle = \App\Models\ShareTalkTicketConsumption::where('user_id', $user->id)
-            ->where('ticket_source', 'calm_starter')
-            ->where('consumed_at', '>=', $currentCalmStarter->started_at)
-            ->where('consumed_at', '<=', $currentCalmStarter->expires_at)
-            ->exists();
-        
-        return !$hasPreviousShareTalkThisCycle; // First Share and Talk in this Calm Starter cycle = true, subsequent = false
-    }
+
 
 
 }

@@ -25,7 +25,7 @@ Route::get('/portal', function () {
 })->name('start');
 
 Route::get('/dashboard', function () {
-    $trackerController = new TrackerController();
+    $trackerController = app(TrackerController::class);
     $statsData = $trackerController->getStatsForDashboard();
     return view('main.main', compact('statsData'));
 })->middleware(['auth', 'verified'])->name('dashboard');
@@ -82,7 +82,6 @@ Route::middleware('auth')->group(function () {
     Route::post('/api/chatbot', [ChatbotController::class, 'chat'])->name('chatbot.api');
 
     Route::get('/tracker', [TrackerController::class,'index'])
-        ->middleware(\App\Http\Middleware\TicketGateMiddleware::class . ':tracker')
         ->name('tracker.index');
     Route::post('tracker/track', [TrackerController::class,'track'])->name('tracker.entry');
     Route::get('/tracker/result', [TrackerController::class, 'result'])->name('tracker.result');

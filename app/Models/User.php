@@ -115,7 +115,7 @@ class User extends Authenticatable implements FilamentUser
     }
 
     /**
-     * Get the daily XP logs for the user.
+     * The daily XP logs for the user.
      */
     public function dailyXpLogs()
     {
@@ -165,5 +165,102 @@ class User extends Authenticatable implements FilamentUser
     {
         $xpService = app(\App\Services\XpService::class);
         return $xpService->getXpBreakdown($this);
+    }
+
+    /**
+     * Get XP history for the user.
+     */
+    public function getXpHistory(int $days = 30): array
+    {
+        $xpService = app(\App\Services\XpService::class);
+        return $xpService->getXpHistory($this, $days);
+    }
+
+    /**
+     * Get active tickets for the user
+     */
+    public function activeTickets()
+    {
+        return $this->hasMany(\App\Models\UserTicket::class)
+            ->where('expires_at', '>', now())
+            ->where('remaining_value', '>', 0);
+    }
+
+    /**
+     * Check if user can access a specific feature
+     */
+    public function canAccessFeature(string $feature): bool
+    {
+        return $this->activeTickets()
+            ->where('ticket_type', $feature)
+            ->exists();
+    }
+
+    /**
+     * Get chat sessions for the user
+     */
+    public function chatSessions()
+    {
+        return $this->hasMany(\App\Models\ChatSession::class);
+    }
+
+    /**
+     * Get active chat sessions
+     */
+    public function activeChatSessions()
+    {
+        return $this->chatSessions()
+            ->whereIn('status', ['waiting', 'pending', 'active']);
+    }
+
+    /**
+     * Get user's full name with username
+     */
+    public function getFullNameAttribute(): string
+    {
+        return "{$this->name} ({$this->username})";
+    }
+
+    /**
+     * Check if user has any active membership
+     */
+    public function hasActiveMembership(): bool
+    {
+        return $this->activeMemberships()->exists();
+    }
+
+    /**
+     * Get user's primary active membership
+     */
+    public function getPrimaryMembershipAttribute()
+    {
+        return $this->activeMemberships()
+            ->with('membership')
+            ->orderBy('expires_at', 'desc')
+            ->first();
+    }
+
+    /**
+     * Scope for active users
+     */
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
+    }
+
+    /**
+     * Scope for users with memberships
+     */
+    public function scopeWithMemberships($query)
+    {
+        return $query->with('userMemberships.membership');
+    }
+
+    /**
+     * Scope for users with active tickets
+     */
+    public function scopeWithActiveTickets($query)
+    {
+        return $query->with('activeTickets');
     }
 }

@@ -364,21 +364,8 @@
         // Pengiriman form ditangani oleh Laravel
         // Form akan dikirim ke server dan diarahkan kembali dengan pesan sukses/error
 
-        // Reset form ditangani oleh redirect Laravel
-
-        // Inisialisasi slider
-        function initializeSliders() {
-            energyTrack.style.width = '44.44%'; // 5/10 * 100% disesuaikan untuk skala 1-10
-            productivityTrack.style.width = '44.44%';
-        }
-
-        // Inisialisasi form
-        document.addEventListener('DOMContentLoaded', function() {
-            initializeSliders();
-            updateSubmitButton();
-        });
-
-        // Fitur auto-save draft dihapus - menggunakan penyimpanan server
+        // Form submission is handled by Laravel redirect
     </script>
+    <script src="/js/modules/tracker-form.js"></script>
 </body>
 </html>
