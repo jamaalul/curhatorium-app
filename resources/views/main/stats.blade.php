@@ -26,7 +26,7 @@
 
     <div class="bottom-boxes">
       <div class="box mental">
-        <div>Rata-rata Kesehatan Mental</div>
+        <div>Rata-rata Mood</div>
         <div class="score mood">{{ $averageMood }}</div>
         <div class="status">
           @php

@@ -84,8 +84,11 @@ Route::middleware('auth')->group(function () {
     Route::post('/api/chatbot', [ChatbotController::class, 'chat'])->name('chatbot.api');
 
     Route::get('/tracker', [TrackerController::class,'index'])
+        ->middleware(\App\Http\Middleware\TicketGateMiddleware::class . ':tracker')
         ->name('tracker.index');
-    Route::post('tracker/track', [TrackerController::class,'track'])->name('tracker.entry');
+    Route::post('tracker/track', [TrackerController::class,'track'])
+        ->middleware(\App\Http\Middleware\TicketGateMiddleware::class . ':tracker')
+        ->name('tracker.entry');
     Route::get('/tracker/result', [TrackerController::class, 'result'])->name('tracker.result');
     Route::get('/tracker/history', [TrackerController::class,'history'])->name('tracker.history');
     Route::get('/tracker/stat/{id}', [TrackerController::class, 'showStat'])->name('tracker.stat.detail');

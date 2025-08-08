@@ -84,6 +84,13 @@ class MissionController extends Controller
             ->where('mission_id', $missionId)
             ->exists();
         if ($alreadyCompleted) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'You have already completed this mission.',
+                    'mission_id' => (int) $missionId,
+                ], 409);
+            }
             return back()->with('error', 'You have already completed this mission.');
         }
         MissionCompletion::create([
@@ -103,6 +110,15 @@ class MissionController extends Controller
             $message .= " +{$xpResult['xp_awarded']} XP earned!";
         }
 
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => $message,
+                'xp_awarded' => $xpResult['success'] ? ($xpResult['xp_awarded'] ?? 0) : 0,
+                'mission_id' => (int) $missionId,
+                'difficulty' => $mission->difficulty,
+            ]);
+        }
         return back()->with('success', $message);
     }
 } 

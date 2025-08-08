@@ -7,6 +7,17 @@
     <title>Misssions of The Day | Curhatorium</title>
     <link rel="stylesheet" href="{{ asset('css/global.css') }}">
     <link rel="stylesheet" href="{{ asset('css/missions.css') }}">
+    <style>
+        .button-loading { opacity: 0.8; pointer-events: none; }
+        .button-loading .spinner { 
+            width: 16px; height: 16px; border-radius: 50%;
+            border: 2px solid rgba(255,255,255,0.35);
+            border-top-color: #fff;
+            display: inline-block; vertical-align: middle; margin-right: 8px;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
 </head>
 <body>
     <!-- Navbar -->
@@ -132,7 +143,9 @@
                     <label for="feeling" class="completion-modal-label">Bagaimana perasaanmu setelahnya?</label>
                     <textarea name="feeling" id="feeling" rows="2" class="completion-modal-textarea feeling" required></textarea>
                 </div>
-                <button type="submit" class="completion-modal-submit">Kirim</button>
+                <button type="submit" class="completion-modal-submit" id="completion-submit-btn">
+                    <span class="btn-content">Kirim</span>
+                </button>
             </form>
         </div>
     </div>
@@ -183,25 +196,68 @@
             
             const formData = new FormData(this);
             const missionId = currentMissionId;
+            const submitBtn = document.getElementById('completion-submit-btn');
+            const originalHtml = submitBtn ? submitBtn.innerHTML : '';
+            if (submitBtn) {
+                submitBtn.classList.add('button-loading');
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span class="spinner"></span><span>Mengirim...</span>';
+            }
             
             fetch(this.action, {
                 method: 'POST',
                 body: formData,
                 headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Accept': 'application/json'
                 }
             })
-            .then(response => response.text())
-            .then(html => {
+            .then(async (response) => {
+                if (!response.ok) {
+                    const err = await response.json().catch(() => ({}));
+                    throw new Error(err.message || 'Gagal menyelesaikan misi');
+                }
+                return response.json();
+            })
+            .then(data => {
                 // Close modal
                 closeCompletionModal();
                 
-                // Reload page to show updated state
-                window.location.reload();
+                // Update UI without full reload
+                const btn = document.querySelector(`.complete-btn[data-mission-id="${missionId}"]`);
+                if (btn) {
+                    const footer = btn.closest('.mission-footer');
+                    if (footer) {
+                        const toggle = footer.querySelector('.completion-toggle');
+                        if (toggle) {
+                            toggle.innerHTML = '<span class="badge badge-success">Selesai</span>';
+                        }
+                    }
+                }
+                const card = document.querySelector(`.mission-card .complete-btn[data-mission-id="${missionId}"]`);
+                if (card) {
+                    const missionCard = card.closest('.mission-card');
+                    missionCard && missionCard.classList.add('completed');
+                }
+
+                // Simple toast
+                const toast = document.createElement('div');
+                toast.id = 'toast-success';
+                toast.style.cssText = 'position:fixed;top:24px;right:24px;z-index:9999;background:#10b981;color:#fff;padding:12px 16px;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.15)';
+                toast.textContent = data.message || 'Misi selesai!';
+                document.body.appendChild(toast);
+                setTimeout(() => { toast.remove(); }, 3000);
             })
             .catch(error => {
                 console.error('Error:', error);
                 alert('Terjadi kesalahan saat menyelesaikan misi. Silakan coba lagi.');
+            })
+            .finally(() => {
+                if (submitBtn) {
+                    submitBtn.classList.remove('button-loading');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalHtml || '<span class="btn-content">Kirim</span>';
+                }
             });
         });
     </script>
