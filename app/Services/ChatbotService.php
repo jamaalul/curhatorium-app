@@ -17,10 +17,18 @@ class ChatbotService
      */
     public function getUserSessions(User $user): array
     {
-        return ChatbotSession::where('user_id', $user->id)
+        $sessions = ChatbotSession::where('user_id', $user->id)
             ->orderBy('updated_at', 'desc')
-            ->get()
-            ->toArray();
+            ->get();
+            
+        return $sessions->map(function ($session) {
+            return [
+                'id' => $session->id,
+                'title' => $session->title,
+                'created_at' => $session->created_at,
+                'updated_at' => $session->updated_at
+            ];
+        })->toArray();
     }
 
     /**
@@ -33,7 +41,24 @@ class ChatbotService
             ->with('messages')
             ->first();
 
-        return $session ? $session->toArray() : null;
+        if (!$session) {
+            return null;
+        }
+
+        return [
+            'id' => $session->id,
+            'title' => $session->title,
+            'created_at' => $session->created_at,
+            'updated_at' => $session->updated_at,
+            'messages' => $session->messages->map(function ($message) {
+                return [
+                    'id' => $message->id,
+                    'role' => $message->role,
+                    'content' => $message->content,
+                    'created_at' => $message->created_at
+                ];
+            })->toArray()
+        ];
     }
 
     /**
@@ -54,7 +79,22 @@ class ChatbotService
                 'content' => 'Haiiii. Ada cerita apa hari ini?'
             ]);
 
-            return $session->load('messages')->toArray();
+            $sessionWithMessages = $session->load('messages');
+            
+            return [
+                'id' => $sessionWithMessages->id,
+                'title' => $sessionWithMessages->title,
+                'created_at' => $sessionWithMessages->created_at,
+                'updated_at' => $sessionWithMessages->updated_at,
+                'messages' => $sessionWithMessages->messages->map(function ($message) {
+                    return [
+                        'id' => $message->id,
+                        'role' => $message->role,
+                        'content' => $message->content,
+                        'created_at' => $message->created_at
+                    ];
+                })->toArray()
+            ];
         });
     }
 
@@ -118,9 +158,17 @@ class ChatbotService
             // Award XP
             $xpResult = $user->awardXp('mentai_chatbot');
 
+            // Get fresh session data
+            $freshSession = $session->fresh();
+
             return [
                 'message' => $aiResponse,
-                'session' => $session->fresh()->toArray(),
+                'session' => [
+                    'id' => $freshSession->id,
+                    'title' => $freshSession->title,
+                    'created_at' => $freshSession->created_at,
+                    'updated_at' => $freshSession->updated_at
+                ],
                 'xp_awarded' => $xpResult['xp_awarded'] ?? 0,
                 'xp_message' => $xpResult['message'] ?? ''
             ];

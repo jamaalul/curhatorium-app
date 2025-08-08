@@ -75,6 +75,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/mental-support-chatbot', [ChatbotController::class, 'index'])
         ->middleware(\App\Http\Middleware\TicketGateMiddleware::class . ':mentai_chatbot')
         ->name('chatbot');
+    
+    // Chatbot API routes (protected by auth only, not ticket gate)
     Route::get('/api/chatbot/sessions', [ChatbotController::class, 'getSessions'])->name('chatbot.get-sessions');
     Route::post('/api/chatbot/session', [ChatbotController::class, 'createSession'])->name('chatbot.create-session');
     Route::get('/api/chatbot/session/{sessionId}', [ChatbotController::class, 'getSession'])->name('chatbot.get-session');
@@ -281,3 +283,4 @@ Route::get('/info/{feature}', function ($feature) {
 
     return view('info.feature', ['feature' => $featureData[$feature]]);
 })->name('info.feature');
+

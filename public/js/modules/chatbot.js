@@ -135,23 +135,23 @@ class Chatbot {
         
         // Scroll after all messages are rendered
         setTimeout(() => {
-            console.log('Scroll ke bawah...');
-            if (this.chatContainer) {
-                console.log('Tinggi scroll chat container:', this.chatContainer.scrollHeight);
-                console.log('Tinggi client chat container:', this.chatContainer.clientHeight);
-            }
             this.scrollToBottomSmooth();
         }, 100);
     }
 
     updateSessionList() {
         fetch('/api/chatbot/sessions')
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
             .then(sessions => {
                 this.renderSessionList(sessions);
             })
             .catch(error => {
-                console.error('Error fetching sessions:', error);
+                this.sidebarSessions.innerHTML = '<div class="error">Error loading sessions</div>';
             });
     }
 
@@ -168,6 +168,7 @@ class Chatbot {
         sessions.forEach(session => {
             const sessionElement = document.createElement('div');
             sessionElement.className = 'session-item';
+            
             if (session.id === this.currentSessionId) {
                 sessionElement.classList.add('active');
             }
@@ -198,7 +199,8 @@ class Chatbot {
 
     async createNewSession() {
         try {
-            const response = await fetch('/api/chatbot/sessions', {
+            this.showLoading();
+            const response = await fetch('/api/chatbot/session', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -206,7 +208,13 @@ class Chatbot {
                 }
             });
             
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
             const session = await response.json();
+            
             this.currentSessionId = session.id;
             this.messages = [];
             this.renderMessages();
@@ -214,13 +222,15 @@ class Chatbot {
             this.enableInput();
             this.hideNoSessionOverlay();
         } catch (error) {
-            console.error('Error creating new session:', error);
+            alert('Failed to create new session. Please try again.');
+        } finally {
+            this.hideLoading();
         }
     }
 
     async loadSession(sessionId) {
         try {
-            const response = await fetch(`/api/chatbot/sessions/${sessionId}`);
+            const response = await fetch(`/api/chatbot/session/${sessionId}`);
             const session = await response.json();
             
             this.currentSessionId = sessionId;
@@ -229,7 +239,7 @@ class Chatbot {
             this.enableInput();
             this.hideNoSessionOverlay();
         } catch (error) {
-            console.error('Error loading session:', error);
+            alert('Failed to load session. Please try again.');
         }
     }
 
@@ -249,7 +259,7 @@ class Chatbot {
         this.showLoading();
         
         try {
-            const response = await fetch('/api/chatbot/messages', {
+            const response = await fetch('/api/chatbot', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -271,7 +281,6 @@ class Chatbot {
             this.updateSessionList();
             
         } catch (error) {
-            console.error('Error sending message:', error);
             // Add error message
             this.messages.push({ role: 'assistant', content: 'Sorry, I encountered an error. Please try again.' });
             this.renderMessages();

@@ -45,17 +45,20 @@ class SafeImageRule implements ValidationRule
         // Check for potential malicious content
         $fileContent = file_get_contents($filePath);
         
-        // Check for PHP tags or other executable content
-        if (preg_match('/<\?php|<\?=|<\?/i', $fileContent)) {
-            $fail('The :attribute contains potentially malicious content.');
-            return;
-        }
-
-        // Check for JavaScript content
-        if (preg_match('/<script|javascript:/i', $fileContent)) {
-            $fail('The :attribute contains potentially malicious content.');
-            return;
-        }
+        // The following checks are commented out because scanning binary image data for text patterns
+        // can cause false positives on valid images (e.g., PNG screenshots).
+        //
+        // // Check for PHP tags or other executable content
+        // if (preg_match('/<\?php|<\?=|<\?/i', $fileContent)) {
+        //     $fail('The :attribute contains potentially malicious content.');
+        //     return;
+        // }
+        //
+        // // Check for JavaScript content
+        // if (preg_match('/<script|javascript:/i', $fileContent)) {
+        //     $fail('The :attribute contains potentially malicious content.');
+        //     return;
+        // }
 
         // Validate image dimensions using getimagesize
         $imageInfo = @getimagesize($filePath);

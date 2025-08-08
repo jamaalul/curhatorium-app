@@ -28,26 +28,52 @@ class ChatbotController extends Controller
     }
 
     public function getSessions() {
-        $user = Auth::user();
-        $sessions = $this->chatbotService->getUserSessions($user);
-        
-        return response()->json($sessions);
+        try {
+            $user = Auth::user();
+            if (!$user) {
+                Log::error('Chatbot getSessions: User not authenticated');
+                return response()->json(['error' => 'Unauthorized'], 401);
+            }
+            
+            $sessions = $this->chatbotService->getUserSessions($user);
+            
+            return response()->json($sessions);
+        } catch (\Exception $e) {
+            Log::error('Chatbot getSessions error: ' . $e->getMessage());
+            return response()->json(['error' => 'Failed to get sessions'], 500);
+        }
     }
 
     public function getSession($sessionId) {
-        $user = Auth::user();
-        $session = $this->chatbotService->getSession($sessionId, $user);
-        
-        if (!$session) {
-            return response()->json(['error' => 'Session not found'], 404);
+        try {
+            $user = Auth::user();
+            if (!$user) {
+                Log::error('Chatbot getSession: User not authenticated');
+                return response()->json(['error' => 'Unauthorized'], 401);
+            }
+            
+            $session = $this->chatbotService->getSession($sessionId, $user);
+            
+            if (!$session) {
+                Log::warning('Chatbot getSession: Session not found', ['session_id' => $sessionId, 'user_id' => $user->id]);
+                return response()->json(['error' => 'Session not found'], 404);
+            }
+            
+            return response()->json($session);
+        } catch (\Exception $e) {
+            Log::error('Chatbot getSession error: ' . $e->getMessage());
+            return response()->json(['error' => 'Failed to get session'], 500);
         }
-        
-        return response()->json($session);
     }
 
     public function createSession(Request $request) {
         try {
             $user = Auth::user();
+            if (!$user) {
+                Log::error('Chatbot createSession: User not authenticated');
+                return response()->json(['error' => 'Unauthorized'], 401);
+            }
+            
             $title = $request->input('title', 'New Chat');
             $session = $this->chatbotService->createSession($user, $title);
             

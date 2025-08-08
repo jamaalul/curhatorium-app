@@ -41,9 +41,9 @@
         </div>
         <div class="sidebar-sessions">
           @foreach($sessions as $session)
-            <div class="session-item" data-session-id="{{ $session->id }}">
-              <div class="session-title">{{ $session->title }}</div>
-              <button class="delete-session-btn" data-session-id="{{ $session->id }}">×</button>
+            <div class="session-item" data-session-id="{{ $session['id'] }}">
+              <div class="session-title">{{ $session['title'] }}</div>
+              <button class="delete-session-btn" data-session-id="{{ $session['id'] }}">×</button>
             </div>
           @endforeach
         </div>

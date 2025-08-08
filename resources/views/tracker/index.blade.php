@@ -154,12 +154,12 @@
                                     <input type="range" id="energySlider" class="slider" min="1" max="10" value="5" name="energy">
                                     <div class="slider-track" id="energyTrack"></div>
                                 </div>
-                                <div class="slider-labels">
-                                    <span>Sangat Rendah</span>
-                                    <span>Rendah</span>
-                                    <span>Sedang</span>
-                                    <span>Tinggi</span>
-                                    <span>Sangat Tinggi</span>
+                                <div class="slider-labels" style="display:grid;grid-template-columns:repeat(5,1fr);column-gap:8px;margin-top:8px;">
+                                    <span style="text-align:left;white-space:nowrap;">Sangat Rendah</span>
+                                    <span style="text-align:center;white-space:nowrap;">Rendah</span>
+                                    <span style="text-align:center;white-space:nowrap;">Sedang</span>
+                                    <span style="text-align:center;white-space:nowrap;">Tinggi</span>
+                                    <span style="text-align:right;white-space:nowrap;">Sangat Tinggi</span>
                                 </div>
                             </div>
 
@@ -175,12 +175,12 @@
                                     <input type="range" id="productivitySlider" class="slider" min="1" max="10" value="5" name="productivity">
                                     <div class="slider-track" id="productivityTrack"></div>
                                 </div>
-                                <div class="slider-labels">
-                                    <span>Sangat Rendah</span>
-                                    <span>Rendah</span>
-                                    <span>Sedang</span>
-                                    <span>Tinggi</span>
-                                    <span>Sangat Tinggi</span>
+                                <div class="slider-labels" style="display:grid;grid-template-columns:repeat(5,1fr);column-gap:8px;margin-top:8px;">
+                                    <span style="text-align:left;white-space:nowrap;">Sangat Rendah</span>
+                                    <span style="text-align:center;white-space:nowrap;">Rendah</span>
+                                    <span style="text-align:center;white-space:nowrap;">Sedang</span>
+                                    <span style="text-align:center;white-space:nowrap;">Tinggi</span>
+                                    <span style="text-align:right;white-space:nowrap;">Sangat Tinggi</span>
                                 </div>
                             </div>
                         </div>
@@ -291,13 +291,24 @@
         });
 
         // Slider Energi
+        function updateSliderTrack(sliderEl, trackEl, valueEl) {
+            const min = Number(sliderEl.min || 0);
+            const max = Number(sliderEl.max || 100);
+            const value = Number(sliderEl.value || min);
+            const percent = ((value - min) / (max - min)) * 100;
+            if (valueEl) valueEl.textContent = String(value);
+            if (trackEl) trackEl.style.width = percent + '%';
+        }
+
+        // Initialize tracks on load
+        updateSliderTrack(energySlider, energyTrack, energyValue);
+        updateSliderTrack(productivitySlider, productivityTrack, productivityValue);
+
         energySlider.addEventListener('input', function() {
-            const value = this.value;
-            energyValue.textContent = value;
-            energyTrack.style.width = ((value - 1) / 9) * 100 + '%';
+            updateSliderTrack(this, energyTrack, energyValue);
             
             // Update data form
-            formData.energy = parseInt(value);
+            formData.energy = parseInt(this.value);
             
             // Update progres
             updateProgress();
@@ -305,12 +316,10 @@
 
         // Slider Produktivitas
         productivitySlider.addEventListener('input', function() {
-            const value = this.value;
-            productivityValue.textContent = value;
-            productivityTrack.style.width = ((value - 1) / 9) * 100 + '%';
+            updateSliderTrack(this, productivityTrack, productivityValue);
             
             // Update data form
-            formData.productivity = parseInt(value);
+            formData.productivity = parseInt(this.value);
             
             // Update progres
             updateProgress();
