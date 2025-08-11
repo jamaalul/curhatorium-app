@@ -1,37 +1,10 @@
-<link rel="stylesheet" href="{{ asset('css/main/agenda.css') }}">
+<link rel="stylesheet" href="{{ asset('css/main/agenda.css') }}?v={{ filemtime(public_path('css/main/agenda.css')) }}">
+<script src="{{ asset('js/main.js') }}?v={{ filemtime(public_path('js/main.js')) }}" defer></script>
 
 <body>
   <section class="agenda-section">
-    <h2>Agenda Mendatang</h2>
-
-    {{-- <!-- Card 1 -->
-    <div class="agenda-card teal">
-      <div class="icon-box"></div>
-      <div class="agenda-text">
-        <small>Webinar</small>
-        <strong>Melawan Stigma Kesehatan Mental</strong>
-        <span>Segera reservasi<br>selagi kuota masih ada</span>
-      </div>
-    </div>
-
-    <!-- Card 2 -->
-    <div class="agenda-card yellow">
-      <div class="icon-box"></div>
-      <div class="agenda-text">
-        <small>Webinar</small>
-        <strong>Kunci Kesehatan Mental di Era Modern</strong>
-        <span>Segera reservasi<br>selagi kuota masih ada</span>
-      </div>
-    </div>
-
-    <!-- Card 3 -->
-    <div class="agenda-card teal">
-      <div class="icon-box"></div>
-      <div class="agenda-text">
-        <small>Webinar</small>
-        <strong>Peer Conseling: Mahasiswa Bantu Mahasiswa</strong>
-        <span>Segera reservasi<br>selagi kuota masih ada</span>
-      </div>
-    </div> --}}
+    <h2>Artikel</h2>
+      <div class="articles-grid"></div>
+      <div class="pagination"></div>
   </section>
 </body>

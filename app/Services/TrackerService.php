@@ -78,13 +78,11 @@ class TrackerService
     /**
      * Get specific stat
      */
-    public function getStat(int $statId, User $user): ?array
+    public function getStat(int $statId, User $user): ?Stat
     {
-        $stat = Stat::where('id', $statId)
+        return Stat::where('id', $statId)
             ->where('user_id', $user->id)
             ->first();
-
-        return $stat ? $stat->toArray() : null;
     }
 
     /**

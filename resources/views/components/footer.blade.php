@@ -273,7 +273,8 @@
                 
                 <!-- Quick Links -->
                 <div class="footer-section">
-                    @if(request()->is('/'))
+                    @php $isPublicFooter = ($publicVariant ?? false) || request()->is('/'); @endphp
+                    @if($isPublicFooter)
                             <h4 class="ftr">Tautan Cepat</h4>
                             <ul class="footer-links">
                                 <!-- Unauthenticated menu for landing page -->

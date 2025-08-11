@@ -1,5 +1,5 @@
 .agenda-section {
-    max-width: 800px;
+    max-width: 1200px;
     margin: 60px auto;
     padding: 0 35px;
 }
@@ -9,6 +9,7 @@
     font-weight: bold;
     color: #000;
     margin-bottom: 30px;
+    text-align: center;
 }
 
 .agenda-card {
@@ -64,6 +65,100 @@
 .agenda-text span {
     font-size: 0.85em;
     color: #777;
+}
+
+/* Articles Grid */
+.articles-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+
+.article-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    display: flex;
+    align-items: stretch;
+    gap: 12px;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.article-card:hover { transform: translateY(-3px); box-shadow: 0 6px 16px rgba(0,0,0,0.12); }
+
+.article-thumb {
+    flex: 0 0 160px;
+    width: 160px;
+    height: 120px; /* 4:3 */
+    border-radius: 10px;
+    overflow: hidden;
+    background: #f3f4f6;
+}
+
+.article-thumb-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.article-content { padding: 2px 4px; flex: 1; display: flex; flex-direction: column; justify-content: center; }
+
+.article-title {
+    font-size: 1.25rem;
+    color: #0f172a; /* slate-900 */
+    margin: 0 0 6px;
+    line-height: 1.35;
+    font-weight: 700;
+}
+
+.article-meta { display: flex; align-items: center; gap: 10px; font-size: 0.84rem; color: #6b7280; }
+
+@media (max-width: 640px) {
+    .article-thumb { flex-basis: 120px; width: 120px; height: 90px; }
+}
+
+.category-chip {
+    background: #e8f6f6; /* soft teal */
+    color: #256e6e; /* teal text */
+    border: 1px solid #c7e7e8; /* light teal border */
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: .78rem;
+    font-weight: 700;
+}
+
+.article-meta .dot {
+    color: #9ca3af; /* gray-400 */
+}
+
+.pagination {
+    margin-top: 24px;
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+}
+
+.pagination button {
+    padding: 8px 12px;
+    border-radius: 10px;
+    border: 1px solid #e5e7eb; /* gray-200 */
+    background: #fff;
+    color: #374151; /* gray-700 */
+    cursor: pointer;
+}
+
+.pagination button:hover {
+    background: #f9fafb; /* gray-50 */
+}
+
+.pagination .active {
+    background: #8ecbcf;
+    color: #fff;
+    border-color: #8ecbcf;
 }
 
 @media (max-width: 768px) {
