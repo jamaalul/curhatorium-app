@@ -122,3 +122,13 @@
         font-size: 1.3em;
     }
 }
+
+@media (max-width: 640px) {
+    #fitur-layanan {
+        padding: 36px 16px 0px 16px;
+    }
+
+    .grid-container {
+        padding-inline: 16px;
+    }
+}

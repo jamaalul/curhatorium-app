@@ -114,3 +114,9 @@
     opacity: 1;
     transform: scale(1.1);
 }
+
+@media (max-width: 640px) {
+    .container {
+        padding: 20px 16px 20px 16px;
+    }
+}
