@@ -22,6 +22,7 @@ return new class extends Migration
             $table->enum('type', ['psychiatrist', 'partner']);
             $table->float('rating')->nullable();
             $table->string('whatsapp_number')->nullable();
+            $table->string('password')->default(bcrypt('password123'));
             $table->string('bank_account_number')->nullable();
             $table->string('bank_name')->nullable();
             $table->timestamps();

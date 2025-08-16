@@ -105,6 +105,9 @@ class DatabaseSeeder extends Seeder
         // Seed professionals
         $this->call(ProfessionalSeeder::class);
 
+        // Seed professional authentication credentials
+        // $this->call(ProfessionalAuthSeeder::class);
+
         // Seed stats, weekly stats, and monthly stats
         $this->call([
             StatSeeder::class,
