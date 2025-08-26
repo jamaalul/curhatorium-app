@@ -69,6 +69,7 @@
         </script>
     @endif
     @include('main.hero')
+    @include('main.announcement')
     @include('main.qotd')
     @include('main.stats')
     @include('main.cta')

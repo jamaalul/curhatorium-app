@@ -28,14 +28,30 @@ class ProfileController extends Controller
             })
             ->groupBy('ticket_type')
             ->map(function ($group) {
-                $first = $group->first();
-                $allUnlimited = $group->every(function ($t) {
+                // Check if any ticket in the group is unlimited
+                $hasUnlimited = $group->contains(function ($t) {
                     return $t->limit_type === 'unlimited' || is_null($t->remaining_value);
                 });
+                
+                // If any ticket is unlimited, return unlimited ticket info
+                if ($hasUnlimited) {
+                    $unlimitedTicket = $group->first(function ($t) {
+                        return $t->limit_type === 'unlimited' || is_null($t->remaining_value);
+                    });
+                    return [
+                        'ticket_type' => $unlimitedTicket->ticket_type,
+                        'limit_type' => 'unlimited',
+                        'remaining_value' => null,
+                        'expires_at' => $unlimitedTicket->expires_at,
+                    ];
+                }
+                
+                // Otherwise, aggregate limited tickets
+                $first = $group->first();
                 return [
                     'ticket_type' => $first->ticket_type,
                     'limit_type' => $first->limit_type,
-                    'remaining_value' => $allUnlimited ? null : $group->sum('remaining_value'),
+                    'remaining_value' => $group->sum('remaining_value'),
                     'expires_at' => $first->expires_at,
                 ];
             })

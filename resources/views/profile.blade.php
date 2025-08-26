@@ -124,6 +124,14 @@
                 'share_talk_psy_chat' => 'Share and Talk via Chat w/ Psikolog',
                 'share_talk_psy_video' => 'Share and Talk via Video Call w/ Psikiater',
               ];
+
+              // Create a map of which features have unlimited tickets
+              $unlimitedFeatures = collect($tickets)
+                ->filter(function ($t) {
+                  return ($t['limit_type'] ?? null) === 'unlimited' || ($t['remaining_value'] ?? null) === null;
+                })
+                ->pluck('ticket_type')
+                ->toArray();
             @endphp
             @foreach ($tickets as $ticket)
               @php

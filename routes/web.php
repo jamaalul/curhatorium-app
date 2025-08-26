@@ -28,7 +28,17 @@ Route::get('/portal', function () {
 Route::get('/dashboard', function () {
     $trackerController = app(TrackerController::class);
     $statsData = $trackerController->getStatsForDashboard();
-    return view('main.main', compact('statsData'));
+    $announcement = \App\Models\Announcement::query()
+        ->where('is_active', true)
+        ->where(function ($q) {
+            $q->whereNull('starts_at')->orWhere('starts_at', '<=', now());
+        })
+        ->where(function ($q) {
+            $q->whereNull('ends_at')->orWhere('ends_at', '>=', now());
+        })
+        ->latest('starts_at')
+        ->first();
+    return view('main.main', compact('statsData', 'announcement'));
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::get('/terms-and-conditions', function () {
