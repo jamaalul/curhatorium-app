@@ -442,7 +442,7 @@ section {
     position: relative;
     z-index: 1;
     padding: 6rem 2rem;
-    background: linear-gradient(135deg, #f5f1eb 0%, #fff8dc 100%);
+    background:#fff8dc;
     border-bottom: 3px solid rgba(255, 205, 45, 0.2);
     overflow: visible;
 }
@@ -495,12 +495,12 @@ section {
 
 .testimonials-carousel-container::before {
     left: 0;
-    background: linear-gradient(to right, #f5f1eb 0%, rgba(245, 241, 235, 0.8) 50%, transparent 100%);
+    background: linear-gradient(to right, #fff8dc 0%, transparent 100%);
 }
 
 .testimonials-carousel-container::after {
     right: 0;
-    background: linear-gradient(to left, #fff8dc 0%, rgba(255, 248, 220, 0.8) 50%, transparent 100%);
+    background: linear-gradient(to left, #fff8dc 0%, transparent 100%);
 }
 
 .testimonials-carousel {
@@ -533,7 +533,7 @@ section {
         transform: translateX(0);
     }
     100% {
-        transform: translateX(-75%);
+        transform: translateX(-50%);
     }
 }
 

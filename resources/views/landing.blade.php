@@ -242,48 +242,48 @@
                     @php
                         $testimonials = [
                             [
-                                'text' => 'Curhatorium dari dulu pas aku joinnya masih sebagai komunitas adalah tempat yang enak buat berbagi cerita, sih. Kayak kita tuh bisa ngomong masalah kita apa sama orang yang nggak kita kenal, nggak harus takut bakal disebar atau gimana. Selain cerita, kita juga bisa dapet saran penyelesaian, juga bisa denger cerita atau sudut pandang orang lain. Jadi lebih netral aja gitu...',
+                                'text' => 'Curhatorium adalah tempat yang nyaman untuk berbagi cerita tanpa takut dihakimi. Saya bisa mendapatkan saran dan sudut pandang baru dari orang lain.',
                                 'author' => 'Adam',
                                 'role' => 'Mahasiswa Universitas Airlangga',
                             ],
                             [
-                                'text' => 'Curhatorium memberikan aku ruang nyaman sebagai introvert buat cerita, belajar saling memahami, dan saling mendukung antar sesama yang sekiranya bisa dibilang punya tantangan emosional yang serupa. Dari diskusi dan pertemuan yang dilakuin, aku merasa lega karena keluh kesah yang selama ini aku pendam akhirnya keluar. Di Curhatorium, aku merasa didengar, dipahami, dan terus termotivasi buat jaga kewarasanku selama aku masih jadi manusia.',
+                                'text' => 'Sebagai seorang introvert, Curhatorium memberiku ruang untuk bercerita dan merasa dipahami. Aku merasa didengar dan termotivasi untuk menjaga kesehatan mentalku.',
                                 'author' => 'Almira',
                                 'role' => 'Mahasiswa Universitas Airlangga',
                             ],
                             [
-                                'text' => 'Sebagai pengguna lama, Curhatorium jadi tempat pelarian paling nyaman waktu aku stres berat karena masalah keluarga. Di sini aku bisa cerita tanpa takut dinilai, dan respons dari komunitasnya selalu hangat. Perlahan-lahan, aku merasa lebih lega dan bisa hadapin semuanya dengan lebih tenang.',
+                                'text' => 'Saat stres karena masalah keluarga, Curhatorium menjadi tempat pelarian yang nyaman. Respon komunitas yang hangat membuatku merasa lebih tenang.',
                                 'author' => 'Mutmainnah F.',
                                 'role' => 'Mahasiswa Psikologi Universitas Airlangga',
                             ],
                             [
-                                'text' => 'Curhatorium jadi titik balik buatku kenal lebih jauh sama diri sendiri. Awalnya cuma ikut iseng, tapi ternyata cerita bareng orang lain bikin aku sadar: aku nggak sendirian. Tempat ini bukan cuma soal curhat, tapi tentang pulih pelan-pelan..',
+                                'text' => 'Awalnya hanya iseng, tapi Curhatorium menjadi titik balik bagiku. Berbagi cerita dengan orang lain membuatku sadar bahwa aku tidak sendirian.',
                                 'author' => 'Basmah',
                                 'role' => 'Mahasiswa Gizi Universitas Negeri Surabaya',
                             ],
                             [
-                                'text' => 'Sebagai mahasiswa yang cukup skeptis soal layanan kesehatan mental online, jujur aku nggak berekspektasi banyak. Tapi Curhatorium berhasil nunjukin pendekatan yang aman, sistematis, dan nyaman buat kami yang mungkin belum siap ke profesional.',
+                                'text' => 'Aku skeptis dengan layanan kesehatan mental online, tapi Curhatorium menunjukkan pendekatan yang aman, sistematis, dan nyaman untuk kami.',
                                 'author' => 'Abdul Aziz',
                                 'role' => 'Mahasiswa Teknik Universitas Negeri Surabaya',
                             ],
                             [
-                                'text' => 'Saya tipe orang yang sering mikir sendiri, dan susah banget cerita. Di Curhatorium, saya ketemu ruang yang nggak maksa, tapi justru ngebantu saya pelan-pelan terbuka. Nggak ada tuntutan harus \'baik-baik aja\'. Buatku, itu yang terpenting.',
+                                'text' => 'Saya sulit bercerita, tapi di Curhatorium saya menemukan ruang yang membantu saya terbuka perlahan tanpa tuntutan untuk selalu "baik-baik saja".',
                                 'author' => 'Ali Ridho',
                                 'role' => 'Mahasiswa Teknik Universitas Negeri Surabaya',
                             ],
                             [
-                                'text' => 'Dari segi tampilan, platform Curhatorium clean banget, nggak ribet, dan gampang dipakai. Semua fitur gampang diakses, bahkan buat orang yang baru pertama kali buka. Warnanya juga bikin tenang, nggak \'ngegas\' kayak platform lain. Buatku, ini penting karena pas lagi down, aku butuh sesuatu yang sederhana, tapi tetap nyaman.',
+                                'text' => 'Tampilan platform Curhatorium sangat bersih dan mudah digunakan. Warnanya menenangkan, cocok untuk saat sedang merasa tidak baik.',
                                 'author' => 'Rohim',
                                 'role' => 'HoD Campaign & Branding Digimarly',
                             ],
                             [
-                                'text' => 'Komunitas ini sangat nyaman dan supportif untuk saya yang sulit berbaur, disini saya bisa berbagi cerita tanpa dihakimi dan merasa lebih diterima. Cocok banget buat yang butuh ruang seperti saya.',
+                                'text' => 'Komunitas ini sangat nyaman dan suportif. Saya bisa berbagi cerita tanpa dihakimi dan merasa lebih diterima. Cocok untuk yang butuh ruang aman.',
                                 'author' => 'Usaratus Sakinah',
                                 'role' => 'Mahasiswa Universitas Airlangga',
                             ],
                         ];
                         // Number of times to repeat the testimonials for marquee effect
-                        $repeat = 4;
+                        $repeat = 2;
                     @endphp
                     @for($i = 0; $i < $repeat; $i++)
                         @foreach($testimonials as $testimonial)
