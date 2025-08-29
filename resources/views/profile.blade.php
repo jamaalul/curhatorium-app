@@ -7,415 +7,449 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline';">
     <title>Profil Saya</title>
+    <link rel="stylesheet" href="{{ asset('css/main/profile-page.css') }}">
     <link rel="stylesheet" href="{{ asset('css/global.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/main/stats.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/main/hero.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/main/features.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/main/profile.css') }}">
+    
 </head>
 <body>
     @include('components.navbar')
-  <main class="profile-main">
-    <section class="profile-section">
-      <h2 class="profile-title">Profil Saya</h2>
-      <!-- Ringkasan Profil -->
-      <div class="profile-overview">
-        <form id="profilePicForm" method="POST" action="{{ route('profile.update') }}" enctype="multipart/form-data" style="display:inline;" onsubmit="return validateFormSubmission(event);">
-          @csrf
-          @method('PATCH')
-          <input type="hidden" name="username" value="{{ $user->username }}">
-          <input type="hidden" name="email" value="{{ $user->email }}">
-          <div class="profile-pic-container">
-            <img id="profilePicPreview"
-                 src="{{ isset($user) && $user['profile_picture'] ? asset('storage/' . $user['profile_picture']) : asset('assets/profile_pict.svg') }}"
-                 alt="Profil"
-                 class="profile-pic"
-                 onerror="this.onerror=null;this.src='{{ asset('assets/profile_pict.svg') }}';">
-            <label class="change-pic-label">
-              Ganti
-              <input id="profilePicInput" name="profile_picture" type="file" class="hidden" accept="image/jpeg,image/jpg,image/png,image/webp" style="display:none;">
-            </label>
-          </div>
-        </form>
-        <div class="profile-username">{{ '@' . ($user->username ?? 'username') }}</div>
-        <div class="profile-email">{{ $user->email ?? 'email@example.com' }}</div>
-        <!-- XP dan Lencana -->
-        @php
-          $xp = $user->total_xp ?? 0;
-          if ($xp >= 4000) {
-            $badgeName = 'Nova';
-            $badgeImage = asset('assets/nova.svg');
-            $badgeColor = '#FF00D4';
-          } elseif ($xp >= 3000) {
-            $badgeName = 'Inferno';
-            $badgeImage = asset('assets/inferno.svg');
-            $badgeColor = '#7220C5';
-          } elseif ($xp >= 2000) {
-            $badgeName = 'Beacon';
-            $badgeImage = asset('assets/beacon.svg');
-            $badgeColor = '#4E42A6';
-          } elseif ($xp >= 1000) {
-            $badgeName = 'Torch';
-            $badgeImage = asset('assets/torch.svg');
-            $badgeColor = '#865A5A';
-          } else {
-            $badgeName = 'Kindle';
-            $badgeImage = asset('assets/kindle.svg');
-            $badgeColor = '#8e805d';
-          }
-        @endphp
-        <div class="xp-badge-box">
-          <div class="badge-box-profile" style="background: {{ $badgeColor }};">
-            <img class="badge-logo-profile" src="{{ $badgeImage }}" alt="lencana">
-            <span class="badge-text-profile">{{ $badgeName }}</span>
-          </div>
-          <span class="xp-profile" id="xp-profile">{{ $xp }} XP</span>
+    
+    <main class="main-container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1 class="page-title">Dashboard Profil</h1>
+            <p class="page-subtitle">Kelola informasi profil dan pengaturan akun Anda</p>
         </div>
-        
-        <!-- Daily XP Progress Section -->
-        @php
-          $dailyXpSummary = $user->getDailyXpSummary();
-          $xpService = app(\App\Services\XpService::class);
-          $membershipType = $xpService->getUserMembershipType($user);
-        @endphp
-        <div class="daily-xp-section">
-          <div class="daily-xp-container">
-            <div class="daily-xp-progress-circle">
-              <svg width="80" height="80" viewBox="0 0 80 80">
-                <circle cx="40" cy="40" r="35" stroke="#e5e7eb" stroke-width="6" fill="none"/>
-                <circle id="profile-daily-xp-circle" cx="40" cy="40" r="35" stroke="#10b981" stroke-width="6" fill="none" 
-                        stroke-dasharray="219.91" stroke-dashoffset="219.91" transform="rotate(-90 40 40)"/>
-              </svg>
-              <div class="daily-xp-text">
-                <span id="profile-daily-xp-current">{{ $dailyXpSummary['daily_xp_gained'] }}</span>
-                <span class="daily-xp-separator">/</span>
-                <span id="profile-daily-xp-max">{{ $dailyXpSummary['max_daily_xp'] }}</span>
-              </div>
-              <div class="daily-xp-label">XP Today</div>
-            </div>
-            <div class="daily-xp-info">
-              <div class="membership-type">
-                <span class="membership-label">Membership:</span>
-                <span class="membership-value">{{ $membershipType === 'subscription' ? 'Paid' : 'Free' }} ({{ $membershipType === 'subscription' ? 'Paid' : 'Calm Starter' }})</span>
-              </div>
-              <div class="daily-limit-info">
-                <span class="limit-label">Daily Limit:</span>
-                <span class="limit-value">{{ $dailyXpSummary['max_daily_xp'] }} XP per day</span>
-              </div>
-              <div class="progress-percentage">
-                <span id="profile-daily-xp-percentage">{{ number_format($dailyXpSummary['daily_progress_percentage'], 1) }}%</span> Complete
-              </div>
-            </div>
-          </div>
-        </div>
-        <!-- Cinema-style Tickets Section -->
-        <div class="cinema-tickets-section">
-          <h3 class="cinema-tickets-title">Tiket Anda</h3>
-          <div class="cinema-tickets-list">
-            @php
-              $featureNames = [
-                'mental_test' => 'Tes Kesehatan Mental',
-                'tracker' => 'Mood and Productivity Tracker',
-                'mentai_chatbot' => 'Ment-AI Chatbot',
-                'missions' => 'Missions of The Day',
-                'support_group' => 'Support Group Discussion',
-                'deep_cards' => 'Deep Cards',
-                'share_talk_ranger_chat' => 'Share and Talk via Chat w/ Rangers',
-                'share_talk_psy_chat' => 'Share and Talk via Chat w/ Psikolog',
-                'share_talk_psy_video' => 'Share and Talk via Video Call w/ Psikiater',
-              ];
 
-              // Create a map of which features have unlimited tickets
-              $unlimitedFeatures = collect($tickets)
-                ->filter(function ($t) {
-                  return ($t['limit_type'] ?? null) === 'unlimited' || ($t['remaining_value'] ?? null) === null;
-                })
-                ->pluck('ticket_type')
-                ->toArray();
-            @endphp
-            @foreach ($tickets as $ticket)
-              @php
-                $isUnlimited = $ticket['remaining_value'] === null;
-                $value = $isUnlimited ? 'Unlimited' : $ticket['remaining_value'];
-              @endphp
-              <div class="cinema-ticket">
-                <div class="cinema-ticket-content">
-                  <div class="cinema-ticket-feature">{{ $featureNames[$ticket['ticket_type']] ?? ucfirst(str_replace(['_', '-'], ' ', $ticket['ticket_type'])) }}</div>
-                  <div class="cinema-ticket-value">
-                    @if($isUnlimited)
-                      Unlimited
-                    @elseif($ticket['limit_type'] === 'hour')
-                      {{ is_numeric($value) ? number_format($value, 2, '.', '') : $value }} Jam
-                    @elseif($ticket['limit_type'] === 'day')
-                      {{ $value }} Hari
-                    @else
-                      {{ $value }} Tiket
-                    @endif
-                  </div>
-                  @if($ticket['expires_at'])
-                    <div class="cinema-ticket-expiry">Exp: {{ \Carbon\Carbon::parse($ticket['expires_at'])->format('d M Y') }}</div>
-                  @endif
+        <div class="grid-container">
+            <!-- Left Column - Profile Overview -->
+            <div class="grid-col-span-1 space-y-6">
+                <!-- Profile Card -->
+                <div class="card">
+                    <div class="profile-card-header">
+                        <!-- Profile Picture Section -->
+                        <form id="profilePicForm" method="POST" action="{{ route('profile.update') }}" enctype="multipart/form-data" class="profile-picture-form" onsubmit="return validateFormSubmission(event);">
+                            @csrf
+                            @method('PATCH')
+                            <input type="hidden" name="username" value="{{ $user->username }}">
+                            <input type="hidden" name="email" value="{{ $user->email }}">
+                            <div class="profile-picture-container">
+                                <img id="profilePicPreview"
+                                     src="{{ isset($user) && $user['profile_picture'] ? asset('storage/' . $user['profile_picture']) : asset('assets/profile_pict.svg') }}"
+                                     alt="Profil"
+                                     class="profile-picture"
+                                     onerror="this.onerror=null;this.src='{{ asset('assets/profile_pict.svg') }}';">
+                                <label class="upload-label">
+                                    <svg class="upload-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    </svg>
+                                    <input id="profilePicInput" name="profile_picture" type="file" class="hidden-input" accept="image/jpeg,image/jpg,image/png,image/webp">
+                                </label>
+                            </div>
+                        </form>
+                        
+                        <div class="profile-info">
+                            <h3 class="profile-username">{{ '@' . ($user->username ?? 'username') }}</h3>
+                            <p class="profile-email">{{ $user->email ?? 'email@example.com' }}</p>
+                        </div>
+
+                        <!-- Badge and XP Section -->
+                        @php
+                          $xp = $user->total_xp ?? 0;
+                          if ($xp >= 4000) {
+                            $badgeName = 'Nova';
+                            $badgeImage = asset('assets/nova.svg');
+                            $badgeColor = 'from-pink-500 to-purple-600';
+                          } elseif ($xp >= 3000) {
+                            $badgeName = 'Inferno';
+                            $badgeImage = asset('assets/inferno.svg');
+                            $badgeColor = 'from-purple-600 to-indigo-600';
+                          } elseif ($xp >= 2000) {
+                            $badgeName = 'Beacon';
+                            $badgeImage = asset('assets/beacon.svg');
+                            $badgeColor = 'from-indigo-500 to-blue-600';
+                          } elseif ($xp >= 1000) {
+                            $badgeName = 'Torch';
+                            $badgeImage = asset('assets/torch.svg');
+                            $badgeColor = 'from-orange-500 to-red-500';
+                          } else {
+                            $badgeName = 'Kindle';
+                            $badgeImage = asset('assets/kindle.svg');
+                            $badgeColor = 'from-yellow-500 to-orange-500';
+                          }
+                        @endphp
+
+                        <div class="badge-xp-section">
+                            <div class="badge-card bg-gradient-to-r {{ $badgeColor }}">
+                                <div class="badge-content">
+                                    <img class="badge-image" src="{{ $badgeImage }}" alt="lencana">
+                                    <span class="badge-name">{{ $badgeName }}</span>
+                                </div>
+                                <div class="xp-display">
+                                    <span class="xp-value" id="xp-profile">{{ $xp }}</span>
+                                    <span class="xp-label">XP</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-              </div>
-            @endforeach
-          </div>
+
+                <!-- Daily Progress Card -->
+                @php
+                  $dailyXpSummary = $user->getDailyXpSummary();
+                  $xpService = app(\App\Services\XpService::class);
+                  $membershipType = $xpService->getUserMembershipType($user);
+                @endphp
+                <div class="card">
+                    <h4 class="progress-card-title">Progress Harian</h4>
+                    <div class="progress-circle-container">
+                        <div class="progress-circle-wrapper">
+                            <svg class="progress-circle-svg" viewBox="0 0 80 80">
+                                <circle class="progress-circle-bg" cx="40" cy="40" r="35"/>
+                                <circle id="profile-daily-xp-circle" class="progress-circle-fg" cx="40" cy="40" r="35"/>
+                            </svg>
+                            <div class="progress-circle-text">
+                                <span class="progress-current-xp" id="profile-daily-xp-current">{{ $dailyXpSummary['daily_xp_gained'] }}</span>
+                                <span class="progress-max-xp">/ {{ $dailyXpSummary['max_daily_xp'] }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="progress-details space-y-2">
+                        <div class="progress-detail-row">
+                            <span class="progress-detail-label">Membership:</span>
+                            <span class="progress-detail-value">{{ $membershipType === 'subscription' ? 'Paid' : 'Free' }}</span>
+                        </div>
+                        <div class="progress-detail-row">
+                            <span class="progress-detail-label">Batas Harian:</span>
+                            <span class="progress-detail-value">{{ $dailyXpSummary['max_daily_xp'] }} XP</span>
+                        </div>
+                        <div class="progress-detail-row">
+                            <span class="progress-detail-label">Progress:</span>
+                            <span class="progress-detail-value" id="profile-daily-xp-percentage">{{ number_format($dailyXpSummary['daily_progress_percentage'], 1) }}%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column - Main Content -->
+            <div class="grid-col-span-2 space-y-6">
+                <!-- Tickets Section -->
+                <div class="card">
+                    <h3 class="tickets-title">Tiket Anda</h3>
+                    @php
+                      $featureNames = [
+                        'mental_test' => 'Tes Kesehatan Mental',
+                        'tracker' => 'Mood and Productivity Tracker',
+                        'mentai_chatbot' => 'Ment-AI Chatbot',
+                        'missions' => 'Missions of The Day',
+                        'support_group' => 'Support Group Discussion',
+                        'deep_cards' => 'Deep Cards',
+                        'share_talk_ranger_chat' => 'Share and Talk via Chat w/ Rangers',
+                        'share_talk_psy_chat' => 'Share and Talk via Chat w/ Psikolog',
+                        'share_talk_psy_video' => 'Share and Talk via Video Call w/ Psikiater',
+                      ];
+                    @endphp
+                    <div class="tickets-grid">
+                        @foreach ($tickets as $ticket)
+                          @php
+                            $isUnlimited = $ticket['remaining_value'] === null;
+                            $value = $isUnlimited ? 'Unlimited' : $ticket['remaining_value'];
+                          @endphp
+                          <div class="ticket-card">
+                            <div class="ticket-content">
+                              <div class="ticket-info">
+                                <h4 class="ticket-name">
+                                  {{ $featureNames[$ticket['ticket_type']] ?? ucfirst(str_replace(['_', '-'], ' ', $ticket['ticket_type'])) }}
+                                </h4>
+                                <div class="ticket-value-container">
+                                  @if($isUnlimited)
+                                    <span class="ticket-badge badge-green">
+                                      Unlimited
+                                    </span>
+                                  @else
+                                    <span class="ticket-badge badge-blue">
+                                      @if($ticket['limit_type'] === 'hour')
+                                        {{ is_numeric($value) ? number_format($value, 2, '.', '') : $value }} Jam
+                                      @elseif($ticket['limit_type'] === 'day')
+                                        {{ $value }} Hari
+                                      @else
+                                        {{ $value }} Tiket
+                                      @endif
+                                    </span>
+                                  @endif
+                                </div>
+                                @if($ticket['expires_at'])
+                                  <p class="ticket-expiry">
+                                    Exp: {{ \Carbon\Carbon::parse($ticket['expires_at'])->format('d M Y') }}
+                                  </p>
+                                @endif
+                              </div>
+                            </div>
+                          </div>
+                        @endforeach
+                    </div>
+                </div>
+
+                <!-- Edit Profile Form -->
+                <div class="card">
+                    <h3 class="form-title">Edit Profil</h3>
+                    <form method="POST" action="{{ route('profile.update') }}" enctype="multipart/form-data" class="space-y-6">
+                        @csrf
+                        @method('PATCH')
+                        <div class="form-grid">
+                            <div>
+                                <label for="username" class="form-label">Nama Pengguna</label>
+                                <input id="username" name="username" type="text" value="{{ old('username', $user['username'] ?? '') }}" required
+                                       class="form-input">
+                            </div>
+                            <div>
+                                <label for="email" class="form-label">Email</label>
+                                <input id="email" name="email" type="email" value="{{ old('email', $user['email'] ?? '') }}" required
+                                       class="form-input">
+                            </div>
+                        </div>
+                        <div class="form-footer">
+                            <button type="submit" class="button button-blue">
+                                Simpan Perubahan
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Change Password Form -->
+                <div class="card">
+                    <h3 class="form-title">Ganti Kata Sandi</h3>
+                    <form method="POST" action="#" class="space-y-6">
+                        @csrf
+                        <div>
+                            <label for="current_password" class="form-label">Kata Sandi Saat Ini</label>
+                            <input id="current_password" name="current_password" type="password" required autocomplete="current-password"
+                                   class="form-input">
+                        </div>
+                        <div class="form-grid">
+                            <div>
+                                <label for="password" class="form-label">Kata Sandi Baru</label>
+                                <input id="password" name="password" type="password" required autocomplete="new-password"
+                                       class="form-input">
+                            </div>
+                            <div>
+                                <label for="password_confirmation" class="form-label">Konfirmasi Kata Sandi Baru</label>
+                                <input id="password_confirmation" name="password_confirmation" type="password" required autocomplete="new-password"
+                                       class="form-input">
+                            </div>
+                        </div>
+                        <div class="form-footer">
+                            <button type="submit" class="button button-blue">
+                                Ganti Kata Sandi
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Account Actions -->
+                <div class="card">
+                    <h3 class="form-title">Aksi Akun</h3>
+                    <div class="account-actions">
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type.submit" class="button button-gray">
+                                Keluar
+                            </button>
+                        </form>
+                        <form method="POST" action="#" onsubmit="return confirm('Apakah Anda yakin ingin menghapus akun Anda? Tindakan ini tidak dapat dibatalkan.');">
+                            @csrf
+                            <button type="submit" class="button button-red">
+                                Hapus Akun
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-      
-          <!-- Form Edit Profil -->
-          <div style="background:#fff;padding:28px 24px 18px 24px;border-radius:16px;box-shadow:0 2px 8px rgba(0,0,0,0.06);margin-bottom:32px;">
-            <form method="POST" action="{{ route('profile.update') }}" enctype="multipart/form-data" style="display:flex;flex-direction:column;gap:18px;width:100%;">
-              @csrf
-              @method('PATCH')
-              <div style="font-family:FigtreeBold;font-size:1.1em;color:#333;margin-bottom:4px;">Edit Profil</div>
-              <div>
-                <label for="username" class="block font-semibold mb-1">Nama Pengguna</label>
-                <input id="username" name="username" type="text" value="{{ old('username', $user['username'] ?? '') }}" required class="w-full p-2 border rounded" style="width:100%;padding:12px 14px;border-radius:8px;border:1px solid #e5e7eb;font-size:1em;">
-              </div>
-              <div>
-                <label for="email" class="block font-semibold mb-1">Email</label>
-                <input id="email" name="email" type="email" value="{{ old('email', $user['email'] ?? '') }}" required class="w-full p-2 border rounded" style="width:100%;padding:12px 14px;border-radius:8px;border:1px solid #e5e7eb;font-size:1em;">
-              </div>
-              <button type="submit" class="profile-save" style="background:#48A6A6;color:#fff;padding:12px 28px;border-radius:8px;font-weight:600;font-size:1em;border:none;transition:background 0.2s;">Simpan Perubahan</button>
-            </form>
-          </div>
-      
-          <!-- Bagian Ganti Kata Sandi -->
-          <div style="background:#fff;padding:28px 24px 18px 24px;border-radius:16px;box-shadow:0 2px 8px rgba(0,0,0,0.06);margin-bottom:32px;">
-            <form method="POST" action="#" style="display:flex;flex-direction:column;gap:18px;width:100%;">
-              <div style="font-family:FigtreeBold;font-size:1.1em;color:#333;margin-bottom:4px;">Ganti Kata Sandi</div>
-              <div>
-                <label for="current_password" class="block font-semibold mb-1">Kata Sandi Saat Ini</label>
-                <input id="current_password" name="current_password" type="password" required autocomplete="current-password" class="w-full p-2 border rounded" style="width:100%;padding:12px 14px;border-radius:8px;border:1px solid #e5e7eb;font-size:1em;">
-              </div>
-              <div>
-                <label for="password" class="block font-semibold mb-1">Kata Sandi Baru</label>
-                <input id="password" name="password" type="password" required autocomplete="new-password" class="w-full p-2 border rounded" style="width:100%;padding:12px 14px;border-radius:8px;border:1px solid #e5e7eb;font-size:1em;">
-              </div>
-              <div>
-                <label for="password_confirmation" class="block font-semibold mb-1">Konfirmasi Kata Sandi Baru</label>
-                <input id="password_confirmation" name="password_confirmation" type="password" required autocomplete="new-password" class="w-full p-2 border rounded" style="width:100%;padding:12px 14px;border-radius:8px;border:1px solid #e5e7eb;font-size:1em;">
-              </div>
-              <button type="submit" class="profile-save" style="background:#48A6A6;color:#fff;padding:12px 28px;border-radius:8px;font-weight:600;font-size:1em;border:none;transition:background 0.2s;">Ganti Kata Sandi</button>
-            </form>
-          </div>
-      
-          <!-- Aksi Akun -->
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:24px;">
-            <form method="POST" action="{{ route('logout') }}">
-              @csrf
-              <button type="submit" class="profile-logout" style="background:#e57373;color:#fff;padding:12px 28px;border-radius:8px;font-weight:600;font-size:1em;border:none;transition:background 0.2s;">Keluar</button>
-            </form>
-            <form method="POST" action="#" onsubmit="return confirm('Apakah Anda yakin ingin menghapus akun Anda? Tindakan ini tidak dapat dibatalkan.');">
-              <button type="submit" style="background:#fff;color:#e57373;padding:12px 28px;border-radius:8px;font-weight:600;font-size:1em;border:1px solid #e57373;transition:background 0.2s;">Hapus Akun</button>
-            </form>
-          </div>
-        </section>
-      </main>
-      @include('components.footer')
-      
-      @if ($errors->any())
+    </main>
+
+    @include('components.footer')
+    
+    @if ($errors->any())
         <script>
-          document.addEventListener('DOMContentLoaded', function() {
-            @foreach ($errors->all() as $error)
-              showError('{{ addslashes($error) }}');
-            @endforeach
-          });
+            document.addEventListener('DOMContentLoaded', function() {
+                @foreach ($errors->all() as $error)
+                    showError('{{ addslashes($error) }}');
+                @endforeach
+            });
         </script>
-      @endif
-      
-      <script>
-        // Pratinjau foto profil dan auto-submit dengan validasi keamanan
+    @endif
+    
+    <script>
+        // Profile picture preview and validation
         const input = document.getElementById('profilePicInput');
         const preview = document.getElementById('profilePicPreview');
         
-        // Konstanta untuk validasi
         const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
         const ALLOWED_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
         const MAX_DIMENSIONS = { width: 2048, height: 2048 };
         
         function showError(message) {
-          // Create a more user-friendly error display
-          const errorDiv = document.createElement('div');
-          errorDiv.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: #ef4444;
-            color: white;
-            padding: 12px 16px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            z-index: 10000;
-            font-family: inherit;
-            max-width: 300px;
-          `;
-          errorDiv.textContent = 'Error: ' + message;
-          document.body.appendChild(errorDiv);
-          
-          // Auto-remove after 5 seconds
-          setTimeout(() => {
-            if (errorDiv.parentNode) {
-              errorDiv.parentNode.removeChild(errorDiv);
-            }
-          }, 5000);
-          
-          input.value = ''; // Reset input
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'fixed top-4 right-4 bg-red-500 text-white px-4 py-3 rounded-lg shadow-lg z-50 max-w-sm';
+            errorDiv.innerHTML = `
+                <div class="flex items-center justify-between">
+                    <span class="text-sm">${message}</span>
+                    <button onclick="this.parentElement.parentElement.remove()" class="ml-2 text-white hover:text-gray-200">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            `;
+            document.body.appendChild(errorDiv);
+            
+            setTimeout(() => {
+                if (errorDiv.parentNode) {
+                    errorDiv.parentNode.removeChild(errorDiv);
+                }
+            }, 5000);
+            
+            input.value = '';
         }
         
         function showLoading() {
-          const loadingDiv = document.createElement('div');
-          loadingDiv.id = 'upload-loading';
-          loadingDiv.style.cssText = `
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0,0,0,0.8);
-            color: white;
-            padding: 20px;
-            border-radius: 8px;
-            z-index: 10000;
-            font-family: inherit;
-          `;
-          loadingDiv.textContent = 'Uploading profile picture...';
-          document.body.appendChild(loadingDiv);
+            const loadingDiv = document.createElement('div');
+            loadingDiv.id = 'upload-loading';
+            loadingDiv.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            loadingDiv.innerHTML = `
+                <div class="bg-white rounded-lg p-6 flex items-center space-x-3">
+                    <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+                    <span class="text-gray-900">Uploading profile picture...</span>
+                </div>
+            `;
+            document.body.appendChild(loadingDiv);
         }
         
         function hideLoading() {
-          const loadingDiv = document.getElementById('upload-loading');
-          if (loadingDiv && loadingDiv.parentNode) {
-            loadingDiv.parentNode.removeChild(loadingDiv);
-          }
+            const loadingDiv = document.getElementById('upload-loading');
+            if (loadingDiv && loadingDiv.parentNode) {
+                loadingDiv.parentNode.removeChild(loadingDiv);
+            }
         }
         
         function validateFormSubmission(event) {
-          const form = event.target;
-          const fileInput = form.querySelector('input[type="file"]');
-          
-          if (fileInput && fileInput.files.length > 0) {
-            const file = fileInput.files[0];
-            if (!validateFile(file)) {
-              event.preventDefault();
-              return false;
+            const form = event.target;
+            const fileInput = form.querySelector('input[type="file"]');
+            
+            if (fileInput && fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                if (!validateFile(file)) {
+                    event.preventDefault();
+                    return false;
+                }
             }
-          }
-          
-          return true;
+            
+            return true;
         }
         
         function validateFile(file) {
-          // Validasi tipe file
-          if (!ALLOWED_TYPES.includes(file.type)) {
-            showError('Hanya file JPEG, PNG, atau WebP yang diperbolehkan.');
-            return false;
-          }
-          
-          // Validasi ukuran file
-          if (file.size > MAX_FILE_SIZE) {
-            showError('Ukuran file tidak boleh lebih dari 2MB.');
-            return false;
-          }
-          
-          // Validasi nama file (mencegah path traversal)
-          const fileName = file.name.toLowerCase();
-          if (fileName.includes('..') || fileName.includes('/') || fileName.includes('\\')) {
-            showError('Nama file tidak valid.');
-            return false;
-          }
-          
-          // Validasi ekstensi file
-          const allowedExtensions = ['.jpg', '.jpeg', '.png', '.webp'];
-          const fileExtension = fileName.substring(fileName.lastIndexOf('.'));
-          if (!allowedExtensions.includes(fileExtension)) {
-            showError('Ekstensi file tidak diperbolehkan.');
-            return false;
-          }
-          
-          return true;
+            if (!ALLOWED_TYPES.includes(file.type)) {
+                showError('Hanya file JPEG, PNG, atau WebP yang diperbolehkan.');
+                return false;
+            }
+            
+            if (file.size > MAX_FILE_SIZE) {
+                showError('Ukuran file tidak boleh lebih dari 2MB.');
+                return false;
+            }
+            
+            const fileName = file.name.toLowerCase();
+            if (fileName.includes('..') || fileName.includes('/') || fileName.includes('\\')) {
+                showError('Nama file tidak valid.');
+                return false;
+            }
+            
+            const allowedExtensions = ['.jpg', '.jpeg', '.png', '.webp'];
+            const fileExtension = fileName.substring(fileName.lastIndexOf('.'));
+            if (!allowedExtensions.includes(fileExtension)) {
+                showError('Ekstensi file tidak diperbolehkan.');
+                return false;
+            }
+            
+            return true;
         }
         
         function validateImageDimensions(file) {
-          return new Promise((resolve, reject) => {
-            const img = new Image();
-            const url = URL.createObjectURL(file);
-            
-            img.onload = function() {
-              URL.revokeObjectURL(url);
-              if (img.width > MAX_DIMENSIONS.width || img.height > MAX_DIMENSIONS.height) {
-                reject('Dimensi gambar tidak boleh lebih dari 2048x2048 pixel.');
-              } else {
-                resolve(true);
-              }
-            };
-            
-            img.onerror = function() {
-              URL.revokeObjectURL(url);
-              reject('File tidak dapat dibaca sebagai gambar.');
-            };
-            
-            img.src = url;
-          });
+            return new Promise((resolve, reject) => {
+                const img = new Image();
+                const url = URL.createObjectURL(file);
+                
+                img.onload = function() {
+                    URL.revokeObjectURL(url);
+                    if (img.width > MAX_DIMENSIONS.width || img.height > MAX_DIMENSIONS.height) {
+                        reject('Dimensi gambar tidak boleh lebih dari 2048x2048 pixel.');
+                    } else {
+                        resolve(true);
+                    }
+                };
+                
+                img.onerror = function() {
+                    URL.revokeObjectURL(url);
+                    reject('File tidak dapat dibaca sebagai gambar.');
+                };
+                
+                img.src = url;
+            });
         }
         
         if(input && preview) {
-          input.addEventListener('change', async () => {
-            const file = input.files[0];
-            if (file) {
-              // Validasi dasar file
-              if (!validateFile(file)) {
-                return;
-              }
-              
-              try {
-                // Validasi dimensi gambar
-                await validateImageDimensions(file);
-                
-                // Tampilkan loading
-                showLoading();
-                
-                // Jika semua validasi berhasil, tampilkan preview dan submit
-                const reader = new FileReader();
-                reader.onload = e => preview.src = e.target.result;
-                reader.readAsDataURL(file);
-                
-                // Otomatis submit form saat file baru dipilih
-                document.getElementById('profilePicForm').submit();
-              } catch (error) {
-                hideLoading();
-                showError(error);
-              }
-            }
-          });
+            input.addEventListener('change', async () => {
+                const file = input.files[0];
+                if (file) {
+                    if (!validateFile(file)) {
+                        return;
+                    }
+                    
+                    try {
+                        await validateImageDimensions(file);
+                        showLoading();
+                        
+                        const reader = new FileReader();
+                        reader.onload = e => preview.src = e.target.result;
+                        reader.readAsDataURL(file);
+                        
+                        document.getElementById('profilePicForm').submit();
+                    } catch (error) {
+                        hideLoading();
+                        showError(error);
+                    }
+                }
+            });
         }
         
-        // Update daily XP progress circle color
+        // Update daily XP progress circle
         document.addEventListener('DOMContentLoaded', function() {
-          const dailyXpCircle = document.getElementById('profile-daily-xp-circle');
-          const dailyXpCurrent = document.getElementById('profile-daily-xp-current');
-          const dailyXpMax = document.getElementById('profile-daily-xp-max');
-          const dailyXpPercentage = document.getElementById('profile-daily-xp-percentage');
-          
-          if (dailyXpCircle && dailyXpCurrent && dailyXpMax && dailyXpPercentage) {
-            const current = parseInt(dailyXpCurrent.textContent);
-            const max = parseInt(dailyXpMax.textContent);
-            const progress = (current / max) * 100;
+            const dailyXpCircle = document.getElementById('profile-daily-xp-circle');
+            const dailyXpCurrent = document.getElementById('profile-daily-xp-current');
+            const dailyXpMax = document.querySelector('#profile-daily-xp-current + .text-xs');
+            const dailyXpPercentage = document.getElementById('profile-daily-xp-percentage');
             
-            // Update circle progress
-            const circumference = 219.91; // 2 * π * radius (35)
-            const offset = circumference - (progress / 100) * circumference;
-            dailyXpCircle.style.strokeDashoffset = offset;
-            
-            // Update color based on progress
-            if (progress >= 90) {
-              dailyXpCircle.style.stroke = "#ef4444"; // Red when near limit
-            } else if (progress >= 70) {
-              dailyXpCircle.style.stroke = "#f59e0b"; // Orange when getting close
-            } else {
-              dailyXpCircle.style.stroke = "#10b981"; // Green for normal progress
+            if (dailyXpCircle && dailyXpCurrent) {
+                const current = parseInt(dailyXpCurrent.textContent);
+                const maxText = dailyXpMax ? dailyXpMax.textContent.replace('/ ', '') : '100';
+                const max = parseInt(maxText);
+                const progress = (current / max) * 100;
+                
+                const circumference = 219.91;
+                const offset = circumference - (progress / 100) * circumference;
+                dailyXpCircle.style.strokeDashoffset = offset;
+                
+                if (progress >= 90) {
+                    dailyXpCircle.style.stroke = "#ef4444";
+                } else if (progress >= 70) {
+                    dailyXpCircle.style.stroke = "#f59e0b";
+                } else {
+                    dailyXpCircle.style.stroke = "#10b981";
+                }
             }
-          }
         });
-      </script>
+    </script>
 </body>
 </html>
