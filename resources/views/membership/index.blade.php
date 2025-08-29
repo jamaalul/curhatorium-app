@@ -33,7 +33,6 @@
                     'benefits' => [
                         '(Unlimited) Tes Kesehatan Mental',
                         '(7 Hari) Mood and Productivity Tracker',
-                        '(1x) Share and Talk via Chat w/ Rangers (Special Launching Bonus)',
                         '(2 Jam) Ment-AI Chatbot',
                         '(7 Hari) Missions of The Day',
                         '(1x) Support Group Discussion',
@@ -46,7 +45,7 @@
                     'benefits' => [
                         '(Unlimited) Tes Kesehatan Mental',
                         '(Unlimited) Mood and Productivity Tracker',
-                        '(Unlimited) Ment-AI Chatbot',
+                        '(1 Jam) Ment-AI Chatbot',
                         '(Unlimited) Missions of The Day',
                         '(1x) Support Group Discussion',
                         '(Unlimited) Deep Cards',

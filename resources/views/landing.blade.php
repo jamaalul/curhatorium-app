@@ -55,7 +55,7 @@
 
                 <div class="hero-stats">
                     <div class="stat-item">
-                        <div class="stat-number">100+</div>
+                        <div class="stat-number">200+</div>
                         <div class="stat-label">Terbantu</div>
                     </div>
                     <div class="stat-item">
@@ -327,7 +327,6 @@
                             'benefits' => [
                                 '(Unlimited) Tes Kesehatan Mental',
                                 '(7 Hari) Mood and Productivity Tracker',
-                                '(1x) Share and Talk via Chat w/ Rangers (Special Launching Bonus)',
                                 '(2 Jam) Ment-AI Chatbot',
                                 '(7 Hari) Missions of The Day',
                                 '(1x) Support Group Discussion',
