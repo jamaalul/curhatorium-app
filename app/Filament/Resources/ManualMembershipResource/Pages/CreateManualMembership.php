@@ -70,7 +70,7 @@ class CreateManualMembership extends CreateRecord
                 'user_id' => $user->id,
                 'membership_id' => $membership->id,
                 'started_at' => $now,
-                'expires_at' => $expires ?? $now->copy()->addMonth(), // fallback 1 month
+                'expires_at' => $expires ?? $now->copy()->addDays(30), // fallback 30 days
             ];
 
             // Log the data being created for debugging

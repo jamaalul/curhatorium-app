@@ -145,22 +145,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/api/xp/can-access-psychologist', [XpController::class, 'canAccessPsychologist'])->name('xp.can-access-psychologist');
     Route::get('/api/xp/history', [XpController::class, 'getXpHistory'])->name('xp.history');
 
-    // Test route for XP system (remove in production)
-    Route::get('/test-xp', function() {
-        $user = auth()->user();
-        $xpService = app(\App\Services\XpService::class);
-        
-        return response()->json([
-            'user_id' => $user->id,
-            'total_xp' => $user->total_xp,
-            'xp_progress' => $user->getXpProgress(),
-            'daily_summary' => $user->getDailyXpSummary(),
-            'xp_breakdown' => $user->getXpBreakdown(),
-            'can_access_psychologist' => $user->canAccessPsychologist(),
-            'membership_type' => $xpService->getUserMembershipType($user),
-            'max_daily_xp' => $xpService->getMaxDailyXp($user)
-        ]);
-    })->name('test.xp');
 
     // XP Redemption Routes
     Route::get('/xp-redemption', [XpRedemptionController::class, 'index'])->name('xp-redemption.index');

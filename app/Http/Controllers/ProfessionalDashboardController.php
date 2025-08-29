@@ -12,6 +12,9 @@ class ProfessionalDashboardController extends Controller
     public function index($professionalId)
     {
         $professional = Professional::findOrFail($professionalId);
+        if (Auth::guard('professional')->id() != $professionalId) {
+            abort(403);
+        }
         
         return view('professional.dashboard', compact('professional'));
     }
@@ -24,6 +27,9 @@ class ProfessionalDashboardController extends Controller
         ]);
 
         $professional = Professional::findOrFail($professionalId);
+        if (Auth::guard('professional')->id() != $professionalId) {
+            abort(403);
+        }
         
         $professional->update([
             'availability' => $request->availability,
@@ -40,6 +46,9 @@ class ProfessionalDashboardController extends Controller
     public function getAvailability($professionalId)
     {
         $professional = Professional::findOrFail($professionalId);
+        if (Auth::guard('professional')->id() != $professionalId) {
+            abort(403);
+        }
         
         return response()->json([
             'availability' => $professional->availability,
@@ -52,6 +61,9 @@ class ProfessionalDashboardController extends Controller
     public function dashboard($professionalId)
     {
         $professional = Professional::findOrFail($professionalId);
+        if (Auth::guard('professional')->id() != $professionalId) {
+            abort(403);
+        }
         
         // Get recent sessions for this professional
         $recentSessions = $professional->chatSessions()
@@ -82,6 +94,9 @@ class ProfessionalDashboardController extends Controller
         ]);
 
         $professional = Professional::findOrFail($professionalId);
+        if (Auth::guard('professional')->id() != $professionalId) {
+            abort(403);
+        }
         
         // Verify current password
         if (!Hash::check($request->current_password, $professional->password)) {
