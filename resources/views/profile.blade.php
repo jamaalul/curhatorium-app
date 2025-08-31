@@ -152,41 +152,51 @@
                     @endphp
                     <div class="tickets-grid">
                         @foreach ($tickets as $ticket)
-                          @php
-                            $isUnlimited = $ticket['remaining_value'] === null;
-                            $value = $isUnlimited ? 'Unlimited' : $ticket['remaining_value'];
-                          @endphp
-                          <div class="ticket-card">
-                            <div class="ticket-content">
-                              <div class="ticket-info">
-                                <h4 class="ticket-name">
-                                  {{ $featureNames[$ticket['ticket_type']] ?? ucfirst(str_replace(['_', '-'], ' ', $ticket['ticket_type'])) }}
-                                </h4>
-                                <div class="ticket-value-container">
-                                  @if($isUnlimited)
-                                    <span class="ticket-badge badge-green">
-                                      Unlimited
-                                    </span>
-                                  @else
-                                    <span class="ticket-badge badge-blue">
-                                      @if($ticket['limit_type'] === 'hour')
-                                        {{ is_numeric($value) ? number_format($value, 2, '.', '') : $value }} Jam
-                                      @elseif($ticket['limit_type'] === 'day')
-                                        {{ $value }} Hari
-                                      @else
-                                        {{ $value }} Tiket
-                                      @endif
-                                    </span>
-                                  @endif
+                            @php
+                                $isUnlimited = $ticket['remaining_value'] === null;
+                                $value = $isUnlimited ? 'Unlimited' : $ticket['remaining_value'];
+                                $featureName = $featureNames[$ticket['ticket_type']] ?? ucfirst(str_replace(['_', '-'], ' ', $ticket['ticket_type']));
+                            @endphp
+                            <div class="ticket-vintage">
+                                <div class="ticket-stub">
+                                    <div class="ticket-stub-content">
+                                        <span class="ticket-brand">Curhatorium</span>
+                                        <span class="ticket-feature-icon">🎟️</span>
+                                        <span class="ticket-admit">Safest Place</span>
+                                    </div>
                                 </div>
-                                @if($ticket['expires_at'])
-                                  <p class="ticket-expiry">
-                                    Exp: {{ \Carbon\Carbon::parse($ticket['expires_at'])->format('d M Y') }}
-                                  </p>
-                                @endif
-                              </div>
+                                <div class="ticket-main">
+                                    <div class="ticket-main-content">
+                                        <h4 class="ticket-feature-name">{{ $featureName }}</h4>
+                                        <div class="ticket-details">
+                                            <div class="ticket-value">
+                                                @if($isUnlimited)
+                                                    <span class="ticket-value-text unlimited">Unlimited</span>
+                                                @else
+                                                    <span class="ticket-value-text">
+                                                        @if($ticket['limit_type'] === 'hour')
+                                                            {{ is_numeric($value) ? number_format($value, 2, '.', '') : $value }} Jam
+                                                        @elseif($ticket['limit_type'] === 'day')
+                                                            {{ $value }} Hari
+                                                        @else
+                                                            {{ $value }}
+                                                        @endif
+                                                    </span>
+                                                    @if($ticket['limit_type'] !== 'hour' && $ticket['limit_type'] !== 'day')
+                                                        <span class="ticket-value-label">Tiket</span>
+                                                    @endif
+                                                @endif
+                                            </div>
+                                            @if($ticket['expires_at'])
+                                                <p class="ticket-expiry-date">
+                                                    Expires: {{ \Carbon\Carbon::parse($ticket['expires_at'])->format('d M Y') }}
+                                                </p>
+                                            @endif
+                                        </div>
+                                        <div class="ticket-barcode"></div>
+                                    </div>
+                                </div>
                             </div>
-                          </div>
                         @endforeach
                     </div>
                 </div>

@@ -286,57 +286,126 @@ body {
     }
 }
 
-.ticket-card {
-    background-image: linear-gradient(to right, #EFF6FF, #E0E7FF);
-    border-radius: 0.5rem;
-    padding: 1rem;
-    border: 1px solid #DBEAFE;
-}
-
-.ticket-content {
+.ticket-vintage {
     display: flex;
+    max-width: 350px;
+    width: 100%;
+    height: 150px;
+    background-color: #FDF5E6;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    font-family: 'Courier New', Courier, monospace;
+    color: #4a4a4a;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid #EAE0D1;
+}
+
+.ticket-vintage::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 99px;
+    border-left: 2px dashed #d3c4a8;
+}
+
+.ticket-stub {
+    width: 100px;
+    padding: 15px 10px;
+    display: flex;
+    flex-direction: column;
     justify-content: space-between;
-    align-items: flex-start;
-}
-
-.ticket-info {
-    flex: 1;
-}
-
-.ticket-name {
-    font-weight: 500;
-    color: #111827;
-    font-size: 0.875rem;
-    line-height: 1.25;
-}
-
-.ticket-value-container {
-    margin-top: 0.5rem;
-}
-
-.ticket-badge {
-    display: inline-flex;
     align-items: center;
-    padding: 0.125rem 0.625rem;
-    border-radius: 9999px;
-    font-size: 0.75rem;
-    font-weight: 500;
+    text-align: center;
+    border-right: 2px dashed #d3c4a8;
 }
 
-.badge-green {
-    background-color: #D1FAE5;
-    color: #065F46;
+.ticket-stub-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    align-items: center;
 }
 
-.badge-blue {
-    background-color: #DBEAFE;
-    color: #1E40AF;
+.ticket-brand {
+    font-size: 12px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    transform: rotate(-90deg);
+    white-space: nowrap;
+    position: absolute;
+    left: -28px;
+    top: 58px;
 }
 
-.ticket-expiry {
-    font-size: 0.75rem;
-    color: #6B7280;
-    margin-top: 0.25rem;
+.ticket-feature-icon {
+    font-size: 28px;
+}
+
+.ticket-admit {
+    font-size: 10px;
+    font-weight: bold;
+}
+
+.ticket-main {
+    flex: 1;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.ticket-main-content {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.ticket-feature-name {
+    font-size: 16px;
+    font-weight: bold;
+    margin: 0;
+    line-height: 1.2;
+}
+
+.ticket-details {
+    margin-top: 10px;
+}
+
+.ticket-value {
+    display: flex;
+    align-items: baseline;
+    gap: 5px;
+}
+
+.ticket-value-text {
+    font-size: 24px;
+    font-weight: bold;
+    color: #d9534f;
+}
+
+.ticket-value-text.unlimited {
+    font-size: 18px;
+    color: #5cb85c;
+}
+
+.ticket-value-label {
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.ticket-expiry-date {
+    font-size: 12px;
+    margin: 5px 0 0;
+}
+
+.ticket-barcode {
+    height: 20px;
+    width: 100%;
+    background-image: repeating-linear-gradient(to right, #4a4a4a, #4a4a4a 2px, transparent 2px, transparent 4px);
 }
 
 /* Form Styles */

@@ -20,6 +20,12 @@ class ChatSession extends Model
         'jitsi_room', // Add jitsi_room for video sessions
     ];
 
+    protected $casts = [
+        'start' => 'datetime',
+        'end' => 'datetime',
+        'pending_end' => 'datetime',
+    ];
+
     public function user()
     {
         return $this->belongsTo(User::class);

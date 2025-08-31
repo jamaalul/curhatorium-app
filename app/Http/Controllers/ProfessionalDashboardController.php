@@ -67,6 +67,7 @@ class ProfessionalDashboardController extends Controller
         
         // Get recent sessions for this professional
         $recentSessions = $professional->chatSessions()
+            ->whereHas('user') // Ensure the user exists
             ->with('user')
             ->orderBy('created_at', 'desc')
             ->limit(10)
