@@ -30,7 +30,7 @@
     <section class="w-full h-fit md:h-screen bg-white pb-4 px-4 pt-16" id="hero">
         <div class="h-full w-full bg-cover rounded-xl flex flex-col items-center overflow-hidden shadow-inner p-4" style="background-image: url('{{ asset('images/background.jpg') }}');">
             <div class="flex flex-col items-center text-center gap-4 p-6 md:p-12">
-                <h1 class="text-[#222222] text-4xl md:text-8xl font-medium tracking-tight">Curhatorium</h1>
+                <h1 class="text-4xl md:text-9xl font-medium text-[#ffcc00] tracking-tight" style="text-shadow: 0px 1px 2px rgba(0,0,0,0.1);">Curhatorium</h1>
                 <p class="text-gray-600 text-base text-ellipsis md:text-lg">Curhatorium adalah ruang aman untuk berbagi cerita, mendapatkan dukungan, dan menemukan ketenangan tanpa rasa takut dihakimi. Mulai perjalananmu menuju kesehatan mental yang lebih baik bersama komunitas yang peduli dan anonim.</p>
             </div>
             <div class="flex flex-col md:flex-row gap-4 w-full md:w-auto justify-center items-center">
