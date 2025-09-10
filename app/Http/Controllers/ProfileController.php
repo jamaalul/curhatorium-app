@@ -23,8 +23,7 @@ class ProfileController extends Controller
             ->filter(function ($ticket) {
                 // Exclude tickets with 0 limit_value
                 // For remaining_value: exclude 0, but allow null (unlimited tickets)
-                return $ticket->limit_value !== 0 && 
-                       ($ticket->remaining_value === null || $ticket->remaining_value > 0);
+                return $ticket->limit_value !== 0 && ($ticket->remaining_value === null || $ticket->remaining_value > 0) && $ticket->created_at < now();
             })
             ->groupBy('ticket_type')
             ->map(function ($group) {

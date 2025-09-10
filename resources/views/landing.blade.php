@@ -4,147 +4,90 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
     <title>Your Safest Place | Curhatorium</title>
-    <link rel="stylesheet" href="{{ asset('css/global.css') }}?v={{ time() }}">
-    <link rel="stylesheet" href="{{ asset('css/components/navbar.css') }}?v={{ time() }}">
-    <link rel="stylesheet" href="{{ asset('css/landing.css') }}?v={{ time() }}">
+    <link rel="stylesheet" href="{{ asset('css/global.css') }}">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    @vite('resources/css/app.css')
 </head>
 <body>
-    <!-- Navigation -->
-    <nav>
-        <div id="logo-box" onclick="window.location.href = '/'">
-            <img src="{{ asset('assets/mini_logo.png') }}" alt="mini_logo" id="mini-logo">
-            <h1>Curhatorium</h1>
+    <nav class="w-full h-16 bg-white flex items-center px-4 fixed top-0 left-0 z-50 gap-6">
+        <div class="h-full flex items-center justify-center py-3 gap-2 mr-auto" onclick="window.location.href = '/'">
+            <img src="{{ asset('assets/mini_logo.png') }}" alt="mini_logo" class="h-full">
+            <h1 class="text-2xl text-[#222222]">Curhatorium</h1>
         </div>
         
-        <div class="nav-links">
-            <a href="#about" class="nav-link">Tentang</a>
-            <a href="#features" class="nav-link">Fitur</a>
-            <a href="#testimonials" class="nav-link">Cerita</a>
-            <a href="#pricing" class="nav-link">Harga</a>
-            <a href="/login" class="nav-btn">Masuk</a>
+        <div class=" hidden md:flex items-center gap-4">
+            <a href="#about" class="nav-link hover:text-[#48A6A6] transition-colors duration-200">Tentang</a>
+            <a href="#features" class="nav-link hover:text-[#48A6A6] transition-colors duration-200">Fitur</a>
+            <a href="#testimonials" class="nav-link hover:text-[#48A6A6] transition-colors duration-200">Cerita</a>
+            <a href="#pricing" class="nav-link hover:text-[#48A6A6] transition-colors duration-200">Harga</a>
         </div>
         
         <!-- Mobile login button -->
-        <a href="/login" class="mobile-login-btn">Masuk</a>
+        <a href="/login" class="px-4 py-2 bg-[#48A6A6] text-white rounded-md transition-colors duration-200 hover:bg-[#48A6A6]">Masuk</a>
     </nav>
 
     <!-- Hero Section -->
-    <section class="hero-section">
-        <div class="hero-container">
-            <div class="fade-in">
-                {{-- <div class="hero-badge">
-                    ✨ Dipercaya oleh 50.000+ Mahasiswa di Seluruh Dunia
-                </div> --}}
-                
-                <h1 class="hero-title">
-                    <span class="highlight">Kesehatan Mental Anda</span><br>
-                    Pantas Mendapatkan yang Lebih Baik
-                </h1>
-                
-                <p class="hero-subtitle">
-                    Temukan tempat yang aman untuk berbagi, belajar, dan berkembang. Curhatorium hadir sebagai teman terpercaya dalam perjalanan kesehatan mental Anda, dengan dukungan yang Anda butuhkan, kapan pun Anda membutuhkannya.
-                </p>
-                
-                <div class="hero-buttons">
-                    <a href="/register" class="btn-primary">
-                        Mulai Perjalanan Anda Gratis
-                        <span>→</span>
-                    </a>
-                    <a href="#features" class="btn-secondary">Pelajari Lebih Lanjut</a>
-                </div>
-
-                <div class="hero-stats">
-                    <div class="stat-item">
-                        <div class="stat-number">200+</div>
-                        <div class="stat-label">Terbantu</div>
+    <section class="w-full h-fit md:h-screen bg-white pb-4 px-4 pt-16" id="hero">
+        <div class="h-full w-full bg-cover rounded-xl flex flex-col items-center overflow-hidden shadow-inner p-4" style="background-image: url('{{ asset('images/background.jpg') }}');">
+            <div class="flex flex-col items-center text-center gap-4 p-6 md:p-12">
+                <h1 class="text-[#222222] text-4xl md:text-8xl font-medium tracking-tight">Curhatorium</h1>
+                <p class="text-gray-600 text-base text-ellipsis md:text-lg">Curhatorium adalah ruang aman untuk berbagi cerita, mendapatkan dukungan, dan menemukan ketenangan tanpa rasa takut dihakimi. Mulai perjalananmu menuju kesehatan mental yang lebih baik bersama komunitas yang peduli dan anonim.</p>
+            </div>
+            <div class="flex flex-col md:flex-row gap-4 w-full md:w-auto justify-center items-center">
+                <button class="px-4 py-2 text-[#48A6A6] border border-[#48A6A6] rounded-md transition-colors duration-200 hover:bg-[#48A6A6] hover:text-white w-full md:w-auto" onclick="window.location.href = '#about'">Kenali Lebih Lanjut</button>
+                <button class="bg-[#48A6A6] px-4 py-2 text-white rounded-md transition-colors duration-200 hover:bg-[#357979] w-full md:w-auto" onclick="window.location.href = '/register'">Mulai Perjalananmu</button>
+            </div>
+            <img src="{{ asset('images/platform.jpg') }}" alt="curhatorium platform" class="w-full max-w-full md:max-w-[80vw] object-cover rounded-md shadow-lg mt-7 hidden md:block" data-aos="fade-up" data-aos-duration="2000">
+        </div>
+    </section>
+    <section class="w-full h-fit bg-white pt-0 md:pt-24" id="statistics">
+        <div class="h-full w-full rounded-xl flex flex-col items-center overflow-hidden p-4">
+            <h1 class="text-2xl md:text-3xl text-[#222222] font-bold text-center mb-4">Curhatorium dalam Angka</h1>
+            <p class="text-gray-600 mb-6 text-center text-base md:text-lg">Ratusan pengguna telah merasakan manfaat Curhatorium, tempat aman untuk berbagi, mendapatkan dukungan, dan tetap anonim kapan saja.</p>
+            <div class="w-full">
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 mt-7 overflow-hidden rounded-lg border border-[#323232]">
+                    <div class="bg-[#222222] p-8 flex flex-col items-center border border-[#323232]">
+                        <p class="text-2xl font-bold text-white">200+</p>
+                        <p class="text-lg text-[#9ACBD0] text-center">Pengguna Terbantu</p>
                     </div>
-                    <div class="stat-item">
-                        <div class="stat-number">24/7</div>
-                        <div class="stat-label">Dukungan Tersedia</div>
+                    <div class="bg-[#222222] p-8 flex flex-col items-center border border-[#323232]">
+                        <p class="text-2xl font-bold text-white">24/7</p>
+                        <p class="text-lg text-[#9ACBD0] text-center">Tersedia</p>
                     </div>
-                    <div class="stat-item">
-                        <div class="stat-number">98%</div>
-                        <div class="stat-label">Merasa Puas</div>
+                    <div class="bg-[#222222] p-8 flex flex-col items-center border border-[#323232]">
+                        <p class="text-2xl font-bold text-white">97%</p>
+                        <p class="text-lg text-[#9ACBD0] text-center">Pengguna Puas</p>
                     </div>
-                    <div class="stat-item">
-                        <div class="stat-number">100%</div>
-                        <div class="stat-label">Anonim & Aman</div>
+                    <div class="bg-[#222222] p-8 flex flex-col items-center border border-[#323232]">
+                        <p class="text-2xl font-bold text-white">100%</p>
+                        <p class="text-lg text-[#9ACBD0] text-center">Anonim</p>
                     </div>
                 </div>
             </div>
         </div>
     </section>
-
     <!-- About Us Section -->
-    <section id="about" class="about">
-        <div class="about-container">
-            <div class="about-main-content fade-in">
-                <!-- Left Side - Quote and Description -->
-                <div class="about-left">
-                    <div class="about-quote">
-                        <div class="quote-icon">"</div>
-                        <p class="quote-text">
-                            Curhatorium hadir sebagai ruang aman untuk generasi muda di seluruh Indonesia dalam merawat kesehatan mentalnya. Kami berkomitmen menyediakan layanan yang terjangkau, ramah, dan efektif didukung oleh teknologi inovatif serta pendekatan yang manusiawi. Di Curhatorium, setiap perjalanan emosional layak dihargai, didengar, dan didampingi.
-                        </p>
-                    </div>
-                    <div class="about-decoration">
-                        <!-- Abstract wave decoration -->
-                    </div>
-                </div>
-
-                <!-- Right Side - About Content -->
-                <div class="about-right">
-                    <div class="about-content-box">   
-                        <div class="about-description">
-                            <div class="vision-mission-section">
-                                <div class="vm-item">
-                                    <h4>Visi Kami</h4>
-                                    <p>Menjadi ekosistem digital kesehatan mental berbasis komunitas dan gamifikasi terdepan yang inklusif, solutif, dan berkelanjutan untuk Indonesia.</p>
-                                </div>
-                                <div class="vm-item">
-                                    <h4>Misi Kami</h4>
-                                    <ul class="mission-list">
-                                        <li>Menyediakan ruang aman dan anonim bagi generasi muda untuk berbagi cerita, pengalaman, dan dukungan psikologis berbasis peer-support</li>
-                                        <li>Meningkatkan kesadaran dan literasi kesehatan mental melalui edukasi interaktif, fitur self-assesment, dan motivasi harian</li>
-                                        <li>Mengembangkan layanan konsultasi terjangkau dengan dukungan mitra profesional, mahasiswa psikologi, dan komunitas</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+    <section id="about" class="w-full bg-white py-12 md:py-24 px-4">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-8 md:gap-12">
+            <div class="w-full md:w-1/2" data-aos="fade-right" data-aos-duration="1000">
+                <div class="bg-[#ffcd2d] p-8 rounded-lg shadow-lg">
+                    <h3 class="text-3xl font-bold text-[#222222] mb-4">Tentang Curhatorium</h3>
+                    <p class="text-stone-800">"Curhatorium hadir sebagai ruang aman untuk generasi muda di seluruh Indonesia dalam merawat kesehatan mentalnya. Kami berkomitmen menyediakan layanan yang terjangkau, ramah, dan efektif didukung oleh teknologi inovatif serta pendekatan yang manusiawi. Di Curhatorium, setiap perjalanan emosional layak dihargai, didengar, dan didampingi."</p>
                 </div>
             </div>
-
-            <!-- Stats Section -->
-            <div class="about-stats-container fade-in">
-                <div class="values-title">
-                    <h3>Nilai Utama Kami</h3>
-                    <p>Prinsip yang memandu setiap langkah kami</p>
-                </div>
-                <div class="stats-box">
-                    <div class="values-item">
-                        <div class="values-icon">🤝</div>
-                        <div class="values-label">Kolaborasi</div>
+            <div class="w-full md:w-1/2" data-aos="fade-left" data-aos-duration="1000">
+                <div class="space-y-6">
+                    <div>
+                        <h4 class="text-2xl font-bold text-[#48A6A6]">Visi</h4>
+                        <p class="text-gray-600">Menjadi ekosistem digital kesehatan mental berbasis komunitas dan gamifikasi terdepan yang inklusif, solutif, dan berkelanjutan untuk Indonesia.</p>
                     </div>
-                    <div class="values-divider"></div>
-                    <div class="values-item">
-                        <div class="values-icon">💖</div>
-                        <div class="values-label">Emosi Tanpa Syarat</div>
-                    </div>
-                    <div class="values-divider"></div>
-                    <div class="values-item">
-                        <div class="values-icon">🔒</div>
-                        <div class="values-label">Ruang Aman</div>
-                    </div>
-                    <div class="values-divider"></div>
-                    <div class="values-item">
-                        <div class="values-icon">🫂</div>
-                        <div class="values-label">Inklusivitas</div>
-                    </div>
-                    <div class="values-divider"></div>
-                    <div class="values-item">
-                        <div class="values-icon">💪</div>
-                        <div class="values-label">Pemberdayaan</div>
+                    <div>
+                        <h4 class="text-2xl font-bold text-[#48A6A6]">Misi</h4>
+                        <ul class="list-disc list-inside text-gray-600 space-y-2">
+                            <li>Menyediakan ruang aman dan anonim bagi generasi muda untuk berbagi cerita, pengalaman, dan dukungan psikologis berbasis peer-support.</li>
+                            <li>Meningkatkan kesadaran dan literasi kesehatan mental melalui edukasi interaktif, fitur self-assesment, dan motivasi harian.</li>
+                            <li>Mengembangkan layanan konsultasi terjangkau dengan dukungan mitra profesional, mahasiswa psikologi, dan komunitas.</li>
+                        </ul>
                     </div>
                 </div>
             </div>
@@ -152,178 +95,136 @@
     </section>
 
     <!-- Features Section -->
-    <section id="features" class="features">
-        <div class="features-container">
-            <div class="features-header fade-in">
-                <h2 class="features-title">
-                    <span class="highlight">Semua yang Anda Butuhkan</span><br>
-                    Untuk Kesejahteraan Mental
-                </h2>
-                <p class="features-subtitle">
-                    Dukungan kesehatan mental yang komprehensif, dirancang khusus untuk Anda, menggabungkan teknologi dengan keahlian manusia.
-                </p>
+    <section id="features" class="w-full bg-stone-200 py-12 md:py-24 px-4">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-12" data-aos="fade-up" data-aos-duration="1000">
+                <h2 class="text-3xl md:text-4xl font-bold text-[#222222]">Semua yang Anda Butuhkan</h2>
+                <p class="text-stone-600 mt-2 text-lg">Dukungan kesehatan mental yang komprehensif, dirancang khusus untuk Anda.</p>
             </div>
-
-            <div class="features-grid">
-                <div class="feature-card fade-in">
-                    <div class="feature-icon">🤖</div>
-                    <h3 class="feature-title">Ment-AI Chatbot</h3>
-                    <p class="feature-description">
-                        Curhat dengan AI 24/7 yang memahami perasaan Anda. Dapatkan dukungan emosional dan saran praktis kapan saja.
-                    </p>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="bg-white p-6 rounded-lg shadow-md text-center flex flex-col items-center gap-2" data-aos="fade-up" data-aos-delay="300" data-aos-duration="1000">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#48a6a6" class="size-12">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
+                    </svg>
+                    <h3 class="text-xl font-bold text-[#222222] mb-2">Support Group Discussion</h3>
+                    <p class="text-stone-600">Bergabung dalam grup diskusi anonim yang dipandu profesional. Berbagi pengalaman dan dukungan dengan sesama.</p>
                 </div>
-
-                <div class="feature-card fade-in">
-                    <div class="feature-icon">👨‍⚕️</div>
-                    <h3 class="feature-title">Konsultasi Profesional</h3>
-                    <p class="feature-description">
-                        Sesi Share & Talk dengan profesional kesehatan mental berlisensi melalui chat atau video call yang aman dan rahasia.
-                    </p>
+                <div class="bg-white p-6 rounded-lg shadow-md text-center flex flex-col items-center gap-2" data-aos="fade-up" data-aos-delay="200" data-aos-duration="1000">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#48a6a6" class="size-12">
+                       <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                    </svg>
+                    <h3 class="text-xl font-bold text-[#222222] mb-2">Konsultasi Profesional</h3>
+                    <p class="text-stone-600">Sesi konsultas dengan peer-supporter atau psikolog profesional melalui chat atau video call yang aman dan rahasia.</p>
                 </div>
-
-                <div class="feature-card fade-in">
-                    <div class="feature-icon">👥</div>
-                    <h3 class="feature-title">Support Group Discussion</h3>
-                    <p class="feature-description">
-                        Bergabung dalam grup diskusi anonim yang dipandu profesional. Berbagi pengalaman dan dukungan dengan sesama mahasiswa.
-                    </p>
+                <div class="bg-white p-6 rounded-lg shadow-md text-center flex flex-col items-center gap-2" data-aos="fade-up" data-aos-delay="100" data-aos-duration="1000">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#48a6a6" class="size-12">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 0 1 .865-.501 48.172 48.172 0 0 0 3.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" />
+                    </svg>
+                    <h3 class="text-xl font-bold text-[#222222] mb-2">Ment-AI Chatbot</h3>
+                    <p class="text-stone-600">Curhat dengan AI 24/7 yang memahami perasaan Anda. Dapatkan dukungan emosional dan saran praktis kapan saja.</p>
                 </div>
-
-                <div class="feature-card fade-in">
-                    <div class="feature-icon">📊</div>
-                    <h3 class="feature-title">Mental Health Tracker</h3>
-                    <p class="feature-description">
-                        Pantau mood, energi, dan produktivitas harian Anda. Dapatkan analisis dan feedback dari AI untuk kemajuan yang terukur.
-                    </p>
+                <div class="bg-white p-6 rounded-lg shadow-md text-center flex flex-col items-center gap-2" data-aos="fade-up" data-aos-delay="400" data-aos-duration="1000">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#48a6a6" class="size-12">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 14.25v2.25m3-4.5v4.5m3-6.75v6.75m3-9v9M6 20.25h12A2.25 2.25 0 0 0 20.25 18V6A2.25 2.25 0 0 0 18 3.75H6A2.25 2.25 0 0 0 3.75 6v12A2.25 2.25 0 0 0 6 20.25Z" />
+                    </svg>
+                    <h3 class="text-xl font-bold text-[#222222] mb-2">Mental Health Tracker</h3>
+                    <p class="text-stone-600">Pantau mood, energi, dan produktivitas harian Anda. Dapatkan analisis dan feedback dari AI untuk kemajuan yang terukur.</p>
                 </div>
-
-                <div class="feature-card fade-in">
-                    <div class="feature-icon">🃏</div>
-                    <h3 class="feature-title">Deep Cards</h3>
-                    <p class="feature-description">
-                        Kartu panduan untuk memulai percakapan dan refleksi diri secara mendalam.
-                    </p>
+                <div class="bg-white p-6 rounded-lg shadow-md text-center flex flex-col items-center gap-2" data-aos="fade-up" data-aos-delay="600" data-aos-duration="1000">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#48a6a6" class="size-12">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25ZM6.75 12h.008v.008H6.75V12Zm0 3h.008v.008H6.75V15Zm0 3h.008v.008H6.75V18Z" />
+                    </svg>
+                    <h3 class="text-xl font-bold text-[#222222] mb-2">Mental Health Test</h3>
+                    <p class="text-stone-600">Tes kesehatan mental standar untuk mengenali kondisi dan kebutuhan Anda.</p>
                 </div>
-
-                <div class="feature-card fade-in">
-                    <div class="feature-icon">📝</div>
-                    <h3 class="feature-title">Mental Health Test</h3>
-                    <p class="feature-description">
-                        Tes kesehatan mental standar untuk mengenali kondisi dan kebutuhan Anda.
-                    </p>
-                </div>
-
-                <div class="feature-card fade-in">
-                    <div class="feature-icon">🎯</div>
-                    <h3 class="feature-title">Missions of the Day</h3>
-                    <p class="feature-description">
-                        Misi harian untuk membangun kebiasaan sehat dan meningkatkan kesejahteraan mental.
-                    </p>
+                <div class="bg-white p-6 rounded-lg shadow-md text-center flex flex-col items-center gap-2" data-aos="fade-up" data-aos-delay="500" data-aos-duration="1000">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#48a6a6" class="size-12">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 8.25V6a2.25 2.25 0 0 0-2.25-2.25H6A2.25 2.25 0 0 0 3.75 6v8.25A2.25 2.25 0 0 0 6 16.5h2.25m8.25-8.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-7.5A2.25 2.25 0 0 1 8.25 18v-1.5m8.25-8.25h-6a2.25 2.25 0 0 0-2.25 2.25v6" />
+                    </svg>
+                    <h3 class="text-xl font-bold text-[#222222] mb-2">Deep Cards</h3>
+                    <p class="text-stone-600">Kartu panduan untuk memulai percakapan dan refleksi diri secara mendalam.</p>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Testimonials Section -->
-    <section id="testimonials" class="testimonials">
-        <div class="testimonials-container">
-            <div class="testimonials-header fade-in">
-                <h2 class="testimonials-title">
-                    Cerita Nyata,
-                    <span class="highlight">Dampak Nyata</span>
-                </h2>
-                <p class="features-subtitle">
-                    Lihat bagaimana Curhatorium telah mengubah hidup orang seperti Anda.
-                </p>
+    <section id="testimonials" class="w-full bg-[#222222] py-12 md:py-24 px-4">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-12" data-aos="fade-up" data-aos-duration="1000">
+                <h2 class="text-3xl md:text-4xl font-bold text-stone-200">Cerita Nyata, <span class="text-[#48A6A6]">Dampak Nyata</span></h2>
+                <p class="text-stone-400 mt-2 text-lg">Lihat bagaimana Curhatorium telah mengubah hidup orang seperti Anda.</p>
             </div>
-
-            <div class="testimonials-carousel-container">
-                <div class="testimonials-carousel">
-                    @php
-                        $testimonials = [
-                            [
-                                'text' => 'Curhatorium adalah tempat yang nyaman untuk berbagi cerita tanpa takut dihakimi. Saya bisa mendapatkan saran dan sudut pandang baru dari orang lain.',
-                                'author' => 'Adam',
-                                'role' => 'Mahasiswa Universitas Airlangga',
-                            ],
-                            [
-                                'text' => 'Sebagai seorang introvert, Curhatorium memberiku ruang untuk bercerita dan merasa dipahami. Aku merasa didengar dan termotivasi untuk menjaga kesehatan mentalku.',
-                                'author' => 'Almira',
-                                'role' => 'Mahasiswa Universitas Airlangga',
-                            ],
-                            [
-                                'text' => 'Saat stres karena masalah keluarga, Curhatorium menjadi tempat pelarian yang nyaman. Respon komunitas yang hangat membuatku merasa lebih tenang.',
-                                'author' => 'Mutmainnah F.',
-                                'role' => 'Mahasiswa Psikologi Universitas Airlangga',
-                            ],
-                            [
-                                'text' => 'Awalnya hanya iseng, tapi Curhatorium menjadi titik balik bagiku. Berbagi cerita dengan orang lain membuatku sadar bahwa aku tidak sendirian.',
-                                'author' => 'Basmah',
-                                'role' => 'Mahasiswa Gizi Universitas Negeri Surabaya',
-                            ],
-                            [
-                                'text' => 'Aku skeptis dengan layanan kesehatan mental online, tapi Curhatorium menunjukkan pendekatan yang aman, sistematis, dan nyaman untuk kami.',
-                                'author' => 'Abdul Aziz',
-                                'role' => 'Mahasiswa Teknik Universitas Negeri Surabaya',
-                            ],
-                            [
-                                'text' => 'Saya sulit bercerita, tapi di Curhatorium saya menemukan ruang yang membantu saya terbuka perlahan tanpa tuntutan untuk selalu "baik-baik saja".',
-                                'author' => 'Ali Ridho',
-                                'role' => 'Mahasiswa Teknik Universitas Negeri Surabaya',
-                            ],
-                            [
-                                'text' => 'Tampilan platform Curhatorium sangat bersih dan mudah digunakan. Warnanya menenangkan, cocok untuk saat sedang merasa tidak baik.',
-                                'author' => 'Rohim',
-                                'role' => 'HoD Campaign & Branding Digimarly',
-                            ],
-                            [
-                                'text' => 'Komunitas ini sangat nyaman dan suportif. Saya bisa berbagi cerita tanpa dihakimi dan merasa lebih diterima. Cocok untuk yang butuh ruang aman.',
-                                'author' => 'Usaratus Sakinah',
-                                'role' => 'Mahasiswa Universitas Airlangga',
-                            ],
-                        ];
-                        // Number of times to repeat the testimonials for marquee effect
-                        $repeat = 2;
-                    @endphp
-                    @for($i = 0; $i < $repeat; $i++)
-                        @foreach($testimonials as $testimonial)
-                            <div class="testimonial-card fade-in">
-                                <div class="stars">
-                                    <span class="star">★</span>
-                                    <span class="star">★</span>
-                                    <span class="star">★</span>
-                                    <span class="star">★</span>
-                                    <span class="star">★</span>
-                                </div>
-                                <p class="testimonial-text">
-                                    "{{ $testimonial['text'] }}"
-                                </p>
-                                <div class="testimonial-author">{{ $testimonial['author'] }}</div>
-                                <div class="testimonial-role">{{ $testimonial['role'] }}</div>
-                            </div>
-                        @endforeach
-                    @endfor
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                @php
+                    $testimonials = [
+                        [
+                            'text' => 'Tampilan platform Curhatorium sangat bersih dan mudah digunakan. Warnanya menenangkan, cocok untuk saat sedang merasa tidak baik.',
+                            'author' => 'Rohim',
+                            'role' => 'HoD Campaign & Branding Digimarly',
+                        ],
+                        [
+                            'text' => 'Saat stres karena masalah keluarga, Curhatorium menjadi tempat pelarian yang nyaman. Respon komunitas yang hangat membuatku merasa lebih tenang.',
+                            'author' => 'Mutmainnah F.',
+                            'role' => 'Mahasiswa Psikologi Universitas Airlangga',
+                        ],
+                        [
+                            'text' => 'Awalnya hanya iseng, tapi Curhatorium menjadi titik balik bagiku. Berbagi cerita dengan orang lain membuatku sadar bahwa aku tidak sendirian.',
+                            'author' => 'Basmah',
+                            'role' => 'Mahasiswa Gizi Universitas Negeri Surabaya',
+                        ],
+                        [
+                            'text' => 'Saya sulit bercerita, tapi di Curhatorium saya menemukan ruang yang membantu saya terbuka perlahan tanpa tuntutan untuk selalu "baik-baik saja".',
+                            'author' => 'Ali Ridho',
+                            'role' => 'Mahasiswa Teknik Universitas Negeri Surabaya',
+                        ],
+                        [
+                            'text' => 'Aku skeptis dengan layanan kesehatan mental online, tapi Curhatorium menunjukkan pendekatan yang aman, sistematis, dan nyaman untuk kami.',
+                            'author' => 'Abdul Aziz',
+                            'role' => 'Mahasiswa Teknik Universitas Negeri Surabaya',
+                        ],
+                        [
+                            'text' => 'Sebagai seorang introvert, Curhatorium memberiku ruang untuk bercerita dan merasa dipahami. Aku merasa didengar dan termotivasi untuk menjaga kesehatan mentalku.',
+                            'author' => 'Almira',
+                            'role' => 'Mahasiswa Universitas Airlangga',
+                        ],
+                        [
+                            'text' => 'Komunitas ini sangat nyaman dan suportif. Saya bisa berbagi cerita tanpa dihakimi dan merasa lebih diterima. Cocok untuk yang butuh ruang aman.',
+                            'author' => 'Usaratus Sakinah',
+                            'role' => 'Mahasiswa Universitas Airlangga',
+                        ],
+                        [
+                            'text' => 'Curhatorium adalah tempat yang nyaman untuk berbagi cerita tanpa takut dihakimi. Saya bisa mendapatkan saran dan sudut pandang baru dari orang lain.',
+                            'author' => 'Adam',
+                            'role' => 'Mahasiswa Universitas Airlangga',
+                        ],
+                    ];
+                @endphp
+                @foreach($testimonials as $testimonial)
+                <div class="bg-stone-200 p-6 rounded-lg shadow-lg flex flex-col" data-aos="fade-up" data-aos-duration="1000">
+                    <p class="text-gray-700 italic mb-auto">"{{ $testimonial['text'] }}"</p>
+                    <div class="text-right">
+                        <p class="font-bold text-[#222222]">{{ $testimonial['author'] }}</p>
+                        <p class="text-sm text-gray-500">{{ $testimonial['role'] }}</p>
+                    </div>
                 </div>
+                @endforeach
             </div>
         </div>
     </section>
 
     <!-- Pricing Section -->
-    <section id="pricing" class="pricing">
-        <div class="pricing-container">
-            <div class="pricing-header fade-in">
-                <h2 class="pricing-title">Paket & Harga</h2>
-                <p class="pricing-subtitle">
-                    Pilih paket membership sesuai kebutuhanmu.
-                </p>
+    <section id="pricing" class="w-full bg-stone-200 py-12 md:py-24 px-4">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-12" data-aos="fade-up" data-aos-duration="1000">
+                <h2 class="text-3xl md:text-4xl font-bold text-[#222222]">Paket & Harga</h2>
+                <p class="text-stone-600 mt-2 text-lg">Pilih paket membership sesuai kebutuhanmu.</p>
             </div>
-
-            <div class="landing-pricing-grid">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                 @php
                     $membershipMeta = [
                         'Calm Starter' => [
                             'price' => 0,
-                            'badge' => 'Gratis',
                             'benefits' => [
                                 '(Unlimited) Tes Kesehatan Mental',
                                 '(7 Hari) Mood and Productivity Tracker',
@@ -404,7 +305,6 @@
                         ],
                     ];
                 @endphp
-
                 @foreach($membershipMeta as $name => $meta)
                     @php
                         // Add "Terpopuler" badge to Harmony
@@ -414,124 +314,53 @@
                             $badge = 'Terpopuler';
                         }
                     @endphp
-                    <div class="{{ 'landing-pricing-card' . ($isHarmony ? ' landing-pricing-card--highlight' : '') }} fade-in">
-                        <div class="landing-pricing-card__top"></div>
-                        @if($badge)
-                            <div class="landing-pricing-card__badge">{{ $badge }}</div>
-                        @endif
-                        <div class="landing-pricing-title">{{ $name }}</div>
-                        <div class="landing-pricing-price">
-                            Rp{{ number_format($meta['price'], 0, ',', '.') }}
-                            @if(isset($meta['period']))
-                                <span class="period">/{{ $meta['period'] }}</span>
-                            @endif
-                        </div>
-                        <ul class="landing-pricing-features">
-                            @foreach($meta['benefits'] as $benefit)
-                                <li>{{ $benefit }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
+                <div class="bg-white p-6 rounded-lg shadow-md ease-in-out text-center flex flex-col{{ $isHarmony ? ' border-2 border-[#48A6A6]' : '' }}" data-aos="fade-up" data-aos-duration="1000">
+                    @if($badge)
+                    <div class="text-sm font-bold text-white bg-[#48A6A6] py-1 px-3 rounded-full self-center mb-4">{{ $badge }}</div>
+                    @endif
+                    <h3 class="text-2xl font-bold text-[#222222] mb-4">{{ $name }}</h3>
+                    <p class="text-4xl font-bold text-[#48A6A6] mb-4">Rp{{ number_format($meta['price'], 0, ',', '.') }}</p>
+                    <ul class="text-gray-600 space-y-2 mb-6 text-left">
+                        @foreach($meta['benefits'] as $benefit)
+                        <li><span class="text-[#ffcd2d] mr-2">✦</span>{{ $benefit }}</li>
+                        @endforeach
+                    </ul>
+                </div>
                 @endforeach
             </div>
         </div>
     </section>
 
     <!-- CTA Section -->
-    <section class="cta">
-        <div class="cta-container">
-            <h2 class="cta-title">
-                Ratusan Mahasiswa Telah Memulai<br>
-                Perjalanan Kesejahteraan Mental
-            </h2>
-            <p class="cta-subtitle">
-                Bergabunglah dengan ribuan mahasiswa yang sudah memulai perjalanan menuju kesehatan mental yang lebih baik.
-            </p>
-
-            <div class="cta-buttons">
-                <a href="/register" class="btn-white">
-                    Mulai Gratis
-                    <span>→</span>
-                </a>
-            </div>
-
-            <div class="cta-features">
-                <div class="cta-feature">
-                    <span>✓</span>
-                    <span>Gratis selamanya</span>
-                </div>
-                <div class="cta-feature">
-                    <span>🛡️</span>
-                    <span>100% Anonim</span>
-                </div>
-                <div class="cta-feature">
-                    <span>🕐</span>
-                    <span>Dukungan 24/7</span>
-                </div>
+    <section class="w-full bg-cover bg-center py-20 px-4 overflow-hidden" style="background-image: url('{{ asset('images/background.jpg') }}');">
+        <div class="max-w-4xl mx-auto text-center bg-white/80 backdrop-blur-sm p-10 rounded-lg shadow-xl" data-aos="zoom-out-down" data-aos-duration="1000">
+            <h2 class="text-3xl md:text-4xl font-bold text-[#222222] mb-4">Siap Memulai Perjalanan Kesehatan Mental Anda?</h2>
+            <p class="text-gray-700 text-lg mb-8">Bergabunglah dengan komunitas kami dan temukan ruang aman untuk bertumbuh.</p>
+            <a href="/register" class="bg-[#48A6A6] text-white py-3 px-8 rounded-md text-lg hover:bg-[#357979] transition-colors duration-200">Mulai Perjalananmu Sekarang</a>
+            <div class="flex justify-center items-center gap-8 mt-8 text-gray-600">
+                <span class="flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                    </svg>
+                    Gratis selamanya
+                </span>
+                <span class="flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                    </svg>
+                    100% Anonim
+                </span>
+                <span class="flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                    </svg>
+                    Tersedia  24/7
+                </span>
             </div>
         </div>
     </section>
-
-    <!-- Footer -->
     @include('components.footer')
 
-    <script>
-        // Landing page functionality
-        document.addEventListener('DOMContentLoaded', function() {
-            // Smooth scrolling and other functionality
-        });
-
-        // Fade in animation on scroll
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                }
-            });
-        }, observerOptions);
-
-        // Observe all fade-in elements
-        document.querySelectorAll('.fade-in').forEach(el => {
-            observer.observe(el);
-        });
-
-        // Initial fade in for hero
-        setTimeout(() => {
-            document.querySelector('.hero-section .fade-in').classList.add('visible');
-        }, 100);
-
-        // Smooth scrolling for navigation links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
-            });
-        });
-
-        // Navigation background on scroll
-        window.addEventListener('scroll', () => {
-            const nav = document.querySelector('nav');
-            if (window.scrollY > 50) {
-                nav.style.background = 'rgba(255, 255, 255, 0.98)';
-                nav.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.1)';
-            } else {
-                nav.style.background = 'rgba(255, 255, 255, 0.95)';
-                nav.style.boxShadow = '0 1px 4px rgba(0, 0, 0, 0.1)';
-            }
-        });
-
-        // Testimonials Marquee - No additional JavaScript needed, CSS handles the animation
-    </script>
+    @vite('resources/js/app.js')
 </body>
 </html>
