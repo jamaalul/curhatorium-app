@@ -25,22 +25,6 @@ Route::get('/portal', function () {
     return view('auth.login');
 })->name('start');
 
-Route::get('/dashboard', function () {
-    $trackerController = app(TrackerController::class);
-    $statsData = $trackerController->getStatsForDashboard();
-    $announcement = \App\Models\Announcement::query()
-        ->where('is_active', true)
-        ->where(function ($q) {
-            $q->whereNull('starts_at')->orWhere('starts_at', '<=', now());
-        })
-        ->where(function ($q) {
-            $q->whereNull('ends_at')->orWhere('ends_at', '>=', now());
-        })
-        ->latest('starts_at')
-        ->first();
-    return view('main.main', compact('statsData', 'announcement'));
-})->middleware(['auth', 'verified'])->name('dashboard');
-
 Route::get('/terms-and-conditions', function () {
     return view('terms-and-conditions');
 })->name('terms-and-conditions');
@@ -55,6 +39,23 @@ Route::get('/api/articles', [ArticleController::class, 'apiIndex'])->name('api.a
 Route::get('/articles/{slug}', [ArticleController::class, 'show'])->name('articles.show');
 
 Route::middleware('auth')->group(function () {
+    Route::get('/dashboard', function () {
+        $trackerController = app(TrackerController::class);
+        $statsData = $trackerController->getStatsForDashboard();
+        $announcement = \App\Models\Announcement::query()
+            ->where('is_active', true)
+            ->where(function ($q) {
+                $q->whereNull('starts_at')->orWhere('starts_at', '<=', now());
+            })
+            ->where(function ($q) {
+                $q->whereNull('ends_at')->orWhere('ends_at', '>=', now());
+            })
+            ->latest('starts_at')
+            ->first();
+        $user = auth()->user();
+        $cards = []; // Cards are now loaded via JavaScript
+        return view('main.main', compact('statsData', 'announcement', 'user', 'cards'));
+    })->middleware(['auth', 'verified'])->name('dashboard');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])
         ->middleware('profile.upload.limit')
@@ -89,7 +90,6 @@ Route::middleware('auth')->group(function () {
     Route::post('/api/share-and-talk/end-session/{sessionId}', [ShareAndTalkController::class, 'endSession'])->name('share-and-talk.end-session');
 
     Route::get('/mental-support-chatbot', [ChatbotController::class, 'index'])
-        ->middleware(\App\Http\Middleware\TicketGateMiddleware::class . ':mentai_chatbot')
         ->name('chatbot');
     
     // Chatbot API routes (protected by auth only, not ticket gate)
@@ -150,6 +150,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/xp-redemption', [XpRedemptionController::class, 'index'])->name('xp-redemption.index');
     Route::post('/xp-redemption/redeem', [XpRedemptionController::class, 'redeem'])->name('xp-redemption.redeem');
 
+    Route::get('/cards', [CardController::class, 'getCards'])->name('cards.all');
 });
 
 require __DIR__.'/auth.php';

@@ -8,7 +8,7 @@
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     @vite('resources/css/app.css')
 </head>
-<body>
+<body class="w-full">
     <nav class="w-full h-16 bg-white flex items-center px-4 fixed top-0 left-0 z-50 gap-6">
         <div class="h-full flex items-center justify-center py-3 gap-2 mr-auto" onclick="window.location.href = '/'">
             <img src="{{ asset('assets/mini_logo.png') }}" alt="mini_logo" class="h-full">
@@ -28,18 +28,33 @@
 
     <!-- Hero Section -->
     <section class="w-full h-fit md:h-screen bg-white pb-4 px-4 pt-16" id="hero">
-        <div class="h-full w-full bg-cover rounded-xl flex flex-col items-center overflow-hidden shadow-inner p-4" style="background-image: url('{{ asset('images/background.jpg') }}');">
+        <div class="h-full w-full bg-cover rounded-xl flex flex-col items-center overflow-hidden shadow-md p-4" style="background-image: url('{{ asset('images/background.jpg') }}');">
             <div class="flex flex-col items-center text-center gap-4 p-6 md:p-12">
-                <h1 class="text-4xl md:text-9xl font-medium text-[#ffcc00] tracking-tight" style="text-shadow: 0px 1px 2px rgba(0,0,0,0.1);">Curhatorium</h1>
-                <p class="text-gray-600 text-base text-ellipsis md:text-lg">Curhatorium adalah ruang aman untuk berbagi cerita, mendapatkan dukungan, dan menemukan ketenangan tanpa rasa takut dihakimi. Mulai perjalananmu menuju kesehatan mental yang lebih baik bersama komunitas yang peduli dan anonim.</p>
+                <h1 class="text-6xl md:text-9xl font-medium text-[#ffcc00] tracking-tight" style="text-shadow: 0px 1px 2px rgba(0,0,0,0.1);" data-aos="zoom-out-down" data-aos-duration="1000">Curhatorium</h1>
+                <p class="text-gray-600 text-base text-ellipsis md:text-lg" data-aos="zoom-out" data-aos-duration="1000" data-aos-delay="100">Curhatorium adalah ruang aman untuk berbagi cerita, mendapatkan dukungan, dan menemukan ketenangan tanpa rasa takut dihakimi. Mulai perjalananmu menuju kesehatan mental yang lebih baik bersama komunitas yang peduli dan anonim.</p>
             </div>
-            <div class="flex flex-col md:flex-row gap-4 w-full md:w-auto justify-center items-center">
+            <div class="flex flex-col md:flex-row gap-4 w-full md:w-auto justify-center items-center" data-aos="zoom-out-up" data-aos-duration="1000">
                 <button class="px-4 py-2 text-[#48A6A6] border border-[#48A6A6] rounded-md transition-colors duration-200 hover:bg-[#48A6A6] hover:text-white w-full md:w-auto" onclick="window.location.href = '#about'">Kenali Lebih Lanjut</button>
                 <button class="bg-[#48A6A6] px-4 py-2 text-white rounded-md transition-colors duration-200 hover:bg-[#357979] w-full md:w-auto" onclick="window.location.href = '/register'">Mulai Perjalananmu</button>
             </div>
-            <img src="{{ asset('images/platform.jpg') }}" alt="curhatorium platform" class="w-full max-w-full md:max-w-[80vw] object-cover rounded-md shadow-lg mt-7 hidden md:block" data-aos="fade-up" data-aos-duration="2000">
+            <img src="{{ asset('images/platform.png') }}" alt="curhatorium platform" class="w-full max-w-full md:max-w-[70vw] object-cover rounded-md shadow-lg mt-7 hidden md:block" data-aos="fade-up" data-aos-duration="2000" data-aos-delay="200">
         </div>
     </section>
+
+    <section class="flex flex-col items-center justify-center w-full bg-white px-4 py-6 h-fit gap-8">
+        <p class="md:text-lg text-center text-stone-600">Berkolaborasi dengan</p>
+        <div class="flex flex-wrap items-center justify-center gap-6 md:gap-10 w-full">
+            <img src="images/hc.png" alt="Help Center Unair" class="h-12 md:h-16 filter grayscale">
+            <img src="images/kpmw.png" alt="KPMW Unair" class="h-10 md:h-16 filter grayscale">
+            <img src="images/upp.png" alt="Unit Pelayanan Psikologi Unair" class="h-10 md:h-16 filter grayscale">
+            <img src="images/sdg.png" alt="SDG Center Unair" class="h-10 md:h-16 filter grayscale">
+            <img src="images/ahpc.png" alt="Airlangga Health Promotion Center" class="h-10 md:h-16 filter grayscale">
+            <img src="images/hji.png" alt="Halo Jiwa Indonesia" class="h-10 md:h-16 filter grayscale">
+            <img src="images/dikti.png" alt="Halo Jiwa Indonesia" class="h-10 md:h-16 filter grayscale">
+            <img src="images/belmawa.png" alt="Halo Jiwa Indonesia" class="h-10 md:h-16 filter grayscale">
+        </div>
+    </section>
+
     <section class="w-full h-fit bg-white pt-0 md:pt-24" id="statistics">
         <div class="h-full w-full rounded-xl flex flex-col items-center overflow-hidden p-4">
             <h1 class="text-2xl md:text-3xl text-[#222222] font-bold text-center mb-4">Curhatorium dalam Angka</h1>
@@ -67,7 +82,7 @@
         </div>
     </section>
     <!-- About Us Section -->
-    <section id="about" class="w-full bg-white py-12 md:py-24 px-4">
+    <section id="about" class="w-full bg-white py-12 md:py-24 px-4 overflow-hidden">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-8 md:gap-12">
             <div class="w-full md:w-1/2" data-aos="fade-right" data-aos-duration="1000">
                 <div class="bg-[#ffcd2d] p-8 rounded-lg shadow-lg">
@@ -94,6 +109,21 @@
         </div>
     </section>
 
+    <!-- Photo Grid Section -->
+    {{-- <section class="w-full relative">
+        <div class="grid grid-cols-2 md:grid-cols-4">
+            <div class="aspect-[4/3] bg-gray-300 bg-cover bg-center" style="background-image: url('images/gal1.jpg');"></div>
+            <div class="aspect-[4/3] bg-gray-300 bg-cover bg-center" style="background-image: url('images/gal2.jpg');"></div>
+            <div class="aspect-[4/3] bg-gray-300 bg-cover bg-center" style="background-image: url('images/gal3.jpg');"></div>
+            <div class="aspect-[4/3] bg-gray-300 bg-cover bg-center" style="background-image: url('images/gal4.jpg');"></div>
+            <div class="aspect-[4/3] bg-gray-300 bg-cover bg-center" style="background-image: url('images/gal5.jpg');"></div>
+            <div class="aspect-[4/3] bg-gray-300 bg-cover" style="background-image: url('images/gal6.jpg');"></div>
+            <div class="aspect-[4/3] bg-gray-300 bg-cover bg-center" style="background-image: url('images/gal7.jpg');"></div>
+            <div class="aspect-[4/3] bg-gray-300 bg-cover bg-center" style="background-image: url('images/gal8.jpg');"></div>
+        </div>
+        <div class="w-full bottom-0 h-1/2 absolute flex left-0 right-0" style="background: linear-gradient(to top, #222222 10%, transparent 100%);"></div>
+    </section> --}}
+
     <!-- Features Section -->
     <section id="features" class="w-full bg-stone-200 py-12 md:py-24 px-4">
         <div class="max-w-7xl mx-auto">
@@ -101,7 +131,7 @@
                 <h2 class="text-3xl md:text-4xl font-bold text-[#222222]">Semua yang Anda Butuhkan</h2>
                 <p class="text-stone-600 mt-2 text-lg">Dukungan kesehatan mental yang komprehensif, dirancang khusus untuk Anda.</p>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <div class="bg-white p-6 rounded-lg shadow-md text-center flex flex-col items-center gap-2" data-aos="fade-up" data-aos-delay="300" data-aos-duration="1000">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#48a6a6" class="size-12">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
@@ -149,13 +179,13 @@
     </section>
 
     <!-- Testimonials Section -->
-    <section id="testimonials" class="w-full bg-[#222222] py-12 md:py-24 px-4">
+    <section id="testimonials" class="w-full bg-[#222222] py-12 md:py-24 px-4 relative">
         <div class="max-w-7xl mx-auto">
             <div class="text-center mb-12" data-aos="fade-up" data-aos-duration="1000">
                 <h2 class="text-3xl md:text-4xl font-bold text-stone-200">Cerita Nyata, <span class="text-[#48A6A6]">Dampak Nyata</span></h2>
                 <p class="text-stone-400 mt-2 text-lg">Lihat bagaimana Curhatorium telah mengubah hidup orang seperti Anda.</p>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 @php
                     $testimonials = [
                         [
@@ -211,6 +241,7 @@
                 @endforeach
             </div>
         </div>
+        <div class="w-full bottom-0 h-1/2 absolute flex left-0 right-0" style="background: linear-gradient(to top, #222222 10%, transparent 100%);"></div>
     </section>
 
     <!-- Pricing Section -->
@@ -332,29 +363,29 @@
     </section>
 
     <!-- CTA Section -->
-    <section class="w-full bg-cover bg-center py-20 px-4 overflow-hidden" style="background-image: url('{{ asset('images/background.jpg') }}');">
-        <div class="max-w-4xl mx-auto text-center bg-white/80 backdrop-blur-sm p-10 rounded-lg shadow-xl" data-aos="zoom-out-down" data-aos-duration="1000">
-            <h2 class="text-3xl md:text-4xl font-bold text-[#222222] mb-4">Siap Memulai Perjalanan Kesehatan Mental Anda?</h2>
-            <p class="text-gray-700 text-lg mb-8">Bergabunglah dengan komunitas kami dan temukan ruang aman untuk bertumbuh.</p>
-            <a href="/register" class="bg-[#48A6A6] text-white py-3 px-8 rounded-md text-lg hover:bg-[#357979] transition-colors duration-200">Mulai Perjalananmu Sekarang</a>
-            <div class="flex justify-center items-center gap-8 mt-8 text-gray-600">
+    <section class="w-full bg-cover bg-center py-12 md:py-20 px-2 md:px-4 overflow-hidden" style="background-image: url('{{ asset('images/background.jpg') }}');">
+        <div class="max-w-4xl mx-auto text-center bg-white/80 backdrop-blur-sm p-4 md:p-10 rounded-lg shadow-xl" data-aos="zoom-out-down" data-aos-duration="1000">
+            <h2 class="text-2xl md:text-4xl font-bold text-[#222222] mb-4">Siap Memulai Perjalanan Kesehatan Mentalmu?</h2>
+            <p class="text-gray-700 text-base md:text-lg mb-8">Bergabunglah dengan komunitas kami dan temukan ruang aman untuk bertumbuh.</p>
+            <a href="/register" class="bg-[#48A6A6] text-white py-2 md:py-3 px-4 md:px-8 rounded-md text-base md:text-lg hover:bg-[#357979] transition-colors duration-200 block w-fit mb-4 md:mb-0 mx-auto">Gabung Sekarang</a>
+            <div class="flex flex-col md:flex-row justify-center items-center gap-4 md:gap-8 mt-8 text-gray-600">
                 <span class="flex items-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 md:size-6">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                     </svg>
                     Gratis selamanya
                 </span>
                 <span class="flex items-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 md:size-6">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
                     </svg>
                     100% Anonim
                 </span>
                 <span class="flex items-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 md:size-6">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                     </svg>
-                    Tersedia  24/7
+                    Tersedia 24/7
                 </span>
             </div>
         </div>
