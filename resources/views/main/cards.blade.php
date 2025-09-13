@@ -230,6 +230,45 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     window.addEventListener('resize', handleViewChange);
+    shuffleButton.addEventListener('click', function() {
+        console.log('Shuffle button clicked');
+        // 1. Shuffle the allCards array
+        allCards.sort(() => Math.random() - 0.5);
+        console.log('Cards shuffled:', allCards);
+
+        // 2. Re-render the appropriate view
+        handleViewChange(true); // Pass a flag to indicate a shuffle
+    });
+
+    function handleViewChange(isShuffle = false) {
+        console.log('handleViewChange called. isShuffle:', isShuffle);
+        const containerWidth = document.querySelector('section.w-full').offsetWidth;
+        const cardWidth = 240 + 16; // card width 240px + gap 1rem/16px
+        const maxCards = Math.floor(containerWidth / cardWidth);
+
+        const isSlider = window.innerWidth < 768 || maxCards < 3;
+        console.log('Current view should be:', isSlider ? 'Slider' : 'Grid');
+
+        if (isSlider) {
+            sliderView.classList.remove('card-hidden');
+            gridView.classList.add('card-hidden');
+            // Re-render slider if it's a shuffle or if swiper doesn't exist
+            if (isShuffle || !swiper) {
+                console.log('Rendering slider...');
+                renderSlider(allCards);
+            }
+        } else {
+            sliderView.classList.add('card-hidden');
+            gridView.classList.remove('card-hidden');
+            if (swiper) {
+                swiper.destroy(true, true);
+                swiper = null;
+            }
+            // Always re-render grid on view change or shuffle
+            console.log('Rendering grid...');
+            renderGrid(allCards);
+        }
+    }
     shuffleButton.addEventListener('click', fetchAndRenderCards);
 
     AOS.init();
