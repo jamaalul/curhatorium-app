@@ -21,6 +21,7 @@ class Chatbot {
         this.chatbotMobileMenuBtn = document.getElementById('chatbot-mobile-menu-btn');
         this.chatbotSidebar = document.getElementById('chatbot-sidebar');
         this.mobileOverlay = document.getElementById('mobile-overlay');
+        this.centerNewChatBtn = document.getElementById('center-new-chat-btn');
         
         this.init();
     }
@@ -30,6 +31,7 @@ class Chatbot {
         this.loadMarkdownLibraries();
         this.updateSessionList();
         this.setupMobileMenu();
+        this.showNoSessionOverlay();
     }
 
     setupEventListeners() {
@@ -44,6 +46,12 @@ class Chatbot {
         // New chat button
         if (this.newChatBtn) {
             this.newChatBtn.addEventListener('click', () => {
+                this.createNewSession();
+            });
+        }
+
+        if (this.centerNewChatBtn) {
+            this.centerNewChatBtn.addEventListener('click', () => {
                 this.createNewSession();
             });
         }
@@ -313,30 +321,32 @@ class Chatbot {
         if (overlay) overlay.style.display = 'none';
     }
 
+    showNoSessionOverlay() {
+        const overlay = document.getElementById('no-session-overlay');
+        if (overlay) overlay.style.display = 'block';
+    }
+
     setupMobileMenu() {
-        // Mobile menu functionality
-        if (this.chatbotMobileMenuBtn && this.chatbotSidebar) {
-            this.chatbotMobileMenuBtn.addEventListener('click', () => {
-                this.toggleMobileMenu();
-            });
-        }
+        // This function is currently empty as the event listener
+        // is already set up in setupEventListeners.
+        // Kept for structure.
     }
 
     toggleMobileMenu() {
         if (this.chatbotSidebar) {
-            this.chatbotSidebar.classList.toggle('active');
+            this.chatbotSidebar.classList.toggle('open');
         }
         if (this.mobileOverlay) {
-            this.mobileOverlay.classList.toggle('active');
+            this.mobileOverlay.classList.toggle('open');
         }
     }
 
     closeMobileMenu() {
         if (this.chatbotSidebar) {
-            this.chatbotSidebar.classList.remove('active');
+            this.chatbotSidebar.classList.remove('open');
         }
         if (this.mobileOverlay) {
-            this.mobileOverlay.classList.remove('active');
+            this.mobileOverlay.classList.remove('open');
         }
     }
 }
