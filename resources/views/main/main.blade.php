@@ -10,6 +10,7 @@
 </head>
 <body class="pt-16">
     @include('components.navbar')
+    @include('main.announcement')
     <section class="w-full h-fit px-4 py-8 flex flex-col gap-2 items-center justify-center bg-cover shadow-inner relative" style="background-image: url('{{ asset('images/background.jpg') }}');">
         <h1 class="text-3xl md:text-5xl font-bold text-center">
             Halo {{ $user->username }} !

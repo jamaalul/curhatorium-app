@@ -7,14 +7,15 @@
   <meta name="csrf-token" content="{{ csrf_token() }}">
   <link rel="stylesheet" href="{{ asset('css/global.css') }}" />
   <link rel="stylesheet" href="{{ asset('css/chatbot.css') }}">
+  @vite('resources/css/app.css')
 </head>
 <body>
   <!-- Navbar Chatbot Kustom -->
   <nav class="chatbot-navbar">
     <button class="chatbot-mobile-menu-btn" id="chatbot-mobile-menu-btn" aria-label="Buka/tutup sidebar">
-      <span></span>
-      <span></span>
-      <span></span>
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-layout-sidebar size-6" viewBox="0 0 16 16">
+        <path d="M0 3a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm5-1v12h9a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1zM4 2H2a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h2z"/>
+      </svg>
     </button>
     
     <div class="chatbot-logo-box" onclick="window.location.href = '/dashboard'">
