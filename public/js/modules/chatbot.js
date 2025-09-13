@@ -21,8 +21,7 @@ class Chatbot {
         this.chatbotMobileMenuBtn = document.getElementById('chatbot-mobile-menu-btn');
         this.chatbotSidebar = document.getElementById('chatbot-sidebar');
         this.mobileOverlay = document.getElementById('mobile-overlay');
-        this.centerNewChatBtn = document.getElementById('center-new-chat-btn-2');
-        this.initialView = document.getElementById('initial-view');
+        this.centerNewChatBtn = document.getElementById('center-new-chat-btn');
         
         this.init();
     }
@@ -32,7 +31,7 @@ class Chatbot {
         this.loadMarkdownLibraries();
         this.updateSessionList();
         this.setupMobileMenu();
-        this.showInitialView();
+        this.showNoSessionOverlay();
     }
 
     setupEventListeners() {
@@ -229,7 +228,7 @@ class Chatbot {
             this.renderMessages();
             this.updateSessionList();
             this.enableInput();
-            this.hideInitialView();
+            this.hideNoSessionOverlay();
         } catch (error) {
             alert('Failed to create new session. Please try again.');
         } finally {
@@ -246,7 +245,7 @@ class Chatbot {
             this.messages = session.messages || [];
             this.renderMessages();
             this.enableInput();
-            this.hideInitialView();
+            this.hideNoSessionOverlay();
         } catch (error) {
             alert('Failed to load session. Please try again.');
         }
@@ -317,12 +316,14 @@ class Chatbot {
         if (this.loadingIndicator) this.loadingIndicator.style.display = 'none';
     }
 
-    hideInitialView() {
-        if (this.initialView) this.initialView.style.display = 'none';
+    hideNoSessionOverlay() {
+        const overlay = document.getElementById('no-session-overlay');
+        if (overlay) overlay.style.display = 'none';
     }
 
-    showInitialView() {
-        if (this.initialView) this.initialView.style.display = 'flex';
+    showNoSessionOverlay() {
+        const overlay = document.getElementById('no-session-overlay');
+        if (overlay) overlay.style.display = 'block';
     }
 
     setupMobileMenu() {

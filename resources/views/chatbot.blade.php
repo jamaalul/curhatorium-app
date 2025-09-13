@@ -81,11 +81,13 @@
         @endif
         <div class="chat-container">
           <div id="chat-messages" class="chat-messages"></div>
-          <div id="initial-view" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 24px; padding: 40px 0; text-align: center; margin-top: 40px;">
-            <div style="font-size: 1.2em; color: #595959; font-weight: 500;">No conversation started</div>
-            <button id="center-new-chat-btn-2" class="new-chat-btn center-new-chat-btn" style="font-size:1.1em; padding: 12px 32px; border-radius: 24px; box-shadow: 0 2px 8px rgba(72,166,166,0.08); background: linear-gradient(90deg, #48a6a6 60%, #4ecdc4 100%); min-width: 0; width: auto; max-width: 100%;">Mulai percakapan</button>
-          </div>
           <div id="loading" class="loading-indicator" style="display:none;">Sedang berpikir...</div>
+          <div id="no-session-overlay" style="display: none; text-align: center; margin-top: 40px;">
+            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 24px; padding: 40px 0;">
+              <div style="font-size: 1.2em; color: #595959; font-weight: 500;">No conversation started</div>
+              <button id="center-new-chat-btn" class="new-chat-btn center-new-chat-btn">Mulai percakapan</button>
+            </div>
+          </div>
         </div>
         
         <div class="chatbot-form-container">
