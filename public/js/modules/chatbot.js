@@ -21,7 +21,7 @@ class Chatbot {
         this.chatbotMobileMenuBtn = document.getElementById('chatbot-mobile-menu-btn');
         this.chatbotSidebar = document.getElementById('chatbot-sidebar');
         this.mobileOverlay = document.getElementById('mobile-overlay');
-        this.centerNewChatBtn = document.getElementById('center-new-chat-btn');
+        this.centerNewChatBtn = document.getElementById('center-new-chat-btn-2');
         this.initialView = document.getElementById('initial-view');
         
         this.init();
