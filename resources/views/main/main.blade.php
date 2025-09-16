@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="{{asset('css/global.css')}}">
     @vite('resources/css/app.css')
 </head>
-<body class="pt-16">
+<body class="pt-16 w-full overflow-x-hidden">
     @include('components.navbar')
     @include('main.announcement')
     <section class="w-full h-fit px-4 py-8 flex flex-col gap-2 items-center justify-center bg-cover shadow-inner relative" style="background-image: url('{{ asset('images/background.jpg') }}');">

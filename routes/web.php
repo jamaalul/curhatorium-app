@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AgendaController;
 use App\Http\Controllers\ArticleController;
@@ -17,216 +18,22 @@ use App\Http\Controllers\XpController;
 use App\Http\Controllers\XpRedemptionController;
 
 
-Route::get('/', function () {
-    return view('landing');
-})->name('land');
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register web routes for your application. These
+| routes are loaded by the RouteServiceProvider and all of them will
+| be assigned to the "web" middleware group. Make something great!
+|
+*/
 
-Route::get('/portal', function () {
-    return view('auth.login');
-})->name('start');
-
-Route::get('/terms-and-conditions', function () {
-    return view('terms-and-conditions');
-})->name('terms-and-conditions');
-
-Route::get('/privacy-policy', function () {
-    return view('privacy-policy');
-})->name('privacy-policy');
-
-// Public Articles page
-Route::get('/articles', [ArticleController::class, 'index'])->name('articles.index');
-Route::get('/api/articles', [ArticleController::class, 'apiIndex'])->name('api.articles.index');
-Route::get('/articles/{slug}', [ArticleController::class, 'show'])->name('articles.show');
-
-Route::middleware('auth')->group(function () {
-    Route::get('/dashboard', function () {
-        $trackerController = app(TrackerController::class);
-        $statsData = $trackerController->getStatsForDashboard();
-        $announcement = \App\Models\Announcement::query()
-            ->where('is_active', true)
-            ->where(function ($q) {
-                $q->whereNull('starts_at')->orWhere('starts_at', '<=', now());
-            })
-            ->where(function ($q) {
-                $q->whereNull('ends_at')->orWhere('ends_at', '>=', now());
-            })
-            ->latest('starts_at')
-            ->first();
-        $user = auth()->user();
-        $cards = []; // Cards are now loaded via JavaScript
-        return view('main.main', compact('statsData', 'announcement', 'user', 'cards'));
-    })->middleware(['auth', 'verified'])->name('dashboard');
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])
-        ->middleware('profile.upload.limit')
-        ->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-
-    Route::get('/support-group-discussion', [SgdController::class, 'show'])->name('sgd');
-
-    Route::get('/deep-cards', [CardController::class, 'index'])
-        ->middleware(\App\Http\Middleware\TicketGateMiddleware::class . ':deep_cards');
-
-    Route::get('/share-and-talk', [ShareAndTalkController::class, 'index'])->name('share-and-talk');
-    Route::get('/share-and-talk/professionals', [ShareAndTalkController::class, 'getProfessionals']);
-    Route::get('/share-and-talk/chat/{professionalId}', [ShareAndTalkController::class, 'chatConsultation'])
-        ->middleware(\App\Http\Middleware\ShareAndTalkTicketGateMiddleware::class)
-        ->name('share-and-talk.chat');
-    Route::get('/share-and-talk/start-chat-session/{sessionId}', [ShareAndTalkController::class, 'startChatSession'])
-        ->name('share-and-talk.start-chat-session');
-    Route::get('/share-and-talk/chat-session/{sessionId}', [ShareAndTalkController::class, 'userChatSession'])
-        ->name('share-and-talk.chat-session');
-    Route::get('/share-and-talk/video/{professionalId}', [ShareAndTalkController::class, 'videoConsultation'])
-        ->middleware(\App\Http\Middleware\ShareAndTalkVideoTicketGateMiddleware::class)
-        ->name('share-and-talk.video');
-    Route::get('/share-and-talk/start-video-session/{sessionId}', [ShareAndTalkController::class, 'startVideoSession'])
-        ->name('share-and-talk.start-video-session');
-    Route::get('/share-and-talk/video-session/{sessionId}', [ShareAndTalkController::class, 'userVideoSession'])
-        ->name('share-and-talk.video-session');
-    Route::post('/share-and-talk/chat/user-send', [ShareAndTalkController::class, 'userSend'])->name('share-and-talk.userSend');
-    
-    // Video consultation API endpoints
-    Route::post('/api/share-and-talk/cancel-session/{sessionId}', [ShareAndTalkController::class, 'cancelSession'])->name('share-and-talk.cancel-session');
-    Route::post('/api/share-and-talk/end-session/{sessionId}', [ShareAndTalkController::class, 'endSession'])->name('share-and-talk.end-session');
-
-    Route::get('/mental-support-chatbot', [ChatbotController::class, 'index'])
-        ->name('chatbot');
-    
-    // Chatbot API routes (protected by auth only, not ticket gate)
-    Route::get('/api/chatbot/sessions', [ChatbotController::class, 'getSessions'])->name('chatbot.get-sessions');
-    Route::post('/api/chatbot/session', [ChatbotController::class, 'createSession'])->name('chatbot.create-session');
-    Route::get('/api/chatbot/session/{sessionId}', [ChatbotController::class, 'getSession'])->name('chatbot.get-session');
-    Route::delete('/api/chatbot/session/{sessionId}', [ChatbotController::class, 'deleteSession'])->name('chatbot.delete-session');
-    Route::post('/api/chatbot', [ChatbotController::class, 'chat'])->name('chatbot.api');
-
-    Route::get('/tracker', [TrackerController::class,'index'])
-        ->middleware(\App\Http\Middleware\TicketGateMiddleware::class . ':tracker')
-        ->name('tracker.index');
-    Route::post('tracker/track', [TrackerController::class,'track'])
-        ->middleware(\App\Http\Middleware\TicketGateMiddleware::class . ':tracker')
-        ->name('tracker.entry');
-    Route::get('/tracker/result', [TrackerController::class, 'result'])->name('tracker.result');
-    Route::get('/tracker/history', [TrackerController::class,'history'])->name('tracker.history');
-    Route::get('/tracker/stat/{id}', [TrackerController::class, 'showStat'])->name('tracker.stat.detail');
-    Route::get('/tracker/weekly-stat/{id}', [TrackerController::class, 'showWeeklyStat'])
-        ->middleware(\App\Http\Middleware\InnerPeaceMembershipMiddleware::class)
-        ->name('tracker.weekly-stat.detail');
-    Route::get('/tracker/monthly-stat/{id}', [TrackerController::class, 'showMonthlyStat'])
-        ->middleware(\App\Http\Middleware\InnerPeaceMembershipMiddleware::class)
-        ->name('tracker.monthly-stat.detail');
-
-    Route::get('/api/tracker/stats', [TrackerController::class, 'getStats'])->name('api.tracker.stats');
-    Route::get('/api/tracker/weekly-stats', [TrackerController::class, 'getWeeklyStats'])
-        ->middleware(\App\Http\Middleware\InnerPeaceMembershipMiddleware::class)
-        ->name('api.tracker.weekly-stats');
-    Route::get('/api/tracker/monthly-stats', [TrackerController::class, 'getMonthlyStats'])
-        ->middleware(\App\Http\Middleware\InnerPeaceMembershipMiddleware::class)
-        ->name('api.tracker.monthly-stats');
-
-    Route::get('mental-health-test', function () {
-        return view('mental-test.form');
-    })->name('mhc-sf.form');
-    Route::post('/mental-test/submit', [MentalTestController::class, 'store'])->name('mental-test.store');
-
-    Route::get('missions-of-the-day', function () {
-        return view('missions');
-    })
-        ->middleware(\App\Http\Middleware\TicketGateMiddleware::class . ':missions')
-        ->name('missions.index');
-
-    Route::get('/membership', [\App\Http\Controllers\MembershipController::class, 'index'])->name('membership.index');
-    Route::post('/membership/buy/{id}', [\App\Http\Controllers\MembershipController::class, 'buy'])->name('membership.buy');
-    
-    // XP System Routes
-    Route::post('/api/xp/award', [XpController::class, 'awardXp'])->name('xp.award');
-    Route::get('/api/xp/progress', [XpController::class, 'getXpProgress'])->name('xp.progress');
-    Route::get('/api/xp/daily-summary', [XpController::class, 'getDailyXpSummary'])->name('xp.daily-summary');
-    Route::get('/api/xp/breakdown', [XpController::class, 'getXpBreakdown'])->name('xp.breakdown');
-    Route::get('/api/xp/can-access-psychologist', [XpController::class, 'canAccessPsychologist'])->name('xp.can-access-psychologist');
-    Route::get('/api/xp/history', [XpController::class, 'getXpHistory'])->name('xp.history');
-
-
-    // XP Redemption Routes
-    Route::get('/xp-redemption', [XpRedemptionController::class, 'index'])->name('xp-redemption.index');
-    Route::post('/xp-redemption/redeem', [XpRedemptionController::class, 'redeem'])->name('xp-redemption.redeem');
-
-    Route::get('/cards', [CardController::class, 'getCards'])->name('cards.all');
-});
-
-require __DIR__.'/auth.php';
-
-
-// API
-
-Route::middleware('auth')->group(function () {
-    Route::get('/user', [AuthenticatedSessionController::class, 'getUser'])->name('user.get');
-
-    Route::get('/agenda/pending', [AgendaController::class, 'getPending'])->name('getPendingAgenda');
-    Route::get('/quote/today', [QuoteController::class, 'quoteOfTheDay']);
-
-    Route::get('/support-group-discussion/get', [SgdController::class, 'getGroups'])->name('group.get');
-    Route::match(['GET', 'POST'], '/support-group-discussion/join', [SgdController::class, 'joinGroup'])
-        ->middleware(\App\Http\Middleware\TicketGateMiddleware::class . ':support_group')
-        ->name('group.join');
-    // Route::get('/support-group-discussion/join/{id}', [SgdController::class, 'groupMeet'])->name('group.meet');
-    Route::post('/support-group-discussion/enter-meeting', [SgdController::class, 'enterMeetingRoom'])->name('group.enter-meeting');
-    Route::post('/support-group-discussion/leave', [SgdController::class, 'leaveGroup'])->name('group.leave');
-
-    // SGD Payment Routes (Admin only)
-    Route::get('/support-group-discussion/{groupId}/payment-data', [SgdController::class, 'getPaymentData'])->name('group.payment-data');
-    Route::get('/support-group-discussion/{groupId}/consumption-details', [SgdController::class, 'getConsumptionDetails'])->name('group.consumption-details');
-    Route::post('/support-group-discussion/payment-summary', [SgdController::class, 'getPaymentSummary'])->name('group.payment-summary');
-
-    Route::get('/share-and-talk/messages/{sessionId}', [ShareAndTalkController::class, 'getMessages'])->name('share-and-talk.messages');
-});
-
-Route::middleware(['auth'])->group(function () {
-    Route::get('/missions-of-the-day', [MissionController::class, 'index'])
-        ->middleware(\App\Http\Middleware\TicketGateMiddleware::class . ':missions')
-        ->name('missions.index');
-    Route::post('/missions-of-the-day/{mission}/complete', [MissionController::class, 'complete'])->name('missions.complete');
-});
-
-
-Route::get('/share-and-talk/facilitator/{sessionId}', [ShareAndTalkController::class, 'facilitatorChat'])->name('share-and-talk.facilitator');
-Route::get('/share-and-talk/facilitator-video/{sessionId}', [ShareAndTalkController::class, 'facilitatorVideo'])->name('share-and-talk.facilitator-video');
-Route::post('/share-and-talk/chat/facilitator-send', [ShareAndTalkController::class, 'facilitatorSend'])->name('share-and-talk.facilitatorSend');
-Route::get('/api/share-and-talk/messages/{sessionId}', [ShareAndTalkController::class,'getMessages'])->name('share-and-talk.fetch');
-Route::get('/api/share-and-talk/session-status/{sessionId}', [ShareAndTalkController::class, 'getSessionStatus']);
-Route::post('/api/share-and-talk/cancel-session/{sessionId}', [ShareAndTalkController::class, 'cancelSessionByUser']);
-Route::post('/api/share-and-talk/professional-online/{professionalId}', [ShareAndTalkController::class, 'setProfessionalOnline']);
-Route::get('/share-and-talk/activate-session/{sessionId}', [ShareAndTalkController::class, 'activateSession'])->name('share-and-talk.activate-session');
-Route::post('/api/share-and-talk/manual-activate/{sessionId}', [ShareAndTalkController::class, 'manualActivateSession'])->name('share-and-talk.manual-activate');
-
-// Professional Authentication Routes
-Route::get('/professional/login', [\App\Http\Controllers\Auth\ProfessionalAuthenticatedSessionController::class, 'create'])->name('professional.login');
-Route::post('/professional/login', [\App\Http\Controllers\Auth\ProfessionalAuthenticatedSessionController::class, 'store'])->name('professional.login');
-Route::post('/professional/logout', [\App\Http\Controllers\Auth\ProfessionalAuthenticatedSessionController::class, 'destroy'])->name('professional.logout');
-
-// Professional Dashboard Routes (Protected)
-Route::middleware([\App\Http\Middleware\AuthenticateProfessional::class])->group(function () {
-    Route::get('/professional/{professionalId}/dashboard', [\App\Http\Controllers\ProfessionalDashboardController::class, 'dashboard'])->name('professional.dashboard');
-    Route::post('/professional/{professionalId}/update-availability', [\App\Http\Controllers\ProfessionalDashboardController::class, 'updateAvailability'])->name('professional.update-availability');
-    Route::get('/professional/{professionalId}/availability', [\App\Http\Controllers\ProfessionalDashboardController::class, 'getAvailability'])->name('professional.get-availability');
-    Route::post('/professional/{professionalId}/change-password', [\App\Http\Controllers\ProfessionalDashboardController::class, 'changePassword'])->name('professional.change-password');
-    Route::post('/professional/logout', [\App\Http\Controllers\ProfessionalDashboardController::class, 'logout'])->name('professional.dashboard.logout');
-});
-
-Route::post('/mark-onboarding-completed', function () {
-    if (auth()->check()) {
-        auth()->user()->update(['onboarding_completed' => true]);
-        return response()->json(['success' => true]);
-    }
-    return response()->json(['success' => false], 401);
-})->middleware('auth');
-
-Route::post('/reset-onboarding', function () {
-    if (auth()->check()) {
-        auth()->user()->update(['onboarding_completed' => false]);
-        return response()->json(['success' => true]);
-    }
-    return response()->json(['success' => false], 401);
-})->middleware('auth');
+// Publicly Accessible Routes
+Route::get('/', fn () => view('landing'))->name('land');
+Route::get('/portal', fn () => view('auth.login'))->name('start');
+Route::get('/terms-and-conditions', fn () => view('terms-and-conditions'))->name('terms-and-conditions');
+Route::get('/privacy-policy', fn () => view('privacy-policy'))->name('privacy-policy');
 
 Route::get('/info/{feature}', function ($feature) {
     $featureData = [
@@ -287,4 +94,189 @@ Route::get('/info/{feature}', function ($feature) {
 
     return view('info.feature', ['feature' => $featureData[$feature]]);
 })->name('info.feature');
+
+
+// Public Articles
+Route::controller(ArticleController::class)->prefix('articles')->as('articles.')->group(function () {
+    Route::get('/', 'index')->name('index');
+    Route::get('/{slug}', 'show')->name('show');
+});
+Route::get('/api/articles', [ArticleController::class, 'apiIndex'])->name('api.articles.index');
+
+
+// Authenticated User Routes
+Route::middleware('auth')->group(function () {
+    // Dashboard
+    Route::get('/dashboard', function () {
+        $trackerController = app(TrackerController::class);
+        $statsData = $trackerController->getStatsForDashboard();
+        $announcement = \App\Models\Announcement::query()
+            ->where('is_active', true)
+            ->where(fn ($q) => $q->whereNull('starts_at')->orWhere('starts_at', '<=', now()))
+            ->where(fn ($q) => $q->whereNull('ends_at')->orWhere('ends_at', '>=', now()))
+            ->latest('starts_at')
+            ->first();
+        return view('main.main', compact('statsData', 'announcement'));
+    })->middleware('verified')->name('dashboard');
+
+    // Profile
+    Route::controller(ProfileController::class)->prefix('profile')->as('profile.')->group(function () {
+        Route::get('/', 'edit')->name('edit');
+        Route::patch('/', 'update')->middleware('profile.upload.limit')->name('update');
+        Route::delete('/', 'destroy')->name('destroy');
+    });
+
+    // Onboarding
+    Route::post('/mark-onboarding-completed', function () {
+        if (Auth::check()) {
+            Auth::user()->update(['onboarding_completed' => true]);
+            return response()->json(['success' => true]);
+        }
+        return response()->json(['success' => false], 401);
+    })->middleware('auth');
+
+    Route::post('/reset-onboarding', function () {
+        if (Auth::check()) {
+            Auth::user()->update(['onboarding_completed' => false]);
+            return response()->json(['success' => true]);
+        }
+        return response()->json(['success' => false], 401);
+    })->middleware('auth');
+
+    // Core Features
+    Route::get('/support-group-discussion', [SgdController::class, 'show'])->name('sgd');
+    Route::get('/deep-cards', [CardController::class, 'index'])->middleware(\App\Http\Middleware\TicketGateMiddleware::class . ':deep_cards');
+    Route::get('/mental-support-chatbot', [ChatbotController::class, 'index'])->name('chatbot');
+    Route::get('mental-health-test', fn () => view('mental-test.form'))->name('mhc-sf.form');
+    Route::post('/mental-test/submit', [MentalTestController::class, 'store'])->name('mental-test.store');
+    Route::get('/membership', [\App\Http\Controllers\MembershipController::class, 'index'])->name('membership.index');
+    Route::post('/membership/buy/{id}', [\App\Http\Controllers\MembershipController::class, 'buy'])->name('membership.buy');
+
+    // Missions
+    Route::controller(MissionController::class)->prefix('missions-of-the-day')->as('missions.')->middleware(\App\Http\Middleware\TicketGateMiddleware::class . ':missions')->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::post('/{mission}/complete', 'complete')->name('complete');
+    });
+
+    // Share and Talk
+    Route::controller(ShareAndTalkController::class)->prefix('share-and-talk')->as('share-and-talk.')->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::get('/professionals', 'getProfessionals');
+        Route::get('/chat/{professionalId}', 'chatConsultation')->middleware(\App\Http\Middleware\ShareAndTalkTicketGateMiddleware::class)->name('chat');
+        Route::get('/start-chat-session/{sessionId}', 'startChatSession')->name('start-chat-session');
+        Route::get('/chat-session/{sessionId}', 'userChatSession')->name('chat-session');
+        Route::get('/video/{professionalId}', 'videoConsultation')->middleware(\App\Http\Middleware\ShareAndTalkVideoTicketGateMiddleware::class)->name('video');
+        Route::get('/start-video-session/{sessionId}', 'startVideoSession')->name('start-video-session');
+        Route::get('/video-session/{sessionId}', 'userVideoSession')->name('video-session');
+        Route::post('/chat/user-send', 'userSend')->name('userSend');
+        Route::get('/messages/{sessionId}', 'getMessages')->name('messages');
+        Route::get('/facilitator/{sessionId}', 'facilitatorChat')->name('facilitator');
+        Route::get('/facilitator-video/{sessionId}', 'facilitatorVideo')->name('facilitator-video');
+        Route::post('/chat/facilitator-send', 'facilitatorSend')->name('facilitatorSend');
+        Route::get('/activate-session/{sessionId}', 'activateSession')->name('activate-session');
+    });
+
+    // Tracker
+    Route::controller(TrackerController::class)->prefix('tracker')->as('tracker.')->group(function () {
+        Route::get('/', 'index')->middleware(\App\Http\Middleware\TicketGateMiddleware::class . ':tracker')->name('index');
+        Route::post('/track', 'track')->middleware(\App\Http\Middleware\TicketGateMiddleware::class . ':tracker')->name('entry');
+        Route::get('/result', 'result')->name('result');
+        Route::get('/history', 'history')->name('history');
+        Route::get('/stat/{id}', 'showStat')->name('stat.detail');
+        Route::middleware(\App\Http\Middleware\InnerPeaceMembershipMiddleware::class)->group(function () {
+            Route::get('/weekly-stat/{id}', 'showWeeklyStat')->name('weekly-stat.detail');
+            Route::get('/monthly-stat/{id}', 'showMonthlyStat')->name('monthly-stat.detail');
+        });
+    });
+
+    // XP System
+    Route::controller(XpController::class)->prefix('api/xp')->as('xp.')->group(function () {
+        Route::post('/award', 'awardXp')->name('award');
+        Route::get('/progress', 'getXpProgress')->name('progress');
+        Route::get('/daily-summary', 'getDailyXpSummary')->name('daily-summary');
+        Route::get('/breakdown', 'getXpBreakdown')->name('breakdown');
+        Route::get('/can-access-psychologist', 'canAccessPsychologist')->name('can-access-psychologist');
+        Route::get('/history', 'getXpHistory')->name('history');
+    });
+
+    // XP Redemption
+    Route::controller(XpRedemptionController::class)->prefix('xp-redemption')->as('xp-redemption.')->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::post('/redeem', 'redeem')->name('redeem');
+    });
+
+    // Misc API
+    Route::get('/cards', [CardController::class, 'getCards'])->name('cards.all');
+    Route::get('/user', [AuthenticatedSessionController::class, 'getUser'])->name('user.get');
+    Route::get('/agenda/pending', [AgendaController::class, 'getPending'])->name('getPendingAgenda');
+    Route::get('/quote/today', [QuoteController::class, 'quoteOfTheDay']);
+
+    // API Routes
+    Route::prefix('api')->as('api.')->group(function () {
+        // Chatbot API
+        Route::controller(ChatbotController::class)->prefix('chatbot')->as('chatbot.')->group(function () {
+            Route::get('/sessions', 'getSessions')->name('get-sessions');
+            Route::post('/session', 'createSession')->name('create-session');
+            Route::get('/session/{sessionId}', 'getSession')->name('get-session');
+            Route::delete('/session/{sessionId}', 'deleteSession')->name('delete-session');
+            Route::post('/', 'chat')->name('api');
+        });
+
+        // Tracker API
+        Route::controller(TrackerController::class)->prefix('tracker')->as('tracker.')->group(function () {
+            Route::get('/stats', 'getStats')->name('stats');
+            Route::middleware(\App\Http\Middleware\InnerPeaceMembershipMiddleware::class)->group(function () {
+                Route::get('/weekly-stats', 'getWeeklyStats')->name('weekly-stats');
+                Route::get('/monthly-stats', 'getMonthlyStats')->name('monthly-stats');
+            });
+        });
+
+        // Share and Talk API
+        Route::controller(ShareAndTalkController::class)->prefix('share-and-talk')->as('share-and-talk.')->group(function () {
+            Route::post('/cancel-session/{sessionId}', 'cancelSession')->name('cancel-session');
+            Route::post('/end-session/{sessionId}', 'endSession')->name('end-session');
+            Route::get('/messages/{sessionId}', 'getMessages')->name('fetch');
+            Route::get('/session-status/{sessionId}', 'getSessionStatus');
+            Route::post('/cancel-session/{sessionId}', 'cancelSessionByUser');
+            Route::post('/professional-online/{professionalId}', 'setProfessionalOnline');
+            Route::post('/manual-activate/{sessionId}', 'manualActivateSession')->name('manual-activate');
+        });
+
+        // Support Group Discussion API
+        Route::controller(SgdController::class)->prefix('support-group-discussion')->as('group.')->group(function () {
+            Route::get('/get', 'getGroups')->name('get');
+            Route::match(['GET', 'POST'], '/join', 'joinGroup')->middleware(\App\Http\Middleware\TicketGateMiddleware::class . ':support_group')->name('join');
+            Route::post('/enter-meeting', 'enterMeetingRoom')->name('enter-meeting');
+            Route::post('/leave', 'leaveGroup')->name('leave');
+            // Admin-only payment routes
+            Route::get('/{groupId}/payment-data', 'getPaymentData')->name('payment-data');
+            Route::get('/{groupId}/consumption-details', 'getConsumptionDetails')->name('consumption-details');
+            Route::post('/payment-summary', 'getPaymentSummary')->name('payment-summary');
+        });
+    });
+});
+
+// Professional Routes
+Route::prefix('professional')->as('professional.')->group(function () {
+    // Authentication
+    Route::controller(\App\Http\Controllers\Auth\ProfessionalAuthenticatedSessionController::class)->group(function () {
+        Route::get('/login', 'create')->name('login');
+        Route::post('/login', 'store');
+        Route::post('/logout', 'destroy')->name('logout');
+    });
+
+    // Dashboard & Actions (Protected)
+    Route::middleware(\App\Http\Middleware\AuthenticateProfessional::class)->group(function () {
+        Route::controller(\App\Http\Controllers\ProfessionalDashboardController::class)->group(function () {
+            Route::get('/{professionalId}/dashboard', 'dashboard')->name('dashboard');
+            Route::post('/{professionalId}/update-availability', 'updateAvailability')->name('update-availability');
+            Route::get('/{professionalId}/availability', 'getAvailability')->name('get-availability');
+            Route::post('/{professionalId}/change-password', 'changePassword')->name('change-password');
+            Route::post('/logout', 'logout')->name('dashboard.logout');
+        });
+    });
+});
+
+
+require __DIR__.'/auth.php';
 
