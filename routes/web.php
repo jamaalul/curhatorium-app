@@ -117,7 +117,7 @@ Route::middleware('auth')->group(function () {
             ->where(fn ($q) => $q->whereNull('ends_at')->orWhere('ends_at', '>=', now()))
             ->latest('starts_at')
             ->first();
-        return view('main.main', compact('statsData', 'announcement'));
+        return view('main.main', compact('statsData', 'announcement', 'user'));
     })->middleware('verified')->name('dashboard');
 
     // Profile
