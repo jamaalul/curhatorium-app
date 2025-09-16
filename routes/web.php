@@ -15,7 +15,7 @@ use App\Http\Controllers\MentalTestController;
 use App\Http\Controllers\MissionController;
 use App\Http\Controllers\XpController;
 use App\Http\Controllers\XpRedemptionController;
-
+use Illuminate\Container\Attributes\Auth;
 
 Route::get('/', function () {
     return view('landing');
@@ -52,7 +52,7 @@ Route::middleware('auth')->group(function () {
             })
             ->latest('starts_at')
             ->first();
-        $user = auth()->user();
+        $user = Illuminate\Support\Facades\Auth::user();
         $cards = []; // Cards are now loaded via JavaScript
         return view('main.main', compact('statsData', 'announcement', 'user', 'cards'));
     })->middleware(['auth', 'verified'])->name('dashboard');
