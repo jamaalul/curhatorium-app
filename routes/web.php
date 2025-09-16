@@ -108,6 +108,7 @@ Route::get('/api/articles', [ArticleController::class, 'apiIndex'])->name('api.a
 Route::middleware('auth')->group(function () {
     // Dashboard
     Route::get('/dashboard', function () {
+        $user = Auth::user();
         $trackerController = app(TrackerController::class);
         $statsData = $trackerController->getStatsForDashboard();
         $announcement = \App\Models\Announcement::query()
