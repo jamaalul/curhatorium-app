@@ -97,4 +97,12 @@ class Professional extends Authenticatable
     {
         return $this->hasMany(ChatSession::class);
     }
+
+    /**
+     * Relationship with schedule slots
+     */
+    public function scheduleSlots()
+    {
+        return $this->hasMany(ProfessionalScheduleSlot::class);
+    }
 }

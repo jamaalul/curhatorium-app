@@ -3,12 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Models\Professional;
+use App\Services\ScheduleService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class ProfessionalDashboardController extends Controller
 {
+    public function __construct(private ScheduleService $scheduleService)
+    {
+    }
+
     public function index($professionalId)
     {
         $professional = Professional::findOrFail($professionalId);
@@ -117,4 +122,64 @@ class ProfessionalDashboardController extends Controller
             'message' => 'Password changed successfully.'
         ]);
     }
-} 
+
+    public function setAvailability(Request $request)
+    {
+        $request->validate([
+            'days' => 'required|array',
+            'days.*' => 'integer|between:0,6', // 0 for Sunday, 6 for Saturday
+            'start_time' => 'required|date_format:H:i',
+            'end_time' => 'required|date_format:H:i|after:start_time',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
+        ]);
+
+        $professional = Auth::guard('professional')->user();
+
+        $this->scheduleService->generateSlots(
+            $professional,
+            $request->days,
+            $request->start_time,
+            $request->end_time,
+            $request->start_date,
+            $request->end_date
+        );
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Availability set successfully.'
+        ]);
+    }
+
+    public function getSchedule(Request $request, Professional $professional)
+    {
+        if (Auth::guard('professional')->id() != $professional->id) {
+            abort(403);
+        }
+
+        $slots = $professional->scheduleSlots()
+            ->where('slot_start_time', '>=', $request->start)
+            ->where('slot_end_time', '<=', $request->end)
+            ->get();
+
+        $events = $slots->map(function ($slot) {
+            $status = $slot->status;
+            $color = '#6b7280'; // Default to gray
+            if ($status === 'available') {
+                $color = '#10b981'; // Green
+            } elseif ($status === 'booked') {
+                $color = '#ef4444'; // Red
+            }
+
+            return [
+                'title' => ucfirst($status),
+                'start' => $slot->slot_start_time,
+                'end' => $slot->slot_end_time,
+                'color' => $color,
+                'allDay' => false
+            ];
+        });
+
+        return response()->json($events);
+    }
+}

@@ -35,7 +35,7 @@ class PusherController extends Controller
 
     public function terminate(Request $request, $room)
     {
-        MessageSent::dispatch('Session terminated', $room);
+        MessageSent::dispatch('Session terminated', $room, 0);
         return redirect()->route('pusher.index');
     }
 }

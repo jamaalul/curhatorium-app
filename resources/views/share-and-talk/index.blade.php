@@ -120,24 +120,6 @@
         </div>
     </div>
 
-    <!-- Checkout Modal -->
-    <div id="checkout-modal" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50" style="display:none;">
-        <div class="bg-white rounded-lg shadow-xl w-full max-w-md m-4 p-6 relative">
-            <button class="absolute top-4 right-4 text-gray-500 hover:text-gray-800" id="close-modal" aria-label="Tutup">&times;</button>
-            <div class="mb-4">
-                <div>
-                    <h2 id="modal-title" class="text-xl font-bold">Pesan Konsultasi</h2>
-                    <p id="modal-professional-title" class="text-gray-500"></p>
-                </div>
-            </div>
-            <form id="checkout-form">
-                <div id="consultation-type-section" class="mb-6">
-                    <div id="consultation-type-options" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
-                </div>
-                <button type="submit" class="w-full bg-[#48A6A6] text-white py-2 px-4 rounded-md hover:bg-[#357979] transition-colors duration-200">Konfirmasi Pemesanan</button>
-            </form>
-        </div>
-    </div>
 
     @include('components.footer')
 
@@ -170,7 +152,7 @@
             const section = document.getElementById('professionals-section');
             const title = document.getElementById('professionals-title');
 
-            title.textContent = type === 'psychiatrist' ? 'Profesional Tersedia' : 'Ranger Tersedia';
+            title.textContent = type === 'psychiatrist' ? 'Daftar Psikolog' : 'Daftar Rangers';
             
             section.style.display = 'block';
             renderProfessionals(allProfessionals);
@@ -223,74 +205,8 @@
         }
 
         function startConsultation(professionalId) {
-            const professional = allProfessionals.find(p => p.id === professionalId);
-            if (!professional || professional.status !== 'online') return;
-            
-            professional.type = currentProfessionalType;
-            openCheckoutModal(professional);
+            window.location.href = `/share-and-talk/checkout/${professionalId}`;
         }
-
-        const modal = document.getElementById('checkout-modal');
-        const closeModalBtn = document.getElementById('close-modal');
-        const modalProfessionalTitle = document.getElementById('modal-professional-title');
-        const consultationTypeOptions = document.getElementById('consultation-type-options');
-        let selectedProfessional = null;
-
-        function openCheckoutModal(professional) {
-            selectedProfessional = professional;
-            document.getElementById('modal-title').textContent = `Pesan Sesi dengan ${professional.name}`;
-            modalProfessionalTitle.textContent = professional.title;
-
-            let options = '';
-            if (professional.type === 'psychiatrist') {
-                options = `
-                    <label class="consultation-option-card border rounded-lg p-4 cursor-pointer hover:border-blue-500 has-[:checked]:border-blue-500 has-[:checked]:ring-2 has-[:checked]:ring-blue-200">
-                        <input type='radio' name='consultation_type' value='chat' class="hidden" checked>
-                        <span class="font-bold">Chat</span>
-                        <span class="text-sm text-gray-500 block">Konsultasi berbasis chat</span>
-                    </label>
-                    <label class="consultation-option-card border rounded-lg p-4 cursor-pointer hover:border-blue-500 has-[:checked]:border-blue-500 has-[:checked]:ring-2 has-[:checked]:ring-blue-200">
-                        <input type='radio' name='consultation_type' value='video' class="hidden">
-                        <span class="font-bold">Video Call</span>
-                        <span class="text-sm text-gray-500 block">Konsultasi berbasis video call</span>
-                    </label>
-                `;
-            } else {
-                options = `
-                    <label class="consultation-option-card border rounded-lg p-4 cursor-pointer hover:border-blue-500 has-[:checked]:border-blue-500 has-[:checked]:ring-2 has-[:checked]:ring-blue-200">
-                        <input type='radio' name='consultation_type' value='chat' class="hidden" checked>
-                        <span class="font-bold">Chat</span>
-                        <span class="text-sm text-gray-500 block">Konsultasi berbasis chat</span>
-                    </label>
-                `;
-            }
-            consultationTypeOptions.innerHTML = options;
-            
-            modal.style.display = 'flex';
-        }
-
-        function closeCheckoutModal() {
-            modal.style.display = 'none';
-            selectedProfessional = null;
-        }
-
-        closeModalBtn.onclick = closeCheckoutModal;
-        window.onclick = function(event) {
-            if (event.target === modal) closeCheckoutModal();
-        };
-
-        document.getElementById('checkout-form').onsubmit = function(e) {
-            e.preventDefault();
-            
-            const consultationType = document.querySelector('input[name="consultation_type"]:checked').value;
-            const professionalId = selectedProfessional.id;
-            
-            if (consultationType === 'video') {
-                window.location.href = `/share-and-talk/waiting`;
-            } else {
-                window.location.href = `/share-and-talk/waiting`;
-            }
-        };
     </script>
 </body>
 </html>
