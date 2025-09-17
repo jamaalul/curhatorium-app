@@ -92,6 +92,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/share-and-talk/video-session/{sessionId}', [ShareAndTalkController::class, 'userVideoSession'])
         ->name('share-and-talk.video-session');
     Route::post('/share-and-talk/chat/user-send', [ShareAndTalkController::class, 'userSend'])->name('share-and-talk.userSend');
+    Route::get('/share-and-talk/waiting', [ShareAndTalkController::class, 'wait'])->name('share-and-talk.waiting');
     
     // Video consultation API endpoints
     Route::post('/api/share-and-talk/cancel-session/{sessionId}', [ShareAndTalkController::class, 'cancelSession'])->name('share-and-talk.cancel-session');

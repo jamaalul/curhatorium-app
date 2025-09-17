@@ -286,9 +286,9 @@
             const professionalId = selectedProfessional.id;
             
             if (consultationType === 'video') {
-                window.location.href = `/share-and-talk/video/${professionalId}`;
+                window.location.href = `/share-and-talk/waiting`;
             } else {
-                window.location.href = `/share-and-talk/chat/${professionalId}`;
+                window.location.href = `/share-and-talk/waiting`;
             }
         };
     </script>
