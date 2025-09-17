@@ -22,8 +22,12 @@ Route::get('/', function () {
     return view('landing');
 })->name('land');
 
-Route::get('/pusher', function () {
+Route::get('/pusher/send', function () {
     MessageSent::dispatch('lorem ipsum');
+})->name('pusher.send');
+
+Route::get('/pusher', function () {
+    return view('pusher');
 })->name('pusher');
 
 Route::get('/portal', function () {
