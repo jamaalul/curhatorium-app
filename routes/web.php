@@ -16,19 +16,18 @@ use App\Http\Controllers\MentalTestController;
 use App\Http\Controllers\MissionController;
 use App\Http\Controllers\XpController;
 use App\Http\Controllers\XpRedemptionController;
+use App\Http\Controllers\PusherController;
 use Illuminate\Container\Attributes\Auth;
 
 Route::get('/', function () {
     return view('landing');
 })->name('land');
 
-Route::get('/pusher/send', function () {
-    MessageSent::dispatch('lorem ipsum');
-})->name('pusher.send');
-
-Route::get('/pusher', function () {
-    return view('pusher');
-})->name('pusher');
+Route::get('/pusher', [PusherController::class, 'index'])->name('pusher.index');
+Route::get('/pusher/room/{room}', [PusherController::class, 'room'])->name('pusher.room');
+Route::post('/pusher/room', [PusherController::class, 'createRoom'])->name('pusher.createRoom');
+Route::post('/pusher/message', [PusherController::class, 'sendMessage'])->name('pusher.sendMessage');
+Route::post('/pusher/terminate/{room}', [PusherController::class, 'terminate'])->name('pusher.terminate');
 
 Route::get('/portal', function () {
     return view('auth.login');
