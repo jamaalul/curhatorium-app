@@ -1,5 +1,6 @@
 <?php
 
+use App\Events\MessageSent;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AgendaController;
@@ -20,6 +21,10 @@ use Illuminate\Container\Attributes\Auth;
 Route::get('/', function () {
     return view('landing');
 })->name('land');
+
+Route::get('/pusher', function () {
+    MessageSent::dispatch('lorem ipsum');
+})->name('pusher');
 
 Route::get('/portal', function () {
     return view('auth.login');
