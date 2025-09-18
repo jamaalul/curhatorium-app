@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('professional_id')->constrained()->onDelete('cascade');
             $table->dateTime('slot_start_time');
             $table->dateTime('slot_end_time');
-            $table->enum('status', ['available', 'booked', 'pending_confirmation'])->default('available');
+            $table->enum('status', ['available', 'booked', 'pending_confirmation', 'completed'])->default('available');
             $table->foreignId('booked_by_user_id')->nullable()->constrained('users')->onDelete('set null');
             $table->timestamps();
 

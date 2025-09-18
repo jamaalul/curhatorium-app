@@ -16,6 +16,7 @@
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
     </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 </head>
 <body class="pt-16 w-full overflow-x-hidden bg-gray-50">
     @include('components.navbar')
@@ -110,7 +111,12 @@
 
             <!-- Professionals Section -->
             <div class="professionals-section" id="professionals-section" style="display: none;">
-                <h2 class="text-2xl md:text-3xl font-bold text-center mb-8" id="professionals-title">Profesional Tersedia</h2>
+                <div class="flex flex-col md:flex-row justify-between items-center mb-8">
+                    <h2 class="text-2xl md:text-3xl font-bold text-center" id="professionals-title">Profesional Tersedia</h2>
+                    <div class="relative mt-4 md:mt-0">
+                        <input type="text" id="date-filter" class="border border-gray-300 rounded-md py-2 px-4" placeholder="Filter by date...">
+                    </div>
+                </div>
                 
                 <!-- Professionals Grid -->
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="professionals-grid">
@@ -123,15 +129,16 @@
 
     @include('components.footer')
 
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script>
         let allProfessionals = [];
         let currentProfessionalType = '';
 
-        async function fetchProfessionals(type = '') {
-            let url = '/share-and-talk/professionals';
-            if (type) {
-                url += `?type=${encodeURIComponent(type)}`;
-            }
+        async function fetchProfessionals(type = '', date = '') {
+            let url = new URL(window.location.origin + '/share-and-talk/professionals');
+            if (type) url.searchParams.append('type', type);
+            if (date) url.searchParams.append('date', date);
+            
             try {
                 const response = await fetch(url);
                 if (!response.ok) {
@@ -145,9 +152,9 @@
             }
         }
 
-        async function showProfessionals(type) {
+        async function showProfessionals(type, date = '') {
             currentProfessionalType = type;
-            allProfessionals = await fetchProfessionals(type);
+            allProfessionals = await fetchProfessionals(type, date);
             
             const section = document.getElementById('professionals-section');
             const title = document.getElementById('professionals-title');
@@ -157,7 +164,9 @@
             section.style.display = 'block';
             renderProfessionals(allProfessionals);
 
-            section.scrollIntoView({ behavior: 'smooth' });
+            if (!date) { // Only scroll into view on the initial click
+                section.scrollIntoView({ behavior: 'smooth' });
+            }
         }
 
         function getSpecialtiesArray(specialties) {
@@ -190,14 +199,13 @@
                             ${getSpecialtiesArray(p.specialties).map(s => `<span class="bg-gray-200 text-gray-800 text-xs font-medium px-2 py-1 rounded-full">${s}</span>`).join('')}
                         </div>
                     </div>
-                    <div class="flex justify-between items-center mb-4">
-                        <p class="font-semibold text-sm">Ketersediaan:</p>
+                    <div class="flex justify-between items-center mb-4 text-sm">
+                        <p class="font-semibold">Jadwal terdekat:</p>
                         <div class="flex items-center gap-2">
-                            <span class="h-3 w-3 rounded-full ${p.status === 'online' ? 'bg-green-500' : 'bg-gray-400'}"></span>
-                            <span class="capitalize text-sm">${p.status}</span>
+                            <span class="font-medium text-gray-700">${p.next_availability_formatted}</span>
                         </div>
                     </div>
-                    <button class="w-full text-white py-2 px-4 rounded-md transition-colors duration-200 ${p.status === 'online' ? 'bg-green-500 hover:bg-green-600' : 'bg-gray-400 cursor-not-allowed'}" onclick="startConsultation(${p.id})" ${p.status !== 'online' ? 'disabled' : ''}>
+                    <button class="w-full bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-md transition-colors duration-200" onclick="startConsultation(${p.id})">
                         Pesan Sesi
                     </button>
                 </div>
@@ -207,6 +215,17 @@
         function startConsultation(professionalId) {
             window.location.href = `/share-and-talk/checkout/${professionalId}`;
         }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            flatpickr("#date-filter", {
+                dateFormat: "Y-m-d",
+                onChange: function(selectedDates, dateStr, instance) {
+                    if (currentProfessionalType) {
+                        showProfessionals(currentProfessionalType, dateStr);
+                    }
+                }
+            });
+        });
     </script>
 </body>
 </html>

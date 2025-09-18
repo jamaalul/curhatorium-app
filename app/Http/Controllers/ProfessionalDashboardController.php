@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Professional;
+use App\Models\ProfessionalScheduleSlot;
 use App\Services\ScheduleService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -24,44 +25,6 @@ class ProfessionalDashboardController extends Controller
         return view('professional.dashboard', compact('professional'));
     }
 
-    public function updateAvailability(Request $request, $professionalId)
-    {
-        $request->validate([
-            'availability' => 'required|in:online,offline',
-            'availabilityText' => 'required|string|max:255',
-        ]);
-
-        $professional = Professional::findOrFail($professionalId);
-        if (Auth::guard('professional')->id() != $professionalId) {
-            abort(403);
-        }
-        
-        $professional->update([
-            'availability' => $request->availability,
-            'availabilityText' => $request->availabilityText,
-        ]);
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Availability updated successfully.',
-            'professional' => $professional
-        ]);
-    }
-
-    public function getAvailability($professionalId)
-    {
-        $professional = Professional::findOrFail($professionalId);
-        if (Auth::guard('professional')->id() != $professionalId) {
-            abort(403);
-        }
-        
-        return response()->json([
-            'availability' => $professional->availability,
-            'availabilityText' => $professional->availabilityText,
-            'effectiveAvailability' => $professional->getEffectiveAvailability(),
-            'effectiveAvailabilityText' => $professional->getEffectiveAvailabilityText(),
-        ]);
-    }
 
     public function dashboard($professionalId)
     {
@@ -71,14 +34,21 @@ class ProfessionalDashboardController extends Controller
         }
         
         // Get recent sessions for this professional
-        $recentSessions = $professional->chatSessions()
-            ->whereHas('user') // Ensure the user exists
-            ->with('user')
-            ->orderBy('created_at', 'desc')
+        $recentSessions = $professional->scheduleSlots()
+            ->whereIn('status', ['booked', 'pending_confirmation', 'completed'])
+            ->whereNotNull('booked_by_user_id')
+            ->with('bookedBy')
+            ->orderBy('slot_start_time', 'desc')
             ->limit(10)
             ->get();
+
+        $pendingBookings = $professional->scheduleSlots()
+            ->where('status', 'pending_confirmation')
+            ->with('bookedBy')
+            ->orderBy('slot_start_time', 'asc')
+            ->get();
         
-        return view('professional.dashboard', compact('professional', 'recentSessions'));
+        return view('professional.dashboard', compact('professional', 'recentSessions', 'pendingBookings'));
     }
 
     public function logout(Request $request)
@@ -169,6 +139,8 @@ class ProfessionalDashboardController extends Controller
                 $color = '#10b981'; // Green
             } elseif ($status === 'booked') {
                 $color = '#ef4444'; // Red
+            } elseif ($status === 'pending_confirmation') {
+                $color = '#f59e0b'; // Yellow
             }
 
             return [
@@ -181,5 +153,40 @@ class ProfessionalDashboardController extends Controller
         });
 
         return response()->json($events);
+    }
+
+    public function acceptBooking(ProfessionalScheduleSlot $slot)
+    {
+        // Authorization check
+        if ($slot->professional_id !== Auth::guard('professional')->id()) {
+            abort(403);
+        }
+
+        if ($slot->status === 'pending_confirmation') {
+            $slot->status = 'booked';
+            $slot->save();
+            // Here you would also send a notification to the user.
+            return back()->with('success', 'Booking accepted.');
+        }
+
+        return back()->with('error', 'This booking is not pending confirmation.');
+    }
+
+    public function declineBooking(ProfessionalScheduleSlot $slot)
+    {
+        // Authorization check
+        if ($slot->professional_id !== Auth::guard('professional')->id()) {
+            abort(403);
+        }
+
+        if ($slot->status === 'pending_confirmation') {
+            $slot->status = 'available';
+            $slot->booked_by_user_id = null;
+            $slot->save();
+            // Here you would also send a notification to the user.
+            return back()->with('success', 'Booking declined.');
+        }
+
+        return back()->with('error', 'This booking is not pending confirmation.');
     }
 }

@@ -206,9 +206,9 @@ Route::post('/professional/logout', [\App\Http\Controllers\Auth\ProfessionalAuth
 // Professional Dashboard Routes (Protected)
 Route::middleware([\App\Http\Middleware\AuthenticateProfessional::class])->group(function () {
     Route::get('/professional/{professionalId}/dashboard', [\App\Http\Controllers\ProfessionalDashboardController::class, 'dashboard'])->name('professional.dashboard');
-    Route::post('/professional/{professionalId}/update-availability', [\App\Http\Controllers\ProfessionalDashboardController::class, 'updateAvailability'])->name('professional.update-availability');
-    Route::get('/professional/{professionalId}/availability', [\App\Http\Controllers\ProfessionalDashboardController::class, 'getAvailability'])->name('professional.get-availability');
     Route::post('/professional/availability/set', [\App\Http\Controllers\ProfessionalDashboardController::class, 'setAvailability'])->name('professional.set-availability');
+    Route::post('/professional/slots/{slot}/accept', [\App\Http\Controllers\ProfessionalDashboardController::class, 'acceptBooking'])->name('professional.booking.accept');
+    Route::post('/professional/slots/{slot}/decline', [\App\Http\Controllers\ProfessionalDashboardController::class, 'declineBooking'])->name('professional.booking.decline');
     Route::post('/professional/{professionalId}/change-password', [\App\Http\Controllers\ProfessionalDashboardController::class, 'changePassword'])->name('professional.change-password');
     Route::post('/professional/logout', [\App\Http\Controllers\ProfessionalDashboardController::class, 'logout'])->name('professional.dashboard.logout');
 });

@@ -6,11 +6,30 @@
     <title>Curhatorium | Checkout</title>
     @vite('resources/css/app.css')
     <link rel="stylesheet" href="{{ asset('css/global.css') }}">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js'></script>
     <style>
-        .flatpickr-calendar {
-            box-shadow: none;
-            border: 1px solid #e5e7eb;
+        :root {
+            --fc-border-color: #e5e7eb;
+            --fc-daygrid-event-dot-width: 8px;
+            --fc-list-event-hover-bg-color: #f3f4f6;
+        }
+        .fc .fc-toolbar-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+        .fc .fc-button-primary {
+            background-color: #48A6A6;
+            border-color: #48A6A6;
+        }
+        .fc .fc-button-primary:hover {
+            background-color: #357979;
+            border-color: #357979;
+        }
+        .fc .fc-daygrid-day.fc-day-today {
+            background-color: #f0fdfa;
+        }
+        .fc-event {
+            cursor: pointer;
         }
     </style>
 </head>
@@ -31,11 +50,11 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                         <div>
                             <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap</label>
-                            <input type="text" id="name" name="name" class="w-full border-gray-300 rounded-md shadow-sm" readonly>
+                            <input type="text" id="name" name="name" class="w-full border-gray-300 rounded-md shadow-sm" required>
                         </div>
                         <div>
                             <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                            <input type="email" id="email" name="email" class="w-full border-gray-300 rounded-md shadow-sm" readonly>
+                            <input type="email" id="email" name="email" class="w-full border-gray-300 rounded-md shadow-sm" required>
                         </div>
                         <div>
                             <label for="whatsapp_number" class="block text-sm font-medium text-gray-700 mb-1">Nomor WhatsApp</label>
@@ -48,7 +67,7 @@
                         <h3 class="text-lg font-semibold mb-3">Jenis Konsultasi</h3>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <label class="consultation-option-card border rounded-lg p-4 cursor-pointer has-[:checked]:border-blue-500 has-[:checked]:ring-2 has-[:checked]:ring-blue-200">
-                                <input type="radio" name="consultation_type" value="chat" class="hidden" checked onchange="updateSummary()">
+                                <input type="radio" name="consultation_type" value="chat" class="hidden" checked onchange="updateSummary()" required>
                                 <span class="font-bold">Chat</span>
                                 <span class="text-sm text-gray-500 block">Konsultasi via chat</span>
                             </label>
@@ -65,19 +84,10 @@
                     <!-- Schedule Appointment -->
                     <div>
                         <h3 class="text-lg font-semibold mb-3">Jadwalkan Sesi</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label for="date" class="block text-sm font-medium text-gray-700 mb-2">Tanggal</label>
-                                <div id="datepicker-container"></div>
-                                <input type="hidden" id="date" name="date">
-                            </div>
-                            <div>
-                                <label for="time" class="block text-sm font-medium text-gray-700 mb-2">Waktu</label>
-                                <div id="time-slots-container" class="grid grid-cols-2 gap-2">
-                                    <p class="text-sm text-gray-500 col-span-2">Pilih tanggal untuk melihat waktu yang tersedia.</p>
-                                </div>
-                            </div>
-                        </div>
+                        <div id='calendar'></div>
+                        <input type="hidden" id="date" name="date" required>
+                        <input type="hidden" id="time" name="time" required>
+                        <p id="selected-slot-text" class="mt-4 text-center font-semibold text-gray-700"></p>
                     </div>
                 </div>
 
@@ -108,15 +118,12 @@
                             <span class="font-bold" id="summary-remaining-tickets"></span>
                         </div>
                     </div>
-                    <button type="submit" class="w-full mt-6 bg-[#48A6A6] text-white py-3 px-4 rounded-md hover:bg-[#357979] transition-colors duration-200 font-semibold">Konfirmasi Pesanan</button>
+                    <button type="submit" class="w-full mt-6 bg-[#48A6A6] text-white py-3 px-4 rounded-md hover:bg-[#357979] transition-colors duration-200 font-semibold">Reservasi</button>
                 </div>
             </div>
         </form>
     </div>
 
-    @include('components.footer')
-
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script>
         const userTickets = @json($tickets);
         const professionalType = @json($professional->type);
@@ -154,40 +161,57 @@
         }
 
         document.addEventListener('DOMContentLoaded', function() {
-            const professionalId = {{ $professional->id }};
-            const timeSlotsContainer = document.getElementById('time-slots-container');
+            const calendarEl = document.getElementById('calendar');
+            const dateInput = document.getElementById('date');
+            const timeInput = document.getElementById('time');
+            const selectedSlotText = document.getElementById('selected-slot-text');
+            let selectedEvent = null;
 
-            flatpickr("#datepicker-container", {
-                inline: true,
-                dateFormat: "Y-m-d",
-                minDate: "today",
-                onChange: async function(selectedDates, dateStr, instance) {
-                    document.getElementById('date').value = dateStr;
-                    timeSlotsContainer.innerHTML = '<p class="text-sm text-gray-500 col-span-2">Memuat...</p>';
-
-                    try {
-                        const response = await fetch(`/api/professionals/${professionalId}/availability?date=${dateStr}`);
-                        if (!response.ok) {
-                            throw new Error('Network response was not ok');
-                        }
-                        const slots = await response.json();
-
-                        if (slots.length > 0) {
-                            timeSlotsContainer.innerHTML = slots.map(time => `
-                                <label class="border rounded-md p-2 text-center cursor-pointer has-[:checked]:bg-blue-500 has-[:checked]:text-white has-[:checked]:border-blue-500">
-                                    <input type="radio" name="time" value="${time}" class="hidden">
-                                    <span>${time}</span>
-                                </label>
-                            `).join('');
-                        } else {
-                            timeSlotsContainer.innerHTML = '<p class="text-sm text-gray-500 col-span-2">Tidak ada waktu yang tersedia pada tanggal ini.</p>';
-                        }
-                    } catch (error) {
-                        console.error('Error fetching time slots:', error);
-                        timeSlotsContainer.innerHTML = '<p class="text-sm text-red-500 col-span-2">Gagal memuat waktu.</p>';
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'timeGridWeek',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek'
+                },
+                events: `/api/professionals/{{ $professional->id }}/schedule`,
+                slotMinTime: '08:00:00',
+                slotMaxTime: '18:00:00',
+                allDaySlot: false,
+                eventDataTransform: function(eventData) {
+                    const now = new Date();
+                    const eventStart = new Date(eventData.start);
+                    if (eventStart < now) {
+                        eventData.color = '#d1d5db'; // Gray for past events
+                        eventData.extendedProps = { isPast: true };
                     }
+                    return eventData;
+                },
+                eventClick: function(info) {
+                    if (info.event.extendedProps.isPast || info.event.backgroundColor === '#ef4444') { // Past or Booked slot
+                        return;
+                    }
+
+                    // Revert previous event color if one was selected
+                    if (selectedEvent) {
+                        selectedEvent.setProp('backgroundColor', '#10b981');
+                    }
+
+                    // Set new selected event and change its color
+                    selectedEvent = info.event;
+                    selectedEvent.setProp('backgroundColor', '#3b82f6'); // Blue for active
+
+                    const startTime = new Date(info.event.start);
+                    const dateStr = startTime.toISOString().split('T')[0];
+                    const timeStr = startTime.toTimeString().split(' ')[0].substring(0, 5);
+                    
+                    dateInput.value = dateStr;
+                    timeInput.value = timeStr;
+
+                    selectedSlotText.textContent = `Jadwal Terpilih: ${info.event.start.toLocaleString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })}`;
                 }
             });
+            calendar.render();
 
             updateSummary();
         });

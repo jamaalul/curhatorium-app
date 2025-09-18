@@ -18,15 +18,41 @@ class ShareAndTalkService
     /**
      * Get professionals with optional type filtering
      */
-    public function getProfessionals(?string $type = null): array
+    public function getProfessionals(?string $type = null, ?string $date = null): array
     {
         $query = Professional::query();
-        
+
         if ($type) {
             $query->where('type', $type);
         }
-        
-        return $query->get()->map(function ($professional) {
+
+        if ($date) {
+            $query->whereHas('scheduleSlots', function ($q) use ($date) {
+                $q->where('status', 'available')
+                  ->whereDate('slot_start_time', $date);
+            });
+        }
+
+        $professionals = $query->with(['scheduleSlots' => function ($q) {
+            $q->where('status', 'available')
+              ->where('slot_start_time', '>=', now())
+              ->orderBy('slot_start_time', 'asc');
+        }])->get();
+
+        return $professionals->map(function ($professional) {
+            $nextSlot = $professional->scheduleSlots->first();
+            $nextAvailabilityFormatted = 'Belum ada jadwal tersedia';
+            if ($nextSlot) {
+                $slotTime = Carbon::parse($nextSlot->slot_start_time)->locale('id');
+                if ($slotTime->isToday()) {
+                    $nextAvailabilityFormatted = 'Hari ini, ' . $slotTime->format('H:i');
+                } elseif ($slotTime->isTomorrow()) {
+                    $nextAvailabilityFormatted = 'Besok, ' . $slotTime->format('H:i');
+                } else {
+                    $nextAvailabilityFormatted = $slotTime->translatedFormat('l, j F, H:i');
+                }
+            }
+
             return [
                 'id' => $professional->id,
                 'name' => $professional->name,
@@ -35,8 +61,7 @@ class ShareAndTalkService
                 'specialties' => $professional->specialties,
                 'type' => $professional->type,
                 'rating' => $professional->rating,
-                'status' => $professional->getEffectiveAvailability(),
-                'statusText' => $professional->getEffectiveAvailabilityText(),
+                'next_availability_formatted' => $nextAvailabilityFormatted,
             ];
         })->toArray();
     }

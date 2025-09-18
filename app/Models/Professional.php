@@ -12,7 +12,7 @@ use Laravel\Sanctum\HasApiTokens;
 class Professional extends Authenticatable
 {
     protected $fillable = [
-        'name', 'password', 'title', 'avatar', 'specialties', 'availability', 'availabilityText', 'type', 'rating',
+        'name', 'password', 'title', 'avatar', 'specialties', 'type', 'rating',
         'whatsapp_number', 'bank_account_number', 'bank_name'
     ];
 
@@ -55,40 +55,6 @@ class Professional extends Authenticatable
             ->exists();
     }
 
-    /**
-     * Get the effective availability status (considers active sessions)
-     */
-    public function getEffectiveAvailability()
-    {
-        if ($this->availability === 'offline') {
-            return 'offline';
-        }
-
-        if ($this->hasActiveSession()) {
-            return 'busy';
-        }
-
-        return 'online';
-    }
-
-    /**
-     * Get the effective availability text
-     */
-    public function getEffectiveAvailabilityText()
-    {
-        $status = $this->getEffectiveAvailability();
-        
-        switch ($status) {
-            case 'offline':
-                return 'Offline';
-            case 'busy':
-                return 'Sedang dalam sesi';
-            case 'online':
-                return 'Tersedia';
-            default:
-                return 'Tidak diketahui';
-        }
-    }
 
     /**
      * Relationship with chat sessions

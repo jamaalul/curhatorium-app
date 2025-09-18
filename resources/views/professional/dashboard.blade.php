@@ -77,7 +77,43 @@
 
                 <!-- Schedule Section -->
                 <div id="schedule-section">
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="mt-8 bg-white p-6 rounded-lg shadow-md">
+                        <h3 class="text-xl font-bold mb-4">Permintaan Booking</h3>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-sm text-left text-gray-500">
+                                <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                                    <tr>
+                                        <th scope="col" class="px-6 py-3">Klien</th>
+                                        <th scope="col" class="px-6 py-3">Waktu Slot</th>
+                                        <th scope="col" class="px-6 py-3">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse($pendingBookings as $booking)
+                                    <tr class="bg-white border-b">
+                                        <td class="px-6 py-4">{{ $booking->bookedBy->username ?? 'N/A' }}</td>
+                                        <td class="px-6 py-4">{{ \Carbon\Carbon::parse($booking->slot_start_time)->format('d M Y, H:i') }}</td>
+                                        <td class="px-6 py-4 flex gap-2">
+                                            <form action="{{ route('professional.booking.accept', $booking) }}" method="POST">
+                                                @csrf
+                                                <button type="submit" class="px-3 py-1 text-xs font-medium text-center text-white bg-green-600 rounded-lg hover:bg-green-700">Accept</button>
+                                            </form>
+                                            <form action="{{ route('professional.booking.decline', $booking) }}" method="POST">
+                                                @csrf
+                                                <button type="submit" class="px-3 py-1 text-xs font-medium text-center text-white bg-red-600 rounded-lg hover:bg-red-700">Decline</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    @empty
+                                    <tr>
+                                        <td colspan="3" class="px-6 py-4 text-center text-gray-500">Tidak ada permintaan booking.</td>
+                                    </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-4">
                         <div class="lg:col-span-2 bg-white p-6 rounded-lg shadow-md">
                             <div id='calendar'></div>
                         </div>
@@ -85,6 +121,14 @@
                             <h3 class="text-xl font-bold mb-4">Atur Ketersediaan</h3>
                             <p class="text-sm text-gray-600 mb-6">Pilih hari dan jam berulang untuk membuka slot jadwal.</p>
                             <form id="scheduleForm" class="space-y-4">
+                                <div>
+                                    <label for="start_date" class="block text-sm font-medium text-gray-700">Terapkan dari</label>
+                                    <input type="date" id="start_date" name="start_date" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
+                                </div>
+                                <div>
+                                    <label for="end_date" class="block text-sm font-medium text-gray-700">Sampai</label>
+                                    <input type="date" id="end_date" name="end_date" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
+                                </div>
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-2">Pilih Hari</label>
                                     <div class="grid grid-cols-3 gap-2 text-sm">
@@ -107,55 +151,47 @@
                                         <input type="time" id="end_time" name="end_time" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
                                     </div>
                                 </div>
-                                <div>
-                                    <label for="start_date" class="block text-sm font-medium text-gray-700">Terapkan dari</label>
-                                    <input type="date" id="start_date" name="start_date" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
-                                </div>
-                                <div>
-                                    <label for="end_date" class="block text-sm font-medium text-gray-700">Sampai</label>
-                                    <input type="date" id="end_date" name="end_date" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
-                                </div>
-                                <button type="submit" class="w-full bg-[#48A6A6] text-white py-2 px-4 rounded-md hover:bg-[#357979]">Terapkan Jadwal</button>
+                                <button type="submit" class="w-full bg-[#48A6A6] text-white py-2 px-4 rounded-md hover:bg-[#357979]">Buat Slot Jadwal</button>
                             </form>
                             <div id="scheduleMessage" class="mt-4"></div>
                         </div>
                     </div>
-                    <div class="mt-8 bg-white p-6 rounded-lg shadow-md">
-                        <h3 class="text-xl font-bold mb-4">Sesi Terbaru</h3>
+                    <div class="mt-4 bg-white p-6 rounded-lg shadow-md">
+                        <h3 class="text-xl font-bold mb-4">Sesi Terakhir</h3>
                         <div class="overflow-x-auto">
                             <table class="w-full text-sm text-left text-gray-500">
                                 <thead class="text-xs text-gray-700 uppercase bg-gray-50">
                                     <tr>
-                                        <th scope="col" class="px-6 py-3">Tanggal</th>
-                                        <th scope="col" class="px-6 py-3">Tipe</th>
+                                        <th scope="col" class="px-6 py-3">Klien</th>
+                                        <th scope="col" class="px-6 py-3">Waktu Slot</th>
                                         <th scope="col" class="px-6 py-3">Status</th>
-                                        <th scope="col" class="px-6 py-3">Durasi</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @forelse($recentSessions as $session)
                                     <tr class="bg-white border-b">
-                                        <td class="px-6 py-4">{{ $session->created_at->format('d M Y, H:i') }}</td>
-                                        <td class="px-6 py-4">{{ ucfirst($session->type) }}</td>
+                                        <td class="px-6 py-4">{{ $session->bookedBy->username ?? 'N/A' }}</td>
+                                        <td class="px-6 py-4">{{ \Carbon\Carbon::parse($session->slot_start_time)->format('d M Y, H:i') }}</td>
                                         <td class="px-6 py-4">
                                             <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
-                                                @if($session->status === 'active') bg-green-100 text-green-800
-                                                @elseif($session->status === 'pending') bg-yellow-100 text-yellow-800
+                                                @if($session->status === 'booked') bg-green-100 text-green-800
+                                                @elseif($session->status === 'pending_confirmation') bg-yellow-100 text-yellow-800
                                                 @else bg-gray-100 text-gray-800 @endif">
-                                                {{ ucfirst($session->status) }}
+                                                @php
+                                                    $statusText = match($session->status) {
+                                                        'pending_confirmation' => 'Menunggu Konfirmasi',
+                                                        'booked' => 'Mendatang',
+                                                        'completed' => 'Selesai',
+                                                        default => ucfirst($session->status),
+                                                    };
+                                                @endphp
+                                                {{ $statusText }}
                                             </span>
-                                        </td>
-                                        <td class="px-6 py-4">
-                                            @if($session->start && $session->end)
-                                                {{ $session->start->diffInMinutes($session->end) }} min
-                                            @else
-                                                -
-                                            @endif
                                         </td>
                                     </tr>
                                     @empty
                                     <tr>
-                                        <td colspan="4" class="px-6 py-4 text-center text-gray-500">Tidak ada sesi terbaru.</td>
+                                        <td colspan="3" class="px-6 py-4 text-center text-gray-500">Tidak ada sesi terbaru.</td>
                                     </tr>
                                     @endforelse
                                 </tbody>
@@ -167,33 +203,6 @@
                 <!-- Profile Section -->
                 <div id="profile-section" class="hidden">
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                        <div class="bg-white p-6 rounded-lg shadow-md">
-                            <h3 class="text-xl font-bold mb-4">Status & Profil</h3>
-                            <form id="availabilityForm" class="space-y-4">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700">Status Saat Ini</label>
-                                    <p class="mt-1 text-lg font-semibold
-                                        @if($professional->getEffectiveAvailability() === 'online') text-green-600
-                                        @elseif($professional->getEffectiveAvailability() === 'busy') text-yellow-600
-                                        @else text-gray-600 @endif">
-                                        {{ $professional->getEffectiveAvailabilityText() }}
-                                    </p>
-                                </div>
-                                <div>
-                                    <label for="availability" class="block text-sm font-medium text-gray-700">Ubah Status</label>
-                                    <select id="availability" name="availability" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
-                                        <option value="online" {{ $professional->availability === 'online' ? 'selected' : '' }}>Online</option>
-                                        <option value="offline" {{ $professional->availability === 'offline' ? 'selected' : '' }}>Offline</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label for="availabilityText" class="block text-sm font-medium text-gray-700">Pesan Ketersediaan</label>
-                                    <input type="text" id="availabilityText" name="availabilityText" value="{{ $professional->availabilityText }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
-                                </div>
-                                <button type="submit" class="w-full bg-[#48A6A6] text-white py-2 px-4 rounded-md hover:bg-[#357979]">Update Status</button>
-                            </form>
-                            <div id="updateMessage" class="mt-4"></div>
-                        </div>
                         <div class="bg-white p-6 rounded-lg shadow-md">
                             <h3 class="text-xl font-bold mb-4">Ubah Password</h3>
                             <form id="passwordForm" class="space-y-4">
@@ -260,24 +269,6 @@
             });
             calendar.render();
 
-            // Availability form submission
-            document.getElementById('availabilityForm').addEventListener('submit', function(e) {
-                e.preventDefault();
-                const formData = new FormData(this);
-                const data = {
-                    availability: formData.get('availability'),
-                    availabilityText: formData.get('availabilityText')
-                };
-                fetch(`/professional/{{ $professional->id }}/update-availability`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content') },
-                    body: JSON.stringify(data)
-                }).then(res => res.json()).then(data => {
-                    const msgDiv = document.getElementById('updateMessage');
-                    msgDiv.innerHTML = `<p class="${data.success ? 'text-green-600' : 'text-red-600'}">${data.message}</p>`;
-                    if(data.success) setTimeout(() => window.location.reload(), 1500);
-                }).catch(err => console.error(err));
-            });
 
             // Schedule form submission
             document.getElementById('scheduleForm').addEventListener('submit', function(e) {

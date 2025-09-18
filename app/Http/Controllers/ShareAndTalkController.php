@@ -29,7 +29,8 @@ class ShareAndTalkController extends Controller
     public function getProfessionals(Request $request)
     {
         $type = $request->query('type');
-        $professionals = $this->shareAndTalkService->getProfessionals($type);
+        $date = $request->query('date');
+        $professionals = $this->shareAndTalkService->getProfessionals($type, $date);
         
         return response()->json($professionals);
     }
@@ -59,6 +60,8 @@ class ShareAndTalkController extends Controller
     {
         $validated = $request->validate([
             'professional_id' => 'required|integer|exists:professionals,id',
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
             'whatsapp_number' => 'required|string|max:20',
             'consultation_type' => 'required|string|in:chat,video',
             'date' => 'required|date_format:Y-m-d',
@@ -82,7 +85,7 @@ class ShareAndTalkController extends Controller
             // Here, you would also consume the user's ticket.
             // For simplicity, we'll skip that for now but it's a critical step.
 
-            $slot->status = 'booked';
+            $slot->status = 'pending_confirmation';
             $slot->booked_by_user_id = $user->id;
             $slot->save();
 
@@ -95,7 +98,7 @@ class ShareAndTalkController extends Controller
             return back()->with('error', $bookingResult['message']);
         }
 
-        return redirect()->route('share-and-talk.waiting')->with('success', 'Sesi Anda telah berhasil dipesan!');
+        return view('share-and-talk.booked')->with('success', 'Permintaan sesi Anda telah terkirim! Mohon tunggu konfirmasi dari fasilitator.');
     }
 
     public function getAvailabilitySlots(Request $request, Professional $professional)
