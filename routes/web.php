@@ -175,8 +175,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/support-group-discussion/{groupId}/payment-data', [SgdController::class, 'getPaymentData'])->name('group.payment-data');
     Route::get('/support-group-discussion/{groupId}/consumption-details', [SgdController::class, 'getConsumptionDetails'])->name('group.consumption-details');
     Route::post('/support-group-discussion/payment-summary', [SgdController::class, 'getPaymentSummary'])->name('group.payment-summary');
-
-    Route::get('/share-and-talk/messages/{sessionId}', [ShareAndTalkController::class, 'getMessages'])->name('share-and-talk.messages');
 });
 
 Route::middleware(['auth'])->group(function () {
@@ -186,16 +184,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/missions-of-the-day/{mission}/complete', [MissionController::class, 'complete'])->name('missions.complete');
 });
 
-
-Route::get('/share-and-talk/facilitator/{sessionId}', [ShareAndTalkController::class, 'facilitatorChat'])->name('share-and-talk.facilitator');
-Route::get('/share-and-talk/facilitator-video/{sessionId}', [ShareAndTalkController::class, 'facilitatorVideo'])->name('share-and-talk.facilitator-video');
-Route::post('/share-and-talk/chat/facilitator-send', [ShareAndTalkController::class, 'facilitatorSend'])->name('share-and-talk.facilitatorSend');
-Route::get('/api/share-and-talk/messages/{sessionId}', [ShareAndTalkController::class,'getMessages'])->name('share-and-talk.fetch');
-Route::get('/api/share-and-talk/session-status/{sessionId}', [ShareAndTalkController::class, 'getSessionStatus']);
-Route::post('/api/share-and-talk/cancel-session/{sessionId}', [ShareAndTalkController::class, 'cancelSessionByUser']);
-Route::post('/api/share-and-talk/professional-online/{professionalId}', [ShareAndTalkController::class, 'setProfessionalOnline']);
-Route::get('/share-and-talk/activate-session/{sessionId}', [ShareAndTalkController::class, 'activateSession'])->name('share-and-talk.activate-session');
-Route::post('/api/share-and-talk/manual-activate/{sessionId}', [ShareAndTalkController::class, 'manualActivateSession'])->name('share-and-talk.manual-activate');
+// Professional Availability and Schedule APIs
 Route::get('/api/professionals/{professional}/availability', [ShareAndTalkController::class, 'getAvailabilitySlots'])->name('api.professionals.availability');
 Route::get('/api/professionals/{professional}/schedule', [\App\Http\Controllers\ProfessionalDashboardController::class, 'getSchedule'])->name('api.professionals.schedule');
 

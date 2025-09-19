@@ -8,9 +8,12 @@ use App\Services\TicketService;
 use App\Http\Requests\ChatMessageRequest;
 use App\Models\Professional;
 use App\Models\ChatSession;
+use App\Models\Consultation;
 use App\Models\Message;
+use App\Models\MessageV2;
 use App\Models\User;
 use App\Models\ProfessionalScheduleSlot;
+use App\Models\UserTicket;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -71,7 +74,7 @@ class ShareAndTalkController extends Controller
         $slotStartTime = Carbon::parse($validated['date'] . ' ' . $validated['time']);
         $user = Auth::user();
 
-        $bookingResult = DB::transaction(function () use ($validated, $slotStartTime, $user) {
+        $slot = DB::transaction(function () use ($validated, $slotStartTime, $user) {
             $slot = ProfessionalScheduleSlot::where('professional_id', $validated['professional_id'])
                 ->where('slot_start_time', $slotStartTime)
                 ->where('status', 'available')
@@ -79,7 +82,7 @@ class ShareAndTalkController extends Controller
                 ->first();
 
             if (!$slot) {
-                return back()->with('error', 'Jadwal yang dipilih tidak lagi tersedia. Silakan pilih jadwal lain.');
+                return null;
             }
 
             $slot->status = 'pending_confirmation';
@@ -88,10 +91,46 @@ class ShareAndTalkController extends Controller
 
             $slot->load('professional');
 
-            return redirect()->route('share-and-talk.booked')->with('bookedSlot', $slot);
+            // Determine the correct ticket type
+            $professionalType = $slot->professional->type;
+            $consultationType = $validated['consultation_type'];
+            $ticketType = '';
+
+            if ($consultationType === 'chat') {
+                $ticketType = $professionalType === 'psychiatrist' ? 'share_talk_psy_chat' : 'share_talk_ranger_chat';
+            } elseif ($consultationType === 'video') {
+                // Assuming video is only for psychiatrists based on previous logic
+                $ticketType = 'share_talk_psy_video';
+            }
+
+            // Find and update the user's ticket
+            $userTicket = UserTicket::where('user_id', $user->id)
+                ->where('ticket_type', $ticketType)
+                ->where('remaining_value', '>=', 1)
+                ->orderBy('expires_at', 'desc')
+                ->lockForUpdate()
+                ->first();
+
+            if (!$userTicket) {
+                // This will trigger the transaction to rollback
+                throw new \Exception('No valid ticket found for this consultation type.');
+            }
+
+            $userTicket->decrement('remaining_value');
+
+            Consultation::create([
+                'professional_schedule_slot_id' => $slot->id,
+                'room' => 'sharetalk_' . uniqid(),
+            ]);
+
+            return $slot;
         });
 
-        return $bookingResult;
+        if (!$slot) {
+            return back()->with('error', 'Jadwal yang dipilih tidak lagi tersedia. Silakan pilih jadwal lain.');
+        }
+
+        return redirect()->route('share-and-talk.booked')->with('bookedSlot', $slot);
     }
 
     public function getAvailabilitySlots(Request $request, Professional $professional)
@@ -126,6 +165,7 @@ class ShareAndTalkController extends Controller
 
     public function chatRoom($room)
     {
-        return view('share-and-talk.chat', ['room' => $room]);
+        $messages = MessageV2::where('room', $room)->orderBy('created_at', 'asc')->get();
+        return view('share-and-talk.chat', ['room' => $room, 'messages' => $messages]);
     }
 }

@@ -26,21 +26,34 @@
             Akhiri Sesi
         </button>
     </div>
-    <div class="w-full h-full bg-white md:rounded-3xl p-3 shadow-md flex flex-col">
+    <div class="w-full h-full bg-white md:rounded-3xl p-4 shadow-md flex flex-col">
         <div class="justify-between items-center flex h-fit md:h-0 md:p-0 p-2 w-full overflow-hidden">
             <div class="flex gap-2 items-center justify-center">
                 <img src="{{ asset('assets/mini_logo.png') }}" alt="mini_logo" class="size-10">
-                <h1 class="text-[#222222] text-2xl font-bold">Curhatorium</h1>
+                <h1 class="text-[#222222] text-3xl font-bold">Curhatorium</h1>
             </div>
             <button class="end-session-button text-xl rounded-xl bg-none w-fit mt-auto transition-all duration-100 text-red-400 font-bold">
                 Akhiri Sesi
             </button>
         </div>
-        <div id="chat-messages" class="w-full h-full overflow-auto" style="scrollbar-width: none; -ms-overflow-style: none;"></div>
+        <div id="chat-messages" class="w-full h-full overflow-auto" style="scrollbar-width: none; -ms-overflow-style: none;">
+            @foreach ($messages as $message)
+                <div class="w-full mb-2 flex {{ $message->user_id == auth()->id() ? 'justify-end' : 'justify-start' }}">
+                    <div class="rounded-2xl p-3 max-w-[70%] break-words shadow-sm text-2xl {{ $message->user_id == auth()->id() ? 'bg-[#48a6a6] text-white' : 'bg-stone-200 text-black' }} flex flex-col items-end">
+                        {!! nl2br(e($message->message)) !!}
+                        @if ($message->user_id == auth()->id())
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                            </svg>
+                        @endif
+                    </div>
+                </div>
+            @endforeach
+        </div>
         <div class="w-full h-fit bg-none flex gap-2">
-            <input id="chat-input" type="text" class="form-control w-full rounded-full border border-stone-400 h-fit text-2xl py-3 px-6 shadow-md" placeholder="Type your message here...">
-            <button id="chat-send" class="bg-[#49a6a6] h-full w-fit pl-6 pr-5 rounded-full shadow-md hover:bg-[#3b8c8c] flex items-center justify-center">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#ffffff" class="size-8">
+            <input id="chat-input" type="text" class="form-control w-full rounded-full border border-stone-400 h-fit text-2xl py-6 px-6 shadow-md" placeholder="Type your message here...">
+            <button id="chat-send" class="bg-[#49a6a6] h-full aspect-square pl-6 pr-5 rounded-full shadow-md hover:bg-[#3b8c8c] flex items-center justify-center transition-all duration-100">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#ffffff" class="size-9">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5" />
                 </svg>
             </button>
@@ -127,7 +140,7 @@
                                         </svg>`;
                     sentBubble.html(safeHtml + ' ' + checkIcon);
                 }).fail(function() {
-                    alert('Message could not be sent.');
+                    alert('Pesan tidak dapat terkirim. Pastikan anda sudah login dan koneksi internet anda stabil. Coba muat ulang halaman ini.');
                     // Optionally remove the optimistic message on failure
                     $('#' + tempId).remove();
                 });
