@@ -79,26 +79,19 @@ class ShareAndTalkController extends Controller
                 ->first();
 
             if (!$slot) {
-                return ['success' => false, 'message' => 'Jadwal yang dipilih tidak lagi tersedia. Silakan pilih jadwal lain.'];
+                return back()->with('error', 'Jadwal yang dipilih tidak lagi tersedia. Silakan pilih jadwal lain.');
             }
-
-            // Here, you would also consume the user's ticket.
-            // For simplicity, we'll skip that for now but it's a critical step.
 
             $slot->status = 'pending_confirmation';
             $slot->booked_by_user_id = $user->id;
             $slot->save();
 
-            // You can also create a record in a general `appointments` table here.
+            $slot->load('professional');
 
-            return ['success' => true];
+            return redirect()->route('share-and-talk.booked')->with('bookedSlot', $slot);
         });
 
-        if (!$bookingResult['success']) {
-            return back()->with('error', $bookingResult['message']);
-        }
-
-        return view('share-and-talk.booked')->with('success', 'Permintaan sesi Anda telah terkirim! Mohon tunggu konfirmasi dari fasilitator.');
+        return $bookingResult;
     }
 
     public function getAvailabilitySlots(Request $request, Professional $professional)
@@ -119,5 +112,20 @@ class ShareAndTalkController extends Controller
             });
 
         return response()->json($slots);
+    }
+
+    public function booked()
+    {
+        $bookedSlot = session('bookedSlot');
+        if (!$bookedSlot) {
+            // Redirect to dashboard if the session data is not available
+            return redirect()->route('dashboard');
+        }
+        return view('share-and-talk.booked', compact('bookedSlot'));
+    }
+
+    public function chatRoom($room)
+    {
+        return view('share-and-talk.chat', ['room' => $room]);
     }
 }

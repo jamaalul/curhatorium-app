@@ -188,7 +188,7 @@
                     return eventData;
                 },
                 eventClick: function(info) {
-                    if (info.event.extendedProps.isPast || info.event.backgroundColor === '#ef4444') { // Past or Booked slot
+                    if (info.event.extendedProps.isPast || info.event.title !== 'Available') {
                         return;
                     }
 

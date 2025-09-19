@@ -81,6 +81,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/share-and-talk/waiting', [ShareAndTalkController::class, 'wait'])->name('share-and-talk.waiting');
     Route::get('/share-and-talk/checkout/{professional}', [ShareAndTalkController::class, 'showCheckoutPage'])->name('share-and-talk.checkout');
     Route::post('/share-and-talk/book', [ShareAndTalkController::class, 'bookSession'])->name('share-and-talk.book');
+    Route::get('/share-and-talk/booked', [ShareAndTalkController::class, 'booked'])->name('share-and-talk.booked');
     // middleware = \App\Http\Middleware\ShareAndTalkVideoTicketGateMiddleware::class
     
     // Video consultation API endpoints
@@ -196,7 +197,7 @@ Route::post('/api/share-and-talk/professional-online/{professionalId}', [ShareAn
 Route::get('/share-and-talk/activate-session/{sessionId}', [ShareAndTalkController::class, 'activateSession'])->name('share-and-talk.activate-session');
 Route::post('/api/share-and-talk/manual-activate/{sessionId}', [ShareAndTalkController::class, 'manualActivateSession'])->name('share-and-talk.manual-activate');
 Route::get('/api/professionals/{professional}/availability', [ShareAndTalkController::class, 'getAvailabilitySlots'])->name('api.professionals.availability');
-Route::get('/api/professionals/{professional}/schedule', [\App\Http\Controllers\ProfessionalDashboardController::class, 'getSchedule'])->name('api.professionals.schedule')->middleware('auth:professional');
+Route::get('/api/professionals/{professional}/schedule', [\App\Http\Controllers\ProfessionalDashboardController::class, 'getSchedule'])->name('api.professionals.schedule');
 
 // Professional Authentication Routes
 Route::get('/professional/login', [\App\Http\Controllers\Auth\ProfessionalAuthenticatedSessionController::class, 'create'])->name('professional.login');
@@ -209,6 +210,7 @@ Route::middleware([\App\Http\Middleware\AuthenticateProfessional::class])->group
     Route::post('/professional/availability/set', [\App\Http\Controllers\ProfessionalDashboardController::class, 'setAvailability'])->name('professional.set-availability');
     Route::post('/professional/slots/{slot}/accept', [\App\Http\Controllers\ProfessionalDashboardController::class, 'acceptBooking'])->name('professional.booking.accept');
     Route::post('/professional/slots/{slot}/decline', [\App\Http\Controllers\ProfessionalDashboardController::class, 'declineBooking'])->name('professional.booking.decline');
+    Route::delete('/professional/slots/{slot}', [\App\Http\Controllers\ProfessionalDashboardController::class, 'deleteSlot'])->name('professional.slot.delete');
     Route::post('/professional/{professionalId}/change-password', [\App\Http\Controllers\ProfessionalDashboardController::class, 'changePassword'])->name('professional.change-password');
     Route::post('/professional/logout', [\App\Http\Controllers\ProfessionalDashboardController::class, 'logout'])->name('professional.dashboard.logout');
 });
@@ -288,4 +290,6 @@ Route::get('/info/{feature}', function ($feature) {
 
     return view('info.feature', ['feature' => $featureData[$feature]]);
 })->name('info.feature');
+
+Route::get('/chat/{room}', [ShareAndTalkController::class, 'chatRoom'])->name('chat.room');
 

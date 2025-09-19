@@ -123,28 +123,39 @@ class ProfessionalDashboardController extends Controller
 
     public function getSchedule(Request $request, Professional $professional)
     {
-        if (Auth::guard('professional')->id() != $professional->id) {
-            abort(403);
-        }
+        $isOwner = Auth::guard('professional')->check() && Auth::guard('professional')->id() == $professional->id;
 
-        $slots = $professional->scheduleSlots()
+        $slotsQuery = $professional->scheduleSlots()
             ->where('slot_start_time', '>=', $request->start)
-            ->where('slot_end_time', '<=', $request->end)
-            ->get();
+            ->where('slot_end_time', '<=', $request->end);
 
-        $events = $slots->map(function ($slot) {
+        // If the viewer is not the owner, only show available slots
+
+        $slots = $slotsQuery->get();
+
+        $events = $slots->map(function ($slot) use ($isOwner) {
             $status = $slot->status;
-            $color = '#6b7280'; // Default to gray
-            if ($status === 'available') {
-                $color = '#10b981'; // Green
-            } elseif ($status === 'booked') {
-                $color = '#ef4444'; // Red
-            } elseif ($status === 'pending_confirmation') {
-                $color = '#f59e0b'; // Yellow
+            $color = '#10b981'; // Green for available
+            $title = 'Available';
+
+            if ($isOwner) {
+                if ($status === 'booked') {
+                    $color = '#ef4444'; // Red
+                    $title = 'Booked';
+                } elseif ($status === 'pending_confirmation') {
+                    $color = '#f59e0b'; // Yellow
+                    $title = 'Pending';
+                }
+            } else {
+                if ($status === 'booked' || $status === 'pending_confirmation') {
+                    $color = '#d1d5db'; // Gray
+                    $title = 'Booked';
+                }
             }
 
             return [
-                'title' => ucfirst($status),
+                'id' => $slot->id,
+                'title' => $title,
                 'start' => $slot->slot_start_time,
                 'end' => $slot->slot_end_time,
                 'color' => $color,
@@ -188,5 +199,22 @@ class ProfessionalDashboardController extends Controller
         }
 
         return back()->with('error', 'This booking is not pending confirmation.');
+    }
+
+    public function deleteSlot(ProfessionalScheduleSlot $slot)
+    {
+        // Authorization check
+        if ($slot->professional_id !== Auth::guard('professional')->id()) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
+        }
+
+        // Only allow deleting available slots
+        if ($slot->status !== 'available') {
+            return response()->json(['success' => false, 'message' => 'You can only delete available slots.'], 422);
+        }
+
+        $slot->delete();
+
+        return response()->json(['success' => true, 'message' => 'Slot deleted successfully.']);
     }
 }

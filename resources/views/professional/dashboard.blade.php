@@ -114,7 +114,20 @@
                         </div>
                     </div>
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-4">
-                        <div class="lg:col-span-2 bg-white p-6 rounded-lg shadow-md">
+                        <div class="lg:col-span-2 bg-white p-6 rounded-lg shadow-md relative">
+                            <div id="calendar-management-overlay" class="absolute inset-0 bg-red-500 bg-opacity-10 border-2 border-red-500 rounded-lg hidden items-center justify-center">
+                                <p class="text-red-700 font-semibold text-lg w-full text-center pt-4">Mode Hapus Aktif: Klik slot untuk menghapus</p>
+                            </div>
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-xl font-bold">Kalender Jadwal</h3>
+                                <div class="flex items-center">
+                                    <label for="manage-schedule-toggle" class="mr-2 text-sm font-medium text-gray-900">Hapus Jadwal</label>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" id="manage-schedule-toggle" class="sr-only peer">
+                                        <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-600"></div>
+                                    </label>
+                                </div>
+                            </div>
                             <div id='calendar'></div>
                         </div>
                         <div class="bg-white p-6 rounded-lg shadow-md">
@@ -129,7 +142,7 @@
                                     <label for="end_date" class="block text-sm font-medium text-gray-700">Sampai</label>
                                     <input type="date" id="end_date" name="end_date" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
                                 </div>
-                                <div>
+                                <div class="mt-4">
                                     <label class="block text-sm font-medium text-gray-700 mb-2">Pilih Hari</label>
                                     <div class="grid grid-cols-3 gap-2 text-sm">
                                         <div><label class="flex items-center"><input type="checkbox" name="days[]" value="1" class="mr-2 rounded">Sen</label></div>
@@ -228,6 +241,18 @@
         </main>
     </div>
 
+    <!-- Deletion Modal -->
+    <div id="delete-modal" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-md m-4 p-6">
+            <h2 class="text-xl font-bold mb-4">Konfirmasi Hapus Jadwal</h2>
+            <p id="delete-modal-text" class="mb-6">Apakah Anda yakin ingin menghapus slot jadwal yang tersedia ini?</p>
+            <div class="flex justify-end gap-4">
+                <button id="cancel-delete-btn" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">Batal</button>
+                <button id="confirm-delete-btn" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">Ya, Hapus</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const navSchedule = document.getElementById('nav-schedule');
@@ -256,8 +281,17 @@
             navSchedule.addEventListener('click', (e) => { e.preventDefault(); showSection('schedule'); });
             navProfile.addEventListener('click', (e) => { e.preventDefault(); showSection('profile'); });
 
-            var calendarEl = document.getElementById('calendar');
-            var calendar = new FullCalendar.Calendar(calendarEl, {
+            const calendarEl = document.getElementById('calendar');
+            const manageToggle = document.getElementById('manage-schedule-toggle');
+            const calendarOverlay = document.getElementById('calendar-management-overlay');
+            const deleteModal = document.getElementById('delete-modal');
+            const cancelDeleteBtn = document.getElementById('cancel-delete-btn');
+            const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
+            const deleteModalText = document.getElementById('delete-modal-text');
+            let slotToDelete = null;
+            let manageMode = false;
+
+            const calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
                 headerToolbar: {
                     left: 'prev,next today',
@@ -265,10 +299,57 @@
                     right: 'dayGridMonth,timeGridWeek'
                 },
                 events: `/api/professionals/{{ $professional->id }}/schedule`,
-                eventColor: '#378006'
+                eventClick: function(info) {
+                    if (!manageMode || info.event.title !== 'Available') {
+                        return;
+                    }
+                    
+                    slotToDelete = info.event;
+                    deleteModalText.innerHTML = `Apakah Anda yakin ingin menghapus slot jadwal pada <br> <span class="font-semibold">${slotToDelete.start.toLocaleString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })}</span>?`;
+                    deleteModal.classList.remove('hidden');
+                }
             });
             calendar.render();
 
+
+            // Toggle Manage Mode
+            manageToggle.addEventListener('change', function() {
+                manageMode = this.checked;
+                calendarOverlay.classList.toggle('hidden', !manageMode);
+            });
+
+            // Modal Controls
+            cancelDeleteBtn.addEventListener('click', () => {
+                deleteModal.classList.add('hidden');
+                slotToDelete = null;
+            });
+
+            confirmDeleteBtn.addEventListener('click', () => {
+                if (!slotToDelete) return;
+
+                fetch(`/professional/slots/${slotToDelete.id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        calendar.refetchEvents();
+                    } else {
+                        alert(data.message); // Or a more elegant notification
+                    }
+                    deleteModal.classList.add('hidden');
+                    slotToDelete = null;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred.');
+                    deleteModal.classList.add('hidden');
+                    slotToDelete = null;
+                });
+            });
 
             // Schedule form submission
             document.getElementById('scheduleForm').addEventListener('submit', function(e) {
