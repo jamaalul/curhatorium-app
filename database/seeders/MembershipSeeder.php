@@ -24,12 +24,9 @@ class MembershipSeeder extends Seeder
                 'is_active' => true,
                 'tickets' => [
                     ['ticket_type' => 'mental_test', 'limit_type' => 'unlimited', 'limit_value' => null],
-                    ['ticket_type' => 'share_talk_ranger_chat', 'limit_type' => 'count', 'limit_value' => 1],
                     ['ticket_type' => 'tracker', 'limit_type' => 'day', 'limit_value' => 7],
-                    ['ticket_type' => 'mentai_chatbot', 'limit_type' => 'hour', 'limit_value' => 2],
                     ['ticket_type' => 'missions', 'limit_type' => 'day', 'limit_value' => 7],
                     ['ticket_type' => 'support_group', 'limit_type' => 'count', 'limit_value' => 1],
-                    ['ticket_type' => 'deep_cards', 'limit_type' => 'count', 'limit_value' => 30],
                 ],
             ],
             [
@@ -40,8 +37,6 @@ class MembershipSeeder extends Seeder
                 'is_active' => true,
                 'tickets' => [
                     ['ticket_type' => 'mental_test', 'limit_type' => 'unlimited', 'limit_value' => null],
-                    ['ticket_type' => 'deep_cards', 'limit_type' => 'unlimited', 'limit_value' => null],
-                    ['ticket_type' => 'mentai_chatbot', 'limit_type' => 'hour', 'limit_value' => 1],
                     ['ticket_type' => 'support_group', 'limit_type' => 'count', 'limit_value' => 1],
                     ['ticket_type' => 'missions', 'limit_type' => 'unlimited', 'limit_value' => null],
                     ['ticket_type' => 'tracker', 'limit_type' => 'unlimited', 'limit_value' => null],
@@ -58,9 +53,7 @@ class MembershipSeeder extends Seeder
                     ['ticket_type' => 'share_talk_ranger_chat', 'limit_type' => 'count', 'limit_value' => 2],
                     ['ticket_type' => 'tracker', 'limit_type' => 'unlimited', 'limit_value' => null],
                     ['ticket_type' => 'support_group', 'limit_type' => 'count', 'limit_value' => 3],
-                    ['ticket_type' => 'mentai_chatbot', 'limit_type' => 'unlimited', 'limit_value' => null],
                     ['ticket_type' => 'missions', 'limit_type' => 'unlimited', 'limit_value' => null],
-                    ['ticket_type' => 'deep_cards', 'limit_type' => 'unlimited', 'limit_value' => null],
                 ],
             ],
             [
@@ -74,9 +67,7 @@ class MembershipSeeder extends Seeder
                     ['ticket_type' => 'share_talk_ranger_chat', 'limit_type' => 'count', 'limit_value' => 3],
                     ['ticket_type' => 'support_group', 'limit_type' => 'count', 'limit_value' => 5],
                     ['ticket_type' => 'tracker', 'limit_type' => 'unlimited', 'limit_value' => null],
-                    ['ticket_type' => 'mentai_chatbot', 'limit_type' => 'unlimited', 'limit_value' => null],
                     ['ticket_type' => 'missions', 'limit_type' => 'unlimited', 'limit_value' => null],
-                    ['ticket_type' => 'deep_cards', 'limit_type' => 'unlimited', 'limit_value' => null],
                 ],
             ],
             [
@@ -87,7 +78,6 @@ class MembershipSeeder extends Seeder
                 'is_active' => true,
                 'tickets' => [
                     ['ticket_type' => 'support_group', 'limit_type' => 'count', 'limit_value' => 1],
-                    ['ticket_type' => 'deep_cards', 'limit_type' => 'unlimited', 'limit_value' => null],
                 ],
             ],
             [
@@ -98,7 +88,6 @@ class MembershipSeeder extends Seeder
                 'is_active' => true,
                 'tickets' => [
                     ['ticket_type' => 'share_talk_ranger_chat', 'limit_type' => 'count', 'limit_value' => 1],
-                    ['ticket_type' => 'deep_cards', 'limit_type' => 'unlimited', 'limit_value' => null],
                 ],
             ],
             [
@@ -110,7 +99,6 @@ class MembershipSeeder extends Seeder
                 'tickets' => [
                     ['ticket_type' => 'share_talk_psy_chat', 'limit_type' => 'count', 'limit_value' => 1],
                     ['ticket_type' => 'tracker', 'limit_type' => 'unlimited', 'limit_value' => null],
-                    ['ticket_type' => 'deep_cards', 'limit_type' => 'unlimited', 'limit_value' => null],
                 ],
             ],
             [
@@ -122,7 +110,6 @@ class MembershipSeeder extends Seeder
                 'tickets' => [
                     ['ticket_type' => 'tracker', 'limit_type' => 'unlimited', 'limit_value' => null],
                     ['ticket_type' => 'share_talk_psy_video', 'limit_type' => 'count', 'limit_value' => 1],
-                    ['ticket_type' => 'deep_cards', 'limit_type' => 'unlimited', 'limit_value' => null],
                 ],
             ],
         ];

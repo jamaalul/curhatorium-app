@@ -82,6 +82,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/share-and-talk/checkout/{professional}', [ShareAndTalkController::class, 'showCheckoutPage'])->name('share-and-talk.checkout');
     Route::post('/share-and-talk/book', [ShareAndTalkController::class, 'bookSession'])->name('share-and-talk.book');
     Route::get('/share-and-talk/booked', [ShareAndTalkController::class, 'booked'])->name('share-and-talk.booked');
+    Route::post('/share-and-talk/end', [ShareAndTalkController::class, 'endSession'])->name('share-and-talk.end');
     // middleware = \App\Http\Middleware\ShareAndTalkVideoTicketGateMiddleware::class
     
     // Video consultation API endpoints

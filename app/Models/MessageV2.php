@@ -12,8 +12,14 @@ class MessageV2 extends Model
     protected $table = 'messages_v2';
 
     protected $fillable = [
-        'user_id',
+        'sender_id',
+        'sender_type',
         'room',
         'message',
     ];
+
+    public function sender()
+    {
+        return $this->morphTo();
+    }
 }

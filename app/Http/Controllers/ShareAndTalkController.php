@@ -168,4 +168,27 @@ class ShareAndTalkController extends Controller
         $messages = MessageV2::where('room', $room)->orderBy('created_at', 'asc')->get();
         return view('share-and-talk.chat', ['room' => $room, 'messages' => $messages]);
     }
+
+    public function endSession(Request $request)
+    {
+        $request->validate([
+            'room' => 'required|string',
+        ]);
+
+        $room = $request->input('room');
+
+        // Find the consultation by room
+        $consultation = Consultation::where('room', $room)->first();
+
+        if ($consultation) {
+            // Find the related professional schedule slot and update its status
+            $slot = ProfessionalScheduleSlot::find($consultation->professional_schedule_slot_id);
+            if ($slot) {
+                $slot->status = 'available';
+                $slot->save();
+            }
+        }
+
+        return redirect()->route('dashboard')->with('success', 'Sesi telah diakhiri.');
+    }
 }

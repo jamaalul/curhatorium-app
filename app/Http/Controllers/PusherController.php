@@ -27,17 +27,24 @@ class PusherController extends Controller
 
     public function sendMessage(Request $request)
     {
-        $message = $request->input('message');
+        $messageContent = $request->input('message');
         $room = $request->input('room');
-        $userId = $request->user()->id;
+        
+        $sender = auth()->guard('web')->user() ?? auth()->guard('professional')->user();
 
-        MessageV2::create([
-            'user_id' => $userId,
+        if (!$sender) {
+            return response()->json(['status' => 'Unauthenticated'], 401);
+        }
+
+        $message = $sender->messages()->create([
             'room' => $room,
-            'message' => $message,
+            'message' => $messageContent,
         ]);
 
-        MessageSent::dispatch($message, $room, $userId);
+        // Eager load the sender relationship
+        $message->load('sender');
+
+        MessageSent::dispatch($message);
         return response()->json(['status' => 'Message sent']);
     }
 
@@ -47,3 +54,4 @@ class PusherController extends Controller
         return redirect()->route('pusher.index');
     }
 }
+

@@ -71,4 +71,11 @@ class Professional extends Authenticatable
     {
         return $this->hasMany(ProfessionalScheduleSlot::class);
     }
+    /**
+     * Get all of the professional's messages.
+     */
+    public function messages()
+    {
+        return $this->morphMany(MessageV2::class, 'sender');
+    }
 }

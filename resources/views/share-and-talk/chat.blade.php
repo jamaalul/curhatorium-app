@@ -38,10 +38,14 @@
         </div>
         <div id="chat-messages" class="w-full h-full overflow-auto" style="scrollbar-width: none; -ms-overflow-style: none;">
             @foreach ($messages as $message)
-                <div class="w-full mb-2 flex {{ $message->user_id == auth()->id() ? 'justify-end' : 'justify-start' }}">
-                    <div class="rounded-2xl p-3 max-w-[70%] break-words shadow-sm text-2xl {{ $message->user_id == auth()->id() ? 'bg-[#48a6a6] text-white' : 'bg-stone-200 text-black' }} flex flex-col items-end">
+                @php
+                    $isSender = ($message->sender_type == 'App\Models\User' && $message->sender_id == auth()->id()) ||
+                                ($message->sender_type == 'App\Models\Professional' && $message->sender_id == auth('professional')->id());
+                @endphp
+                <div class="w-full mb-2 flex {{ $isSender ? 'justify-end' : 'justify-start' }}">
+                    <div class="rounded-2xl p-3 max-w-[70%] break-words shadow-sm text-2xl {{ $isSender ? 'bg-[#48a6a6] text-white' : 'bg-stone-200 text-black' }} flex flex-col items-end">
                         {!! nl2br(e($message->message)) !!}
-                        @if ($message->user_id == auth()->id())
+                        @if ($isSender)
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-5">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
                             </svg>
@@ -66,8 +70,9 @@
             <p class="mb-6">Apakah Anda yakin ingin mengakhiri sesi ini?</p>
             <div class="flex justify-end gap-4">
                 <button id="cancel-button" class="px-4 py-2 bg-gray-300 text-black rounded hover:bg-gray-400">Batal</button>
-                <form id="end-session-form" action="" method="POST">
+                <form id="end-session-form" action="{{ route('share-and-talk.end') }}" method="POST">
                     @csrf
+                    <input type="hidden" name="room" value="{{ $room }}">
                     <button id="confirm-button" type="submit" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">Akhiri Sesi</button>
                 </form>
             </div>
@@ -87,13 +92,21 @@
 
         var channel = pusher.subscribe('chat.{{ $room }}');
         channel.bind('App\\Events\\MessageSent', function(data) {
+            const currentUserId = {{ auth()->id() ?? 'null' }};
+            const currentProfessionalId = {{ auth('professional')->id() ?? 'null' }};
+            const senderId = data.message.sender.id;
+            const senderType = data.message.sender_type;
+
+            const isSender = (senderType === 'App\\Models\\User' && senderId === currentUserId) || 
+                             (senderType === 'App\\Models\\Professional' && senderId === currentProfessionalId);
+
             // build wrapper
             const wrapper = $('<div>').addClass('w-full mb-2').css('display','flex');
             const bubble = $('<div>')
                 .addClass('rounded-2xl p-3 max-w-[70%] break-words shadow-sm text-2xl');
             
             // set alignment & colors depending on sender
-            if (data.userId == '{{ auth()->id() }}') {
+            if (isSender) {
                 wrapper.addClass('justify-end hidden');
                 bubble.addClass('bg-[#48a6a6] text-white');
             } else {
@@ -102,8 +115,7 @@
             }
 
             // set text safely (this escapes any HTML)
-            // optionally convert newlines to <br> while staying safe:
-            const safeHtml = $('<div>').text(data.message).html().replace(/\n/g, '<br>');
+            const safeHtml = $('<div>').text(data.message.message).html().replace(/\n/g, '<br>');
             bubble.html(safeHtml); // safe because we escaped via .text() above
 
             wrapper.append(bubble);

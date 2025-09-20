@@ -263,4 +263,11 @@ class User extends Authenticatable implements FilamentUser
     {
         return $query->with('activeTickets');
     }
+    /**
+     * Get all of the user's messages.
+     */
+    public function messages()
+    {
+        return $this->morphMany(MessageV2::class, 'sender');
+    }
 }
