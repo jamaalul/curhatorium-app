@@ -10,6 +10,8 @@ class Consultation extends Model
     protected $fillable = [
         'professional_schedule_slot_id',
         'room',
+        'consultation_type',
+        'no_wa',
     ];
 
     public function professionalScheduleSlot()

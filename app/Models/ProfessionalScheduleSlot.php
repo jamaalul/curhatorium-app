@@ -23,4 +23,9 @@ class ProfessionalScheduleSlot extends Model
     {
         return $this->belongsTo(Professional::class);
     }
+
+    public function consultation()
+    {
+        return $this->hasOne(Consultation::class);
+    }
 }

@@ -23,10 +23,19 @@ class ShareAndTalkController extends Controller
 {
     public function __construct(
         private ShareAndTalkService $shareAndTalkService,
-        private TicketService $ticketService
+        private TicketService $ticketService,
+        private \App\Services\FonnteService $fonnteService
     ) {}
     public function index() {
-        return view('share-and-talk.index');
+        $user = Auth::user();
+        $upcomingConsultations = ProfessionalScheduleSlot::where('booked_by_user_id', $user->id)
+            ->whereIn('status', ['pending_confirmation', 'booked'])
+            ->where('slot_start_time', '>=', now()->subHour(1))
+            ->with(['professional', 'consultation'])
+            ->orderBy('slot_start_time', 'asc')
+            ->get();
+
+        return view('share-and-talk.index', compact('upcomingConsultations'));
     }
 
     public function getProfessionals(Request $request)
@@ -95,17 +104,26 @@ class ShareAndTalkController extends Controller
             $professionalType = $slot->professional->type;
             $consultationType = $validated['consultation_type'];
             $ticketType = '';
+            $fullConsultationType = '';
 
             if ($consultationType === 'chat') {
-                $ticketType = $professionalType === 'psychiatrist' ? 'share_talk_psy_chat' : 'share_talk_ranger_chat';
+                if ($professionalType === 'psychiatrist') {
+                    $ticketType = 'share_talk_psy_chat';
+                    $fullConsultationType = 'Chat w/ Psikolog';
+                } else {
+                    $ticketType = 'share_talk_ranger_chat';
+                    $fullConsultationType = 'Chat w/ Rangers';
+                }
             } elseif ($consultationType === 'video') {
-                // Assuming video is only for psychiatrists based on previous logic
+                // Assuming video is only for psychiatrists
                 $ticketType = 'share_talk_psy_video';
+                $fullConsultationType = 'Video Call w/ Psikolog';
             }
 
             // Find and update the user's ticket
             $userTicket = UserTicket::where('user_id', $user->id)
                 ->where('ticket_type', $ticketType)
+                ->where('expires_at', '>=', now())
                 ->where('remaining_value', '>=', 1)
                 ->orderBy('expires_at', 'desc')
                 ->lockForUpdate()
@@ -121,6 +139,8 @@ class ShareAndTalkController extends Controller
             Consultation::create([
                 'professional_schedule_slot_id' => $slot->id,
                 'room' => 'sharetalk_' . uniqid(),
+                'consultation_type' => $fullConsultationType,
+                'no_wa' => $validated['whatsapp_number'],
             ]);
 
             return $slot;
@@ -129,6 +149,10 @@ class ShareAndTalkController extends Controller
         if (!$slot) {
             return back()->with('error', 'Jadwal yang dipilih tidak lagi tersedia. Silakan pilih jadwal lain.');
         }
+
+        $professional = $slot->professional;
+        $message = "Halo {$professional->name}, Anda memiliki permintaan booking baru. Silakan cek dashboard Anda di " . route('professional.login') . " untuk konfirmasi.";
+        $this->fonnteService->sendWhatsApp($professional->whatsapp_number, $message);
 
         return redirect()->route('share-and-talk.booked')->with('bookedSlot', $slot);
     }
@@ -165,8 +189,13 @@ class ShareAndTalkController extends Controller
 
     public function chatRoom($room)
     {
-        $messages = MessageV2::where('room', $room)->orderBy('created_at', 'asc')->get();
-        return view('share-and-talk.chat', ['room' => $room, 'messages' => $messages]);
+        $roomExists = Consultation::where('room', $room)->exists();
+        if (!$roomExists) {
+            return redirect()->route('share-and-talk')->with('error', 'Ruang obrolan tidak ditemukan.');
+        } else {
+            $messages = MessageV2::where('room', $room)->orderBy('created_at', 'asc')->get();
+            return view('share-and-talk.chat', ['room' => $room, 'messages' => $messages]);
+        }
     }
 
     public function endSession(Request $request)
@@ -184,7 +213,7 @@ class ShareAndTalkController extends Controller
             // Find the related professional schedule slot and update its status
             $slot = ProfessionalScheduleSlot::find($consultation->professional_schedule_slot_id);
             if ($slot) {
-                $slot->status = 'available';
+                $slot->status = 'completed';
                 $slot->save();
             }
         }

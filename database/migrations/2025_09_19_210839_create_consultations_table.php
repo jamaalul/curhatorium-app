@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('professional_schedule_slot_id')->constrained('professional_schedule_slots')->onDelete('cascade');
             $table->string('room')->unique();
+            $table->string('consultation_type');
+            $table->string('no_wa');
             $table->timestamps();
         });
     }
