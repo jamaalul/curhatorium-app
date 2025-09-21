@@ -20,7 +20,7 @@ return new class extends Migration
             $table->foreignId('booked_by_user_id')->nullable()->constrained('users')->onDelete('set null');
             $table->timestamps();
 
-            $table->index(['professional_id', 'slot_start_time']);
+            $table->index(['professional_id', 'slot_start_time'], 'prof_schedule_slots_prof_id_start_time_idx');
         });
     }
 
