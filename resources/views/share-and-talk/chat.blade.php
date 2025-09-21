@@ -85,9 +85,9 @@
         // Enable pusher logging - don't include this in production
         Pusher.logToConsole = true;
 
-        var pusher = new Pusher('{{ env("PUSHER_APP_KEY") }}', {
-            cluster: '{{ env("PUSHER_APP_CLUSTER") }}',
-            encrypted: true
+        var pusher = new Pusher('{{ config("broadcasting.connections.pusher.key") }}', {
+            cluster: '{{ config("broadcasting.connections.pusher.options.cluster") }}',
+            forceTLS: true
         });
 
         var channel = pusher.subscribe('chat.{{ $room }}');
