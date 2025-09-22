@@ -16,8 +16,13 @@
             --fc-list-event-hover-bg-color: #f3f4f6;
         }
         .fc .fc-toolbar-title {
-            font-size: 1.25rem;
+            font-size: 1.1rem; /* Smaller for mobile */
             font-weight: 600;
+        }
+        @media (min-width: 768px) {
+            .fc .fc-toolbar-title {
+                font-size: 1.25rem;
+            }
         }
         .fc .fc-button-primary {
             background-color: #48A6A6;
@@ -33,25 +38,30 @@
     </style>
 </head>
 <body class="bg-gray-100">
-    <div class="flex h-screen">
+    <div class="flex flex-col md:flex-row h-screen">
         <!-- Sidebar -->
-        <aside class="w-64 bg-white shadow-md flex-shrink-0">
-            <div class="p-6">
-                <h1 class="text-2xl font-bold text-gray-800">Curhatorium</h1>
-                <p class="text-sm text-gray-500">Fasilitator Panel</p>
+        <aside class="w-full md:w-64 bg-white shadow-md flex-shrink-0">
+            <div class="p-4 md:p-6 flex justify-between md:block">
+                <div>
+                    <h1 class="text-xl md:text-2xl font-bold text-gray-800">Curhatorium</h1>
+                    <p class="text-sm text-gray-500">Fasilitator Panel</p>
+                </div>
+                <button id="mobile-menu-button" class="md:hidden">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                </button>
             </div>
-            <nav class="mt-6">
-                <a href="#schedule" id="nav-schedule" class="block px-6 py-3 text-gray-700 font-semibold bg-gray-200">
+            <nav id="mobile-menu" class="mt-2 md:mt-6 hidden md:block">
+                <a href="#schedule" id="nav-schedule" class="block px-4 py-2 md:px-6 md:py-3 text-gray-700 font-semibold bg-gray-200">
                     <svg class="inline-block w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
                     Jadwal Saya
                 </a>
-                <a href="#profile" id="nav-profile" class="block px-6 py-3 text-gray-600 hover:bg-gray-100">
+                <a href="#profile" id="nav-profile" class="block px-4 py-2 md:px-6 md:py-3 text-gray-600 hover:bg-gray-100">
                     <svg class="inline-block w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                     Profil
                 </a>
                 <form method="POST" action="{{ route('professional.dashboard.logout') }}">
                     @csrf
-                    <button type="submit" class="w-full text-left block px-6 py-3 text-gray-600 hover:bg-gray-100">
+                    <button type="submit" class="w-full text-left block px-4 py-2 md:px-6 md:py-3 text-gray-600 hover:bg-gray-100">
                         <svg class="inline-block w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
                         Logout
                     </button>
@@ -60,13 +70,13 @@
         </aside>
 
         <!-- Main Content -->
-        <main class="flex-1 p-8 overflow-y-auto">
+        <main class="flex-1 p-4 md:p-8 overflow-y-auto">
             <div class="max-w-7xl mx-auto">
-                <header class="flex justify-between items-center mb-8">
+                <header class="flex flex-col md:flex-row justify-between md:items-center mb-6 md:mb-8">
                     <div>
-                        <h2 id="page-title" class="text-3xl font-bold text-gray-800">Jadwal Saya</h2>
+                        <h2 id="page-title" class="text-2xl md:text-3xl font-bold text-gray-800">Jadwal Saya</h2>
                     </div>
-                    <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-4 mt-4 md:mt-0">
                         <div class="text-right">
                             <p class="font-semibold">{{ $professional->name }}</p>
                             <p class="text-sm text-gray-500">{{ $professional->title }}</p>
@@ -77,23 +87,23 @@
 
                 <!-- Schedule Section -->
                 <div id="schedule-section">
-                    <div class="mt-8 bg-white p-6 rounded-lg shadow-md">
-                        <h3 class="text-xl font-bold mb-4">Permintaan Booking</h3>
+                    <div class="mt-6 md:mt-8 bg-white p-4 md:p-6 rounded-lg shadow-md">
+                        <h3 class="text-lg md:text-xl font-bold mb-4">Permintaan Booking</h3>
                         <div class="overflow-x-auto">
                             <table class="w-full text-sm text-left text-gray-500">
                                 <thead class="text-xs text-gray-700 uppercase bg-gray-50">
                                     <tr>
-                                        <th scope="col" class="px-6 py-3">Klien</th>
-                                        <th scope="col" class="px-6 py-3">Waktu Slot</th>
-                                        <th scope="col" class="px-6 py-3">Aksi</th>
+                                        <th scope="col" class="px-4 py-3">Klien</th>
+                                        <th scope="col" class="px-4 py-3">Waktu Slot</th>
+                                        <th scope="col" class="px-4 py-3">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @forelse($pendingBookings as $booking)
                                     <tr class="bg-white border-b">
-                                        <td class="px-6 py-4">{{ $booking->bookedBy->username ?? 'N/A' }}</td>
-                                        <td class="px-6 py-4">{{ \Carbon\Carbon::parse($booking->slot_start_time)->format('d M Y, H:i') }}</td>
-                                        <td class="px-6 py-4 flex gap-2">
+                                        <td class="px-4 py-4">{{ $booking->bookedBy->username ?? 'N/A' }}</td>
+                                        <td class="px-4 py-4">{{ \Carbon\Carbon::parse($booking->slot_start_time)->format('d M Y, H:i') }}</td>
+                                        <td class="px-4 py-4 flex flex-col sm:flex-row gap-2">
                                             <form action="{{ route('professional.booking.accept', $booking) }}" method="POST">
                                                 @csrf
                                                 <button type="submit" class="px-3 py-1 text-xs font-medium text-center text-white bg-green-600 rounded-lg hover:bg-green-700">Accept</button>
@@ -106,7 +116,7 @@
                                     </tr>
                                     @empty
                                     <tr>
-                                        <td colspan="3" class="px-6 py-4 text-center text-gray-500">Tidak ada permintaan booking.</td>
+                                        <td colspan="3" class="px-4 py-4 text-center text-gray-500">Tidak ada permintaan booking.</td>
                                     </tr>
                                     @endforelse
                                 </tbody>
@@ -114,14 +124,14 @@
                         </div>
                     </div>
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-4">
-                        <div class="lg:col-span-2 bg-white p-6 rounded-lg shadow-md relative">
+                        <div class="lg:col-span-2 bg-white p-4 md:p-6 rounded-lg shadow-md relative">
                             <div id="calendar-management-overlay" class="absolute inset-0 bg-red-500 bg-opacity-10 border-2 border-red-500 rounded-lg hidden items-center justify-center">
-                                <p class="text-red-700 font-semibold text-lg w-full text-center pt-4">Mode Hapus Aktif: Klik slot untuk menghapus</p>
+                                <p class="text-red-700 font-semibold text-base md:text-lg w-full text-center pt-4">Mode Hapus Aktif: Klik slot untuk menghapus</p>
                             </div>
-                            <div class="flex justify-between items-center mb-4">
-                                <h3 class="text-xl font-bold">Kalender Jadwal</h3>
+                            <div class="flex flex-col md:flex-row justify-between md:items-center mb-4">
+                                <h3 class="text-lg md:text-xl font-bold mb-2 md:mb-0">Kalender Jadwal</h3>
                                 <div class="flex items-center">
-                                    <label for="manage-schedule-toggle" class="mr-2 text-sm font-medium text-gray-900">Hapus Jadwal</label>
+                                    <label for="manage-schedule-toggle" class="mr-2 text-xs md:text-sm font-medium text-gray-900">Hapus Jadwal</label>
                                     <label class="relative inline-flex items-center cursor-pointer">
                                         <input type="checkbox" id="manage-schedule-toggle" class="sr-only peer">
                                         <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-600"></div>
@@ -130,21 +140,21 @@
                             </div>
                             <div id='calendar'></div>
                         </div>
-                        <div class="bg-white p-6 rounded-lg shadow-md">
-                            <h3 class="text-xl font-bold mb-4">Atur Ketersediaan</h3>
-                            <p class="text-sm text-gray-600 mb-6">Pilih hari dan jam berulang untuk membuka slot jadwal.</p>
+                        <div class="bg-white p-4 md:p-6 rounded-lg shadow-md">
+                            <h3 class="text-lg md:text-xl font-bold mb-4">Atur Ketersediaan</h3>
+                            <p class="text-xs md:text-sm text-gray-600 mb-6">Pilih hari dan jam berulang untuk membuka slot jadwal.</p>
                             <form id="scheduleForm" class="space-y-4">
                                 <div>
-                                    <label for="start_date" class="block text-sm font-medium text-gray-700">Terapkan dari</label>
-                                    <input type="date" id="start_date" name="start_date" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
+                                    <label for="start_date" class="block text-xs md:text-sm font-medium text-gray-700">Terapkan dari</label>
+                                    <input type="date" id="start_date" name="start_date" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm text-sm" required>
                                 </div>
                                 <div>
-                                    <label for="end_date" class="block text-sm font-medium text-gray-700">Sampai</label>
-                                    <input type="date" id="end_date" name="end_date" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
+                                    <label for="end_date" class="block text-xs md:text-sm font-medium text-gray-700">Sampai</label>
+                                    <input type="date" id="end_date" name="end_date" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm text-sm" required>
                                 </div>
                                 <div class="mt-4">
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Pilih Hari</label>
-                                    <div class="grid grid-cols-3 gap-2 text-sm">
+                                    <label class="block text-xs md:text-sm font-medium text-gray-700 mb-2">Pilih Hari</label>
+                                    <div class="grid grid-cols-3 gap-2 text-xs md:text-sm">
                                         <div><label class="flex items-center"><input type="checkbox" name="days[]" value="1" class="mr-2 rounded">Sen</label></div>
                                         <div><label class="flex items-center"><input type="checkbox" name="days[]" value="2" class="mr-2 rounded">Sel</label></div>
                                         <div><label class="flex items-center"><input type="checkbox" name="days[]" value="3" class="mr-2 rounded">Rab</label></div>
@@ -156,36 +166,37 @@
                                 </div>
                                 <div class="grid grid-cols-2 gap-4">
                                     <div>
-                                        <label for="start_time" class="block text-sm font-medium text-gray-700">Dari Jam</label>
-                                        <input type="time" id="start_time" name="start_time" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
+                                        <label for="start_time" class="block text-xs md:text-sm font-medium text-gray-700">Dari Jam</label>
+                                        <input type="time" id="start_time" name="start_time" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm text-sm" required>
                                     </div>
                                     <div>
-                                        <label for="end_time" class="block text-sm font-medium text-gray-700">Sampai Jam</label>
-                                        <input type="time" id="end_time" name="end_time" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
+                                        <label for="end_time" class="block text-xs md:text-sm font-medium text-gray-700">Sampai Jam</label>
+                                        <input type="time" id="end_time" name="end_time" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm text-sm" required>
                                     </div>
                                 </div>
-                                <button type="submit" class="w-full bg-[#48A6A6] text-white py-2 px-4 rounded-md hover:bg-[#357979]">Buat Slot Jadwal</button>
+                                <button type="submit" class="w-full bg-[#48A6A6] text-white py-2 px-4 rounded-md hover:bg-[#357979] text-sm">Buat Slot Jadwal</button>
                             </form>
                             <div id="scheduleMessage" class="mt-4"></div>
                         </div>
                     </div>
-                    <div class="mt-4 bg-white p-6 rounded-lg shadow-md">
-                        <h3 class="text-xl font-bold mb-4">Sesi Terakhir</h3>
+                    <div class="mt-4 bg-white p-4 md:p-6 rounded-lg shadow-md">
+                        <h3 class="text-lg md:text-xl font-bold mb-4">Sesi Terakhir</h3>
                         <div class="overflow-x-auto">
                             <table class="w-full text-sm text-left text-gray-500">
                                 <thead class="text-xs text-gray-700 uppercase bg-gray-50">
                                     <tr>
-                                        <th scope="col" class="px-6 py-3">Klien</th>
-                                        <th scope="col" class="px-6 py-3">Waktu Slot</th>
-                                        <th scope="col" class="px-6 py-3">Status</th>
+                                        <th scope="col" class="px-4 py-3">Klien</th>
+                                        <th scope="col" class="px-4 py-3">Waktu Slot</th>
+                                        <th scope="col" class="px-4 py-3">Status</th>
+                                        <th scope="col" class="px-4 py-3">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @forelse($recentSessions as $session)
                                     <tr class="bg-white border-b">
-                                        <td class="px-6 py-4">{{ $session->bookedBy->username ?? 'N/A' }}</td>
-                                        <td class="px-6 py-4">{{ \Carbon\Carbon::parse($session->slot_start_time)->format('d M Y, H:i') }}</td>
-                                        <td class="px-6 py-4">
+                                        <td class="px-4 py-4">{{ $session->bookedBy->username ?? 'N/A' }}</td>
+                                        <td class="px-4 py-4">{{ \Carbon\Carbon::parse($session->slot_start_time)->format('d M Y, H:i') }}</td>
+                                        <td class="px-4 py-4">
                                             <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
                                                 @if($session->status === 'booked') bg-green-100 text-green-800
                                                 @elseif($session->status === 'pending_confirmation') bg-yellow-100 text-yellow-800
@@ -201,10 +212,32 @@
                                                 {{ $statusText }}
                                             </span>
                                         </td>
+                                        <td class="px-4 py-4">
+                                            @if($session->status === 'booked')
+                                                @php
+                                                    $slotStart = \Carbon\Carbon::parse($session->slot_start_time);
+                                                    $minutesUntil = now()->diffInMinutes($slotStart, false);
+                                                    $disabled = $minutesUntil > 5;
+                                                    $isVideo = stripos($session->consultation->consultation_type, 'video') !== false;
+                                                @endphp
+                                                <button
+                                                    @if ($isVideo)
+                                                        onclick="if(!this.disabled) window.location.href='/video/{{ $session->consultation->room }}'"
+                                                    @else
+                                                        onclick="if(!this.disabled) window.location.href='/chat/{{ $session->consultation->room }}'"
+                                                    @endif
+                                                    class="goto-room-btn bg-[#48a6a6] hover:bg-[#357979] text-white py-2 px-4 rounded-md transition-colors duration-200 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                                                    data-schedule-time="{{ $session->slot_start_time }}"
+                                                    @if($disabled) disabled @endif
+                                                >
+                                                    Masuk Ruangan
+                                                </button>
+                                            @endif
+                                        </td>
                                     </tr>
                                     @empty
                                     <tr>
-                                        <td colspan="3" class="px-6 py-4 text-center text-gray-500">Tidak ada sesi terbaru.</td>
+                                        <td colspan="4" class="px-4 py-4 text-center text-gray-500">Tidak ada sesi terbaru.</td>
                                     </tr>
                                     @endforelse
                                 </tbody>
@@ -215,9 +248,9 @@
 
                 <!-- Profile Section -->
                 <div id="profile-section" class="hidden">
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                        <div class="bg-white p-6 rounded-lg shadow-md">
-                            <h3 class="text-xl font-bold mb-4">Ubah Password</h3>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
+                        <div class="bg-white p-4 md:p-6 rounded-lg shadow-md">
+                            <h3 class="text-lg md:text-xl font-bold mb-4">Ubah Password</h3>
                             <form id="passwordForm" class="space-y-4">
                                 <div>
                                     <label for="current_password" class="block text-sm font-medium text-gray-700">Password Saat Ini</label>
@@ -243,8 +276,8 @@
 
     <!-- Deletion Modal -->
     <div id="delete-modal" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50 hidden">
-        <div class="bg-white rounded-lg shadow-xl w-full max-w-md m-4 p-6">
-            <h2 class="text-xl font-bold mb-4">Konfirmasi Hapus Jadwal</h2>
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-md m-4 p-4 md:p-6">
+            <h2 class="text-lg md:text-xl font-bold mb-4">Konfirmasi Hapus Jadwal</h2>
             <p id="delete-modal-text" class="mb-6">Apakah Anda yakin ingin menghapus slot jadwal yang tersedia ini?</p>
             <div class="flex justify-end gap-4">
                 <button id="cancel-delete-btn" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">Batal</button>
@@ -292,13 +325,20 @@
             let manageMode = false;
 
             const calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'dayGridMonth',
+                initialView: window.innerWidth < 768 ? 'timeGridDay' : 'dayGridMonth',
                 headerToolbar: {
                     left: 'prev,next today',
                     center: 'title',
-                    right: 'dayGridMonth,timeGridWeek'
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
                 },
                 events: `/api/professionals/{{ $professional->id }}/schedule`,
+                windowResize: function(view) {
+                    if (window.innerWidth < 768) {
+                        calendar.changeView('timeGridDay');
+                    } else {
+                        calendar.changeView('dayGridMonth');
+                    }
+                },
                 eventClick: function(info) {
                     if (!manageMode || info.event.title !== 'Available') {
                         return;
@@ -392,6 +432,10 @@
                     if(data.success) this.reset();
                 }).catch(err => console.error(err));
             });
+        });
+
+        document.getElementById('mobile-menu-button').addEventListener('click', function() {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
         });
     </script>
 </body>
