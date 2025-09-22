@@ -1,5 +1,6 @@
 <?php
 
+use App\Events\MessageSent;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AgendaController;
@@ -15,11 +16,18 @@ use App\Http\Controllers\MentalTestController;
 use App\Http\Controllers\MissionController;
 use App\Http\Controllers\XpController;
 use App\Http\Controllers\XpRedemptionController;
-
+use App\Http\Controllers\PusherController;
+use Illuminate\Container\Attributes\Auth;
 
 Route::get('/', function () {
     return view('landing');
 })->name('land');
+
+Route::get('/pusher', [PusherController::class, 'index'])->name('pusher.index');
+Route::get('/pusher/room/{room}', [PusherController::class, 'room'])->name('pusher.room');
+Route::post('/pusher/room', [PusherController::class, 'createRoom'])->name('pusher.createRoom');
+Route::post('/pusher/message', [PusherController::class, 'sendMessage'])->name('pusher.sendMessage');
+Route::post('/pusher/terminate/{room}', [PusherController::class, 'terminate'])->name('pusher.terminate');
 
 Route::get('/portal', function () {
     return view('auth.login');
@@ -52,10 +60,11 @@ Route::middleware('auth')->group(function () {
             })
             ->latest('starts_at')
             ->first();
-        $user = auth()->user();
+        $user = Illuminate\Support\Facades\Auth::user();
         $cards = []; // Cards are now loaded via JavaScript
         return view('main.main', compact('statsData', 'announcement', 'user', 'cards'));
     })->middleware(['auth', 'verified'])->name('dashboard');
+    
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])
         ->middleware('profile.upload.limit')
@@ -69,21 +78,12 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/share-and-talk', [ShareAndTalkController::class, 'index'])->name('share-and-talk');
     Route::get('/share-and-talk/professionals', [ShareAndTalkController::class, 'getProfessionals']);
-    Route::get('/share-and-talk/chat/{professionalId}', [ShareAndTalkController::class, 'chatConsultation'])
-        ->middleware(\App\Http\Middleware\ShareAndTalkTicketGateMiddleware::class)
-        ->name('share-and-talk.chat');
-    Route::get('/share-and-talk/start-chat-session/{sessionId}', [ShareAndTalkController::class, 'startChatSession'])
-        ->name('share-and-talk.start-chat-session');
-    Route::get('/share-and-talk/chat-session/{sessionId}', [ShareAndTalkController::class, 'userChatSession'])
-        ->name('share-and-talk.chat-session');
-    Route::get('/share-and-talk/video/{professionalId}', [ShareAndTalkController::class, 'videoConsultation'])
-        ->middleware(\App\Http\Middleware\ShareAndTalkVideoTicketGateMiddleware::class)
-        ->name('share-and-talk.video');
-    Route::get('/share-and-talk/start-video-session/{sessionId}', [ShareAndTalkController::class, 'startVideoSession'])
-        ->name('share-and-talk.start-video-session');
-    Route::get('/share-and-talk/video-session/{sessionId}', [ShareAndTalkController::class, 'userVideoSession'])
-        ->name('share-and-talk.video-session');
-    Route::post('/share-and-talk/chat/user-send', [ShareAndTalkController::class, 'userSend'])->name('share-and-talk.userSend');
+    Route::get('/share-and-talk/waiting', [ShareAndTalkController::class, 'wait'])->name('share-and-talk.waiting');
+    Route::get('/share-and-talk/checkout/{professional}', [ShareAndTalkController::class, 'showCheckoutPage'])->name('share-and-talk.checkout');
+    Route::post('/share-and-talk/book', [ShareAndTalkController::class, 'bookSession'])->name('share-and-talk.book');
+    Route::get('/share-and-talk/booked', [ShareAndTalkController::class, 'booked'])->name('share-and-talk.booked');
+    Route::post('/share-and-talk/end', [ShareAndTalkController::class, 'endSession'])->name('share-and-talk.end');
+    // middleware = \App\Http\Middleware\ShareAndTalkVideoTicketGateMiddleware::class
     
     // Video consultation API endpoints
     Route::post('/api/share-and-talk/cancel-session/{sessionId}', [ShareAndTalkController::class, 'cancelSession'])->name('share-and-talk.cancel-session');
@@ -176,8 +176,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/support-group-discussion/{groupId}/payment-data', [SgdController::class, 'getPaymentData'])->name('group.payment-data');
     Route::get('/support-group-discussion/{groupId}/consumption-details', [SgdController::class, 'getConsumptionDetails'])->name('group.consumption-details');
     Route::post('/support-group-discussion/payment-summary', [SgdController::class, 'getPaymentSummary'])->name('group.payment-summary');
-
-    Route::get('/share-and-talk/messages/{sessionId}', [ShareAndTalkController::class, 'getMessages'])->name('share-and-talk.messages');
 });
 
 Route::middleware(['auth'])->group(function () {
@@ -187,16 +185,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/missions-of-the-day/{mission}/complete', [MissionController::class, 'complete'])->name('missions.complete');
 });
 
-
-Route::get('/share-and-talk/facilitator/{sessionId}', [ShareAndTalkController::class, 'facilitatorChat'])->name('share-and-talk.facilitator');
-Route::get('/share-and-talk/facilitator-video/{sessionId}', [ShareAndTalkController::class, 'facilitatorVideo'])->name('share-and-talk.facilitator-video');
-Route::post('/share-and-talk/chat/facilitator-send', [ShareAndTalkController::class, 'facilitatorSend'])->name('share-and-talk.facilitatorSend');
-Route::get('/api/share-and-talk/messages/{sessionId}', [ShareAndTalkController::class,'getMessages'])->name('share-and-talk.fetch');
-Route::get('/api/share-and-talk/session-status/{sessionId}', [ShareAndTalkController::class, 'getSessionStatus']);
-Route::post('/api/share-and-talk/cancel-session/{sessionId}', [ShareAndTalkController::class, 'cancelSessionByUser']);
-Route::post('/api/share-and-talk/professional-online/{professionalId}', [ShareAndTalkController::class, 'setProfessionalOnline']);
-Route::get('/share-and-talk/activate-session/{sessionId}', [ShareAndTalkController::class, 'activateSession'])->name('share-and-talk.activate-session');
-Route::post('/api/share-and-talk/manual-activate/{sessionId}', [ShareAndTalkController::class, 'manualActivateSession'])->name('share-and-talk.manual-activate');
+// Professional Availability and Schedule APIs
+Route::get('/api/professionals/{professional}/availability', [ShareAndTalkController::class, 'getAvailabilitySlots'])->name('api.professionals.availability');
+Route::get('/api/professionals/{professional}/schedule', [\App\Http\Controllers\ProfessionalDashboardController::class, 'getSchedule'])->name('api.professionals.schedule');
 
 // Professional Authentication Routes
 Route::get('/professional/login', [\App\Http\Controllers\Auth\ProfessionalAuthenticatedSessionController::class, 'create'])->name('professional.login');
@@ -206,8 +197,10 @@ Route::post('/professional/logout', [\App\Http\Controllers\Auth\ProfessionalAuth
 // Professional Dashboard Routes (Protected)
 Route::middleware([\App\Http\Middleware\AuthenticateProfessional::class])->group(function () {
     Route::get('/professional/{professionalId}/dashboard', [\App\Http\Controllers\ProfessionalDashboardController::class, 'dashboard'])->name('professional.dashboard');
-    Route::post('/professional/{professionalId}/update-availability', [\App\Http\Controllers\ProfessionalDashboardController::class, 'updateAvailability'])->name('professional.update-availability');
-    Route::get('/professional/{professionalId}/availability', [\App\Http\Controllers\ProfessionalDashboardController::class, 'getAvailability'])->name('professional.get-availability');
+    Route::post('/professional/availability/set', [\App\Http\Controllers\ProfessionalDashboardController::class, 'setAvailability'])->name('professional.set-availability');
+    Route::post('/professional/slots/{slot}/accept', [\App\Http\Controllers\ProfessionalDashboardController::class, 'acceptBooking'])->name('professional.booking.accept');
+    Route::post('/professional/slots/{slot}/decline', [\App\Http\Controllers\ProfessionalDashboardController::class, 'declineBooking'])->name('professional.booking.decline');
+    Route::delete('/professional/slots/{slot}', [\App\Http\Controllers\ProfessionalDashboardController::class, 'deleteSlot'])->name('professional.slot.delete');
     Route::post('/professional/{professionalId}/change-password', [\App\Http\Controllers\ProfessionalDashboardController::class, 'changePassword'])->name('professional.change-password');
     Route::post('/professional/logout', [\App\Http\Controllers\ProfessionalDashboardController::class, 'logout'])->name('professional.dashboard.logout');
 });
@@ -287,4 +280,6 @@ Route::get('/info/{feature}', function ($feature) {
 
     return view('info.feature', ['feature' => $featureData[$feature]]);
 })->name('info.feature');
+
+Route::get('/chat/{room}', [ShareAndTalkController::class, 'chatRoom'])->name('chat.room');
 

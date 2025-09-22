@@ -1,3 +1,20 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+/* Custom keyframes for waiting animation */
+@layer utilities {
+  @keyframes ripple {
+    0%   { transform: scale(1);   opacity: 0.6; }
+    70%  { transform: scale(2.4); opacity: 0;   }
+    100% { transform: scale(2.4); opacity: 0;   }
+  }
+  @keyframes breathe {
+    0%,100% { transform: scale(1);   opacity: 0.8; }
+    50%     { transform: scale(1.07); opacity: 1;   }
+  }
+
+  .animate-ripple  { animation: ripple 1.6s cubic-bezier(.4,0,.2,1) infinite; }
+  .animate-breathe { animation: breathe 2.6s ease-in-out infinite; }
+}

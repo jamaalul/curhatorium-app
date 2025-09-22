@@ -26,6 +26,11 @@ class AuthenticatedSessionController extends Controller
     {
         $request->authenticate();
 
+        // Logout the professional guard if authenticated
+        if (Auth::guard('professional')->check()) {
+            Auth::guard('professional')->logout();
+        }
+
         $request->session()->regenerate();
 
         $user = Auth::user();

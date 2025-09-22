@@ -8,407 +8,214 @@ use App\Services\TicketService;
 use App\Http\Requests\ChatMessageRequest;
 use App\Models\Professional;
 use App\Models\ChatSession;
+use App\Models\Consultation;
 use App\Models\Message;
+use App\Models\MessageV2;
 use App\Models\User;
+use App\Models\ProfessionalScheduleSlot;
+use App\Models\UserTicket;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
 
 class ShareAndTalkController extends Controller
 {
     public function __construct(
         private ShareAndTalkService $shareAndTalkService,
-        private TicketService $ticketService
+        private TicketService $ticketService,
+        private \App\Services\FonnteService $fonnteService
     ) {}
     public function index() {
-        return view('share-and-talk.index');
+        $user = Auth::user();
+        $upcomingConsultations = ProfessionalScheduleSlot::where('booked_by_user_id', $user->id)
+            ->whereIn('status', ['pending_confirmation', 'booked'])
+            ->where('slot_start_time', '>=', now()->subHour(1))
+            ->with(['professional', 'consultation'])
+            ->orderBy('slot_start_time', 'asc')
+            ->get();
+
+        return view('share-and-talk.index', compact('upcomingConsultations'));
     }
 
     public function getProfessionals(Request $request)
     {
         $type = $request->query('type');
-        $professionals = $this->shareAndTalkService->getProfessionals($type);
+        $date = $request->query('date');
+        $professionals = $this->shareAndTalkService->getProfessionals($type, $date);
         
         return response()->json($professionals);
     }
 
-    public function chatConsultation($professionalId) {
-        try {
-            $user = Auth::user();
-            $session = $this->shareAndTalkService->createChatSession($professionalId, $user);
-            
-            return redirect()->route('share-and-talk.start-chat-session', ['sessionId' => $session->session_id]);
-        } catch (\Exception $e) {
-            Log::error('Chat consultation error: ' . $e->getMessage());
-            return redirect()->route('share-and-talk')->with('error', 'An error occurred while creating the chat consultation. Please try again.');
-        }
+    public function wait() {
+        return view('share-and-talk.waiting');
     }
 
-    public function facilitatorChat($sessionId) {
-        $session = ChatSession::where('session_id', $sessionId)->first();
-        
-        if (!$session) {
-            return redirect()->back()->withErrors(['msg' => 'Session not found.']);
-        }
-        
-        // If this is a video session, redirect to the video facilitator
-        if ($session->type === 'video') {
-            return redirect()->route('share-and-talk.facilitator-video', ['sessionId' => $sessionId]);
-        }
-        
-        $user = User::where('id', $session->user_id)->first();
-
-        // Don't automatically activate the session - let the facilitator do it manually
-        // The session should stay in 'waiting' status until explicitly activated
-
-        $interval = now()->diffInMinutes($session->end);
-
-        return view('share-and-talk.facilitator', [
-            'sessionId' => $sessionId, 
-            'professionalId' => $session->professional_id, 
-            'user' => $user, 
-            'interval' => $interval,
-            'sessionStatus' => $session->status
-        ]);
-    }
-
-    public function facilitatorVideo($sessionId) {
-        $session = ChatSession::where('session_id', $sessionId)->first();
-    
-        $interval = now()->diffInMinutes($session->end);
-
-        return view('share-and-talk.facilitator-video', [
-            'sessionId' => $sessionId, 
-            'professionalId' => $session->professional_id,
-            'interval' => $interval,
-        ]);
-    }
-
-    public function userSend(ChatMessageRequest $request)
+    public function showCheckoutPage(Professional $professional)
     {
-        try {
-            $user = Auth::user();
-            $message = $this->shareAndTalkService->sendMessage(
-                $request->session_id,
-                $request->message,
-                'user',
-                $user->id
-            );
-
-            return response()->json([
-                'status' => 'success',
-                'data' => $message,
-            ]);
-        } catch (\Exception $e) {
-            Log::error('User send message error: ' . $e->getMessage());
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Failed to send message'
-            ], 500);
-        }
-    }
-
-    public function facilitatorSend(ChatMessageRequest $request)
-    {
-        try {
-            $session = ChatSession::where('session_id', $request->session_id)->first();
-            
-            if (!$session) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'Session not found'
-                ], 404);
-            }
-
-            $message = $this->shareAndTalkService->sendMessage(
-                $request->session_id,
-                $request->message,
-                'professional',
-                $session->professional_id
-            );
-
-            return response()->json([
-                'status' => 'success',
-                'data' => $message,
-            ]);
-        } catch (\Exception $e) {
-            Log::error('Facilitator send message error: ' . $e->getMessage());
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Failed to send message'
-            ], 500);
-        }
-    }
-
-    public function getMessages($sessionId) {
-        $messages = $this->shareAndTalkService->getSessionMessages($sessionId);
-        return response()->json($messages);
-    }
-
-    // API endpoint to get session status
-    public function getSessionStatus($sessionId) {
-        $status = $this->shareAndTalkService->getSessionStatus($sessionId);
-        
-        if (!$status) {
-            return response()->json(['status' => 'not_found'], 404);
-        }
-        
-        return response()->json($status);
-    }
-
-    // API endpoint to cancel a session by sessionId (for frontend timeout)
-    public function cancelSessionByUser($sessionId) {
         $user = Auth::user();
-        $success = $this->shareAndTalkService->cancelSessionByUser($sessionId, $user);
-        
-        if (!$success) {
-            return response()->json(['status' => 'not_found_or_not_cancellable'], 404);
-        }
-        
-        return response()->json(['status' => 'cancelled']);
+        $ticketSummary = $this->ticketService->getTicketSummary($user);
+
+        // Corrected ticket type determination based on seeder and debug output
+        $chatTicketType = $professional->type === 'psychiatrist' ? 'share_talk_psy_chat' : 'share_talk_ranger_chat';
+        $videoTicketType = 'share_talk_psy_video';
+
+        $tickets = [
+            'chat' => $ticketSummary[$chatTicketType]['total_remaining'] ?? 0,
+            'video' => $ticketSummary[$videoTicketType]['total_remaining'] ?? 0,
+        ];
+
+        return view('share-and-talk.checkout', compact('professional', 'tickets'));
     }
 
-    // Cancel sessions that are still 'waiting' or 'pending' after timeout and return user's ticket
-    public function cancelExpiredWaitingSessions()
+    public function bookSession(Request $request)
     {
-        $cancelledCount = $this->shareAndTalkService->cancelExpiredSessions();
-        
-        Log::info("Cancelled {$cancelledCount} expired sessions");
-    }
+        $validated = $request->validate([
+            'professional_id' => 'required|integer|exists:professionals,id',
+            'whatsapp_number' => 'required|string|max:20',
+            'consultation_type' => 'required|string|in:chat,video',
+            'date' => 'required|date_format:Y-m-d',
+            'time' => 'required|date_format:H:i',
+        ]);
 
-    // API endpoint to set professional online (after session ends)
-    public function setProfessionalOnline($professionalId) {
-        $success = $this->shareAndTalkService->setProfessionalOnline($professionalId);
-        
-        if (!$success) {
-            return response()->json(['status' => 'not_found'], 404);
-        }
-        
-        return response()->json(['status' => 'online']);
-    }
+        $slotStartTime = Carbon::parse($validated['date'] . ' ' . $validated['time']);
+        $user = Auth::user();
 
-    public function videoConsultation($professionalId) {
-        try {
-            $user = Auth::user();
-            $session = $this->shareAndTalkService->createVideoSession($professionalId, $user);
-            
-            return redirect()->route('share-and-talk.start-video-session', ['sessionId' => $session->session_id]);
-        } catch (\Exception $e) {
-            Log::error('Video consultation error: ' . $e->getMessage());
-            return redirect()->route('share-and-talk')->with('error', $e->getMessage());
-        }
-    }
-    
+        $slot = DB::transaction(function () use ($validated, $slotStartTime, $user) {
+            $slot = ProfessionalScheduleSlot::where('professional_id', $validated['professional_id'])
+                ->where('slot_start_time', $slotStartTime)
+                ->where('status', 'available')
+                ->lockForUpdate()
+                ->first();
 
-
-    public function cancelSession($sessionId) {
-        try {
-            $user = Auth::user();
-            $success = $this->shareAndTalkService->cancelSession($sessionId, $user);
-
-            if (!$success) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Session not found or cannot be cancelled.'
-                ], 404);
+            if (!$slot) {
+                return null;
             }
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Session cancelled and ticket refunded successfully.'
+            $slot->status = 'pending_confirmation';
+            $slot->booked_by_user_id = $user->id;
+            $slot->save();
+
+            $slot->load('professional');
+
+            // Determine the correct ticket type
+            $professionalType = $slot->professional->type;
+            $consultationType = $validated['consultation_type'];
+            $ticketType = '';
+            $fullConsultationType = '';
+
+            if ($consultationType === 'chat') {
+                if ($professionalType === 'psychiatrist') {
+                    $ticketType = 'share_talk_psy_chat';
+                    $fullConsultationType = 'Chat w/ Psikolog';
+                } else {
+                    $ticketType = 'share_talk_ranger_chat';
+                    $fullConsultationType = 'Chat w/ Rangers';
+                }
+            } elseif ($consultationType === 'video') {
+                // Assuming video is only for psychiatrists
+                $ticketType = 'share_talk_psy_video';
+                $fullConsultationType = 'Video Call w/ Psikolog';
+            }
+
+            // Find and update the user's ticket
+            $userTicket = UserTicket::where('user_id', $user->id)
+                ->where('ticket_type', $ticketType)
+                ->where('expires_at', '>=', now())
+                ->where('remaining_value', '>=', 1)
+                ->orderBy('expires_at', 'desc')
+                ->lockForUpdate()
+                ->first();
+
+            if (!$userTicket) {
+                // This will trigger the transaction to rollback
+                throw new \Exception('No valid ticket found for this consultation type.');
+            }
+
+            $userTicket->decrement('remaining_value');
+
+            Consultation::create([
+                'professional_schedule_slot_id' => $slot->id,
+                'room' => 'sharetalk_' . uniqid(),
+                'consultation_type' => $fullConsultationType,
+                'no_wa' => $validated['whatsapp_number'],
             ]);
 
-        } catch (\Exception $e) {
-            Log::error('Session cancellation error: ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to cancel session.'
-            ], 500);
+            return $slot;
+        });
+
+        if (!$slot) {
+            return back()->with('error', 'Jadwal yang dipilih tidak lagi tersedia. Silakan pilih jadwal lain.');
         }
+
+        $professional = $slot->professional;
+        $message = "Halo {$professional->name}, Anda memiliki permintaan booking baru.\n\nSilakan cek dashboard Anda di:\n" . route('professional.login') . "\n\nTerima kasih.";
+        $this->fonnteService->sendWhatsApp($professional->whatsapp_number, $message);
+
+        return redirect()->route('share-and-talk.booked')->with('bookedSlot', $slot);
     }
 
-    public function endSession($sessionId) {
-        try {
-            $user = Auth::user();
-            $result = $this->shareAndTalkService->endSession($sessionId, $user);
+    public function getAvailabilitySlots(Request $request, Professional $professional)
+    {
+        $request->validate([
+            'date' => 'required|date_format:Y-m-d',
+        ]);
 
-            if (!$result['success']) {
-                return response()->json([
-                    'success' => false,
-                    'message' => $result['message']
-                ], 404);
-            }
+        $date = Carbon::parse($request->date);
 
-            return response()->json($result);
+        $slots = ProfessionalScheduleSlot::where('professional_id', $professional->id)
+            ->whereDate('slot_start_time', $date)
+            ->where('status', 'available')
+            ->orderBy('slot_start_time')
+            ->get()
+            ->map(function ($slot) {
+                return Carbon::parse($slot->slot_start_time)->format('H:i');
+            });
 
-        } catch (\Exception $e) {
-            Log::error('Session end error: ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to end session.'
-            ], 500);
-        }
+        return response()->json($slots);
     }
 
-
-
-    // Route for professional to access the session (e.g., from WhatsApp link)
-    public function activateSession($sessionId) {
-        $session = ChatSession::where('session_id', $sessionId)->first();
-        if (!$session) {
-            return response('Session not found', 404);
+    public function booked()
+    {
+        $bookedSlot = session('bookedSlot');
+        if (!$bookedSlot) {
+            // Redirect to dashboard if the session data is not available
+            return redirect()->route('dashboard');
         }
-        
-        // Don't automatically activate - just redirect to facilitator interface
-        // The facilitator will manually activate the session when ready
-        if ($session->status === 'waiting' || $session->status === 'pending') {
-            // Redirect based on session type
-            if ($session->type === 'chat') {
-                return redirect()->route('share-and-talk.facilitator', ['sessionId' => $sessionId]);
-            } else {
-                // video session
-                return redirect()->route('share-and-talk.facilitator-video', ['sessionId' => $sessionId]);
-            }
-        } elseif ($session->status === 'active') {
-            // Already active, redirect based on session type
-            if ($session->type === 'chat') {
-                return redirect()->route('share-and-talk.facilitator', ['sessionId' => $sessionId]);
-            } else {
-                // video session
-                return redirect()->route('share-and-talk.facilitator-video', ['sessionId' => $sessionId]);
-            }
+        return view('share-and-talk.booked', compact('bookedSlot'));
+    }
+
+    public function chatRoom($room)
+    {
+        $roomExists = Consultation::where('room', $room)->exists();
+        if (!$roomExists) {
+            return redirect()->route('share-and-talk')->with('error', 'Ruang obrolan tidak ditemukan.');
         } else {
-            return response('Session is not in a state that can be activated.', 400);
+            $messages = MessageV2::where('room', $room)->orderBy('created_at', 'asc')->get();
+            return view('share-and-talk.chat', ['room' => $room, 'messages' => $messages]);
         }
     }
 
-    // First step: Validate session and redirect to video session
-    public function startVideoSession($sessionId) {
-        $session = ChatSession::where('session_id', $sessionId)->first();
-        
-        if (!$session) {
-            return redirect()->route('share-and-talk')->with('error', 'Session not found.');
-        }
-        
-        // Check if the current user owns this session
-        if ($session->user_id !== Auth::id()) {
-            return redirect()->route('share-and-talk')->with('error', 'You are not authorized to access this session.');
-        }
-        
-        // Check if session is still valid (not cancelled or completed)
-        if (in_array($session->status, ['cancelled', 'completed'])) {
-            return redirect()->route('share-and-talk')->with('error', 'This session has ended.');
-        }
-        
-        // Redirect to the actual video session
-        return redirect()->route('share-and-talk.video-session', ['sessionId' => $sessionId]);
-    }
-
-    // Second step: Display the video session (no session creation)
-    public function userVideoSession($sessionId) {
-        $session = ChatSession::where('session_id', $sessionId)->first();
-        
-        if (!$session) {
-            return redirect()->route('share-and-talk')->with('error', 'Session not found.');
-        }
-        
-        // Check if the current user owns this session
-        if ($session->user_id !== Auth::id()) {
-            return redirect()->route('share-and-talk')->with('error', 'You are not authorized to access this session.');
-        }
-        
-        // Check if session is still valid
-        if (in_array($session->status, ['cancelled', 'completed'])) {
-            return redirect()->route('share-and-talk')->with('error', 'This session has ended.');
-        }
-        
-        $user = User::where('id', $session->user_id)->first();
-        $professional = Professional::where('id', $session->professional_id)->first();
-        
-        if (!$user || !$professional) {
-            return redirect()->route('share-and-talk')->with('error', 'Session data is invalid.');
-        }
-        
-        $interval = now()->diffInMinutes($session->end);
-        
-        return view('share-and-talk.video', [
-            'professional' => $professional, 
-            'user' => $user, 
-            'session_id' => $sessionId, 
-            'interval' => $interval,
-            'jitsi_room' => $session->jitsi_room,
-            'user_display_name' => $user->name,
+    public function endSession(Request $request)
+    {
+        $request->validate([
+            'room' => 'required|string',
         ]);
+
+        $room = $request->input('room');
+
+        // Find the consultation by room
+        $consultation = Consultation::where('room', $room)->first();
+
+        if ($consultation) {
+            // Find the related professional schedule slot and update its status
+            $slot = ProfessionalScheduleSlot::find($consultation->professional_schedule_slot_id);
+            if ($slot) {
+                $slot->status = 'completed';
+                $slot->save();
+            }
+        }
+
+        return redirect()->route('dashboard')->with('success', 'Sesi telah diakhiri.');
     }
-
-    // Manual activation endpoint for facilitators
-    public function manualActivateSession($sessionId) {
-        $success = $this->shareAndTalkService->activateSession($sessionId);
-        
-        if (!$success) {
-            return response()->json(['error' => 'Session not found or cannot be activated'], 400);
-        }
-        
-        return response()->json(['success' => true, 'message' => 'Session activated']);
-    }
-
-    // First step: Validate chat session and redirect to chat session
-    public function startChatSession($sessionId) {
-        $session = ChatSession::where('session_id', $sessionId)->first();
-        
-        if (!$session) {
-            return redirect()->route('share-and-talk')->with('error', 'Session not found.');
-        }
-        
-        // Check if the current user owns this session
-        if ($session->user_id !== Auth::id()) {
-            return redirect()->route('share-and-talk')->with('error', 'You are not authorized to access this session.');
-        }
-        
-        // Check if session is still valid (not cancelled or completed)
-        if (in_array($session->status, ['cancelled', 'completed'])) {
-            return redirect()->route('share-and-talk')->with('error', 'This session has ended.');
-        }
-        
-        // Redirect to the actual chat session
-        return redirect()->route('share-and-talk.chat-session', ['sessionId' => $sessionId]);
-    }
-
-    // Second step: Display the chat session (no session creation)
-    public function userChatSession($sessionId) {
-        $session = ChatSession::where('session_id', $sessionId)->first();
-        
-        if (!$session) {
-            return redirect()->route('share-and-talk')->with('error', 'Session not found.');
-        }
-        
-        // Check if the current user owns this session
-        if ($session->user_id !== Auth::id()) {
-            return redirect()->route('share-and-talk')->with('error', 'You are not authorized to access this session.');
-        }
-        
-        // Check if session is still valid
-        if (in_array($session->status, ['cancelled', 'completed'])) {
-            return redirect()->route('share-and-talk')->with('error', 'This session has ended.');
-        }
-        
-        $user = User::where('id', $session->user_id)->first();
-        $professional = Professional::where('id', $session->professional_id)->first();
-        
-        if (!$user || !$professional) {
-            return redirect()->route('share-and-talk')->with('error', 'Session data is invalid.');
-        }
-        
-        $interval = now()->diffInMinutes($session->end);
-        
-        return view('share-and-talk.chat', [
-            'professional' => $professional, 
-            'user' => $user, 
-            'session_id' => $sessionId, 
-            'interval' => $interval,
-        ]);
-    }
-
-
-
-
 }

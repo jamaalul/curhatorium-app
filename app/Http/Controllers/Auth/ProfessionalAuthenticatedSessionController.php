@@ -32,6 +32,11 @@ class ProfessionalAuthenticatedSessionController extends Controller
         ]);
 
         if (Auth::guard('professional')->attempt($credentials, $request->boolean('remember'))) {
+            // Logout the web guard if authenticated
+            if (Auth::guard('web')->check()) {
+                Auth::guard('web')->logout();
+            }
+
             $request->session()->regenerate();
             $professional = Auth::guard('professional')->user();
             return redirect()->route('professional.dashboard', ['professionalId' => $professional->id]);

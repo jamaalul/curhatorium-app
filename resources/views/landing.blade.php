@@ -259,10 +259,8 @@
                             'benefits' => [
                                 '(Unlimited) Tes Kesehatan Mental',
                                 '(7 Hari) Mood and Productivity Tracker',
-                                '(2 Jam) Ment-AI Chatbot',
                                 '(7 Hari) Missions of The Day',
                                 '(1x) Support Group Discussion',
-                                '(30x) Deep Cards',
                             ],
                         ],
                         'Growth Path' => [
@@ -270,10 +268,8 @@
                             'benefits' => [
                                 '(Unlimited) Tes Kesehatan Mental',
                                 '(Unlimited) Mood and Productivity Tracker',
-                                '(1 Jam) Ment-AI Chatbot',
                                 '(Unlimited) Missions of The Day',
                                 '(1x) Support Group Discussion',
-                                '(Unlimited) Deep Cards',
                                 '(1x) Share and Talk via Chat w/ Rangers',
                                 'Extra gain XP',
                             ],
@@ -283,10 +279,8 @@
                             'benefits' => [
                                 '(Unlimited) Tes Kesehatan Mental',
                                 '(Unlimited) Mood and Productivity Tracker',
-                                '(Unlimited) Ment-AI Chatbot',
                                 '(Unlimited) Missions of The Day',
                                 '(3x) Support Group Discussion',
-                                '(Unlimited) Deep Cards',
                                 '(2x) Share and Talk via Chat w/ Rangers',
                                 'Extra gain XP',
                             ],
@@ -296,10 +290,8 @@
                             'benefits' => [
                                 '(Unlimited) Tes Kesehatan Mental',
                                 '(Unlimited) Mood and Productivity Tracker w/ Extended Report',
-                                '(Unlimited) Ment-AI Chatbot',
                                 '(Unlimited) Missions of The Day',
                                 '(5x) Support Group Discussion',
-                                '(Unlimited) Deep Cards',
                                 '(3x) Share and Talk via Chat w/ Rangers',
                                 'Extra gain XP',
                             ],
@@ -308,14 +300,12 @@
                             'price' => 19900,
                             'benefits' => [
                                 '(1x) Support Group Discussion',
-                                '(Unlimited 1 bulan) Deep Cards',
                             ],
                         ],
                         'Serenity' => [
                             'price' => 15000,
                             'benefits' => [
                                 '(1x) Share and Talk via Chat w/ Rangers',
-                                '(Unlimited 1 bulan) Deep Cards',
                             ],
                         ],
                         "Chat with Sanny's Aid" => [
@@ -323,7 +313,6 @@
                             'benefits' => [
                                 '(1x) Share and Talk via Chat w/ Psikolog',
                                 '(Unlimited 1 bulan) Mood and Productivity Tracker',
-                                '(Unlimited 1 bulan) Deep Cards',
                             ],
                         ],
                         "Meet with Sanny's Aid" => [
@@ -331,7 +320,6 @@
                             'benefits' => [
                                 '(1x) Share and Talk via Video Call w/ Psikolog',
                                 '(Unlimited 1 bulan) Mood and Productivity Tracker w/ Extended Report',
-                                '(Unlimited 1 bulan) Deep Cards',
                             ],
                         ],
                     ];
