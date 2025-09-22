@@ -185,7 +185,12 @@ class ProfessionalDashboardController extends Controller
             $slot->save();
             $user = $slot->bookedBy;
             $consultation = $slot->consultation;
-            $message = "Halo {$user->name}, booking Anda pada tanggal " . \Carbon\Carbon::parse($slot->slot_start_time)->format('d M Y H:i') . " telah dikonfirmasi. Sampai jumpa!";
+            $message = "Halo {$user->name},\n\n"
+                . "Booking Anda pada tanggal " 
+                . \Carbon\Carbon::parse($slot->slot_start_time)->format('d M Y H:i')
+                . " telah *dikonfirmasi*.\n\n"
+                . "Terima kasih telah menggunakan layanan kami. "
+                . "Sampai jumpa di waktu yang telah ditentukan!";
             $this->fonnteService->sendWhatsApp($consultation->no_wa, $message);
 
             return back()->with('success', 'Booking accepted.');
@@ -236,7 +241,13 @@ class ProfessionalDashboardController extends Controller
             $slot->booked_by_user_id = null;
             $slot->save();
             
-            $message = "Halo {$user->name}, mohon maaf booking Anda pada tanggal " . \Carbon\Carbon::parse($slot->slot_start_time)->format('d M Y H:i') . " tidak dapat kami konfirmasi. Tiket Anda sudah kami kembalikan.";
+            $message = "Halo {$user->name},\n\n"
+                . "Mohon maaf, booking Anda pada tanggal "
+                . \Carbon\Carbon::parse($slot->slot_start_time)->format('d M Y H:i')
+                . " tidak dapat kami konfirmasi.\n\n"
+                . "Namun, jangan khawatir. Tiket Anda sudah kami kembalikan.\n"
+                . "Silahkan buat booking dengan jadwal yang lain.\n\n"
+                . "Terima kasih atas pengertian Anda.";
             $this->fonnteService->sendWhatsApp($consultation->no_wa, $message);
 
             return back()->with('success', 'Booking declined and ticket refunded.');

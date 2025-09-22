@@ -72,8 +72,6 @@ class ShareAndTalkController extends Controller
     {
         $validated = $request->validate([
             'professional_id' => 'required|integer|exists:professionals,id',
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
             'whatsapp_number' => 'required|string|max:20',
             'consultation_type' => 'required|string|in:chat,video',
             'date' => 'required|date_format:Y-m-d',
@@ -151,7 +149,7 @@ class ShareAndTalkController extends Controller
         }
 
         $professional = $slot->professional;
-        $message = "Halo {$professional->name}, Anda memiliki permintaan booking baru. Silakan cek dashboard Anda di " . route('professional.login') . " untuk konfirmasi.";
+        $message = "Halo {$professional->name}, Anda memiliki permintaan booking baru.\n\nSilakan cek dashboard Anda di:\n" . route('professional.login') . "\n\nTerima kasih.";
         $this->fonnteService->sendWhatsApp($professional->whatsapp_number, $message);
 
         return redirect()->route('share-and-talk.booked')->with('bookedSlot', $slot);

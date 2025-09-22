@@ -49,16 +49,12 @@
                     <!-- User Information -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                         <div>
-                            <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap</label>
-                            <input type="text" id="name" name="name" class="w-full border-gray-300 rounded-md shadow-sm" required>
-                        </div>
-                        <div>
-                            <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                            <input type="email" id="email" name="email" class="w-full border-gray-300 rounded-md shadow-sm" required>
-                        </div>
-                        <div>
                             <label for="whatsapp_number" class="block text-sm font-medium text-gray-700 mb-1">Nomor WhatsApp</label>
                             <input type="tel" id="whatsapp_number" name="whatsapp_number" class="w-full border-gray-300 rounded-md shadow-sm" placeholder="Contoh: 081234567890" required>
+                        </div>
+                        <div>
+                            <br>
+                            <p class="text-sm text-stone-500">Silakan masukkan nomor WhatsApp Anda agar kami dapat memberikan informasi terkait booking Anda.</p>
                         </div>
                     </div>
 
@@ -168,15 +164,15 @@
             let selectedEvent = null;
 
             const calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'timeGridWeek',
+                initialView: 'dayGridMonth',
                 headerToolbar: {
                     left: 'prev,next today',
                     center: 'title',
                     right: 'dayGridMonth,timeGridWeek'
                 },
                 events: `/api/professionals/{{ $professional->id }}/schedule`,
-                slotMinTime: '08:00:00',
-                slotMaxTime: '18:00:00',
+                slotMinTime: '00:00:00',
+                slotMaxTime: '23:59:00',
                 allDaySlot: false,
                 eventDataTransform: function(eventData) {
                     const now = new Date();
@@ -189,6 +185,11 @@
                 },
                 eventClick: function(info) {
                     if (info.event.extendedProps.isPast || info.event.title !== 'Available') {
+                        return;
+                    }
+
+                    if (calendar.view.type === 'dayGridMonth') {
+                        calendar.changeView('timeGridWeek', info.event.start);
                         return;
                     }
 
