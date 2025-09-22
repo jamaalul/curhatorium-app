@@ -4,100 +4,165 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Curhatorium | Share and Talk</title>
+    @vite('resources/css/app.css')
     <link rel="stylesheet" href="{{ asset('css/global.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/share-and-talk/index.css') }}">
+    <style>
+        /* Custom styles can be added here if needed */
+        .professional-card {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .professional-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 </head>
-<body>
-    <!-- Toast container for notifications -->
-    <div class="toast-container" id="toast-container"></div>
-
-    <!-- Navbar -->
+<body class="pt-16 w-full overflow-x-hidden bg-gray-50">
     @include('components.navbar')
 
+    <!-- Toast container for notifications -->
+    <div class="toast-container fixed top-20 right-5 z-50" id="toast-container"></div>
+
+    <!-- Hero Section -->
+    <section class="w-full h-fit px-4 py-12 flex flex-col gap-2 items-center justify-center bg-cover shadow-inner relative text-white" style="background-image: url('{{ asset('images/background.jpg') }}');">
+        <div class="absolute inset-0 bg-none"></div>
+        <div class="relative z-10 text-center text-[#222222]">
+            <h1 class="text-3xl md:text-5xl font-bold">Share and Talk</h1>
+            <p class="text-base mt-2">Terhubung dengan psikolog berlisensi atau mitra kesehatan mental terlatih untuk dukungan dan bimbingan profesional.</p>
+        </div>
+    </section>
+
     <!-- Main Content -->
-    <div class="container">
+    <div class="container mx-auto px-4 py-8">
         <!-- Success and Error Messages -->
         @if(session('success'))
-            <div class="alert alert-success">{{ session('success') }}</div>
+            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">{{ session('success') }}</div>
         @endif
         @if(session('error'))
-            <div class="alert alert-error">{{ session('error') }}</div>
-        @endif
-        @if($errors->has('msg'))
-            <div class="alert alert-error">{{ $errors->first('msg') }}</div>
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">{{ session('error') }}</div>
         @endif
         @if($errors->any())
             @foreach($errors->all() as $error)
-                <div class="alert alert-error">{{ $error }}</div>
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">{{ $error }}</div>
             @endforeach
         @endif
 
-        <!-- Hero Section -->
-        <div class="hero">
-            <div class="hero-content">
-                <h1>Share and Talk</h1>
-                <p>Terhubung dengan psikiater berlisensi atau mitra kesehatan mental terlatih untuk dukungan dan bimbingan profesional.</p>
-            </div>
-        </div>
-
         <div class="main-content">
+            <!-- Upcoming Consultations -->
+            @if(isset($upcomingConsultations) && $upcomingConsultations->isNotEmpty())
+            <div class="upcoming-consultations mb-12">
+                <h2 class="text-2xl md:text-3xl font-bold text-center mb-8">Jadwal Konsultasi Anda</h2>
+                <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fasilitator</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jadwal</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipe</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th scope="col" class="relative px-6 py-3"></th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                @foreach($upcomingConsultations as $consultation)
+                                <tr id="consultation-{{ $consultation->id }}">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $consultation->professional->name }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ \Carbon\Carbon::parse($consultation->slot_start_time)->format('d M Y, H:i') }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $consultation->consultation->consultation_type }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        @if($consultation->status == 'pending_confirmation')
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Menunggu Konfirmasi</span>
+                                        @elseif($consultation->status == 'booked')
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Terjadwal</span>
+                                        @endif
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                        @php
+                                            $slotStart = \Carbon\Carbon::parse($consultation->slot_start_time);
+                                            $minutesUntil = now()->diffInMinutes($slotStart, false);
+                                            $status = strtolower(trim($consultation->status ?? ''));
+                                            $disabled = ($minutesUntil > 5) || ($status === 'pending_confirmation');
+                                            $isVideo = stripos($consultation->consultation->consultation_type, 'video') !== false;
+                                        @endphp
+
+                                        <button 
+                                            @if ($isVideo)
+                                                onclick="if(!this.disabled) window.location.href='/video/{{ $consultation->consultation->room }}'"
+                                            @else
+                                                onclick="if(!this.disabled) window.location.href='/chat/{{ $consultation->consultation->room }}'"
+                                            @endif 
+                                            class="goto-room-btn bg-[#48a6a6] hover:bg-[#357979] text-white py-2 px-4 rounded-md transition-colors duration-200 disabled:bg-gray-400 disabled:cursor-not-allowed" 
+                                            data-schedule-time="{{ $consultation->slot_start_time }}" 
+                                            @if($disabled) disabled @endif
+                                        >
+                                            Masuk Ruangan
+                                        </button>
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                        <p class="text-sm text-right text-red-400">Anda bisa masuk ke ruangan 5 menit sebelum jadwal</p>
+                    </div>
+                </div>
+            </div>
+            @endif
+
             <!-- Consultation Types -->
-            <div class="consultation-types">
-                <h2 class="section-title">Pilih Jenis Konsultasi Anda</h2>
+            <div class="consultation-types mb-12">
+                <h2 class="text-2xl md:text-3xl font-bold text-center mb-8">Pilih Jenis Konsultasi Anda</h2>
                 
-                <div class="types-grid">
-                    <!-- Psychiatrist Card -->
-                    <div class="type-card psychiatrist">
-                        <div class="type-header">
-                            <div class="type-icon">🩺</div>
-                            <div class="type-info">
-                                <h3>Psikolog Profesional</h3>
-                                <p class="subtitle">Profesional medis bersertifikat</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- Psychologist Card -->
+                    <div class="type-card bg-white p-6 rounded-lg shadow-md border border-gray-200 flex flex-col">
+                        <div class="flex items-center gap-4 mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="md:size-12 size-10">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 0 0 .75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 0 0-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0 1 12 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 0 1-.673-.38m0 0A2.18 2.18 0 0 1 3 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 0 1 3.413-.387m7.5 0V5.25A2.25 2.25 0 0 0 13.5 3h-3a2.25 2.25 0 0 0-2.25 2.25v.894m7.5 0a48.667 48.667 0 0 0-7.5 0M12 12.75h.008v.008H12v-.008Z" />
+                            </svg>
+                            <div>
+                                <h3 class="text-xl font-bold">Psikolog Profesional</h3>
+                                <p class="text-gray-500">Profesional klinis bersertifikat</p>
                             </div>
                         </div>
-                        <p class="type-description">
-                            Dapatkan konsultasi medis profesional dari psikiater berlisensi yang dapat memberikan diagnosis, 
-                            rencana perawatan, dan pengelolaan obat untuk berbagai kondisi kesehatan mental.
+                        <p class="text-gray-600 mb-4 flex-grow">
+                            Dapatkan layanan konsultasi dari psikolog berlisensi yang siap membantumu memahami kondisi emosional, memberikan pendampingan psikologis, serta menyusun strategi pemulihan dan perawatan non-medis sesuai kebutuhanmu.
                         </p>
-                        <div class="consultation-options">
-                            <p class="options-title">Pilihan Tersedia:</p>
-                            <div class="option-list">
-                                <span class="option-badge chat">
-                                    Chat
-                                </span>
-                                <span class="option-badge video">
-                                    Video Call
-                                </span>
+                        <div class="mb-4">
+                            <p class="font-semibold mb-2">Pilihan Tersedia:</p>
+                            <div class="flex gap-2">
+                                <span class="bg-blue-100 text-blue-800 text-sm font-medium mr-2 px-2.5 py-0.5 rounded">Chat</span>
+                                <span class="bg-purple-100 text-purple-800 text-sm font-medium mr-2 px-2.5 py-0.5 rounded">Video Call</span>
                             </div>
                         </div>
-                        <button class="select-button" onclick="showProfessionals('psychiatrist')">
+                        <button class="w-full bg-[#48A6A6] text-white py-2 px-4 rounded-md hover:bg-[#357979] transition-colors duration-200 flex items-center justify-center gap-2" onclick="showProfessionals('psychiatrist')">
                             Pilih Profesional
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                         </button>
                     </div>
 
                     <!-- Trained Partner Card -->
-                    <div class="type-card partner">
-                        <div class="type-header">
-                            <div class="type-icon">🤝</div>
-                            <div class="type-info">
-                                <h3>Rangers</h3>
-                                <p class="subtitle">Mitra Curhatorium terlatih</p>
+                    <div class="type-card bg-white p-6 rounded-lg shadow-md border border-gray-200 flex flex-col">
+                        <div class="flex items-center gap-4 mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="md:size-12 size-10">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.182 15.182a4.5 4.5 0 0 1-6.364 0M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0ZM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75Zm-.375 0h.008v.015h-.008V9.75Zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75Zm-.375 0h.008v.015h-.008V9.75Z" />
+                            </svg>
+                            <div>
+                                <h3 class="text-xl font-bold">Rangers</h3>
+                                <p class="text-gray-500">Mitra Curhatorium terlatih</p>
                             </div>
                         </div>
-                        <p class="type-description">
-                            Terhubung dengan mitra kesehatan mental terlatih yang memberikan konseling suportif, 
-                            bimbingan emosional, dan percakapan terapeutik untuk membantu Anda menghadapi tantangan hidup.
+                        <p class="text-gray-600 mb-4 flex-grow">
+                            Terhubung dengan mitra kesehatan mental terlatih yang memberikan peer support, bimbingan emosional, dan percakapan saling mendukung untuk membantu Anda menghadapi tantangan hidup.
                         </p>
-                        <div class="consultation-options">
-                            <p class="options-title">Pilihan Tersedia:</p>
-                            <div class="option-list">
-                                <span class="option-badge chat">
-                                    Chat
-                                </span>
+                        <div class="mb-4">
+                            <p class="font-semibold mb-2">Pilihan Tersedia:</p>
+                            <div class="flex gap-2">
+                                <span class="bg-blue-100 text-blue-800 text-sm font-medium mr-2 px-2.5 py-0.5 rounded">Chat</span>
                             </div>
                         </div>
-                        <button class="select-button" onclick="showProfessionals('partner')">
+                        <button class="w-full bg-[#48A6A6] text-white py-2 px-4 rounded-md hover:bg-[#357979] transition-colors duration-200 flex items-center justify-center gap-2" onclick="showProfessionals('partner')">
                             Pilih Ranger
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                         </button>
@@ -107,117 +172,64 @@
 
             <!-- Professionals Section -->
             <div class="professionals-section" id="professionals-section" style="display: none;">
-                <h2 class="section-title" id="professionals-title">Profesional Tersedia</h2>
-                
-                {{-- <!-- Filter Section -->
-                <div class="filter-section">
-                    <h3 class="filter-title">Filter Profesional</h3>
-                    <div class="filter-options">
-                        <div class="filter-group">
-                            <label class="filter-label">Spesialisasi</label>
-                            <select class="filter-select" id="specialty-filter">
-                                <option value="">Semua Spesialisasi</option>
-                                <option value="anxiety">Gangguan Kecemasan</option>
-                                <option value="depression">Depresi</option>
-                                <option value="trauma">Trauma & PTSD</option>
-                                <option value="relationships">Masalah Hubungan</option>
-                                <option value="addiction">Adiksi</option>
-                                <option value="eating">Gangguan Makan</option>
-                            </select>
-                        </div>
-                        <div class="filter-group">
-                            <label class="filter-label">Ketersediaan</label>
-                            <select class="filter-select" id="availability-filter">
-                                <option value="">Semua</option>
-                                <option value="online">Tersedia Sekarang</option>
-                                <option value="busy">Sibuk</option>
-                                <option value="offline">Offline</option>
-                            </select>
-                        </div>
-                        <div class="filter-group">
-                            <label class="filter-label">Rating</label>
-                            <select class="filter-select" id="rating-filter">
-                                <option value="">Semua Rating</option>
-                                <option value="5">5 Bintang</option>
-                                <option value="4">4+ Bintang</option>
-                                <option value="3">3+ Bintang</option>
-                            </select>
-                        </div>
+                <div class="flex flex-col md:flex-row justify-between items-center mb-8">
+                    <h2 class="text-2xl md:text-3xl font-bold text-center" id="professionals-title">Profesional Tersedia</h2>
+                    <div class="relative mt-4 md:mt-0">
+                        <input type="text" id="date-filter" class="border border-gray-300 rounded-md py-2 px-4" placeholder="Filter by date...">
                     </div>
-                </div> --}}
-
+                </div>
+                
                 <!-- Professionals Grid -->
-                <div class="professionals-grid" id="professionals-grid">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="professionals-grid">
                     <!-- Akan diisi oleh JavaScript -->
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Checkout Modal -->
-    <div id="checkout-modal" class="modal" style="display:none;">
-        <div class="modal-content">
-            <button class="close" id="close-modal" aria-label="Tutup">&times;</button>
-            <div class="modal-header">
-                <img id="modal-avatar" src="" alt="" class="modal-avatar">
-                <div>
-                    <h2 id="modal-title">Pesan Konsultasi</h2>
-                    <div id="modal-professional-title" class="modal-professional-title"></div>
-                </div>
-            </div>
-            <form id="checkout-form" class="modal-form">
-                <div id="consultation-type-section">
-                    <div id="consultation-type-options" class="consultation-type-options"></div>
-                </div>
-                <button type="submit" class="action-button modal-confirm">Konfirmasi Pemesanan</button>
-            </form>
-        </div>
-    </div>
 
+    @include('components.footer')
+
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script>
-        // Remove mockProfessionals
-        // let mockProfessionals = ...
         let allProfessionals = [];
         let currentProfessionalType = '';
-        let filteredProfessionals = [];
 
-        // Fetch professionals from backend
-        async function fetchProfessionals(type = '') {
-            let url = '/share-and-talk/professionals';
-            if (type) {
-                url += `?type=${encodeURIComponent(type)}`;
-            }
-            const response = await fetch(url);
-            if (!response.ok) {
-                Toast.error('Kesalahan', 'Gagal memuat profesional');
+        async function fetchProfessionals(type = '', date = '') {
+            let url = new URL(window.location.origin + '/share-and-talk/professionals');
+            if (type) url.searchParams.append('type', type);
+            if (date) url.searchParams.append('date', date);
+            
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    console.error('Failed to load professionals');
+                    return [];
+                }
+                return await response.json();
+            } catch (error) {
+                console.error('Error fetching professionals:', error);
                 return [];
             }
-            return await response.json();
         }
 
-        // Show professionals based on type
-        async function showProfessionals(type) {
+        async function showProfessionals(type, date = '') {
             currentProfessionalType = type;
-            allProfessionals = await fetchProfessionals(type);
-            filteredProfessionals = allProfessionals;
-
+            allProfessionals = await fetchProfessionals(type, date);
+            
             const section = document.getElementById('professionals-section');
             const title = document.getElementById('professionals-title');
 
-            if (type === 'psychiatrist') {
-                title.textContent = 'Profesional Tersedia';
-            } else {
-                title.textContent = 'Ranger Tersedia';
-            }
-
+            title.textContent = type === 'psychiatrist' ? 'Daftar Psikolog' : 'Daftar Rangers';
+            
             section.style.display = 'block';
-            renderProfessionals(filteredProfessionals);
+            renderProfessionals(allProfessionals);
 
-            // Smooth scroll to professionals section
-            section.scrollIntoView({ behavior: 'smooth' });
+            if (!date) { // Only scroll into view on the initial click
+                section.scrollIntoView({ behavior: 'smooth' });
+            }
         }
 
-        // Helper to ensure specialties is always an array
         function getSpecialtiesArray(specialties) {
             if (Array.isArray(specialties)) return specialties;
             if (typeof specialties === 'string') {
@@ -226,199 +238,76 @@
             return [];
         }
 
-        // Render professionals grid
         function renderProfessionals(professionals) {
             const grid = document.getElementById('professionals-grid');
             
             if (professionals.length === 0) {
-                grid.innerHTML = `
-                    <div style="grid-column: 1 / -1; text-align: center; padding: 2rem; color: var(--text-secondary);">
-                        Tidak ada profesional yang sesuai dengan kriteria Anda.
-                    </div>
-                `;
+                grid.innerHTML = `<div class="col-span-full text-center py-8 text-gray-500">Tidak ada profesional yang tersedia saat ini.</div>`;
                 return;
             }
             
-            grid.innerHTML = professionals.map(professional => `
-                <div class="professional-card">
-                    <div class="professional-header">
-                        <img src="/storage/${professional.avatar}" alt="${professional.name}" class="professional-avatar">
-                        <div class="professional-info">
-                            <h4>${professional.name}</h4>
-                            <p class="professional-title">${professional.title}</p>
+            grid.innerHTML = professionals.map(p => `
+                <div class="professional-card bg-white p-5 rounded-lg shadow-md border border-gray-200">
+                    <div class="flex items-center gap-4 mb-4">
+                        <div>
+                            <h4 class="font-bold text-lg">${p.name}</h4>
+                            <p class="text-gray-500">${p.title}</p>
                         </div>
                     </div>
-                    <div class="professional-body">
-                        <div class="specialties">
-                            <p class="specialties-title">Spesialisasi:</p>
-                            <div class="specialty-tags">
-                                ${getSpecialtiesArray(professional.specialties).map(specialty => `<span class="specialty-tag">${specialty}</span>`).join('')}
-                            </div>
-                        </div>
-                        <div class="availability">
-                            <p class="availability-title">Availability:</p>
-                            <div class="availability-status">
-                                <div style="display: flex; align-items: center; gap: 0.5em;">
-                                    <span class="status-indicator ${professional.status}"></span>
-                                    <span class="status-label">${professional.status.charAt(0).toUpperCase() + professional.status.slice(1)}</span>
-                                </div>
-                                <div class="availability-text" style="font-size:1em;color:var(--text-tertiary);">
-                                    ${professional.statusText}
-                                </div>
-                            </div>
-                        </div>
-                        <div class="consultation-actions">
-                            <button class="action-button video" onclick="startConsultation(${professional.id}, 'reserve')" ${professional.status !== 'online' ? 'disabled' : ''}>
-                                Pesan
-                            </button>
+                    <div class="mb-4">
+                        <p class="font-semibold text-sm mb-2">Spesialisasi:</p>
+                        <div class="flex flex-wrap gap-2">
+                            ${getSpecialtiesArray(p.specialties).map(s => `<span class="bg-gray-200 text-gray-800 text-xs font-medium px-2 py-1 rounded-full">${s}</span>`).join('')}
                         </div>
                     </div>
+                    <div class="flex justify-between items-center mb-4 text-sm">
+                        <p class="font-semibold">Jadwal terdekat:</p>
+                        <div class="flex items-center gap-2">
+                            <span class="font-medium text-gray-700">${p.next_availability_formatted}</span>
+                        </div>
+                    </div>
+                    <button class="w-full bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-md transition-colors duration-200" onclick="startConsultation(${p.id})">
+                        Pesan Sesi
+                    </button>
                 </div>
             `).join('');
         }
 
-        // Start consultation
-        function startConsultation(professionalId, type) {
-            const professional = allProfessionals.find(p => p.id === professionalId);
-            if (!professional) {
-                return;
-            }
-            if (professional.status !== 'online') {
-                return;
-            }
-            // Add type info for modal logic
-            professional.type = currentProfessionalType;
-            openCheckoutModal(professional);
+        function startConsultation(professionalId) {
+            window.location.href = `/share-and-talk/checkout/${professionalId}`;
         }
 
-        // Filter functionality
-        function applyFilters() {
-            const specialtyFilter = document.getElementById('specialty-filter').value;
-            const availabilityFilter = document.getElementById('availability-filter').value;
-            const ratingFilter = document.getElementById('rating-filter').value;
-
-            let filtered = allProfessionals;
-
-            if (specialtyFilter) {
-                filtered = filtered.filter(p =>
-                    p.specialties.some(s => s.toLowerCase().includes(specialtyFilter.toLowerCase()))
-                );
-            }
-
-            if (availabilityFilter) {
-                filtered = filtered.filter(p => p.status === availabilityFilter);
-            }
-
-            if (ratingFilter) {
-                const minRating = parseFloat(ratingFilter);
-                filtered = filtered.filter(p => (p.rating || 0) >= minRating);
-            }
-
-            filteredProfessionals = filtered;
-            renderProfessionals(filtered);
-        }
-
-        // Event listeners for filters
         document.addEventListener('DOMContentLoaded', function() {
-            const specialty = document.getElementById('specialty-filter');
-            const availability = document.getElementById('availability-filter');
-            const rating = document.getElementById('rating-filter');
-            if (specialty && availability && rating) {
-                specialty.addEventListener('change', applyFilters);
-                availability.addEventListener('change', applyFilters);
-                rating.addEventListener('change', applyFilters);
-            }
-        });
-    </script>
-    <script>
-    // Modal logic
-    const modal = document.getElementById('checkout-modal');
-    const closeModalBtn = document.getElementById('close-modal');
-    const modalProfessionalInfo = document.getElementById('modal-professional-info'); // unused, replaced by header
-    const modalAvatar = document.getElementById('modal-avatar');
-    const modalProfessionalTitle = document.getElementById('modal-professional-title');
-    const consultationTypeOptions = document.getElementById('consultation-type-options');
-    let selectedProfessional = null;
-    let selectedConsultationType = null;
-    function openCheckoutModal(professional) {
-        selectedProfessional = professional;
-        document.getElementById('modal-title').textContent = `Pesan Sesi dengan ${professional.name}`;
-        modalAvatar.src = `/storage/${professional.avatar}`;
-        modalAvatar.alt = professional.name;
-        modalProfessionalTitle.textContent = professional.title;
-        // Consultation type options as cards
-        let options = '';
-        if (professional.type === 'psychiatrist') {
-            options += `
-                <label class="consultation-option-card selected">
-                    <input type='radio' name='consultation_type' value='chat' checked>
-                    <span class="consultation-option-label">Chat</span>
-                    <span class="consultation-option-desc">Konsultasi berbasis teks</span>
-                </label>
-                <label class="consultation-option-card">
-                    <input type='radio' name='consultation_type' value='video'>
-                    <span class="consultation-option-label">Video Call</span>
-                    <span class="consultation-option-desc">Sesi online tatap muka</span>
-                </label>
-            `;
-        } else {
-            options += `
-                <label class="consultation-option-card selected">
-                    <input type='radio' name='consultation_type' value='chat' checked>
-                    <span class="consultation-option-label">Chat</span>
-                    <span class="consultation-option-desc">Konsultasi berbasis teks</span>
-                </label>
-            `;
-        }
-        consultationTypeOptions.innerHTML = options;
-        // Card selection logic
-        Array.from(consultationTypeOptions.querySelectorAll('input[type="radio"]')).forEach(input => {
-            input.addEventListener('change', function() {
-                Array.from(consultationTypeOptions.children).forEach(card => card.classList.remove('selected'));
-                this.closest('.consultation-option-card').classList.add('selected');
+            flatpickr("#date-filter", {
+                dateFormat: "Y-m-d",
+                onChange: function(selectedDates, dateStr, instance) {
+                    if (currentProfessionalType) {
+                        showProfessionals(currentProfessionalType, dateStr);
+                    }
+                }
             });
         });
-        modal.style.display = 'flex';
-        setTimeout(() => { modal.querySelector('.modal-content').focus(); }, 100);
-    }
-    function closeCheckoutModal() {
-        modal.style.display = 'none';
-        selectedProfessional = null;
-        selectedConsultationType = null;
-    }
-    closeModalBtn.onclick = closeCheckoutModal;
-    window.onclick = function(event) {
-        if (event.target === modal) closeCheckoutModal();
-    };
-    // Intercept form submit
-    document.getElementById('checkout-form').onsubmit = function(e) {
-        e.preventDefault();
-        
-        const consultationType = document.querySelector('input[name="consultation_type"]:checked').value;
-        const professionalId = selectedProfessional.id;
-        
-        // Route based on consultation type
-        if (consultationType === 'video') {
-            window.location.href = `/share-and-talk/video/${professionalId}`;
-        } else {
-            window.location.href = `/share-and-talk/chat/${professionalId}`;
+
+        function checkConsultationSchedule() {
+            const now = new Date();
+            document.querySelectorAll('.goto-room-btn').forEach(button => {
+                const scheduleTime = new Date(button.dataset.scheduleTime);
+                const diffMinutes = (scheduleTime.getTime() - now.getTime()) / 60000;
+
+                if (diffMinutes <= 5 && diffMinutes > -60) { // -60 to allow access for 1 hour after start
+                    button.disabled = false;
+                    button.classList.remove('disabled:bg-gray-400', 'disabled:cursor-not-allowed');
+                } else {
+                    button.disabled = true;
+                    button.classList.add('disabled:bg-gray-400', 'disabled:cursor-not-allowed');
+                }
+            });
         }
-    };
-    // Patch startConsultation to open modal
-    function startConsultation(professionalId, reserveType) {
-        const professional = allProfessionals.find(p => p.id === professionalId);
-        if (!professional || professional.status !== 'online') return;
-        professional.type = currentProfessionalType;
-        openCheckoutModal(professional);
-    }
 
-    function chatConsultation() {
-        window.location.href = `/share-and-talk/chat/${selectedProfessional.id}`;
-    }
-
-    function videoConsultation() {
-        console.log('Konsultasi video');
-    }
+        document.addEventListener('DOMContentLoaded', function() {
+            checkConsultationSchedule();
+            setInterval(checkConsultationSchedule, 60000); // Check every minute
+        });
     </script>
 </body>
 </html>

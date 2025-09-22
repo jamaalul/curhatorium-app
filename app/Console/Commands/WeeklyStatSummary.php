@@ -39,21 +39,42 @@ class WeeklyStatSummary extends Command
         $weekEnd = $today;
         $weekStart = $today->copy()->subDays(6);
 
-        $users = User::all();
+        // Only get users with active Inner Peace membership
+        $users = User::whereHas('userMemberships', function($query) {
+            $query->where('expires_at', '>', now())
+                  ->whereHas('membership', function($q) {
+                      $q->where('name', 'Inner Peace');
+                  });
+        })->get();
+
+        $this->info("Found " . $users->count() . " users with active Inner Peace membership.");
+
         foreach ($users as $user) {
             $stats = Stat::where('user_id', $user->id)
                 ->whereDate('created_at', '>=', $weekStart->toDateString())
                 ->whereDate('created_at', '<=', $weekEnd->toDateString())
                 ->get();
+            
             if ($stats->count() === 0) {
+                $this->line("  - User {$user->name}: No stats found for this week");
                 continue;
             }
+            
             $avgMood = $stats->avg('mood');
             $avgProductivity = $stats->avg('productivity');
             $totalEntries = $stats->count();
             
             // Calculate best mood (highest mood score)
             $bestMood = $stats->max('mood');
+            
+            // Debug information
+            $this->line("  - User {$user->name}: {$totalEntries} entries, avg_mood: {$avgMood}, best_mood: {$bestMood}");
+            
+            // Validate data before creating
+            if ($avgMood <= 0 || $bestMood <= 0) {
+                $this->warn("  - User {$user->name}: Invalid mood data (avg: {$avgMood}, best: {$bestMood}), skipping...");
+                continue;
+            }
 
             // Compose summary for Gemini
             $moods = $stats->pluck('mood')->implode(', ');
@@ -104,14 +125,16 @@ class WeeklyStatSummary extends Command
                 'user_id' => $user->id,
                 'week_start' => $weekStart->toDateString(),
                 'week_end' => $weekEnd->toDateString(),
-                'avg_mood' => $avgMood,
-                'avg_productivity' => $avgProductivity,
+                'avg_mood' => round($avgMood, 2),
+                'avg_productivity' => round($avgProductivity, 2),
                 'total_entries' => $totalEntries,
                 'best_mood' => $bestMood,
                 'feedback' => $feedback,
             ]);
+            
+            $this->line("  - User {$user->name}: Created weekly stat successfully");
         }
-        $this->info('WeeklyStat summary created for all users.');
+        $this->info('WeeklyStat summary created for Inner Peace members only.');
         return 0;
     }
 }

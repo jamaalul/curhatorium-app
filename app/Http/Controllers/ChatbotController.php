@@ -3,183 +3,116 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
+use App\Services\ChatbotService;
+use App\Http\Requests\ChatbotMessageRequest;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Str;
-use App\Models\ChatbotSession;
-use App\Models\ChatbotMessage;
+use Illuminate\Support\Facades\Log;
 
 class ChatbotController extends Controller
 {
+    public function __construct(
+        private ChatbotService $chatbotService
+    ) {}
     public function index(Request $request) {
-        $sessions = \App\Models\ChatbotSession::where('user_id', \Auth::id())
-            ->orderBy('updated_at', 'desc')
-            ->get();
-        $chatbotSecondsLeft = null;
+        $user = Auth::user();
+        $sessions = $this->chatbotService->getUserSessions($user);
+        $chatbotSecondsLeft = $this->chatbotService->getRemainingTime();
+
         if ($request->has('consume_amount')) {
-            // Set end time in session (per user) when redeeming/starting
             $minutes = floatval($request->input('consume_amount'));
-            $endTime = now()->addMinutes($minutes)->timestamp;
-            session(['chatbot_end_time' => $endTime]);
-            // Redirect to chatbot page without consume_amount to prevent timer reset
+            $this->chatbotService->setTimer($minutes);
             return redirect()->route('chatbot');
         }
-        // Always check remaining seconds from session
-        $endTime = session('chatbot_end_time');
-        if ($endTime) {
-            $remaining = $endTime - now()->timestamp;
-            if ($remaining > 0) {
-                $chatbotSecondsLeft = $remaining;
-            } else {
-                $chatbotSecondsLeft = 0;
-                session()->forget('chatbot_end_time');
-            }
-        }
+
         return view('chatbot', compact('sessions', 'chatbotSecondsLeft'));
     }
 
     public function getSessions() {
-        $sessions = ChatbotSession::where('user_id', Auth::id())
-            ->orderBy('updated_at', 'desc')
-            ->get();
-        
-        return response()->json($sessions);
+        try {
+            $user = Auth::user();
+            if (!$user) {
+                Log::error('Chatbot getSessions: User not authenticated');
+                return response()->json(['error' => 'Unauthorized'], 401);
+            }
+            
+            $sessions = $this->chatbotService->getUserSessions($user);
+            
+            return response()->json($sessions);
+        } catch (\Exception $e) {
+            Log::error('Chatbot getSessions error: ' . $e->getMessage());
+            return response()->json(['error' => 'Failed to get sessions'], 500);
+        }
     }
 
     public function getSession($sessionId) {
-        $session = ChatbotSession::where('id', $sessionId)
-            ->where('user_id', Auth::id())
-            ->with('messages')
-            ->firstOrFail();
-        
-        return response()->json($session);
+        try {
+            $user = Auth::user();
+            if (!$user) {
+                Log::error('Chatbot getSession: User not authenticated');
+                return response()->json(['error' => 'Unauthorized'], 401);
+            }
+            
+            $session = $this->chatbotService->getSession($sessionId, $user);
+            
+            if (!$session) {
+                Log::warning('Chatbot getSession: Session not found', ['session_id' => $sessionId, 'user_id' => $user->id]);
+                return response()->json(['error' => 'Session not found'], 404);
+            }
+            
+            return response()->json($session);
+        } catch (\Exception $e) {
+            Log::error('Chatbot getSession error: ' . $e->getMessage());
+            return response()->json(['error' => 'Failed to get session'], 500);
+        }
     }
 
     public function createSession(Request $request) {
-        $session = ChatbotSession::create([
-            'user_id' => Auth::id(),
-            'title' => $request->input('title', 'New Chat')
-        ]);
-
-        // Add initial bot message
-        ChatbotMessage::create([
-            'chatbot_session_id' => $session->id,
-            'role' => 'assistant',
-            'content' => 'Haiiii. Ada cerita apa hari ini?'
-        ]);
-
-        return response()->json($session->load('messages'));
+        try {
+            $user = Auth::user();
+            if (!$user) {
+                Log::error('Chatbot createSession: User not authenticated');
+                return response()->json(['error' => 'Unauthorized'], 401);
+            }
+            
+            $title = $request->input('title', 'New Chat');
+            $session = $this->chatbotService->createSession($user, $title);
+            
+            return response()->json($session);
+        } catch (\Exception $e) {
+            Log::error('Create chatbot session error: ' . $e->getMessage());
+            return response()->json(['error' => 'Failed to create session'], 500);
+        }
     }
 
     public function deleteSession($sessionId) {
-        $session = ChatbotSession::where('id', $sessionId)
-            ->where('user_id', Auth::id())
-            ->firstOrFail();
-        
-        $session->delete();
-        
-        return response()->json(['success' => true]);
+        try {
+            $user = Auth::user();
+            $success = $this->chatbotService->deleteSession($sessionId, $user);
+            
+            if (!$success) {
+                return response()->json(['error' => 'Session not found'], 404);
+            }
+            
+            return response()->json(['success' => true]);
+        } catch (\Exception $e) {
+            Log::error('Delete chatbot session error: ' . $e->getMessage());
+            return response()->json(['error' => 'Failed to delete session'], 500);
+        }
     }
 
-    public function chat(Request $request)
+    public function chat(ChatbotMessageRequest $request)
     {
-        // Validasi request yang masuk
-        $request->validate([
-            'session_id' => 'required|exists:chatbot_sessions,id',
-            'message' => 'required|string',
-        ]);
-
-        // Temukan sesi chatbot berdasarkan ID dan user yang sedang login
-        $session = ChatbotSession::where('id', $request->session_id)
-            ->where('user_id', Auth::id())
-            ->firstOrFail();
-
-        // Simpan pesan user ke database
-        ChatbotMessage::create([
-            'chatbot_session_id' => $session->id,
-            'role' => 'user',
-            'content' => $request->message
-        ]);
-
-        // Ambil pesan dari sesi untuk konteks percakapan (termasuk pesan user yang baru saja disimpan)
-        $allMessages = $session->messages()
-            ->orderBy('created_at', 'asc')
-            ->get();
-
-        // Konfigurasi API Gemini
-        $apiKey = env('GEMINI_API_KEY');
-        $apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent';
-        $maxTokens = 800;
-        $temperature = 0.5;
-
-        // System prompt untuk mendefinisikan persona Ment-AI
-        $systemPrompt = implode("\n", [
-            "Kamu adalah Ment-AI, chatbot curhat dari Curhatorium yang berperilaku seperti teman dekat sehari-hari.",
-            "",
-            "• Gunakan Bahasa Indonesia yang alami dan nyaman didengar.",
-            "• Gunakan gaya santai dan akrab, misalnya: 'iyaa yaa', 'wahh', 'beneran dehh', 'aku paham kok', dll.",
-            "• Dengarkan dengan penuh empati dan jangan menghakimi.",
-            "• Sesekali tambahkan ekspresi dengan huruf akhir berulang seperti 'haiiii', 'oke dehhh', 'hehee', 'gituu yaaa'.",
-            "• Jangan pernah menyebutkan bahwa kamu adalah AI, model bahasa, atau menyebutkan nama model seperti 'Gemini'.",
-            "• Jawaban tidak perlu panjang, cukup seperti ngobrol biasa."
-        ]);
-
-        // Konversi pesan ke format yang diterima oleh API Gemini
-        $geminiMessages = [];
-        foreach ($allMessages as $message) {
-            $geminiMessages[] = [
-                'role' => $message->role === 'user' ? 'user' : 'model',
-                'parts' => [['text' => $message->content]]
-            ];
-        }
-
         try {
-            // Panggil API Gemini
-            $response = Http::post($apiUrl . '?key=' . $apiKey, [
-                // PENTING: system_instruction dipisahkan dari 'contents'
-                'system_instruction' => [
-                    'parts' => [['text' => $systemPrompt]]
-                ],
-                'contents' => $geminiMessages, // Ini hanya berisi riwayat percakapan user/model
-                'generationConfig' => [
-                    'maxOutputTokens' => $maxTokens,
-                    'temperature' => $temperature,
-                ]
-            ]);
-
-            // Cek jika ada error dari respons API Gemini
-            if (!$response->ok()) {
-                return response()->json([
-                    'error' => 'Gemini API error: ' . $response->status(),
-                    'body' => $response->body()
-                ], 500);
-            }
-
-            $data = $response->json();
+            $user = Auth::user();
+            $result = $this->chatbotService->processChatMessage(
+                $request->session_id,
+                $request->message,
+                $user
+            );
             
-            // Ekstrak teks respons dari format Gemini
-            $responseText = $data['candidates'][0]['content']['parts'][0]['text'] ?? 'Maaf, saya tidak mengerti.';
-            
-            // Simpan respons bot ke database
-            ChatbotMessage::create([
-                'chatbot_session_id' => $session->id,
-                'role' => 'assistant',
-                'content' => $responseText
-            ]);
-
-            // Perbarui judul sesi jika masih default ('New Chat')
-            if (!$session->title || $session->title === 'New Chat') {
-                $session->update(['title' => Str::limit($request->message, 50)]);
-            }
-            
-            // Kembalikan respons ke frontend
-            return response()->json([
-                'message' => $responseText,
-                'session' => $session->fresh()
-            ]);
-
+            return response()->json($result);
         } catch (\Exception $e) {
-            // Tangani error jika ada masalah saat memanggil API atau lainnya
+            Log::error('Chatbot chat error: ' . $e->getMessage());
             return response()->json([
                 'error' => 'Server error: ' . $e->getMessage()
             ], 500);

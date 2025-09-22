@@ -2,18 +2,28 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no"/>
   <meta name="csrf-token" content="{{ csrf_token() }}">
   <title>Chatroom - Share and Talk</title>
   <link rel="stylesheet" href="{{ asset('css/global.css') }}">
   <link rel="stylesheet" href="{{ asset('css/share-and-talk/chat.css') }}">
 </head>
-<body>
+<body style="height: 100vh; overflow: hidden; margin: 0; padding: 0;">
   <div class="app">
     <!-- Sidebar -->
     <div class="sidebar">
       <h2>Lunar</h2>
       <div class="channel active">{{ $user['username'] }}</div>
+      <div class="dashboard-link">
+        <a href="{{ route('professional.dashboard', ['professionalId' => $professionalId]) }}" 
+           style="color: #fff; text-decoration: none; padding: 8px 12px; background: rgba(255,255,255,0.1); border-radius: 4px; margin-top: 20px; display: block; font-size: 0.9rem;">
+          📊 Dashboard
+        </a>
+        <a href="{{ route('professional.login') }}" 
+           style="color: #fff; text-decoration: none; padding: 8px 12px; background: rgba(255,255,255,0.1); border-radius: 4px; margin-top: 10px; display: block; font-size: 0.9rem;">
+          🔐 Login
+        </a>
+      </div>
     </div>
 
     <!-- Chat Main Area -->
@@ -23,6 +33,14 @@
         <div id="session-timer" style="font-size: 0.9rem; color: var(--text-muted);">
           Sisa waktu: 60:00
         </div>
+      </div>
+
+      <div id="activation-section" style="text-align: center; display: {{ $sessionStatus === 'waiting' || $sessionStatus === 'pending' ? 'block' : 'none' }};">
+        <h3 style="margin: 0 0 15px 0; color: #333;">Sesi Menunggu Aktivasi</h3>
+        <p style="margin: 0 0 15px 0; color: #666;">Klik tombol di bawah untuk memulai sesi konsultasi</p>
+        <button id="activate-session-btn" style="padding: 12px 24px; background: #007bff; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 16px;">
+          🚀 Mulai Sesi
+        </button>
       </div>
 
       <div class="chat-body" id="chat-body">
@@ -40,12 +58,55 @@
   </div>
 
   <script>
+    // Mobile viewport fix
+    function setViewportHeight() {
+      const vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty('--vh', `${vh}px`);
+    }
+    
+    // Chrome mobile specific fix
+    function isChromeMobile() {
+      return /Chrome/.test(navigator.userAgent) && /Mobile/.test(navigator.userAgent);
+    }
+    
+    function fixChromeMobile() {
+      if (isChromeMobile()) {
+        const input = document.querySelector('.chat-input');
+        if (input) {
+          input.style.position = 'fixed';
+          input.style.bottom = '0';
+          input.style.left = '0';
+          input.style.right = '0';
+          input.style.width = '100vw';
+          input.style.zIndex = '9999';
+          input.style.paddingBottom = '20px';
+        }
+        
+        const chatBody = document.querySelector('.chat-body');
+        if (chatBody) {
+          chatBody.style.paddingBottom = '150px';
+        }
+      }
+    }
+    
+    setViewportHeight();
+    window.addEventListener('resize', setViewportHeight);
+    window.addEventListener('orientationchange', setViewportHeight);
+    
+    // Apply Chrome fix
+    fixChromeMobile();
+    window.addEventListener('load', fixChromeMobile);
+    
     const input = document.getElementById('chat-input-field');
     const btn = document.getElementById('send-btn');
     const chatBody = document.getElementById('chat-body');
     const timerEl = document.getElementById('session-timer');
+    const activationSection = document.getElementById('activation-section');
+    const activateBtn = document.getElementById('activate-session-btn');
     const interval = {{ $interval }};
     let sessionStart = new Date();
+    let sessionStatus = '{{ $sessionStatus ?? "waiting" }}';
+    const sessionId = '{{ $sessionId }}';
 
     function updateTimer() {
       const now = new Date();
@@ -63,6 +124,68 @@
         timerEl.innerText = `Sisa waktu: ${mins}:${secs}`;
       }
     }
+
+    // Check session status and control UI
+    async function checkSessionStatus() {
+      try {
+        const response = await fetch(`/api/share-and-talk/session-status/${sessionId}`);
+        if (!response.ok) return;
+        const data = await response.json();
+        sessionStatus = data.status;
+        
+        if (sessionStatus === 'waiting' || sessionStatus === 'pending') {
+          // Show activation section
+          activationSection.style.display = 'block';
+          input.disabled = true;
+          btn.disabled = true;
+          timerEl.innerText = 'Menunggu aktivasi...';
+          timerEl.style.color = 'orange';
+        } else if (sessionStatus === 'active') {
+          // Hide activation section and enable chat
+          activationSection.style.display = 'none';
+          input.disabled = false;
+          btn.disabled = false;
+          timerEl.style.color = 'var(--text-muted)';
+          updateTimer();
+        } else if (sessionStatus === 'cancelled') {
+          // Session was cancelled
+          activationSection.style.display = 'none';
+          input.disabled = true;
+          btn.disabled = true;
+          timerEl.innerText = 'Sesi dibatalkan';
+          timerEl.style.color = 'red';
+        }
+      } catch (error) {
+        console.error('Error checking session status:', error);
+      }
+    }
+
+    // Handle session activation
+    activateBtn.addEventListener('click', async function() {
+      try {
+        const response = await fetch(`/api/share-and-talk/manual-activate/${sessionId}`, {
+          method: 'POST',
+          headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        if (response.ok) {
+          // Session activated, refresh the page to show the chat interface
+          window.location.reload();
+        } else {
+          alert('Gagal mengaktifkan sesi. Silakan coba lagi.');
+        }
+      } catch (error) {
+        console.error('Error activating session:', error);
+        alert('Gagal mengaktifkan sesi. Silakan coba lagi.');
+      }
+    });
+
+    // Check session status every 2 seconds
+    setInterval(checkSessionStatus, 2000);
+    checkSessionStatus(); // Initial check
 
     setInterval(updateTimer, 1000);
     updateTimer();

@@ -1,5 +1,8 @@
+html, body { height: 100%; }
+
 body.ticket-modal-bg {
-    height: 100vh;
+    min-height: 100vh; /* fallback */
+    min-height: 100dvh; /* modern mobile browsers */
     background-image: url("/images/background.jpg");
     background-size: cover;
     background-position: center;
@@ -9,43 +12,61 @@ body.ticket-modal-bg {
 }
 
 .ticket-modal-center {
-    min-height: 100vh;
+    min-height: 100vh; /* fallback */
+    min-height: 100dvh;
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: clamp(12px, 3vw, 24px);
+    padding-top: calc(env(safe-area-inset-top, 0px) + clamp(12px, 3vw, 24px));
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + clamp(12px, 3vw, 24px));
 }
 
 .ticket-modal-box {
     max-width: 350px;
     width: 100%;
     background: white;
-    padding: 30px 28px 24px 28px;
+    padding: 28px 24px 20px 24px;
     border-radius: 10px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
     display: flex;
     flex-direction: column;
     align-items: stretch;
+    max-height: 90vh;
+    max-height: 90dvh;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
 }
-.ticket-modal-box h1 {
+.ticket-modal-title {
     text-align: center;
     font-weight: 900;
-    font-size: 2em;
+    font-size: clamp(1.25rem, 2.5vw + 1rem, 2rem);
     color: #2b9c94;
-    margin-bottom: 18px;
+    margin: 0 0 16px 0;
+}
+.ticket-modal-box h1 {
+    /* kept for backward compatibility if class is missing */
+    text-align: center;
+    font-weight: 900;
+    font-size: clamp(1.25rem, 2.5vw + 1rem, 2rem);
+    color: #2b9c94;
+    margin-bottom: 16px;
 }
 .ticket-modal-box input[type="number"],
 .ticket-modal-box input[type="text"],
 .ticket-modal-box .form-control {
     width: 100%;
-    padding: 10px;
+    padding: 12px;
     margin: 10px 0 18px 0;
     border: 1px solid #ccc;
     border-radius: 5px;
     font-size: 1em;
+    box-sizing: border-box;
+    display: block;
 }
 .modal-btn {
     width: 100%;
-    padding: 10px;
+    padding: 12px;
     margin-top: 10px;
     background-color: #2b9c94;
     color: white;
@@ -69,7 +90,13 @@ body.ticket-modal-bg {
 }
 @media (max-width: 480px) {
     .ticket-modal-box {
-        padding: 18px 8px 16px 8px;
-        max-width: 98vw;
+        padding: 18px 12px 14px 12px;
+        max-width: min(98vw, 420px);
     }
+    .modal-btn { font-size: 1rem; }
+}
+
+@media (max-height: 540px) and (orientation: landscape) {
+    .ticket-modal-center { align-items: flex-start; }
+    .ticket-modal-box { margin-top: 12px; }
 }

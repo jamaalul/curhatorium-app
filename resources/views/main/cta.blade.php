@@ -8,7 +8,7 @@
         dapatkan free-privileges<br>
         <span>atau</span>
       </h2>
-      <button onclick="window.location.href = '{{ route('membership.index') }}'">Beli Membership</button>
+      <button onclick="window.location.href = '{{ route('membership.index') }}'" class="membership-btn">Beli Membership</button>
     </div>
     <div class="cards">
       <img src="images/cta_cards.svg" alt="cards" class="cta-cards">

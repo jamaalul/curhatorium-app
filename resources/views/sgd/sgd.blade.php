@@ -38,7 +38,7 @@
                    </select>
                    
                    <select name="sort" class="filter-select">
-                       <option value="schedule">Sort by Schedule</option>
+                       <option value="schedule" {{ request('sort') == 'schedule' || !request('sort') ? 'selected' : '' }}>Sort by Schedule (Newest First)</option>
                        <option value="title" {{ request('sort') == 'title' ? 'selected' : '' }}>Sort by Title</option>
                        <option value="category" {{ request('sort') == 'category' ? 'selected' : '' }}>Sort by Category</option>
                    </select>
@@ -98,29 +98,41 @@
                                         <span>{{ ucfirst(str_replace('-', ' ', $group->category)) }}</span>
                                         <span>Scheduled: {{ \Carbon\Carbon::parse($group->schedule)->format('M d, Y g:i A') }}</span>
                                     </div>
-                                    <p class="card-text">{{ $group->topic }}</p>
+                                    <p class="card-text">
+                                        <strong>Host:</strong> 
+                                        @if($group->host)
+                                            {{ $group->host->name }}
+                                        @else
+                                            <span style="color: #999; font-style: italic;">No host assigned</span>
+                                        @endif
+                                    </p>
                                     
                                     @auth
                                         @if($hasJoined)
                                             @if($isUpcoming || $hasStarted)
-                                                <div class="button-group">
-                                                    <form action="{{ route('group.enter-meeting') }}" method="POST" style="display: inline;">
-                                                        @csrf
-                                                        <input type="hidden" name="group_id" value="{{ $group->id }}">
-                                                        <button type="submit" class="join-button meeting-button">
-                                                            Go to Room
-                                                        </button>
-                                                    </form>
+                                                <div class="button-group" style="justify-content: space-between; align-items: flex-start; width: 100%;">
                                                     @if($isUpcoming)
-                                                        <form action="{{ route('group.leave') }}" method="POST" style="display: inline;" onsubmit="return confirm('Are you sure you want to leave this group?')">
+                                                        <form action="{{ route('group.leave') }}" method="POST" style="display: inline;">
                                                             @csrf
                                                             <input type="hidden" name="group_id" value="{{ $group->id }}">
-                                                            <button type="submit" class="join-button leave-button" style="">
+                                                            <button type="submit" class="join-button leave-button">
                                                                 Leave Group
                                                             </button>
                                                         </form>
                                                     @endif
+                                                    <div style="display: flex; flex-direction: column; align-items: flex-end; flex: 1;">
+                                                        <form action="{{ route('group.enter-meeting') }}" method="POST" style="display: inline;">
+                                                            @csrf
+                                                            <input type="hidden" name="group_id" value="{{ $group->id }}">
+                                                            <button type="submit" class="join-button meeting-button" @if(!$group->canEnterRoom()) disabled title="You can enter the room 5 minutes before the meeting starts." @endif>
+                                                                Go to Room
+                                                            </button>
+                                                        </form>
+                                                    </div>
                                                 </div>
+                                                @if(!$group->canEnterRoom())
+                                                <span class="disabled-info">Anda dapat masuk ke ruangan 5 menit sebelum pertemuan dimulai.</span>
+                                            @endif
                                             @else
                                                 <button class="join-button past-button" disabled>
                                                     Past Event

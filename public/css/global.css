@@ -15,6 +15,7 @@
 
 * {
     font-family: FigtreeReg;
+    scroll-behavior: smooth;
 }
 
 *::selection {
@@ -24,6 +25,7 @@
 
 body {
     margin: 0;
+    background-color: #f5f1eb;
 }
 
 h1,
@@ -58,9 +60,4 @@ h6 {
     background-color: #fee2e2;
     color: #991b1b;
     border: 1px solid #fca5a5;
-}
-
-::-webkit-scrollbar {
-    width: 0px;
-    height: 0px;
 }

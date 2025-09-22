@@ -17,7 +17,7 @@
       <h1>Signup</h1>
       <form method="POST" action="{{ route('register') }}">
         @csrf
-        <input type="text" placeholder="Username" required name="username" autofocus/>
+        <input type="text" placeholder="Username (Disarankan samaran)" required name="username" autofocus/>
         @error('username')
             <div class="error-message">{{ $message }}</div>
         @enderror
@@ -37,7 +37,7 @@
         </label>
         @error('terms') <div>{{ $message }}</div> @enderror
         <div class="links">
-          <a href="/">Sudah Punya Akun</a>
+          <a href="/login">Sudah Punya Akun</a>
         </div>
         <button type="submit">Sign Up</button>
       </form>

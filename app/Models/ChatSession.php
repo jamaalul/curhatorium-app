@@ -14,8 +14,16 @@ class ChatSession extends Model
         'professional_id',
         'start',
         'end',
-        'status', // Add status to fillable
-        'type', // Add type to distinguish video/chat sessions
+        'status',
+        'type',
+        'pending_end', // Add pending_end to fillable
+        'jitsi_room', // Add jitsi_room for video sessions
+    ];
+
+    protected $casts = [
+        'start' => 'datetime',
+        'end' => 'datetime',
+        'pending_end' => 'datetime',
     ];
 
     public function user()
@@ -26,5 +34,13 @@ class ChatSession extends Model
     public function professional()
     {
         return $this->belongsTo(Professional::class);
+    }
+
+    /**
+     * Get the ticket consumptions for this chat session.
+     */
+    public function shareTalkTicketConsumptions()
+    {
+        return $this->hasMany(\App\Models\ShareTalkTicketConsumption::class);
     }
 }

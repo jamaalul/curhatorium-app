@@ -5,16 +5,25 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
-class Professional extends Model
+class Professional extends Authenticatable
 {
     protected $fillable = [
-        'name', 'title', 'avatar', 'specialties', 'availability', 'availabilityText', 'type', 'rating',
+        'name', 'password', 'title', 'avatar', 'specialties', 'type', 'rating',
         'whatsapp_number', 'bank_account_number', 'bank_name'
+    ];
+
+    protected $hidden = [
+        'password',
+        'remember_token',
     ];
 
     protected $casts = [
         'specialties' => 'array',
+        'password' => 'hashed',
     ];
 
     protected static function booted()
@@ -46,40 +55,6 @@ class Professional extends Model
             ->exists();
     }
 
-    /**
-     * Get the effective availability status (considers active sessions)
-     */
-    public function getEffectiveAvailability()
-    {
-        if ($this->availability === 'offline') {
-            return 'offline';
-        }
-
-        if ($this->hasActiveSession()) {
-            return 'busy';
-        }
-
-        return 'online';
-    }
-
-    /**
-     * Get the effective availability text
-     */
-    public function getEffectiveAvailabilityText()
-    {
-        $status = $this->getEffectiveAvailability();
-        
-        switch ($status) {
-            case 'offline':
-                return 'Offline';
-            case 'busy':
-                return 'Sedang dalam sesi';
-            case 'online':
-                return 'Tersedia';
-            default:
-                return 'Tidak diketahui';
-        }
-    }
 
     /**
      * Relationship with chat sessions
@@ -87,5 +62,20 @@ class Professional extends Model
     public function chatSessions()
     {
         return $this->hasMany(ChatSession::class);
+    }
+
+    /**
+     * Relationship with schedule slots
+     */
+    public function scheduleSlots()
+    {
+        return $this->hasMany(ProfessionalScheduleSlot::class);
+    }
+    /**
+     * Get all of the professional's messages.
+     */
+    public function messages()
+    {
+        return $this->morphMany(MessageV2::class, 'sender');
     }
 }

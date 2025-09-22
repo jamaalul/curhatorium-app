@@ -28,6 +28,15 @@ class MentalTestController extends Controller
             'answers' => $data['answers'],
         ]);
 
-        return response()->json(['success' => true, 'result_id' => $result->id]);
+        // Award XP for completing mental health test
+        $user = auth()->user();
+        $xpResult = $user->awardXp('mental_test');
+
+        return response()->json([
+            'success' => true, 
+            'result_id' => $result->id,
+            'xp_awarded' => $xpResult['xp_awarded'] ?? 0,
+            'xp_message' => $xpResult['message'] ?? ''
+        ]);
     }
 } 

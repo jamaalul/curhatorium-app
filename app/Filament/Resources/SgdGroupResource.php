@@ -56,6 +56,17 @@ class SgdGroupResource extends Resource
                     ->required()
                     ->label('Meeting Schedule'),
                     
+                Forms\Components\Select::make('host_id')
+                    ->label('Host (Professional)')
+                    ->options(function () {
+                        return \App\Models\Professional::where('type', 'partner')
+                            ->pluck('name', 'id')
+                            ->toArray();
+                    })
+                    ->searchable()
+                    ->placeholder('Select a professional host')
+                    ->helperText('Only professionals with partner type can be selected as hosts'),
+                    
                 Forms\Components\Toggle::make('is_done')
                     ->label('Meeting Completed')
                     ->default(false),
@@ -92,6 +103,12 @@ class SgdGroupResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->label('Scheduled'),
+                    
+                Tables\Columns\TextColumn::make('host.name')
+                    ->label('Host')
+                    ->sortable()
+                    ->searchable()
+                    ->placeholder('No host assigned'),
                     
                 Tables\Columns\IconColumn::make('is_done')
                     ->boolean()

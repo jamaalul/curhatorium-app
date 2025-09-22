@@ -26,9 +26,21 @@ class AuthenticatedSessionController extends Controller
     {
         $request->authenticate();
 
+        // Logout the professional guard if authenticated
+        if (Auth::guard('professional')->check()) {
+            Auth::guard('professional')->logout();
+        }
+
         $request->session()->regenerate();
 
         $user = Auth::user();
+
+        // Check if this is user's first login (no stats recorded yet)
+        $hasActivity = \App\Models\Stat::where('user_id', $user->id)->exists();
+        if (!$hasActivity && !$user->onboarding_completed) {
+            // This is likely their first login, keep onboarding_completed as false
+            // so introjs will run
+        }
 
         if ($user->is_admin) {
             return redirect('/admin');
@@ -48,12 +60,21 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerateToken();
 
-        return redirect('/');
+        return redirect('/login');
     }
 
     public function getUser()
     {
         $user = Auth::user();
-        return response()->json($user);
+        
+        // Get daily XP summary for the navbar progress indicator
+        $dailyXpSummary = $user->getDailyXpSummary();
+        
+        return response()->json([
+            'id' => $user->id,
+            'username' => $user->username,
+            'total_xp' => $user->total_xp,
+            'daily_xp_summary' => $dailyXpSummary
+        ]);
     }
 }

@@ -17,7 +17,7 @@ class ProfessionalResource extends Resource
 {
     protected static ?string $model = Professional::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-user';
 
     public static function form(Form $form): Form
     {
@@ -31,13 +31,6 @@ class ProfessionalResource extends Resource
                     ->directory('avatars')
                     ->required(),
                 Forms\Components\TagsInput::make('specialties')->label('Specialties')->required(),
-                Forms\Components\Select::make('availability')
-                    ->options([
-                        'online' => 'Online',
-                        'busy' => 'Busy',
-                        'offline' => 'Offline',
-                    ])->required(),
-                Forms\Components\TextInput::make('availabilityText')->label('Availability Text')->required()->maxLength(255),
                 Forms\Components\Select::make('type')
                     ->options([
                         'psychiatrist' => 'Psychiatrist',
@@ -56,8 +49,6 @@ class ProfessionalResource extends Resource
                 Tables\Columns\TextColumn::make('name')->searchable(),
                 Tables\Columns\TextColumn::make('title')->searchable(),
                 Tables\Columns\TagsColumn::make('specialties')->label('Specialties'),
-                Tables\Columns\TextColumn::make('availability')->badge(),
-                Tables\Columns\TextColumn::make('availabilityText')->label('Availability Text'),
                 Tables\Columns\TextColumn::make('type')->badge(),
                 Tables\Columns\TextColumn::make('whatsapp_number')->label('WhatsApp'),
                 Tables\Columns\TextColumn::make('bank_account_number')->label('Bank Account'),

@@ -14,6 +14,7 @@
     border-radius: 10px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     padding: 1vw;
+    position: relative;
 }
 
 .bottom-boxes {
@@ -88,4 +89,34 @@
 
 .status {
     font-size: 16px;
+}
+
+.info-button-stats {
+    color: #70c0bb;
+    text-decoration: none;
+    opacity: 0.8;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    z-index: 10;
+}
+
+.info-button-stats svg {
+    width: 20px;
+    height: 20px;
+}
+
+.info-button-stats:hover {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+@media (max-width: 640px) {
+    .container {
+        padding: 20px 16px 20px 16px;
+    }
 }

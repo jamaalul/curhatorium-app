@@ -8,10 +8,11 @@
     </div>
     <div class="text-block">
       <p>
-        Curhatorium is your go-to platform for open conversations, mental health support, and personal growth.
-        Designed with students in mind, it's a place where you can share your thoughts, seek advice, and connect
-        with others who understands your journey.
+        Curhatorium adalah ruang aman untuk berbagi cerita, mendapatkan dukungan kesehatan mental, dan bertumbuh bersama. 
+        Didesain khusus untuk kamu, di sini kamu bisa mengekspresikan pikiran, mencari saran,
+        dan terhubung dengan mereka yang memahami perjalananmu.
       </p>
     </div>
+    <dotlottie-wc class="sanny-hero" src="https://lottie.host/956c946a-ed98-4aee-a058-b14a48da71f2/sxvSOHmIkl.lottie" style="width: 300px;height: 300px" speed="1" autoplay loop></dotlottie-wc>
   </section>
 </body>

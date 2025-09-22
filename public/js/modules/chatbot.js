@@ -1,0 +1,363 @@
+/**
+ * Chatbot Module
+ * Handles chat interface, message rendering, and AI interactions
+ */
+
+class Chatbot {
+    constructor() {
+        this.currentSessionId = null;
+        this.messages = [];
+        
+        // DOM elements
+        this.chatMessages = document.getElementById('chat-messages');
+        this.chatContainer = document.querySelector('.chat-container');
+        this.chatbotForm = document.getElementById('chatbot-form');
+        this.userInput = document.getElementById('user-input');
+        this.sendBtn = document.getElementById('send-btn');
+        this.loadingIndicator = document.getElementById('loading');
+        this.newChatBtn = document.getElementById('new-chat-btn');
+        this.sidebarSessions = document.querySelector('.sidebar-sessions');
+        this.sessionSearch = document.getElementById('session-search');
+        this.chatbotMobileMenuBtn = document.getElementById('chatbot-mobile-menu-btn');
+        this.chatbotSidebar = document.getElementById('chatbot-sidebar');
+        this.mobileOverlay = document.getElementById('mobile-overlay');
+        this.centerNewChatBtn = document.getElementById('center-new-chat-btn');
+        
+        this.init();
+    }
+
+    init() {
+        this.setupEventListeners();
+        this.loadMarkdownLibraries();
+        this.updateSessionList();
+        this.setupMobileMenu();
+        this.showNoSessionOverlay();
+    }
+
+    setupEventListeners() {
+        // Form submission
+        if (this.chatbotForm) {
+            this.chatbotForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                this.sendMessage();
+            });
+        }
+
+        // New chat button
+        if (this.newChatBtn) {
+            this.newChatBtn.addEventListener('click', () => {
+                this.createNewSession();
+            });
+        }
+
+        if (this.centerNewChatBtn) {
+            this.centerNewChatBtn.addEventListener('click', () => {
+                this.createNewSession();
+            });
+        }
+
+        // Session search
+        if (this.sessionSearch) {
+            this.sessionSearch.addEventListener('input', (e) => {
+                this.filterSessions(e.target.value);
+            });
+        }
+
+        // Mobile menu toggle
+        if (this.chatbotMobileMenuBtn) {
+            this.chatbotMobileMenuBtn.addEventListener('click', () => {
+                this.toggleMobileMenu();
+            });
+        }
+
+        // Mobile overlay
+        if (this.mobileOverlay) {
+            this.mobileOverlay.addEventListener('click', () => {
+                this.closeMobileMenu();
+            });
+        }
+    }
+
+    loadMarkdownLibraries() {
+        // Load marked.js for markdown parsing
+        if (typeof marked === 'undefined') {
+            const markedScript = document.createElement('script');
+            markedScript.src = 'https://cdn.jsdelivr.net/npm/marked/marked.min.js';
+            document.head.appendChild(markedScript);
+        }
+
+        // Load DOMPurify for sanitization
+        if (typeof DOMPurify === 'undefined') {
+            const purifyScript = document.createElement('script');
+            purifyScript.src = 'https://cdn.jsdelivr.net/npm/dompurify/dist/purify.min.js';
+            document.head.appendChild(purifyScript);
+        }
+    }
+
+    renderMarkdownSafe(text) {
+        if (typeof marked === 'undefined' || typeof DOMPurify === 'undefined') {
+            return text; // Fallback to plain text
+        }
+        
+        const rawHtml = marked.parse(text, { breaks: true });
+        return DOMPurify.sanitize(rawHtml, { USE_PROFILES: { html: true } });
+    }
+
+    scrollToBottom() {
+        setTimeout(() => {
+            if (this.chatContainer) {
+                this.chatContainer.scrollTop = this.chatContainer.scrollHeight;
+            }
+        }, 100);
+    }
+
+    scrollToBottomSmooth() {
+        if (this.chatContainer) {
+            this.chatContainer.scrollTo({
+                top: this.chatContainer.scrollHeight,
+                behavior: 'smooth'
+            });
+        }
+    }
+
+    renderMessages() {
+        if (!this.chatMessages) return;
+        
+        this.chatMessages.innerHTML = '';
+        this.messages.forEach(msg => {
+            const row = document.createElement('div');
+            row.className = 'message-row ' + (msg.role === 'user' ? 'user' : 'bot');
+            
+            const bubble = document.createElement('div');
+            bubble.className = 'message-bubble';
+            
+            if (msg.role === 'assistant') {
+                bubble.innerHTML = this.renderMarkdownSafe(msg.content);
+            } else {
+                bubble.textContent = msg.content;
+            }
+            
+            row.appendChild(bubble);
+            this.chatMessages.appendChild(row);
+        });
+        
+        // Scroll after all messages are rendered
+        setTimeout(() => {
+            this.scrollToBottomSmooth();
+        }, 100);
+    }
+
+    updateSessionList() {
+        fetch('/api/chatbot/sessions')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(sessions => {
+                this.renderSessionList(sessions);
+            })
+            .catch(error => {
+                this.sidebarSessions.innerHTML = '<div class="error">Error loading sessions</div>';
+            });
+    }
+
+    renderSessionList(sessions) {
+        if (!this.sidebarSessions) return;
+        
+        this.sidebarSessions.innerHTML = '';
+        
+        if (sessions.length === 0) {
+            this.sidebarSessions.innerHTML = '<div class="no-sessions">No sessions yet</div>';
+            return;
+        }
+        
+        sessions.forEach(session => {
+            const sessionElement = document.createElement('div');
+            sessionElement.className = 'session-item';
+            
+            if (session.id === this.currentSessionId) {
+                sessionElement.classList.add('active');
+            }
+            
+            sessionElement.innerHTML = `
+                <div class="session-title">${session.title || 'New Chat'}</div>
+                <div class="session-date">${new Date(session.created_at).toLocaleDateString()}</div>
+            `;
+            
+            sessionElement.addEventListener('click', () => {
+                this.loadSession(session.id);
+            });
+            
+            this.sidebarSessions.appendChild(sessionElement);
+        });
+    }
+
+    filterSessions(searchTerm) {
+        const sessionItems = this.sidebarSessions?.querySelectorAll('.session-item');
+        if (!sessionItems) return;
+        
+        sessionItems.forEach(item => {
+            const title = item.querySelector('.session-title').textContent.toLowerCase();
+            const matches = title.includes(searchTerm.toLowerCase());
+            item.style.display = matches ? 'block' : 'none';
+        });
+    }
+
+    async createNewSession() {
+        try {
+            this.showLoading();
+            const response = await fetch('/api/chatbot/session', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                }
+            });
+            
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const session = await response.json();
+            
+            this.currentSessionId = session.id;
+            this.messages = [];
+            this.renderMessages();
+            this.updateSessionList();
+            this.enableInput();
+            this.hideNoSessionOverlay();
+        } catch (error) {
+            alert('Failed to create new session. Please try again.');
+        } finally {
+            this.hideLoading();
+        }
+    }
+
+    async loadSession(sessionId) {
+        try {
+            const response = await fetch(`/api/chatbot/session/${sessionId}`);
+            const session = await response.json();
+            
+            this.currentSessionId = sessionId;
+            this.messages = session.messages || [];
+            this.renderMessages();
+            this.enableInput();
+            this.hideNoSessionOverlay();
+        } catch (error) {
+            alert('Failed to load session. Please try again.');
+        }
+    }
+
+    async sendMessage() {
+        if (!this.currentSessionId || !this.userInput) return;
+        
+        const message = this.userInput.value.trim();
+        if (!message) return;
+        
+        // Add user message to UI
+        this.messages.push({ role: 'user', content: message });
+        this.renderMessages();
+        
+        // Clear input and disable
+        this.userInput.value = '';
+        this.disableInput();
+        this.showLoading();
+        
+        try {
+            const response = await fetch('/api/chatbot', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({
+                    session_id: this.currentSessionId,
+                    message: message
+                })
+            });
+            
+            const data = await response.json();
+            
+            // Add bot response to UI
+            this.messages.push({ role: 'assistant', content: data.message });
+            this.renderMessages();
+            
+            // Update session list to reflect new title
+            this.updateSessionList();
+            
+        } catch (error) {
+            // Add error message
+            this.messages.push({ role: 'assistant', content: 'Sorry, I encountered an error. Please try again.' });
+            this.renderMessages();
+        } finally {
+            this.hideLoading();
+            this.enableInput();
+        }
+    }
+
+    enableInput() {
+        if (this.userInput) this.userInput.disabled = false;
+        if (this.sendBtn) this.sendBtn.disabled = false;
+    }
+
+    disableInput() {
+        if (this.userInput) this.userInput.disabled = true;
+        if (this.sendBtn) this.sendBtn.disabled = true;
+    }
+
+    showLoading() {
+        if (this.loadingIndicator) this.loadingIndicator.style.display = 'block';
+    }
+
+    hideLoading() {
+        if (this.loadingIndicator) this.loadingIndicator.style.display = 'none';
+    }
+
+    hideNoSessionOverlay() {
+        const overlay = document.getElementById('no-session-overlay');
+        if (overlay) overlay.style.display = 'none';
+    }
+
+    showNoSessionOverlay() {
+        const overlay = document.getElementById('no-session-overlay');
+        if (overlay) overlay.style.display = 'block';
+    }
+
+    setupMobileMenu() {
+        // This function is currently empty as the event listener
+        // is already set up in setupEventListeners.
+        // Kept for structure.
+    }
+
+    toggleMobileMenu() {
+        if (this.chatbotSidebar) {
+            this.chatbotSidebar.classList.toggle('open');
+        }
+        if (this.mobileOverlay) {
+            this.mobileOverlay.classList.toggle('open');
+        }
+    }
+
+    closeMobileMenu() {
+        if (this.chatbotSidebar) {
+            this.chatbotSidebar.classList.remove('open');
+        }
+        if (this.mobileOverlay) {
+            this.mobileOverlay.classList.remove('open');
+        }
+    }
+}
+
+// Auto-initialize when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    // Check if we're on the chatbot page
+    if (document.getElementById('chat-messages')) {
+        new Chatbot();
+    }
+});
+
+// Make available globally for debugging
+window.Chatbot = Chatbot; 

@@ -73,6 +73,26 @@
     font-size: 0.7em;
 }
 
+.info-button {
+    color: #70c0bb;
+    text-decoration: none;
+    opacity: 0.8;
+    transition: all 0.2s ease;
+    margin-left: 8px;
+    display: flex;
+    align-items: center;
+}
+
+.info-button svg {
+    width: 16px;
+    height: 16px;
+}
+
+.info-button:hover {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
 .card-description {
     font-size: 0.85em;
     line-height: 1.4;
@@ -100,5 +120,15 @@
 
     #fitur-layanan {
         font-size: 1.3em;
+    }
+}
+
+@media (max-width: 640px) {
+    #fitur-layanan {
+        padding: 36px 16px 0px 16px;
+    }
+
+    .grid-container {
+        padding-inline: 16px;
     }
 }

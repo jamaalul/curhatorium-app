@@ -1,38 +1,53 @@
-<link rel="stylesheet" href="{{ asset('css/main/qotd.css') }}">
-
-<body>
-  <div class="quote-section">
-    <h2>Quotes of The Day</h2>
-    <div class="quote-carousel">
-      <div class="quote-container">
-        <div class="quote-slide active">
-          <div class="quote-box">
-            <p class="quote-text" id="quote-1"></p>
+<section class="w-full h-fit px-4 flex flex-col items-center justify-center bg-white shadow-md">
+  <div class="text-center px-6 py-10 w-full text-black">
+    <h2 class="text-teal-500 text-2xl md:text-xl font-bold">Quotes of The Day</h2>
+    <div class="relative max-w-4xl mx-auto mt-4">
+      <div class="relative overflow-hidden min-h-24 h-full flex flex-col items-center justify-center">
+        <div class="quote-slide absolute top-0 left-0 w-full opacity-0 transition-all duration-1000 ease-in-out transform invisible flex items-center justify-center">
+          <div class="mx-auto border-y-4 border-stone-200 max-w-full md:max-w-3xl">
+            <p class="text-xl md:text-3xl italic text-black font-serif my-2" id="quote-1"></p>
           </div>
         </div>
-        <div class="quote-slide">
-          <div class="quote-box">
-            <p class="quote-text" id="quote-2"></p>
+        <div class="quote-slide absolute top-0 left-0 w-full opacity-0 transition-all duration-1000 ease-in-out transform invisible flex items-center justify-center">
+          <div class="mx-auto border-y-4 border-stone-200 max-w-full md:max-w-3xl">
+            <p class="text-xl md:text-3xl italic text-black font-serif my-2" id="quote-2"></p>
           </div>
         </div>
-        <div class="quote-slide">
-          <div class="quote-box">
-            <p class="quote-text" id="quote-3"></p>
+        <div class="quote-slide absolute top-0 left-0 w-full opacity-0 transition-all duration-1000 ease-in-out transform invisible flex items-center justify-center">
+          <div class="mx-auto border-y-4 border-stone-200 max-w-full md:max-w-3xl">
+            <p class="text-xl md:text-3xl italic text-black font-serif my-2" id="quote-3"></p>
           </div>
         </div>
       </div>
-      <div class="carousel-indicators">
-        <span class="indicator active" data-slide="0"></span>
-        <span class="indicator" data-slide="1"></span>
-        <span class="indicator" data-slide="2"></span>
+      <div class="flex justify-center gap-2.5 mt-4">
+        <span class="indicator w-3 h-3 rounded-full bg-gray-300 cursor-pointer transition-colors duration-300 ease-in-out hover:bg-teal-500 hover:opacity-70" data-slide="0"></span>
+        <span class="indicator w-3 h-3 rounded-full bg-gray-300 cursor-pointer transition-colors duration-300 ease-in-out hover:bg-teal-500 hover:opacity-70" data-slide="1"></span>
+        <span class="indicator w-3 h-3 rounded-full bg-gray-300 cursor-pointer transition-colors duration-300 ease-in-out hover:bg-teal-500 hover:opacity-70" data-slide="2"></span>
       </div>
     </div>
   </div>
 
+  <style>
+    .quote-slide.active {
+      opacity: 1;
+      transform: translateX(0);
+      visibility: visible;
+    }
+    .quote-slide.prev {
+      transform: translateX(-100%);
+    }
+    .quote-slide.next {
+      transform: translateX(100%);
+    }
+    .indicator.active {
+        background-color: #2b9c94;
+    }
+  </style>
+
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       // Show loading state
-      const quoteElements = document.querySelectorAll('.quote-text');
+      const quoteElements = [document.getElementById('quote-1'), document.getElementById('quote-2'), document.getElementById('quote-3')];
       quoteElements.forEach(element => {
         element.textContent = 'Loading...';
       });
@@ -104,7 +119,7 @@
       showSlide(0);
 
       // Auto-slide every 5 seconds
-      setInterval(nextSlide, 5000);
+      setInterval(nextSlide, 6000);
 
       // Manual navigation with indicators
       indicators.forEach((indicator, index) => {
@@ -115,4 +130,4 @@
       });
     });
   </script>
-</body>
+</section>

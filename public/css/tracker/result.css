@@ -29,7 +29,7 @@
     --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
         0 10px 10px -5px rgba(0, 0, 0, 0.04);
     --transition: all 0.3s ease;
-    --container-width: 800px;
+    --container-width: 1400px;
 }
 
 * {
@@ -162,6 +162,7 @@ body {
     background: var(--bg-secondary);
     padding: 1.5rem;
     border-radius: var(--border-radius-lg);
+    width: 100%;
 }
 
 .detail-title {
@@ -204,6 +205,7 @@ body {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1.5rem;
+    width: 100%;
 }
 
 .metric-item {
@@ -212,6 +214,8 @@ body {
     background: var(--white);
     border-radius: var(--border-radius-lg);
     box-shadow: var(--shadow-sm);
+    width: 100%;
+    min-width: 0;
 }
 
 .metric-icon {
@@ -464,7 +468,17 @@ body {
 }
 
 /* Responsive Design */
+@media (max-width: 1200px) {
+    :root {
+        --container-width: 1000px;
+    }
+}
+
 @media (max-width: 768px) {
+    :root {
+        --container-width: 100%;
+    }
+
     .page-header h1 {
         font-size: 2rem;
     }
@@ -479,7 +493,9 @@ body {
     }
 
     .energy-metrics {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        width: 100%;
     }
 
     .entry-card,

@@ -14,6 +14,8 @@ class Kernel extends ConsoleKernel
         $schedule->command('membership:grant-calm-starter')->monthlyOn(1, '00:05');
         $schedule->command('sessions:cleanup-expired')->everyMinute();
         $schedule->command('tickets:cleanup-expired')->daily()->at('02:00');
+        $schedule->command('sgd:mark-done')->everyFiveMinutes();
+        $schedule->command('share-and-talk:cancel-expired-sessions')->everyMinute();
     }
 
     protected function commands()

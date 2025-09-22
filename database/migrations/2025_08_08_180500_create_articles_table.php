@@ -11,12 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('messages', function (Blueprint $table) {
+        Schema::create('articles', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('sender_id')->nullable();
-            $table->string('sender_type')->nullable();
-            $table->integer('session_id');
-            $table->text('message')->nullable();
+            $table->string('title');
+            $table->text('content');
+            $table->string('image');
+            $table->string('slug')->unique();
+            $table->string('category');
             $table->timestamps();
         });
     }
@@ -26,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('messages');
+        Schema::dropIfExists('articles');
     }
 };

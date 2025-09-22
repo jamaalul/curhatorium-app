@@ -43,17 +43,56 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
-        // Always create or update a sample SGD group
+        // Always create or update sample SGD groups in order of oldest to newest by 'schedule'
         \App\Models\SgdGroup::updateOrCreate(
             [
-                'title' => 'Sample Group',
+                'title' => 'Curhat #3',
             ],
             [
-                'topic' => 'Mental Health Awareness',
+                'topic' => 'Pengembangan karir dan pekerjaan',
+                'meeting_address' => 'https://zoom.us/j/123456789',
+                'schedule' => now()->subDays(3),
+                'is_done' => true,
+                'category' => 'career',
+            ]
+        );
+
+        \App\Models\SgdGroup::updateOrCreate(
+            [
+                'title' => 'Curhat #2',
+            ],
+            [
+                'topic' => 'Diskusi seputar pendidikan dan belajar',
+                'meeting_address' => 'https://meet.google.com/abc-defg-hij',
+                'schedule' => now()->subDays(2),
+                'is_done' => true,
+                'category' => 'education',
+            ]
+        );
+
+        \App\Models\SgdGroup::updateOrCreate(
+            [
+                'title' => 'Curhat #1',
+            ],
+            [
+                'topic' => '',
                 'meeting_address' => 'https://www.youtube.com',
-                'schedule' => now()->addDays(1),
-                'is_done' => false,
-                'category' => 'mental-health', // Changed from 'Support' to 'mental-health'
+                'schedule' => now()->subDays(1),
+                'is_done' => true,
+                'category' => 'mental-health',
+            ]
+        );
+
+        \App\Models\SgdGroup::updateOrCreate(
+            [
+                'title' => 'Curhat #4',
+            ],
+            [
+                'topic' => 'Hubungan dan relasi sosial',
+                'meeting_address' => 'https://teams.microsoft.com/l/meetup-join/19%3ameeting',
+                'schedule' => now()->subDays(1),
+                'is_done' => true,
+                'category' => 'relationships',
             ]
         );
 
@@ -65,6 +104,9 @@ class DatabaseSeeder extends Seeder
 
         // Seed professionals
         $this->call(ProfessionalSeeder::class);
+
+        // Seed professional authentication credentials
+        // $this->call(ProfessionalAuthSeeder::class);
 
         // Seed stats, weekly stats, and monthly stats
         $this->call([

@@ -455,8 +455,10 @@
         <!-- View Toggle -->
         <div class="view-toggle">
             <button class="toggle-btn active" data-view="daily">Harian</button>
-            <button class="toggle-btn" data-view="weekly">Mingguan</button>
-            <button class="toggle-btn" data-view="monthly">Bulanan</button>
+            @if(Auth::user()->hasActiveInnerPeaceMembership())
+                <button class="toggle-btn" data-view="weekly">Mingguan</button>
+                <button class="toggle-btn" data-view="monthly">Bulanan</button>
+            @endif
         </div>
 
         <!-- History Container -->
@@ -512,25 +514,58 @@
 
         // Ambil data dari API
         async function fetchDailyTracks(page = 1) {
-            const res = await fetch(`/api/tracker/stats?page=${page}`);
-            const data = await res.json();
-            dailyTracks = data.data;
-            dailyPage = data.current_page;
-            dailyLastPage = data.last_page;
+            try {
+                const res = await fetch(`/api/tracker/stats?page=${page}`);
+                const data = await res.json();
+                // Some responses may return an array directly or an object with data
+                dailyTracks = Array.isArray(data?.data) ? data.data : (Array.isArray(data) ? data : []);
+                dailyPage = Number(data?.current_page) || 1;
+                dailyLastPage = Number(data?.last_page) || 1;
+            } catch (e) {
+                dailyTracks = [];
+                dailyPage = 1;
+                dailyLastPage = 1;
+            }
         }
         async function fetchWeeklyTracks(page = 1) {
-            const res = await fetch(`/api/tracker/weekly-stats?page=${page}`);
-            const data = await res.json();
-            weeklyTracks = data.data;
-            weeklyPage = data.current_page;
-            weeklyLastPage = data.last_page;
+            try {
+                const res = await fetch(`/api/tracker/weekly-stats?page=${page}`);
+                if (res.status === 403) {
+                    // User doesn't have Inner Peace membership
+                    weeklyTracks = [];
+                    weeklyPage = 1;
+                    weeklyLastPage = 1;
+                    return;
+                }
+                const data = await res.json();
+                weeklyTracks = Array.isArray(data?.data) ? data.data : (Array.isArray(data) ? data : []);
+                weeklyPage = data.current_page;
+                weeklyLastPage = data.last_page;
+            } catch (error) {
+                weeklyTracks = [];
+                weeklyPage = 1;
+                weeklyLastPage = 1;
+            }
         }
         async function fetchMonthlyTracks(page = 1) {
-            const res = await fetch(`/api/tracker/monthly-stats?page=${page}`);
-            const data = await res.json();
-            monthlyTracks = data.data;
-            monthlyPage = data.current_page;
-            monthlyLastPage = data.last_page;
+            try {
+                const res = await fetch(`/api/tracker/monthly-stats?page=${page}`);
+                if (res.status === 403) {
+                    // User doesn't have Inner Peace membership
+                    monthlyTracks = [];
+                    monthlyPage = 1;
+                    monthlyLastPage = 1;
+                    return;
+                }
+                const data = await res.json();
+                monthlyTracks = Array.isArray(data?.data) ? data.data : (Array.isArray(data) ? data : []);
+                monthlyPage = data.current_page;
+                monthlyLastPage = data.last_page;
+            } catch (error) {
+                monthlyTracks = [];
+                monthlyPage = 1;
+                monthlyLastPage = 1;
+            }
         }
 
         // Inisialisasi halaman
@@ -561,19 +596,19 @@
 
         // Render kartu harian
         function renderDailyCards() {
-            if (dailyTracks.length === 0) {
+            if (!Array.isArray(dailyTracks) || dailyTracks.length === 0) {
                 return `
                     <div class="empty-state">
                         <div class="empty-state-icon">📅</div>
                         <h3>Tidak Ada Catatan Harian</h3>
                         <p>Anda belum pernah melacak mood harian.</p>
-                        <a href="mood-tracker.html" class="empty-state-btn">Lacak Mood Anda</a>
+                        <a href="/tracker" class="empty-state-btn">Lacak Mood Anda</a>
                     </div>
                 `;
             }
             return `
                 <div class="cards-grid">
-                    ${dailyTracks.map(track => {
+                    ${(dailyTracks || []).map(track => {
                         const moods = {
                             1: {emoji: '😢', label: 'Sangat sedih'},
                             2: {emoji: '😞', label: 'Sedih'},
@@ -586,17 +621,17 @@
                             9: {emoji: '🤩', label: 'Bahagia'},
                             10: {emoji: '🥳', label: 'Gembira'},
                         };
-                        const mood = moods[track.mood] || {emoji: '', label: ''};
+                        const mood = moods[Number(track?.mood)] || {emoji: '', label: ''};
                         return `
-                        <div class="track-card daily-card" data-type="daily" data-id="${track.id}">
+                        <div class="track-card daily-card" data-type="daily" data-id="${track?.id ?? ''}">
                             <div class="card-header">
                                 <div>
-                                    <div class="card-title">${formatDate(track.created_at)}</div>
+                                    <div class="card-title">${track?.created_at ? formatDate(track.created_at) : ''}</div>
                                     <div class="card-date">${mood.label}</div>
                                 </div>
                                 <div class="card-mood">
                                     <span class="mood-emoji">${mood.emoji}</span>
-                                    <span class="mood-score">${track.mood}/10</span>
+                                    <span class="mood-score">${Number(track?.mood) || 0}/10</span>
                                 </div>
                             </div>
                             <div class="card-content"></div>
@@ -621,9 +656,9 @@
                 return `
                     <div class="empty-state">
                         <div class="empty-state-icon">📊</div>
-                        <h3>Tidak Ada Catatan Mingguan</h3>
-                        <p>Belum ada ringkasan mingguan yang tersedia.</p>
-                        <a href="mood-tracker.html" class="empty-state-btn">Lacak Mood Anda</a>
+                        <h3>Fitur Mingguan Hanya untuk Inner Peace</h3>
+                        <p>Upgrade ke membership Inner Peace untuk mengakses laporan mingguan dan analisis mendalam.</p>
+                        <a href="/membership" class="empty-state-btn">Lihat Membership</a>
                     </div>
                 `;
             }
@@ -666,9 +701,9 @@
                 return `
                     <div class="empty-state">
                         <div class="empty-state-icon">📈</div>
-                        <h3>Tidak Ada Catatan Bulanan</h3>
-                        <p>Belum ada ringkasan bulanan yang tersedia.</p>
-                        <a href="mood-tracker.html" class="empty-state-btn">Lacak Mood Anda</a>
+                        <h3>Fitur Bulanan Hanya untuk Inner Peace</h3>
+                        <p>Upgrade ke membership Inner Peace untuk mengakses laporan bulanan dan analisis mendalam.</p>
+                        <a href="/membership" class="empty-state-btn">Lihat Membership</a>
                     </div>
                 `;
             }

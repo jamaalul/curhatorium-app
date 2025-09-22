@@ -44,24 +44,31 @@
                             Pilih emoji yang paling menggambarkan suasana hatimu hari ini. Ini membantu kami memahami keadaan emosimu.
                         </p>
                         <div class="mood-scale">
+                            @php
+                                $moods = [
+                                    1 => ['label' => 'Sangat sedih'],
+                                    2 => ['label' => 'Sedih'],
+                                    3 => ['label' => 'Murung'],
+                                    4 => ['label' => 'Biasa'],
+                                    5 => ['label' => 'Netral'],
+                                    6 => ['label' => 'Positif'],
+                                    7 => ['label' => 'Senang'],
+                                    8 => ['label' => 'Sangat senang'],
+                                    9 => ['label' => 'Bahagia'],
+                                    10 => ['label' => 'Gembira'],
+                                ];
+                            @endphp
                             @for ($i = 1; $i <= 10; $i++)
-                                @php
-                                    $moods = [
-                                        1 => ['emoji' => '😢', 'label' => 'Sangat sedih'],
-                                        2 => ['emoji' => '😞', 'label' => 'Sedih'],
-                                        3 => ['emoji' => '😔', 'label' => 'Murung'],
-                                        4 => ['emoji' => '😐', 'label' => 'Biasa'],
-                                        5 => ['emoji' => '🙂', 'label' => 'Netral'],
-                                        6 => ['emoji' => '😊', 'label' => 'Positif'],
-                                        7 => ['emoji' => '😄', 'label' => 'Senang'],
-                                        8 => ['emoji' => '😁', 'label' => 'Sangat senang'],
-                                        9 => ['emoji' => '🤩', 'label' => 'Bahagia'],
-                                        10 => ['emoji' => '🥳', 'label' => 'Gembira'],
-                                    ];
-                                @endphp
                                 <label class="mood-option" data-mood="{{ $i }}">
                                     <input type="radio" name="mood" value="{{ $i }}">
-                                    <div class="mood-emoji">{{ $moods[$i]['emoji'] }}</div>
+                                    <div class="mood-emoji">
+                                        <img 
+                                            src="{{ asset('assets/emoji/' . $i . '.png') }}" 
+                                            alt="{{ $moods[$i]['label'] }}" 
+                                            style="width: 2.5rem; height: 2.5rem; object-fit: contain; display: block; margin: 0 auto;"
+                                            class="mood-emoji-img"
+                                        >
+                                    </div>
                                     <div class="mood-label">{{ $moods[$i]['label'] }}</div>
                                     <div class="mood-number">{{ $i }}</div>
                                 </label>
@@ -147,12 +154,12 @@
                                     <input type="range" id="energySlider" class="slider" min="1" max="10" value="5" name="energy">
                                     <div class="slider-track" id="energyTrack"></div>
                                 </div>
-                                <div class="slider-labels">
-                                    <span>Sangat Rendah</span>
-                                    <span>Rendah</span>
-                                    <span>Sedang</span>
-                                    <span>Tinggi</span>
-                                    <span>Sangat Tinggi</span>
+                                <div class="slider-labels" style="display:grid;grid-template-columns:repeat(5,1fr);column-gap:8px;margin-top:8px;">
+                                    <span style="text-align:left;white-space:nowrap;">Sangat Rendah</span>
+                                    <span style="text-align:center;white-space:nowrap;">Rendah</span>
+                                    <span style="text-align:center;white-space:nowrap;">Sedang</span>
+                                    <span style="text-align:center;white-space:nowrap;">Tinggi</span>
+                                    <span style="text-align:right;white-space:nowrap;">Sangat Tinggi</span>
                                 </div>
                             </div>
 
@@ -168,12 +175,12 @@
                                     <input type="range" id="productivitySlider" class="slider" min="1" max="10" value="5" name="productivity">
                                     <div class="slider-track" id="productivityTrack"></div>
                                 </div>
-                                <div class="slider-labels">
-                                    <span>Sangat Rendah</span>
-                                    <span>Rendah</span>
-                                    <span>Sedang</span>
-                                    <span>Tinggi</span>
-                                    <span>Sangat Tinggi</span>
+                                <div class="slider-labels" style="display:grid;grid-template-columns:repeat(5,1fr);column-gap:8px;margin-top:8px;">
+                                    <span style="text-align:left;white-space:nowrap;">Sangat Rendah</span>
+                                    <span style="text-align:center;white-space:nowrap;">Rendah</span>
+                                    <span style="text-align:center;white-space:nowrap;">Sedang</span>
+                                    <span style="text-align:center;white-space:nowrap;">Tinggi</span>
+                                    <span style="text-align:right;white-space:nowrap;">Sangat Tinggi</span>
                                 </div>
                             </div>
                         </div>
@@ -284,13 +291,24 @@
         });
 
         // Slider Energi
+        function updateSliderTrack(sliderEl, trackEl, valueEl) {
+            const min = Number(sliderEl.min || 0);
+            const max = Number(sliderEl.max || 100);
+            const value = Number(sliderEl.value || min);
+            const percent = ((value - min) / (max - min)) * 100;
+            if (valueEl) valueEl.textContent = String(value);
+            if (trackEl) trackEl.style.width = percent + '%';
+        }
+
+        // Initialize tracks on load
+        updateSliderTrack(energySlider, energyTrack, energyValue);
+        updateSliderTrack(productivitySlider, productivityTrack, productivityValue);
+
         energySlider.addEventListener('input', function() {
-            const value = this.value;
-            energyValue.textContent = value;
-            energyTrack.style.width = ((value - 1) / 9) * 100 + '%';
+            updateSliderTrack(this, energyTrack, energyValue);
             
             // Update data form
-            formData.energy = parseInt(value);
+            formData.energy = parseInt(this.value);
             
             // Update progres
             updateProgress();
@@ -298,12 +316,10 @@
 
         // Slider Produktivitas
         productivitySlider.addEventListener('input', function() {
-            const value = this.value;
-            productivityValue.textContent = value;
-            productivityTrack.style.width = ((value - 1) / 9) * 100 + '%';
+            updateSliderTrack(this, productivityTrack, productivityValue);
             
             // Update data form
-            formData.productivity = parseInt(value);
+            formData.productivity = parseInt(this.value);
             
             // Update progres
             updateProgress();
@@ -357,21 +373,8 @@
         // Pengiriman form ditangani oleh Laravel
         // Form akan dikirim ke server dan diarahkan kembali dengan pesan sukses/error
 
-        // Reset form ditangani oleh redirect Laravel
-
-        // Inisialisasi slider
-        function initializeSliders() {
-            energyTrack.style.width = '44.44%'; // 5/10 * 100% disesuaikan untuk skala 1-10
-            productivityTrack.style.width = '44.44%';
-        }
-
-        // Inisialisasi form
-        document.addEventListener('DOMContentLoaded', function() {
-            initializeSliders();
-            updateSubmitButton();
-        });
-
-        // Fitur auto-save draft dihapus - menggunakan penyimpanan server
+        // Form submission is handled by Laravel redirect
     </script>
+    <script src="/js/modules/tracker-form.js"></script>
 </body>
 </html>

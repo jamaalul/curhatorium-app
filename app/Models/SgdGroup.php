@@ -14,7 +14,8 @@ class SgdGroup extends Model
         'meeting_address',
         'schedule',
         'is_done',
-        'category'
+        'category',
+        'host_id'
     ];
 
     protected $casts = [
@@ -69,5 +70,32 @@ class SgdGroup extends Model
     public function isUpcoming()
     {
         return now()->lt($this->schedule);
+    }
+
+    /**
+     * Get the ticket consumptions for this SGD group.
+     */
+    public function sgdTicketConsumptions()
+    {
+        return $this->hasMany(\App\Models\SgdTicketConsumption::class);
+    }
+
+    /**
+     * Get the host (professional) for this SGD group.
+     */
+    public function host()
+    {
+        return $this->belongsTo(\App\Models\Professional::class, 'host_id');
+    }
+
+    /**
+     * Check if the group can be entered (within 5 minutes before or after start).
+     */
+    public function canEnterRoom()
+    {
+        $now = now();
+        $startTime = $this->schedule;
+        $fiveMinutesBefore = $startTime->copy()->subMinutes(5);
+        return $now->gte($fiveMinutesBefore);
     }
 }

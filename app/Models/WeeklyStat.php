@@ -18,6 +18,13 @@ class WeeklyStat extends Model
         'feedback',
     ];
 
+    protected $casts = [
+        'avg_mood' => 'float',
+        'avg_productivity' => 'float',
+        'best_mood' => 'float',
+        'total_entries' => 'integer',
+    ];
+
     /**
      * Get the user that owns the weekly stat.
      */

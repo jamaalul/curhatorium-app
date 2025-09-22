@@ -631,13 +631,18 @@ body {
 /* Button group for multiple buttons */
 .button-group {
     display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100%;
+    gap: 16px;
 }
-
+.button-group > * {
+    margin: 0 4px;
+}
 .button-group .join-button {
-    flex: 1;
     min-width: 120px;
+    /* Remove flex: 1; so both buttons don't stretch equally */
 }
 
 /* Leave button */
@@ -921,4 +926,20 @@ nav #profile-box #xp-box #badge-box {
         font-size: 13px;
         padding: 6px 10px;
     }
+}
+
+.meeting-button:disabled {
+    background-color: #cccccc !important;
+    color: #888888 !important;
+    cursor: not-allowed !important;
+    opacity: 0.7;
+    border: 1px solid #bbbbbb;
+}
+
+.disabled-info {
+    color: #b94a48;
+    font-size: 13px;
+    margin-top: 6px;
+    display: block;
+    text-align: center;
 }

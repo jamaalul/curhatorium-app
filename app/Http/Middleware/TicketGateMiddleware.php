@@ -90,13 +90,22 @@ class TicketGateMiddleware
                 return redirect()->back()->withErrors(['msg' => 'Tiket Anda sudah habis untuk fitur ini.']);
             }
             if (($request->isMethod('get') && $request->input('redeem') == '1') || $request->isMethod('post')) {
+                $consumedTicket = null;
                 foreach ($countTickets as $t) {
                     if ($t->remaining_value > 0) {
                         $t->remaining_value -= 1;
                         $t->save();
+                        $consumedTicket = $t;
                         break;
                     }
                 }
+                
+                // Track SGD ticket consumption for payment purposes
+                if ($ticketType === 'support_group' && $consumedTicket) {
+                    $this->trackSgdTicketConsumption($user, $consumedTicket);
+                }
+                
+                // Note: Share and Talk ticket consumption is now tracked in the controller after session creation
                 
                 // Clean up any tickets that should be deleted
                 \App\Models\UserTicket::cleanupAfterConsumption();
@@ -165,4 +174,55 @@ class TicketGateMiddleware
         // Unknown type
         return redirect()->back()->withErrors(['msg' => 'Tipe tiket tidak dikenali.']);
     }
+
+    private function trackSgdTicketConsumption($user, $consumedTicket)
+    {
+        // Determine if this is the user's first SGD while having active Calm Starter membership
+        $isFirstSgdWithCalmStarter = $this->isFirstSgdWithCalmStarter($user);
+        
+        // Determine ticket source
+        $ticketSource = $isFirstSgdWithCalmStarter ? 'calm_starter' : 'paid';
+        
+        // Get SGD group ID from request (assuming it's passed as group_id)
+        $sgdGroupId = request('group_id');
+        
+        if ($sgdGroupId) {
+            \App\Models\SgdTicketConsumption::create([
+                'user_id' => $user->id,
+                'sgd_group_id' => $sgdGroupId,
+                'ticket_source' => $ticketSource,
+                'consumed_at' => Carbon::now(),
+            ]);
+        }
+    }
+    
+    private function isFirstSgdWithCalmStarter($user)
+    {
+        $now = Carbon::now();
+        
+        // Find the user's current Calm Starter cycle
+        // Get the most recent Calm Starter membership for this user
+        $currentCalmStarter = $user->userMemberships()
+            ->whereHas('membership', function($query) {
+                $query->where('name', 'Calm Starter');
+            })
+            ->where('started_at', '<=', $now)
+            ->where('expires_at', '>=', $now)
+            ->orderBy('started_at', 'desc')
+            ->first();
+            
+        if (!$currentCalmStarter) {
+            return false; // No active Calm Starter, so it's a paid ticket
+        }
+        
+        // Check if this is the user's first SGD participation in this Calm Starter cycle
+        $hasPreviousSgdThisCycle = $user->sgdGroups()
+            ->wherePivot('joined_at', '>=', $currentCalmStarter->started_at)
+            ->wherePivot('joined_at', '<=', $currentCalmStarter->expires_at)
+            ->exists();
+        
+        return !$hasPreviousSgdThisCycle; // First SGD in this Calm Starter cycle = true, subsequent = false
+    }
+
+
 } 
