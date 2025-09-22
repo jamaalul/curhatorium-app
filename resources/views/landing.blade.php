@@ -110,7 +110,7 @@
     </section>
 
     <!-- Photo Grid Section -->
-    {{-- <section class="w-full relative">
+    <section class="w-full relative">
         <div class="grid grid-cols-2 md:grid-cols-4">
             <div class="aspect-[4/3] bg-gray-300 bg-cover bg-center" style="background-image: url('images/gal1.jpg');"></div>
             <div class="aspect-[4/3] bg-gray-300 bg-cover bg-center" style="background-image: url('images/gal2.jpg');"></div>
@@ -122,7 +122,7 @@
             <div class="aspect-[4/3] bg-gray-300 bg-cover bg-center" style="background-image: url('images/gal8.jpg');"></div>
         </div>
         <div class="w-full bottom-0 h-1/2 absolute flex left-0 right-0" style="background: linear-gradient(to top, #222222 10%, transparent 100%);"></div>
-    </section> --}}
+    </section>
 
     <!-- Features Section -->
     <section id="features" class="w-full bg-stone-200 py-12 md:py-24 px-4">
