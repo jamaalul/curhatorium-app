@@ -16,9 +16,9 @@
     <style>
         /* Responsive font sizes */
         html { font-size: 16px; }
-        @media (max-width: 640px) { html { font-size: 14px; } }
-        @media (min-width: 640px) and (max-width: 1024px) { html { font-size: 15px; } }
-        @media (min-width: 1024px) { html { font-size: 16px; } }
+        @media (max-width: 640px) { html { font-size: 13px; } }
+        @media (min-width: 640px) and (max-width: 1024px) { html { font-size: 14px; } }
+        @media (min-width: 1024px) { html { font-size: 15px; } }
 
         /* Sidebar transitions for mobile */
         #sidebar {
@@ -69,10 +69,10 @@
 </head>
 <body class="w-screen h-screen flex bg-gray-800">
     <div id="sidebar-overlay"></div>
-    <div id="sidebar" class="bg-gray-800 text-white flex flex-col p-4 w-64 transition-all duration-300 ease-out">
+    <div id="sidebar" class="bg-gray-800 text-white flex flex-col p-4 w-64 transition-all duration-300 ease-out overflow-hidden">
         <!-- Header -->
         <div class="flex items-center justify-between w-full flex-none">
-            <img src="{{ asset('assets/mini_logo.png') }}" alt="mini_logo" class="size-8">
+            <img src="{{ asset('assets/mini_logo.png') }}" alt="mini_logo" class="size-8 cursor-pointer" onclick="window.location.href='/dashboard'">
             <svg id="sidebar-toggle-a" onclick="toggleSidebar()" xmlns="http://www.w3.org/2000/svg"
                 class="size-6 text-gray-400 hover:text-gray-100 cursor-pointer transition-all duration-100"
                 fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -133,7 +133,7 @@
                 </svg>
             </div>
             <div class="relative">
-            <button id="ai-mode-btn" type="button"
+            <button id="ai-mode-btn" type="button" class="hidden"
                 @switch($mode)
                     @case('friendly')
                         class="bg-green-200 text-green-800 px-3 py-1 rounded-full shadow-sm text-base md:text-lg flex items-center gap-2"
@@ -226,7 +226,7 @@
         </script>
         </nav>
 
-        <div id="chat-container" class="flex w-2/3 flex-col mx-auto overflow-y-auto p-4 pt-16 pb-24" style="scrollbar-width:thin; scrollbar-color:#d1d5db #f9fafb;">
+        <div id="chat-container" class="flex w-full md:w-3/4 flex-col mx-auto overflow-y-auto p-4 pt-24 pb-24" style="scrollbar-width:thin; scrollbar-color:#d1d5db #f9fafb;">
             @foreach($messages as $message)
                 <div class="flex mb-4 @if($message->role == 'user') justify-end @endif">
                     <div class="p-3 rounded-lg @if($message->role == 'user') bg-[#48a6a6] text-white @else text-black @endif">
@@ -238,7 +238,7 @@
             @endforeach
         </div>
         <div class="w-full h-fit flex items-center justify-center absolute bottom-0 py-2" style="background: linear-gradient(180deg,rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%);">
-            <div class="h-fit w-2/3 flex flex-col items-center justify-center">
+            <div class="h-fit w-full md:w-2/3 flex flex-col items-center justify-center p-4 md:p-0">
                 <form id="chat-form" method="POST" class="flex gap-1 rounded-full shadow-md p-2 w-full h-full border border-gray-300 hover:shadow-lg transition-all duration-100 bg-white">
                     @csrf
                     <input type="hidden" name="mode" id="ai-mode-input" value="{{ $mode }}">
@@ -250,7 +250,7 @@
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-full aspect-square rounded-full text-white" viewBox="0 0 20 20" fill="#ffffff"><g fill="#ffffff" fill-rule="evenodd" clip-rule="evenodd"><path d="M5.232 8.974a1 1 0 0 1 .128-1.409l4-3.333a1 1 0 1 1 1.28 1.536l-4 3.334a1 1 0 0 1-1.408-.128Z"/><path d="M14.768 8.974a1 1 0 0 1-1.408.128l-4-3.334a1 1 0 1 1 1.28-1.536l4 3.333a1 1 0 0 1 .128 1.409Z"/><path d="M10 6a1 1 0 0 1 1 1v8a1 1 0 1 1-2 0V7a1 1 0 0 1 1-1Z"/></g></svg>
                     </button>
                 </form>
-                <p class="text-sm mt-2 text-gray-500">Respon Ment-AI bisa saja keliru. Selalu verifikasi informasi dan utamakan konsultasi profesional.</p>
+                <p class="text-sm mt-2 text-gray-500 hidden md:block text-center">Respon Ment-AI bisa saja keliru. Selalu verifikasi informasi dan utamakan konsultasi profesional.</p>
             </div>
         </div>
     </div>

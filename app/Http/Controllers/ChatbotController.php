@@ -52,11 +52,12 @@ class ChatbotController extends Controller
         ]);
 
         $history = $this->buildChatHistory($chat);
+        $systemPrompt = config('chatbot.system_prompt');
 
         $geminiChat = Gemini::chat(model: 'gemini-2.0-flash')
             ->startChat(history: $history);
 
-        $response = $geminiChat->sendMessage($message);
+        $response = $geminiChat->sendMessage($systemPrompt . "\n" . $message);
 
         $responseText = $response->text();
 
@@ -79,8 +80,11 @@ class ChatbotController extends Controller
         ]);
 
         $history = $this->buildChatHistory($chat);
+        $systemPrompt = config('chatbot.system_prompt');
 
         $history[] = Content::parse(part: $message, role: Role::USER);
+
+        array_unshift($history, Content::parse(part: $systemPrompt, role: Role::MODEL));
 
         $stream = Gemini::generativeModel('gemini-2.0-flash')
             ->streamGenerateContent(...$history);
@@ -128,7 +132,7 @@ class ChatbotController extends Controller
         $mode = $request->input('mode', 'friendly');
         $title = Gemini::generativeModel(model: 'gemini-2.0-flash')
             ->generateContent(
-                'Buat satu frasa singkat maksimal 3 kata yang merepresentasikan obrolan berikut: ' . $message
+                'Buat judul obrolan singkat (2–6 kata) yang jelas, ringkas, dan representatif, mirip dengan judul otomatis ChatGPT. Jangan gunakan tanda kutip, tanda baca, atau format markdown. Plain text saja. Fokus pada inti dari obrolan berikut: ' . $message
             )
             ->text();
 
@@ -144,8 +148,11 @@ class ChatbotController extends Controller
             'role' => 'user',
         ]);
 
-        $chatInstance = Gemini::chat(model: 'gemini-2.0-flash')->startChat();
-        $response = $chatInstance->sendMessage($message);
+        $systemPrompt = config('chatbot.system_prompt');
+
+        $chatInstance = Gemini::chat(model: 'gemini-2.0-flash')
+            ->startChat();
+        $response = $chatInstance->sendMessage($systemPrompt . "\n" . $message);
 
         $chat->messages()->create([
             'message' => $response->text(),

@@ -14,9 +14,9 @@
     <style>
         /* Responsive font sizes */
         html { font-size: 16px; }
-        @media (max-width: 640px) { html { font-size: 14px; } }
-        @media (min-width: 640px) and (max-width: 1024px) { html { font-size: 15px; } }
-        @media (min-width: 1024px) { html { font-size: 16px; } }
+        @media (max-width: 640px) { html { font-size: 13px; } }
+        @media (min-width: 640px) and (max-width: 1024px) { html { font-size: 14px; } }
+        @media (min-width: 1024px) { html { font-size: 15px; } }
 
         /* Sidebar transitions for mobile */
         #sidebar {
@@ -56,10 +56,10 @@
 </head>
 <body class="w-screen h-screen flex bg-gray-800">
     <div id="sidebar-overlay"></div>
-    <div id="sidebar" class="bg-gray-800 text-white flex flex-col p-4 w-64 transition-all duration-300 ease-out">
+    <div id="sidebar" class="bg-gray-800 text-white flex flex-col p-4 w-64 transition-all duration-300 ease-out overflow-hidden">
         <!-- Header -->
         <div class="flex items-center justify-between w-full flex-none">
-            <img src="{{ asset('assets/mini_logo.png') }}" alt="mini_logo" class="size-8">
+            <img src="{{ asset('assets/mini_logo.png') }}" alt="mini_logo" class="size-8 cursor-pointer" onclick="window.location.href='/dashboard'">
             <svg id="sidebar-toggle-a" onclick="toggleSidebar()" xmlns="http://www.w3.org/2000/svg"
                 class="size-6 text-gray-400 hover:text-gray-100 cursor-pointer transition-all duration-100"
                 fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -120,7 +120,7 @@
                 </svg>
             </div>
             <div class="relative">
-            <button id="ai-mode-btn" type="button"
+            <button id="ai-mode-btn" type="button" class="hidden"
                 @switch($mode)
                     @case('friendly')
                         class="bg-green-200 text-green-800 px-3 py-1 rounded-full shadow-sm text-base md:text-lg flex items-center gap-2"
@@ -214,7 +214,7 @@
         </nav>
         <h1 class="text-[#48a6a6] text-4xl md:text-5xl font-semibold mb-8">Curhatin Ajah</h1>
         <div class="h-16 w-2/3 flex flex-col items-center justify-center">
-            <form action="{{ route('api.chatbot.create-send') }}" method="POST" class="flex gap-1 rounded-full shadow-md p-2 w-full h-full border border-gray-300 hover:shadow-lg transition-all duration-100">
+            <form id="chat-form" action="{{ route('api.chatbot.create-send') }}" method="POST" class="flex gap-1 rounded-full shadow-md p-2 w-full h-full border border-gray-300 hover:shadow-lg transition-all duration-100">
                 @csrf
                 <input type="hidden" name="mode" id="ai-mode-input" value="{{ $mode }}">
                 <div class="h-full aspect-square rounded-full flex items-center justify-center p-1 cursor-pointer">
@@ -222,7 +222,8 @@
                 </div>
                 <input type="text" name="message" placeholder="Ceritakan apa saja..." class="w-full py-2 px-0 border-none focus:outline-none focus:ring-0 text-base md:text-lg">
                 <button id="send-button" type="submit" class="h-full aspect-square bg-[#48a6a6] rounded-full flex items-center justify-center p-1 cursor-pointer hover:bg-[#357979] transition-all duration-100">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-full aspect-square rounded-full text-white" viewBox="0 0 20 20" fill="#ffffff"><g fill="#ffffff" fill-rule="evenodd" clip-rule="evenodd"><path d="M5.232 8.974a1 1 0 0 1 .128-1.409l4-3.333a1 1 0 1 1 1.28 1.536l-4 3.334a1 1 0 0 1-1.408-.128Z"/><path d="M14.768 8.974a1 1 0 0 1-1.408.128l-4-3.334a1 1 0 1 1 1.28-1.536l4 3.333a1 1 0 0 1 .128 1.409Z"/><path d="M10 6a1 1 0 0 1 1 1v8a1 1 0 1 1-2 0V7a1 1 0 0 1 1-1Z"/></g></svg>
+                    <svg id="send-icon" xmlns="http://www.w3.org/2000/svg" class="h-full aspect-square rounded-full text-white" viewBox="0 0 20 20" fill="#ffffff"><g fill="#ffffff" fill-rule="evenodd" clip-rule="evenodd"><path d="M5.232 8.974a1 1 0 0 1 .128-1.409l4-3.333a1 1 0 1 1 1.28 1.536l-4 3.334a1 1 0 0 1-1.408-.128Z"/><path d="M14.768 8.974a1 1 0 0 1-1.408.128l-4-3.334a1 1 0 1 1 1.28-1.536l4 3.333a1 1 0 0 1 .128 1.409Z"/><path d="M10 6a1 1 0 0 1 1 1v8a1 1 0 1 1-2 0V7a1 1 0 0 1 1-1Z"/></g></svg>
+                    <div id="spinner" class="hidden animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
                 </button>
             </form>
             <p class="text-sm mt-2 text-gray-500">Respon Ment-AI bisa saja keliru. Selalu verifikasi informasi dan utamakan konsultasi profesional.</p>
@@ -306,6 +307,12 @@
         function deleteChat(element) {
             element.parentElement.remove();
         }
+
+        document.getElementById('chat-form').addEventListener('submit', function() {
+            document.getElementById('send-icon').classList.add('hidden');
+            document.getElementById('spinner').classList.remove('hidden');
+            document.getElementById('send-button').disabled = true;
+        });
     </script>
 </body>
 </html>

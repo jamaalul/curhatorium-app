@@ -223,6 +223,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     Route::get('/cards', [CardController::class, 'getCards'])->name('cards.all');
+    Route::get('/quote/today', [QuoteController::class, 'quoteOfTheDay']);
+    Route::get('/user', [AuthenticatedSessionController::class, 'getUser']);
 });
 
 // API routes
