@@ -327,7 +327,11 @@
         }
 
         window.addEventListener('resize', setSidebarDefault);
-        window.addEventListener('DOMContentLoaded', setSidebarDefault);
+        window.addEventListener('DOMContentLoaded', () => {
+            setSidebarDefault();
+            const chatContainer = document.getElementById('chat-container');
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        });
 
         function deleteChat(element) {
             element.parentElement.remove();
@@ -358,6 +362,24 @@
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }
 
+        function typeEffect(element, text, callback) {
+            let i = 0;
+            const typingInterval = 1;
+
+            function typing() {
+                if (i < text.length) {
+                    const char = text.charAt(i);
+                    element.insertBefore(document.createTextNode(char), element.querySelector('.typing-cursor'));
+                    i++;
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
+                    setTimeout(typing, typingInterval);
+                } else {
+                    if (callback) callback();
+                }
+            }
+            typing();
+        }
+
         chatForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const message = messageInput.value;
@@ -376,7 +398,27 @@
             messageElement.appendChild(messageBubble);
             chatContainer.appendChild(messageElement);
 
+            const cursor = document.createElement('span');
+            cursor.className = 'typing-cursor';
+            messageText.appendChild(cursor);
+
             let fullResponse = '';
+            let textQueue = [];
+            let isTyping = false;
+
+            function processQueue() {
+                if (textQueue.length === 0) {
+                    isTyping = false;
+                    // When typing is done, render the full markdown
+                    messageText.innerHTML = marked.parse(fullResponse);
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
+                    return;
+                }
+                isTyping = true;
+                const textToType = textQueue.shift();
+                typeEffect(messageText, textToType, processQueue);
+            }
+
             const eventSource = new EventSource('{{ route('api.chatbot.stream', $activeChat->identifier) }}?message=' + encodeURIComponent(message));
 
             eventSource.onmessage = function(event) {
@@ -394,13 +436,20 @@
                             body: JSON.stringify({ message: fullResponse })
                         });
                     }
+                    // Final render after stream is done
+                    if (!isTyping && textQueue.length === 0) {
+                        messageText.innerHTML = marked.parse(fullResponse);
+                        chatContainer.scrollTop = chatContainer.scrollHeight;
+                    }
                     return;
                 }
 
                 if (data.text) {
                     fullResponse += data.text;
-                    messageText.innerHTML = marked.parse(fullResponse);
-                    chatContainer.scrollTop = chatContainer.scrollHeight;
+                    textQueue.push(data.text);
+                    if (!isTyping) {
+                        processQueue();
+                    }
                 }
             };
 
