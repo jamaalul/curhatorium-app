@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('title');
             $table->string('identifier')->unique();
-            $table->enum('mode', ['friendly', 'professional', 'motivational', 'Emphatetic'])->default('curhat');
+            $table->enum('mode', ['friendly', 'professional', 'motivational', 'Emphatetic'])->default('friendly');
             $table->timestamps();
         });
     }
