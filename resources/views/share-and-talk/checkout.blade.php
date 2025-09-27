@@ -14,8 +14,13 @@
             --fc-list-event-hover-bg-color: #f3f4f6;
         }
         .fc .fc-toolbar-title {
-            font-size: 1.25rem;
+            font-size: 1.1rem; /* Smaller for mobile */
             font-weight: 600;
+        }
+        @media (min-width: 768px) {
+            .fc .fc-toolbar-title {
+                font-size: 1.25rem;
+            }
         }
         .fc .fc-button-primary {
             background-color: #48A6A6;
@@ -36,42 +41,41 @@
 <body class="pt-16 w-full overflow-x-hidden bg-gray-100">
     @include('components.navbar')
 
-    <div class="container mx-auto px-4 py-8">
+    <div class="container mx-auto px-4 py-4 md:py-8">
         <form action="{{ route('share-and-talk.book') }}" method="POST">
             @csrf
             <input type="hidden" name="professional_id" value="{{ $professional->id }}">
 
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <!-- Left Column: Booking Details -->
-                <div class="lg:col-span-2 bg-white p-8 rounded-lg shadow-md">
-                    <h1 class="text-2xl font-bold mb-6">Informasi Pemesanan</h1>
+                <div class="lg:col-span-2 bg-white p-4 md:p-8 rounded-lg shadow-md">
+                    <h1 class="text-xl md:text-2xl font-bold mb-6">Informasi Pemesanan</h1>
 
                     <!-- User Information -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-6 md:mb-8">
                         <div>
-                            <label for="whatsapp_number" class="block text-sm font-medium text-gray-700 mb-1">Nomor WhatsApp</label>
-                            <input type="tel" id="whatsapp_number" name="whatsapp_number" class="w-full border-gray-300 rounded-md shadow-sm" placeholder="Contoh: 081234567890" required>
+                            <label for="whatsapp_number" class="block text-xs md:text-sm font-medium text-gray-700 mb-1">Nomor WhatsApp</label>
+                            <input type="tel" id="whatsapp_number" name="whatsapp_number" class="w-full border-gray-300 rounded-md shadow-sm text-sm" placeholder="Contoh: 081234567890" required>
                         </div>
                         <div>
-                            <br>
-                            <p class="text-sm text-stone-500">Silakan masukkan nomor WhatsApp Anda agar kami dapat memberikan informasi terkait booking Anda.</p>
+                            <p class="text-xs md:text-sm text-stone-500 mt-2 md:mt-0">Silakan masukkan nomor WhatsApp Anda agar kami dapat memberikan informasi terkait booking Anda.</p>
                         </div>
                     </div>
 
                     <!-- Consultation Type -->
-                    <div class="mb-8">
-                        <h3 class="text-lg font-semibold mb-3">Jenis Konsultasi</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="mb-6 md:mb-8">
+                        <h3 class="text-base md:text-lg font-semibold mb-3">Jenis Konsultasi</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                             <label class="consultation-option-card border rounded-lg p-4 cursor-pointer has-[:checked]:border-blue-500 has-[:checked]:ring-2 has-[:checked]:ring-blue-200">
                                 <input type="radio" name="consultation_type" value="chat" class="hidden" checked onchange="updateSummary()" required>
-                                <span class="font-bold">Chat</span>
-                                <span class="text-sm text-gray-500 block">Konsultasi via chat</span>
+                                <span class="font-bold text-sm md:text-base">Chat</span>
+                                <span class="text-xs md:text-sm text-gray-500 block">Konsultasi via chat</span>
                             </label>
                             @if ($professional->type === 'psychiatrist')
                             <label class="consultation-option-card border rounded-lg p-4 cursor-pointer has-[:checked]:border-blue-500 has-[:checked]:ring-2 has-[:checked]:ring-blue-200">
                                 <input type="radio" name="consultation_type" value="video" class="hidden" onchange="updateSummary()">
-                                <span class="font-bold">Video Call</span>
-                                <span class="text-sm text-gray-500 block">Konsultasi via video</span>
+                                <span class="font-bold text-sm md:text-base">Video Call</span>
+                                <span class="text-xs md:text-sm text-gray-500 block">Konsultasi via video</span>
                             </label>
                             @endif
                         </div>
@@ -79,42 +83,42 @@
 
                     <!-- Schedule Appointment -->
                     <div>
-                        <h3 class="text-lg font-semibold mb-3">Jadwalkan Sesi</h3>
-                        <div id='calendar'></div>
+                        <h3 class="text-base md:text-lg font-semibold mb-3">Jadwalkan Sesi</h3>
+                        <div id='calendar' class="text-sm"></div>
                         <input type="hidden" id="date" name="date" required>
                         <input type="hidden" id="time" name="time" required>
-                        <p id="selected-slot-text" class="mt-4 text-center font-semibold text-gray-700"></p>
+                        <p id="selected-slot-text" class="mt-4 text-center font-semibold text-sm md:text-base text-gray-700"></p>
                     </div>
                 </div>
 
                 <!-- Right Column: Order Summary -->
-                <div class="bg-white p-8 rounded-lg shadow-md h-fit">
-                    <h2 class="text-2xl font-bold mb-6">Ringkasan Pesanan</h2>
+                <div class="bg-white p-4 md:p-8 rounded-lg shadow-md h-fit text-sm">
+                    <h2 class="text-xl md:text-2xl font-bold mb-6">Ringkasan Pesanan</h2>
                     <div class="space-y-3" id="order-summary">
                         <div class="flex items-center gap-4 pb-4 border-b">
                             <div>
-                                <h3 class="font-semibold">{{ $professional->name }}</h3>
-                                <p class="text-sm text-gray-500">{{ $professional->title }}</p>
+                                <h3 class="font-semibold text-sm md:text-base">{{ $professional->name }}</h3>
+                                <p class="text-xs md:text-sm text-gray-500">{{ $professional->title }}</p>
                             </div>
                         </div>
-                        <div class="flex justify-between">
+                        <div class="flex justify-between text-xs md:text-sm">
                             <span class="text-gray-600">Jenis Tiket</span>
                             <span class="font-semibold" id="summary-ticket-type"></span>
                         </div>
-                        <div class="flex justify-between">
+                        <div class="flex justify-between text-xs md:text-sm">
                             <span class="text-gray-600">Tiket Tersedia</span>
                             <span class="font-semibold" id="summary-available-tickets"></span>
                         </div>
-                        <div class="flex justify-between">
+                        <div class="flex justify-between text-xs md:text-sm">
                             <span class="text-gray-600">Tiket Digunakan</span>
                             <span class="font-semibold" id="summary-consumed-tickets">1 Tiket</span>
                         </div>
-                        <div class="flex justify-between pt-3 border-t mt-3">
+                        <div class="flex justify-between pt-3 border-t mt-3 text-sm md:text-base">
                             <span class="font-bold">Sisa Tiket</span>
                             <span class="font-bold" id="summary-remaining-tickets"></span>
                         </div>
                     </div>
-                    <button type="submit" class="w-full mt-6 bg-[#48A6A6] text-white py-3 px-4 rounded-md hover:bg-[#357979] transition-colors duration-200 font-semibold">Reservasi</button>
+                    <button type="submit" class="w-full mt-6 bg-[#48A6A6] text-white py-3 px-4 rounded-md hover:bg-[#357979] transition-colors duration-200 font-semibold text-sm md:text-base">Reservasi</button>
                 </div>
             </div>
         </form>
@@ -164,13 +168,20 @@
             let selectedEvent = null;
 
             const calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'dayGridMonth',
+                initialView: window.innerWidth < 768 ? 'timeGridDay' : 'dayGridMonth',
                 headerToolbar: {
                     left: 'prev,next today',
                     center: 'title',
-                    right: 'dayGridMonth,timeGridWeek'
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
                 },
                 events: `/api/professionals/{{ $professional->id }}/schedule`,
+                windowResize: function(view) {
+                    if (window.innerWidth < 768) {
+                        calendar.changeView('timeGridDay');
+                    } else {
+                        calendar.changeView('dayGridMonth');
+                    }
+                },
                 slotMinTime: '00:00:00',
                 slotMaxTime: '23:59:00',
                 allDaySlot: false,
