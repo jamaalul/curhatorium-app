@@ -65,6 +65,7 @@
             50% { color: black; }
         }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body class="w-screen h-screen flex bg-gray-800">
     <div id="sidebar-overlay"></div>
@@ -351,10 +352,7 @@
                 messageBubble.classList.add('text-[#222222]');
             }
 
-            const messageText = document.createElement('p');
-            messageText.textContent = message;
-
-            messageBubble.appendChild(messageText);
+            messageBubble.innerHTML = marked.parse(message);
             messageElement.appendChild(messageBubble);
             chatContainer.appendChild(messageElement);
             chatContainer.scrollTop = chatContainer.scrollHeight;
@@ -370,7 +368,7 @@
 
             const messageBubble = document.createElement('div');
             messageBubble.classList.add('p-3', 'rounded-lg', 'text-[#222222]');
-            const messageText = document.createElement('p');
+            const messageText = document.createElement('div');
             messageBubble.appendChild(messageText);
 
             const messageElement = document.createElement('div');
@@ -381,14 +379,10 @@
             let fullResponse = '';
             const eventSource = new EventSource('{{ route('api.chatbot.stream', $activeChat->identifier) }}?message=' + encodeURIComponent(message));
 
-            let charIndex = 0;
-            messageText.classList.add('typing-cursor');
-
             eventSource.onmessage = function(event) {
                 const data = JSON.parse(event.data);
 
                 if (data.done) {
-                    messageText.classList.remove('typing-cursor');
                     eventSource.close();
                     if (fullResponse.trim()) {
                         fetch('{{ route('api.chatbot.save', $activeChat->identifier) }}', {
@@ -405,14 +399,8 @@
 
                 if (data.text) {
                     fullResponse += data.text;
-                    const type = () => {
-                        if (charIndex < fullResponse.length) {
-                            messageText.textContent = fullResponse.slice(0, ++charIndex);
-                            chatContainer.scrollTop = chatContainer.scrollHeight;
-                            setTimeout(type, 20);
-                        }
-                    }
-                    type();
+                    messageText.innerHTML = marked.parse(fullResponse);
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
                 }
             };
 
