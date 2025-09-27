@@ -5,117 +5,166 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Services\ChatbotService;
 use App\Http\Requests\ChatbotMessageRequest;
+use App\Models\ChatbotChatMessageV2;
+use App\Models\ChatbotChatV2;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Gemini\Data\Content;
+use Gemini\Data\Part;
+use Gemini\Enums\Role;
+use Gemini\Laravel\Facades\Gemini;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ChatbotController extends Controller
 {
     public function __construct(
         private ChatbotService $chatbotService
     ) {}
+
     public function index(Request $request) {
         $user = Auth::user();
-        $sessions = $this->chatbotService->getUserSessions($user);
-        $chatbotSecondsLeft = $this->chatbotService->getRemainingTime();
+        $chats = ChatbotChatV2::where('user_id', $user->id)
+            ->orderBy('created_at', 'desc')
+            ->get(['title', 'identifier']);
 
-        if ($request->has('consume_amount')) {
-            $minutes = floatval($request->input('consume_amount'));
-            $this->chatbotService->setTimer($minutes);
-            return redirect()->route('chatbot');
-        }
-
-        return view('chatbot', compact('sessions', 'chatbotSecondsLeft'));
+        return view('chatbot.index', compact('user', 'chats'));
     }
 
-    public function getSessions() {
-        try {
-            $user = Auth::user();
-            if (!$user) {
-                Log::error('Chatbot getSessions: User not authenticated');
-                return response()->json(['error' => 'Unauthorized'], 401);
-            }
-            
-            $sessions = $this->chatbotService->getUserSessions($user);
-            
-            return response()->json($sessions);
-        } catch (\Exception $e) {
-            Log::error('Chatbot getSessions error: ' . $e->getMessage());
-            return response()->json(['error' => 'Failed to get sessions'], 500);
-        }
+    public function chat(Request $request, $identifier) {
+        $user = Auth::user();
+        $chats = ChatbotChatV2::where('user_id', $user->id)
+            ->orderBy('created_at', 'desc')
+            ->get(['title', 'identifier']);
+        $activeChat = ChatbotChatV2::where('identifier', $identifier)->where('user_id', $user->id)->firstOrFail();
+        $messages = $activeChat->messages()->orderBy('created_at', 'asc')->get();
+
+        return view('chatbot.chat', compact('user', 'chats', 'activeChat', 'messages'));
     }
 
-    public function getSession($sessionId) {
-        try {
-            $user = Auth::user();
-            if (!$user) {
-                Log::error('Chatbot getSession: User not authenticated');
-                return response()->json(['error' => 'Unauthorized'], 401);
-            }
-            
-            $session = $this->chatbotService->getSession($sessionId, $user);
-            
-            if (!$session) {
-                Log::warning('Chatbot getSession: Session not found', ['session_id' => $sessionId, 'user_id' => $user->id]);
-                return response()->json(['error' => 'Session not found'], 404);
-            }
-            
-            return response()->json($session);
-        } catch (\Exception $e) {
-            Log::error('Chatbot getSession error: ' . $e->getMessage());
-            return response()->json(['error' => 'Failed to get session'], 500);
-        }
+    public function send(Request $request, $identifier) {
+        $user = Auth::user();
+        $message = $request->input('message');
+        $chat = ChatbotChatV2::where('identifier', $identifier)->where('user_id', $user->id)->firstOrFail();
+
+        $chat->messages()->create([
+            'message' => $message,
+            'role' => 'user',
+        ]);
+
+        $history = $this->buildChatHistory($chat);
+
+        $geminiChat = Gemini::chat(model: 'gemini-2.0-flash')
+            ->startChat(history: $history);
+
+        $response = $geminiChat->sendMessage($message);
+
+        $responseText = $response->text();
+
+        $chat->messages()->create([
+            'message' => $responseText,
+            'role' => 'assistant',
+        ]);
+
+        return response()->json($responseText);
     }
 
-    public function createSession(Request $request) {
-        try {
-            $user = Auth::user();
-            if (!$user) {
-                Log::error('Chatbot createSession: User not authenticated');
-                return response()->json(['error' => 'Unauthorized'], 401);
+    public function stream(Request $request, $identifier) {
+        $user = Auth::user();
+        $message = $request->input('message');
+        $chat = ChatbotChatV2::where('identifier', $identifier)->where('user_id', $user->id)->firstOrFail();
+
+        $chat->messages()->create([
+            'message' => $message,
+            'role' => 'user',
+        ]);
+
+        $history = $this->buildChatHistory($chat);
+
+        $history[] = Content::parse(part: $message, role: Role::USER);
+
+        $stream = Gemini::generativeModel('gemini-2.0-flash')
+            ->streamGenerateContent(...$history);
+
+        $response = new StreamedResponse(function () use ($stream) {
+            if (ob_get_level() > 0) {
+                ob_end_clean();
             }
-            
-            $title = $request->input('title', 'New Chat');
-            $session = $this->chatbotService->createSession($user, $title);
-            
-            return response()->json($session);
-        } catch (\Exception $e) {
-            Log::error('Create chatbot session error: ' . $e->getMessage());
-            return response()->json(['error' => 'Failed to create session'], 500);
-        }
+
+            foreach ($stream as $response) {
+                echo "data: " . json_encode(['text' => $response->text()]) . "\n\n";
+                flush();
+            }
+
+            echo "data: " . json_encode(['done' => true]) . "\n\n";
+            flush();
+        });
+
+        $response->headers->set('Content-Type', 'text/event-stream');
+        $response->headers->set('X-Accel-Buffering', 'no');
+        $response->headers->set('Cache-Control', 'no-cache, private');
+        $response->headers->set('Connection', 'keep-alive');
+
+        return $response;
     }
 
-    public function deleteSession($sessionId) {
-        try {
-            $user = Auth::user();
-            $success = $this->chatbotService->deleteSession($sessionId, $user);
-            
-            if (!$success) {
-                return response()->json(['error' => 'Session not found'], 404);
-            }
-            
-            return response()->json(['success' => true]);
-        } catch (\Exception $e) {
-            Log::error('Delete chatbot session error: ' . $e->getMessage());
-            return response()->json(['error' => 'Failed to delete session'], 500);
-        }
+    public function saveMessage(Request $request, $identifier) {
+        $user = Auth::user();
+        $message = $request->input('message');
+        $chat = ChatbotChatV2::where('identifier', $identifier)->where('user_id', $user->id)->firstOrFail();
+
+        $chat->messages()->create([
+            'message' => $message,
+            'role' => 'assistant',
+        ]);
+
+        return response()->json(['success' => true]);
     }
 
-    public function chat(ChatbotMessageRequest $request)
+    public function createSend(Request $request)
     {
-        try {
-            $user = Auth::user();
-            $result = $this->chatbotService->processChatMessage(
-                $request->session_id,
-                $request->message,
-                $user
-            );
-            
-            return response()->json($result);
-        } catch (\Exception $e) {
-            Log::error('Chatbot chat error: ' . $e->getMessage());
-            return response()->json([
-                'error' => 'Server error: ' . $e->getMessage()
-            ], 500);
+        $user = Auth::user();
+        $message = $request->input('message');
+        $identifier = uniqid('_', true);
+        $mode = $request->input('mode', 'friendly');
+        $title = Gemini::generativeModel(model: 'gemini-2.0-flash')
+            ->generateContent(
+                'Buat satu frasa singkat maksimal 3 kata yang merepresentasikan obrolan berikut: ' . $message
+            )
+            ->text();
+
+        $chat = ChatbotChatV2::create([
+            'user_id' => $user->id,
+            'title' => $title,
+            'identifier' => $identifier,
+            'mode' => $mode,
+        ]);
+
+        $chat->messages()->create([
+            'message' => $message,
+            'role' => 'user',
+        ]);
+
+        $chatInstance = Gemini::chat(model: 'gemini-2.0-flash')->startChat();
+        $response = $chatInstance->sendMessage($message);
+
+        $chat->messages()->create([
+            'message' => $response->text(),
+            'role' => 'assistant',
+        ]);
+
+        return redirect()->route('chatbot.chat', ['identifier' => $identifier]);
+    }
+
+    private function buildChatHistory(ChatbotChatV2 $chat): array
+    {
+        $previousMessages = $chat->messages()->orderBy('created_at', 'asc')->get();
+        $history = [];
+
+        foreach ($previousMessages as $prevMessage) {
+            $role = $prevMessage->role === 'assistant' ? Role::MODEL : Role::USER;
+            $history[] = Content::parse(part: $prevMessage->message, role: $role);
         }
+
+        return $history;
     }
 }
