@@ -9,6 +9,7 @@ use App\Services\ScheduleService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
 class ProfessionalDashboardController extends Controller
 {
@@ -126,6 +127,14 @@ class ProfessionalDashboardController extends Controller
 
     public function getSchedule(Request $request, Professional $professional)
     {
+        Log::info('getSchedule called', [
+            'professional_id' => $professional->id,
+            'request_start' => $request->start,
+            'request_end' => $request->end,
+            'user_auth' => Auth::check(),
+            'professional_auth' => Auth::guard('professional')->check(),
+        ]);
+
         $isOwner = Auth::guard('professional')->check() && Auth::guard('professional')->id() == $professional->id;
 
         $slotsQuery = $professional->scheduleSlots()

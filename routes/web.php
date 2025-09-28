@@ -267,8 +267,8 @@ Route::middleware('auth')->prefix('api')->name('api.')->group(function () {
 
     // Professional Availability and Schedule APIs
     Route::get('/professionals/{professional}/availability', [ShareAndTalkController::class, 'getAvailabilitySlots'])->name('professionals.availability');
-    Route::get('/professionals/{professional}/schedule', [ProfessionalDashboardController::class, 'getSchedule'])->name('professionals.schedule');
 });
+
 
 // Professional Dashboard routes (Protected)
 Route::middleware([AuthenticateProfessional::class])->prefix('professional')->name('professional.')->group(function () {
@@ -280,5 +280,8 @@ Route::middleware([AuthenticateProfessional::class])->prefix('professional')->na
     Route::post('/{professionalId}/change-password', [ProfessionalDashboardController::class, 'changePassword'])->name('change-password');
     Route::post('/logout', [ProfessionalDashboardController::class, 'logout'])->name('dashboard.logout');
 });
+
+// Professional Schedule API (no auth required for professionals)
+Route::get('/api/professionals/{professional}/schedule', [ProfessionalDashboardController::class, 'getSchedule'])->name('api.professionals.schedule');
 
 require __DIR__ . '/auth.php';
