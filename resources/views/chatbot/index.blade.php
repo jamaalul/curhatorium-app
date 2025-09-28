@@ -110,7 +110,7 @@
             </div>
         </div>
     </div>
-    <div class="w-full h-full flex flex-col justify-center items-center bg-white rounded-md relative overflow-hidden">
+    <div class="w-full h-full flex flex-col justify-center items-center bg-white rounded-md relative overflow-hidden p-4">
         <nav class="w-full h-16 bg-none absolute top-0 px-4 flex items-center gap-4 justify-between" style="background: linear-gradient(180deg,rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 100%);">
             <div class="flex items-center gap-2">
                 <svg id="sidebar-toggle-b" onclick="toggleSidebar()" xmlns="http://www.w3.org/2000/svg" class="h-6 text-gray-400 hover:text-gray-700 cursor-pointer transition-all duration-100 w-0 hidden opacity-0" fill="none" viewBox="0 0 24 24"stroke="currentColor"stroke-width="2"stroke-linecap="round"stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/></svg>
@@ -213,7 +213,7 @@
         </script>
         </nav>
         <h1 class="text-[#48a6a6] text-4xl md:text-5xl font-semibold mb-8">Curhatin Ajah</h1>
-        <div class="h-16 w-2/3 flex flex-col items-center justify-center">
+        <div class="h-16 w-full md:w-2/3 flex flex-col items-center justify-center">
             <form id="chat-form" action="{{ route('api.chatbot.create-send') }}" method="POST" class="flex gap-1 rounded-full shadow-md p-2 w-full h-full border border-gray-300 hover:shadow-lg transition-all duration-100">
                 @csrf
                 <input type="hidden" name="mode" id="ai-mode-input" value="{{ $mode }}">

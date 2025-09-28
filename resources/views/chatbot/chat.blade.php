@@ -123,7 +123,7 @@
             </div>
         </div>
     </div>
-    <div class="w-full h-full flex flex-col bg-white rounded-md relative overflow-hidden">
+    <div class="w-full h-screen flex flex-col bg-white rounded-md relative overflow-hidden">
         <nav class="w-full h-16 bg-none absolute top-0 px-4 flex items-center gap-4 justify-between" style="background: linear-gradient(180deg,rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 100%);">
             <div class="flex items-center gap-2">
                 <svg id="sidebar-toggle-b" onclick="toggleSidebar()" xmlns="http://www.w3.org/2000/svg" class="h-6 text-gray-400 hover:text-gray-700 cursor-pointer transition-all duration-100 w-0 hidden opacity-0" fill="none" viewBox="0 0 24 24"stroke="currentColor"stroke-width="2"stroke-linecap="round"stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/></svg>
