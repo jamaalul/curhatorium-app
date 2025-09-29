@@ -118,7 +118,7 @@
         <!-- Footer / profile (fixed at bottom) -->
         <div class="flex gap-2 items-center justify-between w-full border-t border-gray-700 pt-2 flex-none transition-all duration-300 ease-out">
             <div class="flex items-center gap-4">
-            <img src="{{ $user->profile_picture ?? asset('assets/profile_pict.svg') }}" alt="avatar" class="size-8 rounded-full">
+            <img src="public/{{ $user->profile_picture ?? asset('assets/profile_pict.svg') }}" alt="avatar" class="size-8 rounded-full">
             <p class="text-sm md:text-base font-semibold">{{ $user->username }}</p>
             </div>
         </div>
