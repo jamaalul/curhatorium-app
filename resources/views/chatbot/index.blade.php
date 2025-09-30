@@ -14,9 +14,9 @@
     <style>
         /* Responsive font sizes */
         html { font-size: 16px; }
-        @media (max-width: 640px) { html { font-size: 13px; } }
-        @media (min-width: 640px) and (max-width: 1024px) { html { font-size: 14px; } }
-        @media (min-width: 1024px) { html { font-size: 15px; } }
+        @media (max-width: 640px) { html { font-size: 14px; } }
+        @media (min-width: 640px) and (max-width: 1024px) { html { font-size: 15px; } }
+        @media (min-width: 1024px) { html { font-size: 16px; } }
 
         /* Sidebar transitions for mobile */
         #sidebar {
