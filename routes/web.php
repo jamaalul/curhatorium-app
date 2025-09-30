@@ -276,6 +276,7 @@ Route::middleware([AuthenticateProfessional::class])->prefix('professional')->na
     Route::post('/availability/set', [ProfessionalDashboardController::class, 'setAvailability'])->name('set-availability');
     Route::post('/slots/{slot}/accept', [ProfessionalDashboardController::class, 'acceptBooking'])->name('booking.accept');
     Route::post('/slots/{slot}/decline', [ProfessionalDashboardController::class, 'declineBooking'])->name('booking.decline');
+    Route::get('/chat/{room}', [ShareAndTalkController::class, 'chatRoom'])->name('chat.room');
     Route::delete('/slots/{slot}', [ProfessionalDashboardController::class, 'deleteSlot'])->name('slot.delete');
     Route::post('/{professionalId}/change-password', [ProfessionalDashboardController::class, 'changePassword'])->name('change-password');
     Route::post('/logout', [ProfessionalDashboardController::class, 'logout'])->name('dashboard.logout');

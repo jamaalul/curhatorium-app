@@ -224,7 +224,7 @@
                                                     @if ($isVideo)
                                                         onclick="if(!this.disabled) window.location.href='/video/{{ $session->consultation->room }}'"
                                                     @else
-                                                        onclick="if(!this.disabled) window.location.href='/chat/{{ $session->consultation->room }}'"
+                                                        onclick="if(!this.disabled) window.location.href='/professional/chat/{{ $session->consultation->room }}'"
                                                     @endif
                                                     class="goto-room-btn bg-[#48a6a6] hover:bg-[#357979] text-white py-2 px-4 rounded-md transition-colors duration-200 disabled:bg-gray-400 disabled:cursor-not-allowed"
                                                     data-schedule-time="{{ $session->slot_start_time }}"

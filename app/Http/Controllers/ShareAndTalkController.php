@@ -187,9 +187,16 @@ class ShareAndTalkController extends Controller
 
     public function chatRoom($room)
     {
+        \Illuminate\Support\Facades\Log::info("Chat room access attempt for room: {$room}", [
+            'is_professional' => Auth::guard('professional')->check(),
+            'professional_id' => Auth::guard('professional')->id(),
+            'is_user' => Auth::check(),
+            'user_id' => Auth::id(),
+            'request_uri' => request()->getRequestUri()
+        ]);
         $roomExists = Consultation::where('room', $room)->exists();
         if (!$roomExists) {
-            return redirect()->route('share-and-talk')->with('error', 'Ruang obrolan tidak ditemukan.');
+            return redirect()->route('share-and-talk.index')->with('error', 'Ruang obrolan tidak ditemukan.');
         } else {
             $messages = MessageV2::where('room', $room)->orderBy('created_at', 'asc')->get();
             return view('share-and-talk.chat', ['room' => $room, 'messages' => $messages]);
