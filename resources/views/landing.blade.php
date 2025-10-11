@@ -39,14 +39,15 @@
 
     <!-- Hero Section -->
     <section class="w-full h-fit md:h-screen bg-white pb-4 px-4 pt-16" id="hero">
-        <div class="h-full w-full bg-cover rounded-xl flex flex-col items-center overflow-hidden shadow-md p-4" style="background-image: url('{{ asset('images/background.jpg') }}');">
+        {{-- <div class="h-full w-full bg-cover rounded-xl flex flex-col items-center overflow-hidden shadow-md p-4" style="background: #F1EDE7 radial-gradient(rgba(0,0,0,0.2) 1px, transparent 1px); background-size: 13px 13px; box-shadow: inset 0 2px 20px rgba(93,71,38,0.1);"> --}}
+        <div class="h-full w-full bg-cover rounded-xl flex flex-col items-center overflow-hidden shadow-md p-4" style="background-image: url(images/background.jpg)">
             <div class="flex flex-col items-center text-center gap-4 p-6 md:p-12">
                 <h1 class="text-6xl md:text-9xl font-medium text-[#ffcc00] tracking-tight" style="text-shadow: 0px 1px 2px rgba(0,0,0,0.1);" data-aos="zoom-out-down" data-aos-duration="1000">Curhatorium</h1>
                 <p class="text-gray-600 text-base text-ellipsis md:text-lg" data-aos="zoom-out" data-aos-duration="1000" data-aos-delay="100">Curhatorium adalah ruang aman untuk berbagi cerita, mendapatkan dukungan, dan menemukan ketenangan tanpa rasa takut dihakimi. Mulai perjalananmu menuju kesehatan mental yang lebih baik bersama komunitas yang peduli dan anonim.</p>
             </div>
             <div class="flex flex-col md:flex-row gap-4 w-full md:w-auto justify-center items-center" data-aos="zoom-out-up" data-aos-duration="1000">
-                <button class="px-4 py-2 text-[#48A6A6] border border-[#48A6A6] rounded-md transition-colors duration-200 hover:bg-[#48A6A6] hover:text-white w-full md:w-auto" onclick="window.location.href = '#about'">Kenali Lebih Lanjut</button>
-                <button class="bg-[#48A6A6] px-4 py-2 text-white rounded-md transition-colors duration-200 hover:bg-[#357979] w-full md:w-auto" onclick="window.location.href = '/register'">Mulai Perjalananmu</button>
+                <button class="px-4 py-2 text-[#48A6A6] border border-[#48A6A6] rounded-md transition-colors duration-200 hover:bg-[#48A6A6] hover:text-white w-full md:w-auto shadow-md" onclick="window.location.href = '#about'">Kenali Lebih Lanjut</button>
+                <button class="bg-[#48A6A6] px-4 py-2 text-white rounded-md transition-colors duration-200 hover:bg-[#357979] w-full md:w-auto shadow-md" onclick="window.location.href = '/register'">Mulai Perjalananmu</button>
             </div>
             <img src="{{ asset('images/platform.png') }}" alt="curhatorium platform" class="w-full max-w-full md:max-w-[70vw] object-cover rounded-md shadow-lg mt-7 hidden md:block" data-aos="fade-up" data-aos-duration="2000" data-aos-delay="200">
         </div>
@@ -55,14 +56,14 @@
     <section class="flex flex-col items-center justify-center w-full bg-white px-4 py-6 h-fit gap-8">
         <p class="md:text-lg text-center text-stone-600">Berkolaborasi dengan</p>
         <div class="flex flex-wrap items-center justify-center gap-6 md:gap-10 w-full">
-            <img src="images/hc.png" alt="Help Center Unair" class="h-12 md:h-16 filter grayscale">
-            <img src="images/kpmw.png" alt="KPMW Unair" class="h-10 md:h-16 filter grayscale">
-            <img src="images/upp.png" alt="Unit Pelayanan Psikologi Unair" class="h-10 md:h-16 filter grayscale">
-            <img src="images/sdg.png" alt="SDG Center Unair" class="h-10 md:h-16 filter grayscale">
-            <img src="images/ahpc.png" alt="Airlangga Health Promotion Center" class="h-10 md:h-16 filter grayscale">
-            <img src="images/hji.png" alt="Halo Jiwa Indonesia" class="h-10 md:h-16 filter grayscale">
-            <img src="images/dikti.png" alt="Halo Jiwa Indonesia" class="h-10 md:h-16 filter grayscale">
-            <img src="images/belmawa.png" alt="Halo Jiwa Indonesia" class="h-10 md:h-16 filter grayscale">
+            <img src="images/hc.png" alt="Help Center Unair" class="h-12 md:h-16">
+            <img src="images/kpmw.png" alt="KPMW Unair" class="h-10 md:h-16 filter">
+            <img src="images/upp.png" alt="Unit Pelayanan Psikologi Unair" class="h-10 md:h-16">
+            <img src="images/sdg.png" alt="SDG Center Unair" class="h-10 md:h-16">
+            <img src="images/ahpc.png" alt="Airlangga Health Promotion Center" class="h-10 md:h-16">
+            <img src="images/hji.png" alt="Halo Jiwa Indonesia" class="h-10 md:h-16">
+            <img src="images/dikti.png" alt="Halo Jiwa Indonesia" class="h-10 md:h-16">
+            <img src="images/belmawa.png" alt="Halo Jiwa Indonesia" class="h-10 md:h-16">
         </div>
     </section>
 
@@ -158,18 +159,18 @@
                     <p class="text-stone-600">Sesi konsultas dengan peer-supporter atau psikolog profesional melalui chat atau video call yang aman dan rahasia.</p>
                 </div>
                 <div class="bg-white p-6 rounded-lg shadow-md text-center flex flex-col items-center gap-2" data-aos="fade-up" data-aos-delay="100" data-aos-duration="1000">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-12">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-12 text-[#48a6a6]">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z" />
                     </svg>
                     <h3 class="text-xl font-bold text-[#222222] mb-2">Ment-AI</h3>
                     <p class="text-stone-600">Curhat dengan AI 24/7 yang memahami perasaan Anda. Dapatkan dukungan emosional dan saran praktis kapan saja.</p>
                 </div>
                 <div class="bg-white p-6 rounded-lg shadow-md text-center flex flex-col items-center gap-2" data-aos="fade-up" data-aos-delay="400" data-aos-duration="1000">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#48a6a6" class="size-12">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-12 text-[#48a6a6]">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 14.25v2.25m3-4.5v4.5m3-6.75v6.75m3-9v9M6 20.25h12A2.25 2.25 0 0 0 20.25 18V6A2.25 2.25 0 0 0 18 3.75H6A2.25 2.25 0 0 0 3.75 6v12A2.25 2.25 0 0 0 6 20.25Z" />
                     </svg>
-                    <h3 class="text-xl font-bold text-[#222222] mb-2">Mental Health Tracker</h3>
-                    <p class="text-stone-600">Pantau mood, energi, dan produktivitas harian Anda. Dapatkan analisis dan feedback dari AI untuk kemajuan yang terukur.</p>
+                    <h3 class="text-xl font-bold text-[#222222] mb-2">Mood and Productivity Tracker</h3>
+                    <p class="text-stone-600">Pantau mood, energi, dan produktivitas harian Anda. Dapatkan analisis dan feedback untuk kemajuan yang terukur.</p>
                 </div>
                 <div class="bg-white p-6 rounded-lg shadow-md text-center flex flex-col items-center gap-2" data-aos="fade-up" data-aos-delay="600" data-aos-duration="1000">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#48a6a6" class="size-12">

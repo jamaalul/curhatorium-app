@@ -213,6 +213,10 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         container.querySelectorAll('.card-response-form').forEach(form => {
+            form.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
                 const textarea = this.querySelector('textarea');
