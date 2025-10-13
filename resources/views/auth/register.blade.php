@@ -25,6 +25,17 @@
     </div>
     <div class="signup-box">
       <h1>Signup</h1>
+      <!-- Social Login Buttons -->
+      <div class="social-login">
+        <a href="{{ route('socialite.redirect', 'google') }}" class="social-btn google-btn">
+          <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google" class="social-icon">
+          Register with Google
+        </a>
+      </div>
+
+      <div class="divider">
+        <span>or</span>
+      </div>
       <form method="POST" action="{{ route('register') }}">
         @csrf
         <input type="text" placeholder="Username (Disarankan samaran)" required name="username" autofocus/>
