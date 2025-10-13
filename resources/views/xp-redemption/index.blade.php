@@ -6,6 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>XP Redemption | Curhatorium</title>
+    <link rel="stylesheet" href="{{ asset('css/global.css') }}">
     @vite('resources/css/app.css')
 </head>
 <body class="bg-gray-100">
