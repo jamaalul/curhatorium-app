@@ -17,6 +17,45 @@
     </script>
     <link rel="stylesheet" href="{{ asset('css/register.css') }}">
     <link rel="stylesheet" href="{{ asset('css/global.css') }}">
+    <style>
+      /* Social Login Styles */
+      .social-login {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+          margin-bottom: 20px;
+      }
+
+      .social-btn {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 12px 20px;
+          border: 1px solid #ddd;
+          border-radius: 5px;
+          text-decoration: none;
+          color: #333;
+          font-size: 14px;
+          font-weight: 500;
+          transition: all 0.3s ease;
+          background: white;
+      }
+
+      .social-btn:hover {
+          border-color: #ccc;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .social-icon {
+          width: 18px;
+          height: 18px;
+          margin-right: 10px;
+      }
+
+      .google-btn:hover {
+          background-color: #f8f9fa;
+      }
+    </style>
 </head>
 <body>
     <div class="container">
