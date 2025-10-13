@@ -41,7 +41,7 @@
         </label>
         <div class="links">
           <a href="{{ route('register') }}">Signup</a>
-          <a href="{{ route('password.request') }}">Lupa Password</a>
+          {{-- <a href="{{ route('password.request') }}">Lupa Password</a> --}}
         </div>
         <button type="submit">Log In</button>
       </form>
