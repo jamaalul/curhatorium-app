@@ -55,6 +55,27 @@
       .google-btn:hover {
           background-color: #f8f9fa;
       }
+
+      .divider {
+          display: flex;
+          align-items: center;
+          margin: 20px 0;
+          text-align: center;
+      }
+
+      .divider::before,
+      .divider::after {
+          content: '';
+          flex: 1;
+          height: 1px;
+          background-color: #ddd;
+      }
+
+      .divider span {
+          padding: 0 10px;
+          color: #666;
+          font-size: 14px;
+      }
     </style>
 </head>
 <body>
