@@ -15,7 +15,7 @@
         document.getElementsByTagName("head")[0].appendChild(mf);
       })();
     </script>
-    <link rel="stylesheet" href="{{ asset('css/login.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/login.css') }}?v=1.0.0">
     <link rel="stylesheet" href="{{ asset('css/global.css') }}">
 </head>
 <body>
