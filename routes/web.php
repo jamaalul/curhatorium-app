@@ -16,6 +16,7 @@ use App\Http\Controllers\PusherController;
 use App\Http\Controllers\QuoteController;
 use App\Http\Controllers\SgdController;
 use App\Http\Controllers\ShareAndTalkController;
+use App\Http\Controllers\SocialiteController;
 use App\Http\Controllers\TrackerController;
 use App\Http\Controllers\XpController;
 use App\Http\Controllers\XpRedemptionController;
@@ -63,6 +64,12 @@ Route::name('professional.')->group(function () {
     Route::get('/professional/login', [ProfessionalAuthenticatedSessionController::class, 'create'])->name('login');
     Route::post('/professional/login', [ProfessionalAuthenticatedSessionController::class, 'store']);
     Route::post('/professional/logout', [ProfessionalAuthenticatedSessionController::class, 'destroy'])->name('logout');
+});
+
+// Socialite authentication routes
+Route::controller(SocialiteController::class)->prefix('auth')->name('socialite.')->group(function () {
+    Route::get('/{provider}', 'redirectToProvider')->name('redirect');
+    Route::get('/{provider}/callback', 'handleProviderCallback')->name('callback');
 });
 
 // Feature information pages

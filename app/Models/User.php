@@ -28,6 +28,8 @@ class User extends Authenticatable implements FilamentUser
         'profile_picture',
         'total_xp',
         'onboarding_completed',
+        'provider_name',
+        'provider_id',
     ];
 
     /**
