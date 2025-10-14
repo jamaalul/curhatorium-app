@@ -392,6 +392,73 @@
     </section>
     @include('components.footer')
 
+    <!-- Fixed Tutorial Button -->
+    <button id="tutorial-btn"
+        style="position: fixed; bottom: 1rem; right: 1rem; z-index: 50; background-color: #48A6A6; color: white;
+            padding: 0.75rem; border-radius: 50%; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+            0 4px 6px -2px rgba(0, 0, 0, 0.05); border: none; cursor: pointer; transition: all 0.3s ease;
+            display: flex; align-items: center; gap: 0.5rem; overflow: hidden; width: 3rem; height: 3rem;"
+        onmouseover="this.style.backgroundColor = '#357979'; this.style.width = 'auto'; this.style.borderRadius = '2rem'; this.style.padding = '0.75rem 1rem'; this.querySelector('span').style.opacity = '1';"
+        onmouseout="this.style.backgroundColor = '#48A6A6'; this.style.width = '3rem'; this.style.borderRadius = '50%'; this.style.padding = '0.75rem'; this.querySelector('span').style.opacity = '0';">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+            style="width: 1.5rem; height: 1.5rem; flex-shrink: 0;">
+            <path stroke-linecap="round" stroke-linejoin="round"
+                d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
+        </svg>
+        <span style="opacity: 0; transition: opacity 0.3s ease; white-space: nowrap; color: white;">Tutorial</span>
+    </button>
+
+    <!-- Tutorial Modal -->
+    <div id="tutorial-modal"
+        style="position: fixed; inset: 0; background-color: rgba(0, 0, 0, 0.5);
+            display: none; align-items: center; justify-content: center; z-index: 60;">
+        <div style="background-color: white; border-radius: 1rem; width: 90%; max-width: 900px; 
+                    padding: 1.5rem; position: relative; box-shadow: 0 20px 40px rgba(0,0,0,0.2);">
+            <button id="close-modal"
+                style="position: absolute; top: 1rem; right: 1rem; color: #6b7280; border: none;
+                    background: none; cursor: pointer; transition: color 0.2s;"
+                onmouseover="this.style.color = '#374151'" onmouseout="this.style.color = '#6b7280'">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                    stroke="currentColor" style="width: 1.75rem; height: 1.75rem;">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+
+            <!-- Responsive video container -->
+            <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 0.5rem; margin-top: 2rem; border: 2px solid #e5e7eb;">
+                <iframe id="tutorial-video" src="" frameborder="0" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin"
+                    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+                        border: none; border-radius: 0.5rem;">
+                </iframe>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const btn = document.getElementById('tutorial-btn');
+        const modal = document.getElementById('tutorial-modal');
+        const close = document.getElementById('close-modal');
+        const video = document.getElementById('tutorial-video');
+
+        btn.addEventListener('click', () => {
+            modal.style.display = 'flex';
+            video.src = "https://www.youtube.com/embed/C2pjXtknQSI?si=icjaTmb1-iZbrjSl";
+        });
+
+        close.addEventListener('click', () => {
+            modal.style.display = 'none';
+            video.src = ""; // stop video when closing
+        });
+
+        // Optional: close modal when clicking outside
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+                video.src = "";
+            }
+        });
+    </script>
+
     @vite('resources/js/app.js')
 </body>
 </html>
