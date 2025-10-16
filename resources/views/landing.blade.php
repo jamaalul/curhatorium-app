@@ -339,13 +339,13 @@
                 @foreach($membershipMeta as $name => $meta)
                     @php
                         // Add "Terpopuler" badge to Harmony
-                        $isHarmony = strtolower($name) === 'harmony';
+                        $isTerpopuler = strtolower($name) === 'serenity';
                         $badge = $meta['badge'] ?? null;
-                        if ($isHarmony) {
+                        if ($isTerpopuler) {
                             $badge = 'Terpopuler';
                         }
                     @endphp
-                <div class="bg-white p-6 rounded-lg shadow-md ease-in-out text-center flex flex-col{{ $isHarmony ? ' border-2 border-[#48A6A6]' : '' }}" data-aos="fade-up" data-aos-duration="1000">
+                <div class="bg-white p-6 rounded-lg shadow-md ease-in-out text-center flex flex-col{{ $isTerpopuler ? ' border-2 border-[#48A6A6]' : '' }}" data-aos="fade-up" data-aos-duration="1000">
                     @if($badge)
                     <div class="text-sm font-bold text-white bg-[#48A6A6] py-1 px-3 rounded-full self-center mb-4">{{ $badge }}</div>
                     @endif
