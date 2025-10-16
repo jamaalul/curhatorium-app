@@ -269,7 +269,7 @@
                         'Calm Starter' => [
                             'price' => 0,
                             'benefits' => [
-                                '(Unlimited) Tes Skala Kesejahteraan Mental',
+                                '(Unlimited) Skala Kesejahteraan Mental',
                                 '(7 Hari) Mood and Productivity Tracker',
                                 '(7 Hari) Missions of The Day',
                                 '(1x) Support Group Discussion',
@@ -278,7 +278,7 @@
                         'Growth Path' => [
                             'price' => 23900,
                             'benefits' => [
-                                '(Unlimited) Tes Skala Kesejahteraan Mental',
+                                '(Unlimited) Skala Kesejahteraan Mental',
                                 '(Unlimited) Mood and Productivity Tracker',
                                 '(Unlimited) Missions of The Day',
                                 '(1x) Support Group Discussion',
@@ -289,7 +289,7 @@
                         'Blossom' => [
                             'price' => 59900,
                             'benefits' => [
-                                '(Unlimited) Tes Skala Kesejahteraan Mental',
+                                '(Unlimited) Skala Kesejahteraan Mental',
                                 '(Unlimited) Mood and Productivity Tracker',
                                 '(Unlimited) Missions of The Day',
                                 '(3x) Support Group Discussion',
@@ -300,7 +300,7 @@
                         'Inner Peace' => [
                             'price' => 86900,
                             'benefits' => [
-                                '(Unlimited) Tes Skala Kesejahteraan Mental',
+                                '(Unlimited) Skala Kesejahteraan Mental',
                                 '(Unlimited) Mood and Productivity Tracker w/ Extended Report',
                                 '(Unlimited) Missions of The Day',
                                 '(5x) Support Group Discussion',
