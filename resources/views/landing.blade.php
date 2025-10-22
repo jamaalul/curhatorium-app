@@ -61,6 +61,7 @@
             <img src="images/upp.png" alt="Unit Pelayanan Psikologi Unair" class="h-10 md:h-16">
             <img src="images/sdg.png" alt="SDG Center Unair" class="h-10 md:h-16">
             <img src="images/ahpc.png" alt="Airlangga Health Promotion Center" class="h-10 md:h-16">
+            <img src="images/lpm.png" alt="Lembaga Pengabdian Masyarakat" class="h-10 md:h-16">
             <img src="images/hji.png" alt="Halo Jiwa Indonesia" class="h-10 md:h-16">
             <img src="images/dikti.png" alt="Halo Jiwa Indonesia" class="h-10 md:h-16">
             <img src="images/belmawa.png" alt="Halo Jiwa Indonesia" class="h-10 md:h-16">
