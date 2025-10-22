@@ -26,6 +26,7 @@ use App\Http\Middleware\TicketGateMiddleware;
 use App\Models\Announcement;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use App\Models\User;
 
 /*
 |--------------------------------------------------------------------------
@@ -147,7 +148,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
             ->first();
         $user = Auth::user();
         $cards = []; // Cards are now loaded via JavaScript
-        return view('main.main', compact('statsData', 'announcement', 'user', 'cards'));
+        $hasCalmStarter = $user->hasActiveCalmStarter();
+        $hasEverHadCalmStarter = $user->userMemberships()->whereHas('membership', function($query) {
+            $query->where('name', 'Calm Starter');
+        })->exists();
+        return view('main.main', compact('statsData', 'announcement', 'user', 'cards', 'hasCalmStarter', 'hasEverHadCalmStarter'));
     })->name('dashboard');
 
     // Profile routes
@@ -172,6 +177,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::controller(MembershipController::class)->prefix('membership')->name('membership.')->group(function () {
         Route::get('/', 'index')->name('index');
         Route::post('/buy/{id}', 'buy')->name('buy');
+        Route::get('/claim-starter', 'claimCalmStarter')->name('claim-starter');
     });
 
     // Feature routes requiring authentication

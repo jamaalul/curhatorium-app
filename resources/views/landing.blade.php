@@ -338,7 +338,7 @@
                 @endphp
                 @foreach($membershipMeta as $name => $meta)
                     @php
-                        // Add "Terpopuler" badge to Harmony
+                        // Add "Terpopuler" badge to Serenity
                         $isTerpopuler = strtolower($name) === 'serenity';
                         $badge = $meta['badge'] ?? null;
                         if ($isTerpopuler) {

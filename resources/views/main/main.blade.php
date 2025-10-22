@@ -12,6 +12,7 @@
     @include('components.navbar')
     @include('main.announcement')
     @include('components.error', ['msg' => $errors])
+    @include('components.starter-claimer')
     <section class="w-full h-fit px-4 py-8 flex flex-col gap-2 items-center justify-center bg-cover shadow-inner relative" style="background-image: url('{{ asset('images/background.jpg') }}');">
         <h1 class="text-3xl md:text-5xl font-bold text-center text-[#222222]">
             Halo {{ $user->username }} !

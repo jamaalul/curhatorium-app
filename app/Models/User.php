@@ -111,6 +111,15 @@ class User extends Authenticatable implements FilamentUser
             ->exists();
     }
 
+    public function hasActiveCalmStarter()
+    {
+        return $this->activeMemberships()
+            ->whereHas('membership', function($query) {
+                $query->where('name', 'Calm Starter');
+            })
+            ->exists();
+    }
+
      public function canAccessPanel(\Filament\Panel $panel): bool
     {
         return $this->is_admin;
