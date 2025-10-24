@@ -36,6 +36,17 @@
         .fc-event {
             cursor: pointer;
         }
+        .fc-popover {
+            max-width: 90vw;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+        @media (min-width: 768px) {
+            .fc-popover {
+                max-width: 400px;
+                max-height: 400px;
+            }
+        }
     </style>
 </head>
 <body class="pt-16 w-full overflow-x-hidden bg-gray-100">
@@ -168,20 +179,17 @@
             let selectedEvent = null;
 
             const calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: window.innerWidth < 768 ? 'timeGridDay' : 'dayGridMonth',
+                initialView: 'dayGridMonth',
                 headerToolbar: {
                     left: 'prev,next today',
                     center: 'title',
-                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                    right: ''
                 },
                 events: `/api/professionals/{{ $professional->id }}/schedule`,
-                windowResize: function(view) {
-                    if (window.innerWidth < 768) {
-                        calendar.changeView('timeGridDay');
-                    } else {
-                        calendar.changeView('dayGridMonth');
-                    }
-                },
+                dayMaxEventRows: 2,
+                dayMaxEvents: 2,
+                moreLinkClick: 'popover',
+                dayPopoverFormat: { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' },
                 slotMinTime: '00:00:00',
                 slotMaxTime: '23:59:00',
                 allDaySlot: false,
@@ -199,11 +207,6 @@
                         return;
                     }
 
-                    if (calendar.view.type === 'dayGridMonth') {
-                        calendar.changeView('timeGridWeek', info.event.start);
-                        return;
-                    }
-
                     // Revert previous event color if one was selected
                     if (selectedEvent) {
                         selectedEvent.setProp('backgroundColor', '#10b981');
@@ -216,7 +219,7 @@
                     const startTime = new Date(info.event.start);
                     const dateStr = startTime.toISOString().split('T')[0];
                     const timeStr = startTime.toTimeString().split(' ')[0].substring(0, 5);
-                    
+
                     dateInput.value = dateStr;
                     timeInput.value = timeStr;
 

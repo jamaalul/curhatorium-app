@@ -35,6 +35,17 @@
         .fc .fc-daygrid-day.fc-day-today {
             background-color: #f0fdfa;
         }
+        .fc-popover {
+            max-width: 90vw;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+        @media (min-width: 768px) {
+            .fc-popover {
+                max-width: 400px;
+                max-height: 400px;
+            }
+        }
     </style>
 </head>
 <body class="bg-gray-100">
@@ -325,25 +336,22 @@
             let manageMode = false;
 
             const calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: window.innerWidth < 768 ? 'timeGridDay' : 'dayGridMonth',
+                initialView: 'dayGridMonth',
                 headerToolbar: {
                     left: 'prev,next today',
                     center: 'title',
-                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                    right: ''
                 },
                 events: `/api/professionals/{{ $professional->id }}/schedule`,
-                windowResize: function(view) {
-                    if (window.innerWidth < 768) {
-                        calendar.changeView('timeGridDay');
-                    } else {
-                        calendar.changeView('dayGridMonth');
-                    }
-                },
+                dayMaxEventRows: 2,
+                dayMaxEvents: 2,
+                moreLinkClick: 'popover',
+                dayPopoverFormat: { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' },
                 eventClick: function(info) {
                     if (!manageMode || info.event.title !== 'Available') {
                         return;
                     }
-                    
+
                     slotToDelete = info.event;
                     deleteModalText.innerHTML = `Apakah Anda yakin ingin menghapus slot jadwal pada <br> <span class="font-semibold">${slotToDelete.start.toLocaleString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })}</span>?`;
                     deleteModal.classList.remove('hidden');

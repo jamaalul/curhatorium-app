@@ -26,7 +26,7 @@
     }
 </style>
 
-<section class="w-full px-4 py-8 bg-cover flex flex-col items-center justify-center shadow-inner h-fit" style="background-image: url('{{ asset('images/background.jpg') }}');" id="cards-section">
+<section class="w-screen overflow-x-hidden px-4 py-8 bg-cover flex flex-col items-center justify-center shadow-inner h-fit" style="background-image: url('{{ asset('images/background.jpg') }}');" id="cards-section">
 
     <div class="min-h-80">
         <!-- Slider View (Mobile/Tablet) -->
