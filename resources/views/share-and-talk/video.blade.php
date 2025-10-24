@@ -7,7 +7,7 @@
     <script type="text/javascript">
       window.onload = () => {
         const api = new JitsiMeetExternalAPI("8x8.vc", {
-          roomName: "vpaas-magic-cookie-ac9ee141fc8a4c308ac24f5ec225af3f/{{ $session_id }}",
+          roomName: "vpaas-magic-cookie-ac9ee141fc8a4c308ac24f5ec225af3f/{{ $room }}",
           parentNode: document.querySelector('#jaas-container'),
           // Make sure to include a JWT if you intend to record,
           // make outbound calls or use any other premium features!
@@ -19,7 +19,7 @@
 </head>
 <body>
   @include('components.navbar')
-    <div id="timer-container" style="position:fixed;bottom:32px;right:32px;z-index:9999;">
+    {{-- <div id="timer-container" style="position:fixed;bottom:32px;right:32px;z-index:9999;">
       <div id="session-timer" style="background:#222;color:#fff;padding:12px 28px;border-radius:16px;box-shadow:0 2px 12px #0002;display:flex;flex-direction:column;align-items:center;min-width:110px;font-family:'FigtreeReg', Figtree, Arial,sans-serif;">
         <span id="timer-label" style="font-size:0.85em;color:#9acbd0;font-family:'FigtreeBold', Figtree, Arial,sans-serif;font-weight:600;letter-spacing:0.5px;">Waiting: </span>
         <span id="timer-value" style="font-size:1.5em;font-family:'Courier New',monospace;font-weight:700;letter-spacing:1px;">05:00</span>
@@ -27,9 +27,9 @@
       <div id="warning-message" style="background:#f59e42;color:#fff;padding:8px 12px;border-radius:8px;font-size:0.75rem;margin-top:8px;text-align:center;font-family:'FigtreeBold', Figtree, Arial,sans-serif;font-weight:600;box-shadow:0 2px 8px #0002;">
         ⚠️ Don't leave this page until session is cancelled
       </div>
-    </div>
+    </div> --}}
     <div id="jaas-container" />
-    <meta name="session-id" content="{{ $session_id }}">
+    <meta name="session-id" content="{{ $room }}">
     <script src="/js/modules/video-session.js"></script>
 </body>
 </html> 

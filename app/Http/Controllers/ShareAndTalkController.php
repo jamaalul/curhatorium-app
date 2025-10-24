@@ -203,6 +203,17 @@ class ShareAndTalkController extends Controller
         }
     }
 
+    public function videoRoom($room)
+    {
+
+        $roomExists = Consultation::where('room', $room)->exists();
+        if (!$roomExists) {
+            return redirect()->route('share-and-talk.index')->with('error', 'Ruang obrolan tidak ditemukan.');
+        } else {
+            return view('share-and-talk.video', ['room' => $room]);
+        }
+    }
+
     public function endSession(Request $request)
     {
         $request->validate([

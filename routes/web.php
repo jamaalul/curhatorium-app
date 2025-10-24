@@ -198,6 +198,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/booked', 'booked')->name('booked');
         Route::post('/end', 'endSession')->name('end');
         Route::get('/chat/{room}', 'chatRoom')->name('chat.room');
+        Route::get('/video/{room}', 'videoRoom')->name('video.room');
     });
 
     // Tracker routes
