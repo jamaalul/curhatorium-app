@@ -233,7 +233,7 @@
                                                 @endphp
                                                 <button
                                                     @if ($isVideo)
-                                                        onclick="if(!this.disabled) window.location.href='/video/{{ $session->consultation->room }}'"
+                                                        onclick="if(!this.disabled) window.location.href='/share-and-talk/video/{{ $session->consultation->room }}'"
                                                     @else
                                                         onclick="if(!this.disabled) window.location.href='/professional/chat/{{ $session->consultation->room }}'"
                                                     @endif
