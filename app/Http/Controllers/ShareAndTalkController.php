@@ -205,6 +205,13 @@ class ShareAndTalkController extends Controller
 
     public function videoRoom($room)
     {
+        \Illuminate\Support\Facades\Log::info("Video room access attempt for room: {$room}", [
+            'is_professional' => Auth::guard('professional')->check(),
+            'professional_id' => Auth::guard('professional')->id(),
+            'is_user' => Auth::check(),
+            'user_id' => Auth::id(),
+            'request_uri' => request()->getRequestUri()
+        ]);
 
         $roomExists = Consultation::where('room', $room)->exists();
         if (!$roomExists) {
