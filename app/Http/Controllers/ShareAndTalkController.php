@@ -258,9 +258,10 @@ class ShareAndTalkController extends Controller
                 'client_status' => 'offline'
             ]);
 
+            $statusType = Auth::guard('professional')->check() ? 'facilitator' : 'client';
+
             // Broadcast the status updates
-            StatusUpdated::dispatch($room, 'facilitator', 'offline', $consultation);
-            StatusUpdated::dispatch($room, 'client', 'offline', $consultation);
+            StatusUpdated::dispatch($room, $statusType, 'offline', $consultation);
 
             // Find the related professional schedule slot and update its status
             $slot = ProfessionalScheduleSlot::find($consultation->professional_schedule_slot_id);
