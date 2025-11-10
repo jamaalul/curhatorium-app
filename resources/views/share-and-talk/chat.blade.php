@@ -25,13 +25,13 @@
             <h1 class="text-[#222222] text-4xl font-bold">Curhatorium</h1>
         </div>
         <p class="text-2xl text-bold text-[#222222] text-center">Your Safest Place</p>
-        <div class="flex w-full mt-8 items-center gap-2" id="facilitator-status">
-            <p>Facilitator - <span id="facilitator-status-text">Offline</span></p>
-            <span class="h-3 aspect-square rounded-full bg-gray-400" id="facilitator-indicator"></span>
+        <div class="flex w-full mt-8 items-center gap-2 facilitator-status">
+            <p>Facilitator - <span class="facilitator-status-text">Offline</span></p>
+            <span class="h-3 aspect-square rounded-full bg-gray-400 facilitator-indicator"></span>
         </div>
-        <div class="flex w-full items-center gap-2" id="client-status">
-            <p>Client - <span id="client-status-text">Offline</span></p>
-            <span class="h-3 aspect-square rounded-full bg-gray-400" id="client-indicator"></span>
+        <div class="flex w-full items-center gap-2 client-status">
+            <p>Client - <span class="client-status-text">Offline</span></p>
+            <span class="h-3 aspect-square rounded-full bg-gray-400 client-indicator"></span>
         </div>
         <button
             class="end-session-button px-6 py-4 text-2xl rounded-2xl bg-none w-full hover:bg-red-300 mt-auto border-red-300 border-2 transition-all duration-100 text-[#222222] font-bold">
@@ -43,6 +43,14 @@
             <div class="flex gap-2 items-center justify-center">
                 <img src="{{ asset('assets/mini_logo.png') }}" alt="mini_logo" class="size-10">
                 <h1 class="text-[#222222] text-3xl font-bold">Curhatorium</h1>
+            </div>
+            <div class="flex md:hidden items-center gap-2 facilitator-status">
+                <p>Facilitator</p>
+                <span class="h-3 aspect-square rounded-full bg-gray-400 facilitator-indicator"></span>
+            </div>
+            <div class="flex md:hidden items-center gap-2 client-status">
+                <p>Client</p>
+                <span class="h-3 aspect-square rounded-full bg-gray-400 client-indicator"></span>
             </div>
             <button
                 class="end-session-button text-xl rounded-xl bg-none w-fit mt-auto transition-all duration-100 text-red-400 font-bold">
@@ -143,8 +151,8 @@
         function updateStatusDisplay(statusType, status) {
             // Add a small delay to ensure the DOM is ready
             setTimeout(() => {
-                const statusText = $('#' + statusType + '-status-text');
-                const indicator = $('#' + statusType + '-indicator');
+                const statusText = $('.' + statusType + '-status-text');
+                const indicator = $('.' + statusType + '-indicator');
 
                 if (statusText.length === 0 || indicator.length === 0) {
                     console.error('Could not find status elements for:', statusType);
