@@ -25,6 +25,14 @@
             <h1 class="text-[#222222] text-4xl font-bold">Curhatorium</h1>
         </div>
         <p class="text-2xl text-bold text-[#222222] text-center">Your Safest Place</p>
+        <div class="flex w-full mt-8 items-center gap-2" id="facilitator-status">
+            <p>Facilitator - <span id="facilitator-status-text">Offline</span></p>
+            <span class="h-3 aspect-square rounded-full bg-gray-400" id="facilitator-indicator"></span>
+        </div>
+        <div class="flex w-full items-center gap-2" id="client-status">
+            <p>Client - <span id="client-status-text">Offline</span></p>
+            <span class="h-3 aspect-square rounded-full bg-gray-400" id="client-indicator"></span>
+        </div>
         <button
             class="end-session-button px-6 py-4 text-2xl rounded-2xl bg-none w-full hover:bg-red-300 mt-auto border-red-300 border-2 transition-all duration-100 text-[#222222] font-bold">
             Akhiri Sesi
@@ -110,11 +118,103 @@
         });
 
         var channel = pusher.subscribe('chat.{{ $room }}');
+
+        // Determine user type and current user ID
+        const isProfessional = {{ auth('professional')->check() ? 'true' : 'false' }};
+        const currentUserId =
+            {{ auth('professional')->check() ? auth('professional')->id() : (auth()->check() ? auth()->id() : 'null') }};
+        const currentUserType = isProfessional ? 'facilitator' : 'client';
+
+        // Status update function
+        function updateStatus(status) {
+            $.post("{{ route('share-and-talk.updateStatus') }}", {
+                _token: '{{ csrf_token() }}',
+                room: '{{ $room }}',
+                status_type: currentUserType,
+                status: status
+            }).done(function(response) {
+                console.log('Status updated to:', status);
+            }).fail(function() {
+                console.error('Failed to update status');
+            });
+        }
+
+        // Update status display
+        function updateStatusDisplay(statusType, status) {
+            // Add a small delay to ensure the DOM is ready
+            setTimeout(() => {
+                const statusText = $('#' + statusType + '-status-text');
+                const indicator = $('#' + statusType + '-indicator');
+
+                if (statusText.length === 0 || indicator.length === 0) {
+                    console.error('Could not find status elements for:', statusType);
+                    return;
+                }
+
+                statusText.text(status.charAt(0).toUpperCase() + status.slice(1));
+                console.log(`Status updated: ${statusType} is now ${status}`);
+
+                if (status === 'online') {
+                    indicator.removeClass('bg-gray-400').addClass('bg-green-500');
+                } else {
+                    indicator.removeClass('bg-green-500').addClass('bg-gray-400');
+                }
+            }, 100);
+        }
+
+        // On page load, set user as online
+        $(document).ready(function() {
+            // Small delay to ensure DOM is ready
+            setTimeout(() => {
+                // Initialize status display with current consultation data
+                updateStatusDisplay('facilitator', '{{ $consultation->facilitator_status ?? 'offline' }}');
+                updateStatusDisplay('client', '{{ $consultation->client_status ?? 'offline' }}');
+
+                // Set current user as online
+                updateStatus('online');
+            }, 300);
+        });
+
+        // On page unload, set user as offline
+        $(window).on('beforeunload', function() {
+            updateStatus('offline');
+        });
+
+        // Listen for status updates
+        channel.bind('StatusUpdated', function(data) {
+            console.log('Status event received:', data);
+
+            // First, force a re-subscription to the channel to ensure we get the event
+            pusher.unsubscribe('chat.{{ $room }}');
+            channel = pusher.subscribe('chat.{{ $room }}');
+
+            // Re-bind the events
+            channel.bind('StatusUpdated', function(data) {
+                console.log('Status updated (rebound):', data);
+                if (data && data.status_type && data.status) {
+                    updateStatusDisplay(data.status_type, data.status);
+                } else {
+                    console.error('Invalid status update data:', data);
+                }
+            });
+
+            // Handle the original data
+            if (data && data.status_type && data.status) {
+                updateStatusDisplay(data.status_type, data.status);
+            } else {
+                console.error('Invalid status update data:', data);
+            }
+        });
+
+        // Listen for messages
         channel.bind('App\\Events\\MessageSent', function(data) {
             const currentUserId = {{ auth()->id() ?? 'null' }};
             const currentProfessionalId = {{ auth('professional')->id() ?? 'null' }};
-            const senderId = data.message.sender.id;
-            const senderType = data.message.sender_type;
+
+            // Access the message data correctly
+            const messageData = data.message;
+            const senderId = messageData.sender.id;
+            const senderType = messageData.sender.type;
 
             const isSender = (senderType === 'App\\Models\\User' && senderId === currentUserId) ||
                 (senderType === 'App\\Models\\Professional' && senderId === currentProfessionalId);
@@ -126,7 +226,7 @@
 
             // set alignment & colors depending on sender
             if (isSender) {
-                wrapper.addClass('justify-end hidden');
+                wrapper.addClass('justify-end');
                 bubble.addClass('bg-[#48a6a6] text-white');
             } else {
                 wrapper.addClass('justify-start');
@@ -134,8 +234,8 @@
             }
 
             // set text safely (this escapes any HTML)
-            const safeHtml = $('<div>').text(data.message.message).html().replace(/\n/g, '<br>');
-            bubble.html(safeHtml); // safe because we escaped via .text() above
+            const safeHtml = $('<div>').text(messageData.message).html().replace(/\n/g, '<br>');
+            bubble.html(safeHtml);
 
             wrapper.append(bubble);
             $('#chat-messages').append(wrapper);

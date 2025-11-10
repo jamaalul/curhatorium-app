@@ -2,22 +2,24 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Services\ShareAndTalkService;
-use App\Services\TicketService;
+use App\Events\StatusUpdated;
 use App\Http\Requests\ChatMessageRequest;
-use App\Models\Professional;
 use App\Models\ChatSession;
 use App\Models\Consultation;
-use App\Models\Message;
-use App\Models\MessageV2;
-use App\Models\User;
+use App\Models\Professional;
 use App\Models\ProfessionalScheduleSlot;
+use App\Models\User;
 use App\Models\UserTicket;
+use App\Services\ShareAndTalkService;
+use App\Services\TicketService;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use Carbon\Carbon;
+use Illuminate\Support\Facades\Log as LogFacade;
+use Illuminate\Support\Facades\Log as Log;
+use App\Models\Message;
+use App\Models\MessageV2;
 
 class ShareAndTalkController extends Controller
 {
@@ -187,25 +189,42 @@ class ShareAndTalkController extends Controller
 
     public function chatRoom($room)
     {
-        \Illuminate\Support\Facades\Log::info("Chat room access attempt for room: {$room}", [
+        Log::info("Chat room access attempt for room: {$room}", [
             'is_professional' => Auth::guard('professional')->check(),
             'professional_id' => Auth::guard('professional')->id(),
             'is_user' => Auth::check(),
             'user_id' => Auth::id(),
             'request_uri' => request()->getRequestUri()
         ]);
-        $roomExists = Consultation::where('room', $room)->exists();
-        if (!$roomExists) {
+        $consultation = Consultation::where('room', $room)->first();
+        
+        if (!$consultation) {
+            Log::warning('Room not found in chatRoom: ' . $room);
             return redirect()->route('share-and-talk.index')->with('error', 'Ruang obrolan tidak ditemukan.');
-        } else {
-            $messages = MessageV2::where('room', $room)->orderBy('created_at', 'asc')->get();
-            return view('share-and-talk.chat', ['room' => $room, 'messages' => $messages]);
         }
+        
+        // Update status to online for the current user (professional -> facilitator, otherwise client)
+        $statusType = Auth::guard('professional')->check() ? 'facilitator' : 'client';
+        $columnName = $statusType . '_status';
+        $consultation->update([$columnName => 'online']);
+        
+        // Refresh the consultation to get the latest data
+        $consultation->refresh();
+        
+        // Broadcast the status update
+        StatusUpdated::dispatch($room, $statusType, 'online', $consultation);
+        
+        $messages = MessageV2::where('room', $room)->orderBy('created_at', 'asc')->get();
+        return view('share-and-talk.chat', [
+            'room' => $room,
+            'messages' => $messages,
+            'consultation' => $consultation
+        ]);
     }
 
     public function videoRoom($room)
     {
-        \Illuminate\Support\Facades\Log::info("Video room access attempt for room: {$room}", [
+        Log::info("Video room access attempt for room: {$room}", [
             'is_professional' => Auth::guard('professional')->check(),
             'professional_id' => Auth::guard('professional')->id(),
             'is_user' => Auth::check(),
@@ -233,6 +252,16 @@ class ShareAndTalkController extends Controller
         $consultation = Consultation::where('room', $room)->first();
 
         if ($consultation) {
+            // Update both statuses to offline when session ends
+            $consultation->update([
+                'facilitator_status' => 'offline',
+                'client_status' => 'offline'
+            ]);
+
+            // Broadcast the status updates
+            StatusUpdated::dispatch($room, 'facilitator', 'offline', $consultation);
+            StatusUpdated::dispatch($room, 'client', 'offline', $consultation);
+
             // Find the related professional schedule slot and update its status
             $slot = ProfessionalScheduleSlot::find($consultation->professional_schedule_slot_id);
             if ($slot) {
@@ -241,6 +270,46 @@ class ShareAndTalkController extends Controller
             }
         }
 
-        return redirect()->route('dashboard')->with('success', 'Sesi telah diakhiri.');
+        if (Auth::guard('professional')->check()) {
+            $professionalId = Auth::guard('professional')->id();
+            return redirect()->route('professional.dashboard', ['professionalId' => $professionalId])->with('success', 'Sesi telah diakhiri.');
+        } else {
+            return redirect()->route('dashboard')->with('success', 'Sesi telah diakhiri.');
+        }
+    }
+
+    public function updateStatus(Request $request)
+    {
+        $request->validate([
+            'room' => 'required|string',
+            'status_type' => 'required|string|in:facilitator,client',
+            'status' => 'required|string|in:online,offline',
+        ]);
+
+        $room = $request->input('room');
+        $statusType = $request->input('status_type');
+        $status = $request->input('status');
+
+        // Find the consultation by room
+        $consultation = Consultation::where('room', $room)->first();
+
+        if (!$consultation) {
+            Log::error("Room not found in updateStatus: {$room}");
+            return response()->json(['status' => 'Room not found'], 404);
+        }
+
+        // Update the status
+        $columnName = $statusType . '_status';
+        $consultation->update([$columnName => $status]);
+
+        // Reload the consultation with updated data
+        $consultation->refresh();
+
+        Log::info("Status updated for room: {$room}, type: {$statusType}, status: {$status}");
+
+        // Broadcast the status update
+        StatusUpdated::dispatch($room, $statusType, $status, $consultation);
+
+        return response()->json(['status' => 'Status updated successfully']);
     }
 }

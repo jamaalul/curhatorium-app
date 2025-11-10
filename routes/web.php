@@ -51,6 +51,7 @@ Route::controller(PusherController::class)->prefix('pusher')->name('pusher.')->g
     Route::get('/room/{room}', 'room')->name('room');
     Route::post('/room', 'createRoom')->name('createRoom');
     Route::post('/message', 'sendMessage')->name('sendMessage');
+    Route::post('/update-status', 'updateStatus')->name('updateStatus');
     Route::post('/terminate/{room}', 'terminate')->name('terminate');
 });
 
@@ -199,6 +200,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/end', 'endSession')->name('end');
         Route::get('/chat/{room}', 'chatRoom')->name('chat.room');
         Route::get('/video/{room}', 'videoRoom')->name('video.room');
+        Route::post('/update-status', 'updateStatus')->name('updateStatus');
     });
 
     // Tracker routes
@@ -292,6 +294,7 @@ Route::middleware([AuthenticateProfessional::class])->prefix('professional')->na
     Route::post('/slots/{slot}/decline', [ProfessionalDashboardController::class, 'declineBooking'])->name('booking.decline');
     Route::get('/chat/{room}', [ShareAndTalkController::class, 'chatRoom'])->name('chat.room');
     Route::get('/video/{room}', [ShareAndTalkController::class, 'videoRoom'])->name('video.room');
+    Route::post('/update-status', [ShareAndTalkController::class, 'updateStatus'])->name('updateStatus');
     Route::delete('/slots/{slot}', [ProfessionalDashboardController::class, 'deleteSlot'])->name('slot.delete');
     Route::post('/{professionalId}/change-password', [ProfessionalDashboardController::class, 'changePassword'])->name('change-password');
     Route::post('/logout', [ProfessionalDashboardController::class, 'logout'])->name('dashboard.logout');

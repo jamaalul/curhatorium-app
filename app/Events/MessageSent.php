@@ -14,9 +14,8 @@ class MessageSent implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-
     public $message;
-
+    public $room;
 
     /**
      * Create a new event instance.
@@ -24,6 +23,7 @@ class MessageSent implements ShouldBroadcast
     public function __construct(\App\Models\MessageV2 $message)
     {
         $this->message = $message;
+        $this->room = $message->room;
     }
 
     /**
@@ -33,6 +33,37 @@ class MessageSent implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new Channel('chat.' . $this->message->room);
+        return new Channel('chat.' . $this->room);
+    }
+
+    /**
+     * The event's broadcast name.
+     *
+     * @return string
+     */
+    public function broadcastAs()
+    {
+        return 'MessageSent';
+    }
+
+    /**
+     * Get the data to broadcast.
+     *
+     * @return array<string, mixed>
+     */
+    public function broadcastWith()
+    {
+        return [
+            'message' => [
+                'id' => $this->message->id,
+                'message' => $this->message->message,
+                'sender' => [
+                    'id' => $this->message->sender->id,
+                    'type' => $this->message->sender_type,
+                ],
+                'created_at' => $this->message->created_at->toIso8601String(),
+            ],
+            'room' => $this->room,
+        ];
     }
 }
