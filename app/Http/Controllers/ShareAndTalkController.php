@@ -72,89 +72,146 @@ class ShareAndTalkController extends Controller
 
     public function bookSession(Request $request)
     {
-        $validated = $request->validate([
-            'professional_id' => 'required|integer|exists:professionals,id',
-            'whatsapp_number' => 'required|string|max:20',
-            'consultation_type' => 'required|string|in:chat,video',
-            'date' => 'required|date_format:Y-m-d',
-            'time' => 'required|date_format:H:i',
-        ]);
-
-        $slotStartTime = Carbon::parse($validated['date'] . ' ' . $validated['time']);
-        $user = Auth::user();
-
-        $slot = DB::transaction(function () use ($validated, $slotStartTime, $user) {
-            $slot = ProfessionalScheduleSlot::where('professional_id', $validated['professional_id'])
-                ->where('slot_start_time', $slotStartTime)
-                ->where('status', 'available')
-                ->lockForUpdate()
-                ->first();
-
-            if (!$slot) {
-                return null;
-            }
-
-            $slot->status = 'pending_confirmation';
-            $slot->booked_by_user_id = $user->id;
-            $slot->save();
-
-            $slot->load('professional');
-
-            // Determine the correct ticket type
-            $professionalType = $slot->professional->type;
-            $consultationType = $validated['consultation_type'];
-            $ticketType = '';
-            $fullConsultationType = '';
-
-            if ($consultationType === 'chat') {
-                if ($professionalType === 'psychiatrist') {
-                    $ticketType = 'share_talk_psy_chat';
-                    $fullConsultationType = 'Chat w/ Psikolog';
-                } else {
-                    $ticketType = 'share_talk_ranger_chat';
-                    $fullConsultationType = 'Chat w/ Rangers';
-                }
-            } elseif ($consultationType === 'video') {
-                // Assuming video is only for psychiatrists
-                $ticketType = 'share_talk_psy_video';
-                $fullConsultationType = 'Video Call w/ Psikolog';
-            }
-
-            // Find and update the user's ticket
-            $userTicket = UserTicket::where('user_id', $user->id)
-                ->where('ticket_type', $ticketType)
-                ->where('expires_at', '>=', now())
-                ->where('remaining_value', '>=', 1)
-                ->orderBy('expires_at', 'desc')
-                ->lockForUpdate()
-                ->first();
-
-            if (!$userTicket) {
-                // This will trigger the transaction to rollback
-                throw new \Exception('No valid ticket found for this consultation type.');
-            }
-
-            $userTicket->decrement('remaining_value');
-
-            Consultation::create([
-                'professional_schedule_slot_id' => $slot->id,
-                'room' => 'sharetalk_' . uniqid(),
-                'consultation_type' => $fullConsultationType,
-                'no_wa' => $validated['whatsapp_number'],
+        try {
+            $validated = $request->validate([
+                'professional_id' => 'required|integer|exists:professionals,id',
+                'whatsapp_number' => 'required|string|max:20',
+                'consultation_type' => 'required|string|in:chat,video',
+                'date' => 'required|date_format:Y-m-d',
+                'time' => 'required|date_format:H:i',
             ]);
 
-            return $slot;
-        });
+            $slotStartTime = Carbon::parse($validated['date'] . ' ' . $validated['time']);
+            $user = Auth::user();
 
-        if (!$slot) {
-            return back()->with('error', 'Jadwal yang dipilih tidak lagi tersedia. Silakan pilih jadwal lain.');
+            // Debug: Get professional info and ticket summary
+            $professional = Professional::find($validated['professional_id']);
+            $ticketSummary = $this->ticketService->getTicketSummary($user);
+            
+            // Log debugging information
+            Log::info('Checkout attempt', [
+                'user_id' => $user->id,
+                'professional_id' => $validated['professional_id'],
+                'professional_type' => $professional->type ?? 'not found',
+                'consultation_type' => $validated['consultation_type'],
+                'slot_time' => $slotStartTime,
+                'ticket_summary' => $ticketSummary,
+            ]);
+
+            $slot = DB::transaction(function () use ($validated, $slotStartTime, $user, $professional) {
+                // Debug: Log all available slots for this professional on the requested date
+                $availableSlots = ProfessionalScheduleSlot::where('professional_id', $validated['professional_id'])
+                    ->where('status', 'available')
+                    ->whereDate('slot_start_time', $validated['date'])
+                    ->get();
+                
+                Log::info('Available slots debug', [
+                    'professional_id' => $validated['professional_id'],
+                    'requested_date' => $validated['date'],
+                    'available_slots_count' => $availableSlots->count(),
+                    'available_slot_times' => $availableSlots->pluck('slot_start_time')->toArray(),
+                    'requested_time' => $validated['time'],
+                    'combined_datetime' => $slotStartTime->toDateTimeString(),
+                ]);
+
+                $slot = ProfessionalScheduleSlot::where('professional_id', $validated['professional_id'])
+                    ->where('slot_start_time', $slotStartTime)
+                    ->where('status', 'available')
+                    ->lockForUpdate()
+                    ->first();
+
+                if (!$slot) {
+                    Log::warning('No available slot found', [
+                        'professional_id' => $validated['professional_id'],
+                        'slot_time' => $slotStartTime,
+                    ]);
+                    return null;
+                }
+
+                $slot->status = 'pending_confirmation';
+                $slot->booked_by_user_id = $user->id;
+                $slot->save();
+
+                $slot->load('professional');
+
+                // Determine the correct ticket type
+                $professionalType = $slot->professional->type;
+                $consultationType = $validated['consultation_type'];
+                $ticketType = '';
+                $fullConsultationType = '';
+
+                if ($consultationType === 'chat') {
+                    if ($professionalType === 'psychiatrist') {
+                        $ticketType = 'share_talk_psy_chat';
+                        $fullConsultationType = 'Chat w/ Psikolog';
+                    } else {
+                        $ticketType = 'share_talk_ranger_chat';
+                        $fullConsultationType = 'Chat w/ Rangers';
+                    }
+                } elseif ($consultationType === 'video') {
+                    // Assuming video is only for psychiatrists
+                    $ticketType = 'share_talk_psy_video';
+                    $fullConsultationType = 'Video Call w/ Psikolog';
+                }
+
+                // Find and update the user's ticket
+                $userTicket = UserTicket::where('user_id', $user->id)
+                    ->where('ticket_type', $ticketType)
+                    ->where('expires_at', '>=', now())
+                    ->where('remaining_value', '>=', 1)
+                    ->orderBy('expires_at', 'desc')
+                    ->lockForUpdate()
+                    ->first();
+
+                if (!$userTicket) {
+                    // Log detailed ticket issue for debugging
+                    $userTickets = UserTicket::where('user_id', $user->id)->get();
+                    Log::warning('No valid ticket found', [
+                        'user_id' => $user->id,
+                        'required_ticket_type' => $ticketType,
+                        'all_user_tickets' => $userTickets->toArray(),
+                        'consultation_type' => $consultationType,
+                        'professional_type' => $professionalType,
+                    ]);
+                    throw new \Exception('No valid ticket found for this consultation type.');
+                }
+
+                $userTicket->decrement('remaining_value');
+
+                Consultation::create([
+                    'professional_schedule_slot_id' => $slot->id,
+                    'room' => 'sharetalk_' . uniqid(),
+                    'consultation_type' => $fullConsultationType,
+                    'no_wa' => $validated['whatsapp_number'],
+                ]);
+
+                return $slot;
+            });
+
+            if (!$slot) {
+                return back()->with('error', json_encode($request));
+            }
+
+            $professional = $slot->professional;
+            $message = "Halo {$professional->name}, Anda memiliki permintaan booking baru.\n\nSilakan cek dashboard Anda di:\n" . route('professional.login') . "\n\nTerima kasih.";
+            $this->fonnteService->sendWhatsApp($professional->whatsapp_number, $message);
+
+            return redirect()->route('share-and-talk.booked')->with('bookedSlot', $slot);
+        } catch (\Exception $e) {
+            // Handle ticket-related errors specifically
+            if (strpos($e->getMessage(), 'No valid ticket found') !== false) {
+                return back()->with('error', 'Tiket tidak cukup atau tidak valid untuk jenis konsultasi yang dipilih. Silakan periksa membership Anda.');
+            }
+            
+            // Log any other errors
+            Log::error('Booking error', [
+                'user_id' => Auth::id(),
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            
+            return back()->with('error', 'Terjadi kesalahan saat memproses pesanan. Silakan coba lagi atau hubungi support.');
         }
-
-        $professional = $slot->professional;
-        $message = "Halo {$professional->name}, Anda memiliki permintaan booking baru.\n\nSilakan cek dashboard Anda di:\n" . route('professional.login') . "\n\nTerima kasih.";
-        $this->fonnteService->sendWhatsApp($professional->whatsapp_number, $message);
-
-        return redirect()->route('share-and-talk.booked')->with('bookedSlot', $slot);
     }
 
     public function getAvailabilitySlots(Request $request, Professional $professional)

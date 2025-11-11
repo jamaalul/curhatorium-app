@@ -114,6 +114,16 @@
                 <header class="flex flex-col md:flex-row justify-between md:items-center mb-6 md:mb-8">
                     <div>
                         <h2 id="page-title" class="text-2xl md:text-3xl font-bold text-gray-800">Jadwal Saya</h2>
+                        @if (session('success'))
+                            <div class="mt-2 p-3 bg-green-100 border border-green-400 text-green-700 rounded">
+                                {{ session('success') }}
+                            </div>
+                        @endif
+                        @if (session('error'))
+                            <div class="mt-2 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+                                {{ session('error') }}
+                            </div>
+                        @endif
                     </div>
                     <div class="flex items-center gap-4 mt-4 md:mt-0">
                         <div class="text-right">
@@ -133,6 +143,7 @@
                                 <thead class="text-xs text-gray-700 uppercase bg-gray-50">
                                     <tr>
                                         <th scope="col" class="px-4 py-3">Klien</th>
+                                        <th scope="col" class="px-4 py-3">Tipe</th>
                                         <th scope="col" class="px-4 py-3">Waktu Slot</th>
                                         <th scope="col" class="px-4 py-3">Aksi</th>
                                     </tr>
@@ -141,6 +152,8 @@
                                     @forelse($pendingBookings as $booking)
                                         <tr class="bg-white border-b">
                                             <td class="px-4 py-4">{{ $booking->bookedBy->username ?? 'N/A' }}</td>
+                                            <td class="px-4 py-4">
+                                                {{ $booking->consultation->consultation_type ?? 'N/A' }}</td>
                                             <td class="px-4 py-4">
                                                 {{ \Carbon\Carbon::parse($booking->slot_start_time)->format('d M Y, H:i') }}
                                             </td>
@@ -157,12 +170,20 @@
                                                     <button type="submit"
                                                         class="px-3 py-1 text-xs font-medium text-center text-white bg-red-600 rounded-lg hover:bg-red-700">Decline</button>
                                                 </form>
+                                                <form
+                                                    action="{{ route('professional.booking.reschedule', $booking->id) }}"
+                                                    method="POST">
+                                                    @csrf
+                                                    <button type="submit"
+                                                        class="px-3 py-1 text-xs font-medium text-center text-white bg-yellow-600 rounded-lg hover:bg-yellow-700">Reschedule</button>
+                                                </form>
                                             </td>
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="3" class="px-4 py-4 text-center text-gray-500">Tidak ada
-                                                permintaan booking.</td>
+                                            <td colspan="3" class="px-4 py-4 text-center text-gray-500">
+                                                Tidak ada permintaan booking.
+                                            </td>
                                         </tr>
                                     @endforelse
                                 </tbody>
@@ -195,40 +216,56 @@
                             <h3 class="text-lg md:text-xl font-bold mb-4">Atur Ketersediaan</h3>
                             <p class="text-xs md:text-sm text-gray-600 mb-6">Pilih hari dan jam berulang untuk membuka
                                 slot jadwal.</p>
-                            <form id="scheduleForm" class="space-y-4">
+                            <form action="{{ route('professional.set-availability', $professional->id) }}"
+                                method="POST" class="space-y-4">
+                                @csrf
                                 <div>
                                     <label for="start_date"
                                         class="block text-xs md:text-sm font-medium text-gray-700">Terapkan
                                         dari</label>
                                     <input type="date" id="start_date" name="start_date"
                                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm text-sm"
-                                        required>
+                                        value="{{ old('start_date') }}" required>
                                 </div>
                                 <div>
                                     <label for="end_date"
                                         class="block text-xs md:text-sm font-medium text-gray-700">Sampai</label>
                                     <input type="date" id="end_date" name="end_date"
                                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm text-sm"
-                                        required>
+                                        value="{{ old('end_date') }}" required>
                                 </div>
                                 <div class="mt-4">
                                     <label class="block text-xs md:text-sm font-medium text-gray-700 mb-2">Pilih
                                         Hari</label>
                                     <div class="grid grid-cols-3 gap-2 text-xs md:text-sm">
                                         <div><label class="flex items-center"><input type="checkbox" name="days[]"
-                                                    value="1" class="mr-2 rounded">Sen</label></div>
+                                                    value="1"
+                                                    {{ in_array('1', old('days', [])) ? 'checked' : '' }}
+                                                    class="mr-2 rounded">Sen</label></div>
                                         <div><label class="flex items-center"><input type="checkbox" name="days[]"
-                                                    value="2" class="mr-2 rounded">Sel</label></div>
+                                                    value="2"
+                                                    {{ in_array('2', old('days', [])) ? 'checked' : '' }}
+                                                    class="mr-2 rounded">Sel</label></div>
                                         <div><label class="flex items-center"><input type="checkbox" name="days[]"
-                                                    value="3" class="mr-2 rounded">Rab</label></div>
+                                                    value="3"
+                                                    {{ in_array('3', old('days', [])) ? 'checked' : '' }}
+                                                    class="mr-2 rounded">Rab</label></div>
                                         <div><label class="flex items-center"><input type="checkbox" name="days[]"
-                                                    value="4" class="mr-2 rounded">Kam</label></div>
+                                                    value="4"
+                                                    {{ in_array('4', old('days', [])) ? 'checked' : '' }}
+                                                    class="mr-2 rounded">Kam</label></div>
                                         <div><label class="flex items-center"><input type="checkbox" name="days[]"
-                                                    value="5" class="mr-2 rounded">Jum</label></div>
+                                                    value="5"
+                                                    {{ in_array('5', old('days', [])) ? 'checked' : '' }}
+                                                    class="mr-2 rounded">Jum</label></div>
                                         <div><label class="flex items-center"><input type="checkbox" name="days[]"
-                                                    value="6" class="mr-2 rounded">Sab</label></div>
+                                                    value="6"
+                                                    {{ in_array('6', old('days', [])) ? 'checked' : '' }}
+                                                    class="mr-2 rounded">Sab</label></div>
                                         <div><label class="flex items-center"><input type="checkbox" name="days[]"
-                                                    value="0" class="mr-2 rounded">Min</label></div>
+                                                    value="0"
+                                                    {{ in_array('0', old('days', [])) ? 'checked' : '' }}
+                                                    class="mr-2 rounded">Min</label></div>
                                     </div>
                                 </div>
                                 <div class="grid grid-cols-2 gap-4">
@@ -237,7 +274,7 @@
                                             class="block text-xs md:text-sm font-medium text-gray-700">Dari Jam</label>
                                         <input type="time" id="start_time" name="start_time"
                                             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm text-sm"
-                                            required>
+                                            value="{{ old('start_time') }}" required>
                                     </div>
                                     <div>
                                         <label for="end_time"
@@ -245,7 +282,7 @@
                                             Jam</label>
                                         <input type="time" id="end_time" name="end_time"
                                             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm text-sm"
-                                            required>
+                                            value="{{ old('end_time') }}" required>
                                     </div>
                                 </div>
                                 <button type="submit"
@@ -494,33 +531,6 @@
                         deleteModal.classList.add('hidden');
                         slotToDelete = null;
                     });
-            });
-
-            // Schedule form submission
-            document.getElementById('scheduleForm').addEventListener('submit', function(e) {
-                e.preventDefault();
-                const formData = new FormData(this);
-                const data = {
-                    days: formData.getAll('days[]'),
-                    start_time: formData.get('start_time'),
-                    end_time: formData.get('end_time'),
-                    start_date: formData.get('start_date'),
-                    end_date: formData.get('end_date'),
-                };
-                fetch(`/professional/availability/set`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
-                            .getAttribute('content')
-                    },
-                    body: JSON.stringify(data)
-                }).then(res => res.json()).then(data => {
-                    const msgDiv = document.getElementById('scheduleMessage');
-                    msgDiv.innerHTML =
-                        `<p class="${data.success ? 'text-green-600' : 'text-red-600'}">${data.message}</p>`;
-                    if (data.success) calendar.refetchEvents();
-                }).catch(err => console.error(err));
             });
 
             // Password Change Form

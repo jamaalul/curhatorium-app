@@ -15,7 +15,8 @@ class ProfessionalDashboardController extends Controller
 {
     public function __construct(
         private ScheduleService $scheduleService,
-        private \App\Services\FonnteService $fonnteService
+        private \App\Services\FonnteService $fonnteService,
+        private \App\Services\RescheduleService $rescheduleService
     ) {
     }
 
@@ -41,14 +42,14 @@ class ProfessionalDashboardController extends Controller
         $recentSessions = $professional->scheduleSlots()
             ->whereIn('status', ['booked', 'pending_confirmation', 'completed'])
             ->whereNotNull('booked_by_user_id')
-            ->with('bookedBy')
+            ->with(['bookedBy', 'consultation'])
             ->orderBy('slot_start_time', 'desc')
             ->limit(10)
             ->get();
 
         $pendingBookings = $professional->scheduleSlots()
             ->where('status', 'pending_confirmation')
-            ->with('bookedBy')
+            ->with(['bookedBy', 'consultation'])
             ->orderBy('slot_start_time', 'asc')
             ->get();
         
@@ -97,9 +98,9 @@ class ProfessionalDashboardController extends Controller
         ]);
     }
 
-    public function setAvailability(Request $request)
+    public function setAvailability(Request $request, $professionalId)
     {
-        $request->validate([
+        $validatedData = $request->validate([
             'days' => 'required|array',
             'days.*' => 'integer|between:0,6', // 0 for Sunday, 6 for Saturday
             'start_time' => 'required|date_format:H:i',
@@ -108,21 +109,22 @@ class ProfessionalDashboardController extends Controller
             'end_date' => 'required|date|after_or_equal:start_date',
         ]);
 
-        $professional = Auth::guard('professional')->user();
+        $professional = Professional::findOrFail($professionalId);
+        if (Auth::guard('professional')->id() != $professionalId) {
+            abort(403);
+        }
 
         $this->scheduleService->generateSlots(
             $professional,
-            $request->days,
-            $request->start_time,
-            $request->end_time,
-            $request->start_date,
-            $request->end_date
+            $validatedData['days'],
+            $validatedData['start_time'],
+            $validatedData['end_time'],
+            $validatedData['start_date'],
+            $validatedData['end_date']
         );
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Availability set successfully.'
-        ]);
+        return redirect()->route('professional.dashboard', $professionalId)
+            ->with('success', 'Availability set successfully.');
     }
 
     public function getSchedule(Request $request, Professional $professional)
@@ -280,5 +282,154 @@ class ProfessionalDashboardController extends Controller
         $slot->delete();
 
         return response()->json(['success' => true, 'message' => 'Slot deleted successfully.']);
+    }
+
+    /**
+     * Start the reschedule process for a pending booking
+     *
+     * @param ProfessionalScheduleSlot $slot
+     * @return \Illuminate\Http\Response
+     */
+    public function rescheduleBooking(ProfessionalScheduleSlot $slot)
+    {
+        // Authorization check
+        if ($slot->professional_id !== Auth::guard('professional')->id()) {
+            abort(403);
+        }
+
+        // Only allow rescheduling of pending or booked slots
+        if (!in_array($slot->status, ['pending_confirmation', 'booked'])) {
+            return back()->with('error', 'This booking cannot be rescheduled.');
+        }
+
+        // Create a reschedule record
+        $reschedule = $this->rescheduleService->createRescheduleOffer($slot, [], null);
+
+        // Redirect to the form for selecting available slots
+        return redirect()->route('professional.reschedule.offer-slots', [
+            'professionalId' => $slot->professional_id,
+            'rescheduleId' => $reschedule->id
+        ])->with('reschedule_id', $reschedule->id);
+    }
+
+    /**
+     * Show the form for selecting available slots to offer
+     *
+     * @param int $professionalId
+     * @param int $rescheduleId
+     * @return \Illuminate\Http\Response
+     */
+    public function showOfferSlotsForm($professionalId, $rescheduleId)
+    {
+        // Authorization check
+        $professional = Professional::findOrFail($professionalId);
+        if (Auth::guard('professional')->id() != $professionalId) {
+            abort(403);
+        }
+
+        // Get the reschedule
+        $reschedule = \App\Models\Reschedule::findOrFail($rescheduleId);
+        $originalSlot = $reschedule->originalSlot;
+
+        // Get available slots in the next 30 days (excluding the original slot)
+        $availableSlots = $professional->scheduleSlots()
+            ->where('status', 'available')
+            ->where('slot_start_time', '>=', now())
+            ->where('slot_end_time', '<=', now()->addDays(30))
+            ->where('id', '!=', $originalSlot->id)
+            ->orderBy('slot_start_time', 'asc')
+            ->get();
+
+        return view('professional.reschedule.offer-slots', [
+            'professional' => $professional,
+            'reschedule' => $reschedule,
+            'originalSlot' => $originalSlot,
+            'availableSlots' => $availableSlots,
+        ]);
+    }
+
+    /**
+     * Save the offered slots and send notification to client
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param int $professionalId
+     * @param int $rescheduleId
+     * @return \Illuminate\Http\Response
+     */
+    public function offerRescheduleSlots(Request $request, $professionalId, $rescheduleId)
+    {
+        // Authorization check
+        $professional = Professional::findOrFail($professionalId);
+        if (Auth::guard('professional')->id() != $professionalId) {
+            abort(403);
+        }
+
+        // Validate the request
+        $request->validate([
+            'notes' => 'nullable|string|max:500',
+            'slots' => 'required|array|min:1',
+            'slots.*' => 'exists:professional_schedule_slots,id',
+        ]);
+
+        // Get the reschedule
+        $reschedule = \App\Models\Reschedule::findOrFail($rescheduleId);
+        $originalSlot = $reschedule->originalSlot;
+        $selectedSlots = $request->input('slots');
+        $notes = $request->input('notes');
+
+        // Update the reschedule with the offered slots
+        $this->rescheduleService->updateRescheduleOffer($reschedule, $selectedSlots, $notes);
+
+        // Send WhatsApp notification to client
+        $consultation = $reschedule->consultation;
+        $client = $originalSlot->bookedBy;
+        $originalDate = \Carbon\Carbon::parse($originalSlot->slot_start_time)->format('d M Y');
+        $originalTime = \Carbon\Carbon::parse($originalSlot->slot_start_time)->format('H:i');
+
+        // Generate the reschedule link
+        $rescheduleLink = route('reschedule.client', $reschedule->token);
+
+        $message = "Halo {$client->name},\n\n"
+            . "{$professional->name} ingin menukar jadwal konsultasi Anda.\n\n"
+            . "🗓️ Jadwal Lama: {$originalDate}\n"
+            . "🕐 Waktu: {$originalTime}\n\n"
+            . "Silakan pilih jadwal baru melalui link berikut:\n"
+            . "{$rescheduleLink}\n\n"
+            . "Pilihan harus dilakukan dalam 48 jam.\n\n"
+            . "Terima kasih,\n"
+            . "Tim Curhatorium";
+
+        $this->fonnteService->sendWhatsApp($consultation->no_wa, $message);
+
+        return redirect()->route('professional.dashboard', $professionalId)
+            ->with('success', 'Reschedule offer sent to client successfully.');
+    }
+
+    /**
+     * List all reschedules for the professional
+     *
+     * @param int $professionalId
+     * @return \Illuminate\Http\Response
+     */
+    public function listReschedules($professionalId)
+    {
+        // Authorization check
+        $professional = Professional::findOrFail($professionalId);
+        if (Auth::guard('professional')->id() != $professionalId) {
+            abort(403);
+        }
+
+        // Get all reschedules for this professional's bookings
+        $reschedules = \App\Models\Reschedule::whereHas('originalSlot', function ($query) use ($professionalId) {
+            $query->where('professional_id', $professionalId);
+        })
+        ->with(['rescheduleSlots.slot', 'originalSlot', 'consultation'])
+        ->orderBy('created_at', 'desc')
+        ->paginate(10);
+
+        return view('professional.reschedule.list', [
+            'professional' => $professional,
+            'reschedules' => $reschedules,
+        ]);
     }
 }
