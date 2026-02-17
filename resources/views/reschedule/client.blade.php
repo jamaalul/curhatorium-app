@@ -70,8 +70,8 @@
                 </button>
                 <button type="button"
                     class="w-full py-3 px-4 bg-white text-gray-600 border border-gray-200 font-bold rounded-md hover:bg-gray-50 transition-colors duration-200"
-                    onclick="cancelReschedule()">
-                    Keep Original Time
+                    onclick="cancelBooking()">
+                    Cancel Booking
                 </button>
             </div>
         </form>
@@ -116,7 +116,7 @@
             document.getElementById('reschedule-form').submit();
         }
 
-        function cancelReschedule() {
+        function cancelBooking() {
             // Set the form action to cancel
             document.getElementById('action-input').value = 'cancel';
 

@@ -24,20 +24,23 @@
                 </svg>
             </div>
 
-            <h1 class="text-2xl font-bold text-gray-800 mb-2">Reschedule Cancelled</h1>
-            <p class="text-gray-600 mb-6">Your consultation will remain at the original time.</p>
+            <h1 class="text-2xl font-bold text-gray-800 mb-2">Consultation Cancelled</h1>
+            <p class="text-gray-600 mb-6">{{ $message ?? 'Your consultation has been cancelled and ticket refunded.' }}
+            </p>
 
-            <div class="bg-gray-50 p-4 rounded-md mb-6 text-left">
-                <h2 class="text-lg font-bold text-gray-800 mb-3">Original Booking</h2>
-                <div class="grid grid-cols-3 gap-2 mb-2">
-                    <div class="font-bold text-gray-600">Date:</div>
-                    <div class="col-span-2">{{ $originalDate }}</div>
+            @if (isset($originalDate) && isset($originalTime))
+                <div class="bg-gray-50 p-4 rounded-md mb-6 text-left">
+                    <h2 class="text-lg font-bold text-gray-800 mb-3">Cancelled Booking</h2>
+                    <div class="grid grid-cols-3 gap-2 mb-2">
+                        <div class="font-bold text-gray-600">Date:</div>
+                        <div class="col-span-2">{{ $originalDate }}</div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2">
+                        <div class="font-bold text-gray-600">Time:</div>
+                        <div class="col-span-2">{{ $originalTime }}</div>
+                    </div>
                 </div>
-                <div class="grid grid-cols-3 gap-2">
-                    <div class="font-bold text-gray-600">Time:</div>
-                    <div class="col-span-2">{{ $originalTime }}</div>
-                </div>
-            </div>
+            @endif
 
             <p class="text-gray-600">Thank you for using our service. You will receive a confirmation notification.</p>
         </div>

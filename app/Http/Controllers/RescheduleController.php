@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Reschedule;
 use App\Models\RescheduleSlot;
 use App\Services\RescheduleService;
+use App\Services\TicketService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -12,13 +13,16 @@ class RescheduleController extends Controller
 {
     protected $rescheduleService;
     protected $fonnteService;
+    protected $ticketService;
 
     public function __construct(
         RescheduleService $rescheduleService,
-        \App\Services\FonnteService $fonnteService
+        \App\Services\FonnteService $fonnteService,
+        TicketService $ticketService
     ) {
         $this->rescheduleService = $rescheduleService;
         $this->fonnteService = $fonnteService;
+        $this->ticketService = $ticketService;
     }
 
     /**
@@ -27,7 +31,7 @@ class RescheduleController extends Controller
      * @param string $token
      * @return \Illuminate\Http\Response
      */
-    public function clientInterface($token)
+    public function clientInterface(string $token)
     {
         // Find the reschedule by token
         $reschedule = Reschedule::where('token', $token)
@@ -85,11 +89,11 @@ class RescheduleController extends Controller
      * @param string $token
      * @return \Illuminate\Http\Response
      */
-    public function selectSlot(Request $request, $token)
+    public function selectSlot(Request $request, string $token)
     {
         // Validate the request
         $request->validate([
-            'slot_id' => 'required',
+            'slot_id' => 'required_if:action,accept',
             'action' => 'required|in:accept,cancel',
         ]);
 
@@ -106,19 +110,21 @@ class RescheduleController extends Controller
         $action = $request->input('action');
         $selectedSlotId = $request->input('slot_id');
 
-        // Handle the reschedule action
-        $result = $this->rescheduleService->handleClientResponse($reschedule, $selectedSlotId, $action);
-
-        if (!$result) {
-            return view('reschedule.error', ['message' => 'Unable to process reschedule. Please try again.']);
-        }
-
         if ($action === 'accept') {
+            // Handle the reschedule action
+            $result = $this->rescheduleService->handleClientResponse($reschedule, $selectedSlotId, $action);
+
+            if (!$result) {
+                return view('reschedule.error', ['message' => 'Unable to process reschedule. Please try again.']);
+            }
             // Get the selected slot details
-            $selectedSlot = $reschedule->rescheduleSlots()
+            $selectedSlotRelation = $reschedule->rescheduleSlots()
                 ->where('professional_schedule_slot_id', $selectedSlotId)
-                ->first()
-                ->slot;
+                ->first();
+            if (!$selectedSlotRelation) {
+                return view('reschedule.error', ['message' => 'Selected slot not found.']);
+            }
+            $selectedSlot = $selectedSlotRelation->slot;
 
             // Format the new slot date and time
             $newDate = \Carbon\Carbon::parse($selectedSlot->slot_start_time)->format('d M Y');
@@ -140,23 +146,38 @@ class RescheduleController extends Controller
                 'newTime' => $newTime,
             ]);
         } else {
-            // Send notification to the client about cancellation
-            $client = $reschedule->consultation->professionalScheduleSlot->bookedBy;
-            $originalDate = \Carbon\Carbon::parse($reschedule->originalSlot->slot_start_time)->format('d M Y');
-            $originalTime = \Carbon\Carbon::parse($reschedule->originalSlot->slot_start_time)->format('H:i');
+            // Cancel the booking and refund the ticket
+            $consultation = $reschedule->consultation;
+            $originalSlot = $reschedule->originalSlot;
+            $client = $consultation->professionalScheduleSlot->bookedBy;
+            $noWa = $consultation->no_wa;
 
+            // Mark original slot as available
+            $originalSlot->status = 'available';
+            $originalSlot->booked_by_user_id = null;
+            $originalSlot->save();
+
+            // Delete the consultation
+            $consultation->delete();
+
+            // Refund the ticket
+            $this->ticketService->refundTicket($client, 'consultation', 1);
+
+            // Set reschedule status to expired (not cancelled)
+            $reschedule->status = 'expired';
+            $reschedule->client_response_at = \Carbon\Carbon::now();
+            $reschedule->save();
+
+            // Send notification to the client
             $message = "Halo {$client->username},\n\n"
-                . "Jadwal konsultasi Anda tetap sesuai rencana awal.\n\n"
-                . "🗓️ Jadwal: {$originalDate}\n"
-                . "🕐 Waktu: {$originalTime}\n\n"
+                . "Konsultasi Anda telah dibatalkan dan tiket telah dikembalikan.\n\n"
                 . "Terima kasih,\n"
                 . "Tim Curhatorium";
-            $this->fonnteService->sendWhatsApp($reschedule->consultation->no_wa, $message);
+            $this->fonnteService->sendWhatsApp($noWa, $message);
 
             return view('reschedule.cancelled', [
                 'reschedule' => $reschedule,
-                'originalDate' => $originalDate,
-                'originalTime' => $originalTime,
+                'message' => 'Your consultation has been cancelled and ticket refunded.',
             ]);
         }
     }
