@@ -6,6 +6,7 @@
     <title>Ringkasan Mingguan - Curhatorium</title>
     <link rel="stylesheet" href="{{ asset('css/global.css') }}">
     <link rel="stylesheet" href="{{ asset('css/tracker/result.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         .weekly-summary {
             background: white;
@@ -1343,39 +1344,8 @@
                 </div>
             </div>
             <div class="ai-content">
-                <div class="ai-section-content">
-                    @php
-                        // Konversi Markdown sederhana ke HTML aman (tanpa tag HTML)
-                        $text = $weeklyStat->feedback ?? '';
-                        // Escape all HTML
-                        $text = e($text);
-
-                        // Bold: **text** or __text__
-                        $text = preg_replace('/\*\*(.*?)\*\*/s', '<strong>$1</strong>', $text);
-                        $text = preg_replace('/\_\_(.*?)\_\_/s', '<strong>$1</strong>', $text);
-
-                        // Italic: *text* or _text_
-                        $text = preg_replace('/\*(.*?)\*/s', '<em>$1</em>', $text);
-                        $text = preg_replace('/\_(.*?)\_/s', '<em>$1</em>', $text);
-
-                        // Inline code: `code`
-                        $text = preg_replace('/`([^`]+)`/', '<code>$1</code>', $text);
-
-                        // Headings: #, ##, ###
-                        $text = preg_replace('/^### (.*)$/m', '<b>$1</b>', $text);
-                        $text = preg_replace('/^## (.*)$/m', '<b>$1</b>', $text);
-                        $text = preg_replace('/^# (.*)$/m', '<b>$1</b>', $text);
-
-                        // Unordered lists: - item or * item
-                        $text = preg_replace('/^(\s*)[-\*] (.*)$/m', '$1• $2', $text);
-
-                        // Numbered lists: 1. item
-                        $text = preg_replace('/^(\s*)\d+\.\s(.*)$/m', '$1$2', $text);
-
-                        // Convert newlines to <br>
-                        $text = nl2br($text);
-                    @endphp
-                    {!! $text !!}
+                <div class="ai-section-content prose prose-lg" style="max-width: none;">
+                    {!! Illuminate\Support\Str::markdown($weeklyStat->feedback) !!}
                 </div>
             </div>
         </div>

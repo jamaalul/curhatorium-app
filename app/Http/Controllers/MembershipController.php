@@ -52,7 +52,7 @@ class MembershipController extends Controller
             'user_id' => $user->id,
             'membership_id' => $membership->id,
             'started_at' => $now,
-            'expires_at' => $expires ?? $now->copy()->addMonth(), // fallback 1 month
+            'expires_at' => $expires ?? $now->addDays(30), // fallback 1 month
         ]);
 
         // Grant tickets
@@ -73,5 +73,12 @@ class MembershipController extends Controller
 
         // For now, just return a simple confirmation view/alert
         return redirect()->route('membership.index')->with('success', 'Membership purchased! Tickets granted.');
+    }
+
+    public function claimCalmStarter()
+    {
+        $this->buy(1);
+
+        return redirect()->route('dashboard')->with('success', 'Calm Starter membership berhasil diklaim!');
     }
 }

@@ -16,6 +16,8 @@ use App\Http\Controllers\PusherController;
 use App\Http\Controllers\QuoteController;
 use App\Http\Controllers\SgdController;
 use App\Http\Controllers\ShareAndTalkController;
+use App\Http\Controllers\SocialiteController;
+use App\Http\Controllers\RescheduleController;
 use App\Http\Controllers\TrackerController;
 use App\Http\Controllers\XpController;
 use App\Http\Controllers\XpRedemptionController;
@@ -25,6 +27,7 @@ use App\Http\Middleware\TicketGateMiddleware;
 use App\Models\Announcement;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use App\Models\User;
 
 /*
 |--------------------------------------------------------------------------
@@ -49,6 +52,7 @@ Route::controller(PusherController::class)->prefix('pusher')->name('pusher.')->g
     Route::get('/room/{room}', 'room')->name('room');
     Route::post('/room', 'createRoom')->name('createRoom');
     Route::post('/message', 'sendMessage')->name('sendMessage');
+    Route::post('/update-status', 'updateStatus')->name('updateStatus');
     Route::post('/terminate/{room}', 'terminate')->name('terminate');
 });
 
@@ -63,6 +67,12 @@ Route::name('professional.')->group(function () {
     Route::get('/professional/login', [ProfessionalAuthenticatedSessionController::class, 'create'])->name('login');
     Route::post('/professional/login', [ProfessionalAuthenticatedSessionController::class, 'store']);
     Route::post('/professional/logout', [ProfessionalAuthenticatedSessionController::class, 'destroy'])->name('logout');
+});
+
+// Socialite authentication routes
+Route::controller(SocialiteController::class)->prefix('auth')->name('socialite.')->group(function () {
+    Route::get('/{provider}', 'redirectToProvider')->name('redirect');
+    Route::get('/{provider}/callback', 'handleProviderCallback')->name('callback');
 });
 
 // Feature information pages
@@ -140,7 +150,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
             ->first();
         $user = Auth::user();
         $cards = []; // Cards are now loaded via JavaScript
-        return view('main.main', compact('statsData', 'announcement', 'user', 'cards'));
+        $hasCalmStarter = $user->hasActiveCalmStarter();
+        $hasEverHadCalmStarter = $user->userMemberships()->whereHas('membership', function($query) {
+            $query->where('name', 'Calm Starter');
+        })->exists();
+        return view('main.main', compact('statsData', 'announcement', 'user', 'cards', 'hasCalmStarter', 'hasEverHadCalmStarter'));
     })->name('dashboard');
 
     // Profile routes
@@ -165,6 +179,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::controller(MembershipController::class)->prefix('membership')->name('membership.')->group(function () {
         Route::get('/', 'index')->name('index');
         Route::post('/buy/{id}', 'buy')->name('buy');
+        Route::get('/claim-starter', 'claimCalmStarter')->name('claim-starter');
     });
 
     // Feature routes requiring authentication
@@ -185,6 +200,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/booked', 'booked')->name('booked');
         Route::post('/end', 'endSession')->name('end');
         Route::get('/chat/{room}', 'chatRoom')->name('chat.room');
+        Route::get('/video/{room}', 'videoRoom')->name('video.room');
+        Route::post('/update-status', 'updateStatus')->name('updateStatus');
     });
 
     // Tracker routes
@@ -267,18 +284,32 @@ Route::middleware('auth')->prefix('api')->name('api.')->group(function () {
 
     // Professional Availability and Schedule APIs
     Route::get('/professionals/{professional}/availability', [ShareAndTalkController::class, 'getAvailabilitySlots'])->name('professionals.availability');
-    Route::get('/professionals/{professional}/schedule', [ProfessionalDashboardController::class, 'getSchedule'])->name('professionals.schedule');
 });
+
 
 // Professional Dashboard routes (Protected)
 Route::middleware([AuthenticateProfessional::class])->prefix('professional')->name('professional.')->group(function () {
     Route::get('/{professionalId}/dashboard', [ProfessionalDashboardController::class, 'dashboard'])->name('dashboard');
-    Route::post('/availability/set', [ProfessionalDashboardController::class, 'setAvailability'])->name('set-availability');
+    Route::post('/{professionalId}/availability/set', [ProfessionalDashboardController::class, 'setAvailability'])->name('set-availability');
     Route::post('/slots/{slot}/accept', [ProfessionalDashboardController::class, 'acceptBooking'])->name('booking.accept');
     Route::post('/slots/{slot}/decline', [ProfessionalDashboardController::class, 'declineBooking'])->name('booking.decline');
+    Route::post('/slots/{slot}/reschedule', [ProfessionalDashboardController::class, 'rescheduleBooking'])->name('booking.reschedule');
+    Route::get('/{professionalId}/reschedule/{rescheduleId}/offer-slots', [ProfessionalDashboardController::class, 'showOfferSlotsForm'])->name('reschedule.offer-slots');
+    Route::post('/{professionalId}/reschedule/{rescheduleId}/offer-slots', [ProfessionalDashboardController::class, 'offerRescheduleSlots'])->name('reschedule.offer-slots.save');
+    Route::get('/{professionalId}/reschedules', [ProfessionalDashboardController::class, 'listReschedules'])->name('reschedule.list');
+    Route::get('/chat/{room}', [ShareAndTalkController::class, 'chatRoom'])->name('chat.room');
+    Route::get('/video/{room}', [ShareAndTalkController::class, 'videoRoom'])->name('video.room');
+    Route::post('/update-status', [ShareAndTalkController::class, 'updateStatus'])->name('updateStatus');
     Route::delete('/slots/{slot}', [ProfessionalDashboardController::class, 'deleteSlot'])->name('slot.delete');
     Route::post('/{professionalId}/change-password', [ProfessionalDashboardController::class, 'changePassword'])->name('change-password');
     Route::post('/logout', [ProfessionalDashboardController::class, 'logout'])->name('dashboard.logout');
 });
+
+// Client Public Routes (No Auth Required)
+Route::get('/reschedule/{token}', [RescheduleController::class, 'clientInterface'])->name('reschedule.client');
+Route::post('/reschedule/{token}/select', [RescheduleController::class, 'selectSlot'])->name('reschedule.select');
+
+// Professional Schedule API (no auth required for professionals)
+Route::get('/api/professionals/{professional}/schedule', [ProfessionalDashboardController::class, 'getSchedule'])->name('api.professionals.schedule');
 
 require __DIR__ . '/auth.php';

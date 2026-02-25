@@ -28,6 +28,8 @@ class User extends Authenticatable implements FilamentUser
         'profile_picture',
         'total_xp',
         'onboarding_completed',
+        'provider_name',
+        'provider_id',
     ];
 
     /**
@@ -105,6 +107,15 @@ class User extends Authenticatable implements FilamentUser
         return $this->activeMemberships()
             ->whereHas('membership', function($query) {
                 $query->where('name', 'Inner Peace');
+            })
+            ->exists();
+    }
+
+    public function hasActiveCalmStarter()
+    {
+        return $this->activeMemberships()
+            ->whereHas('membership', function($query) {
+                $query->where('name', 'Calm Starter');
             })
             ->exists();
     }

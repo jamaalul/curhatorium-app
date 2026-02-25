@@ -64,6 +64,17 @@
         </button>
     </nav>
     
+    <!-- Mouseflow Tracking Script -->
+    <script type="text/javascript">
+      window._mfq = window._mfq || [];
+      (function() {
+        var mf = document.createElement("script");
+        mf.type = "text/javascript"; mf.defer = true;
+        mf.src = "//cdn.mouseflow.com/projects/c5eb0d0a-6b75-427c-81f3-ee3c9e946eca.js";
+        document.getElementsByTagName("head")[0].appendChild(mf);
+      })();
+    </script>
+
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             fetch("/user")

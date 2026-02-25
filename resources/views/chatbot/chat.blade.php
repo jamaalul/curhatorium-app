@@ -13,12 +13,23 @@
     <title>Ment-AI | Curhatorium</title>
     <link rel="stylesheet" href="{{ asset('css/global.css') }}">
     @vite('resources/css/app.css')
+    <!-- Mouseflow Tracking Script -->
+    <script type="text/javascript">
+      window._mfq = window._mfq || [];
+      (function() {
+        var mf = document.createElement("script");
+        mf.type = "text/javascript"; mf.defer = true;
+        mf.src = "//cdn.mouseflow.com/projects/c5eb0d0a-6b75-427c-81f3-ee3c9e946eca.js";
+        document.getElementsByTagName("head")[0].appendChild(mf);
+      })();
+    </script>
+
     <style>
         /* Responsive font sizes */
         html { font-size: 16px; }
-        @media (max-width: 640px) { html { font-size: 13px; } }
-        @media (min-width: 640px) and (max-width: 1024px) { html { font-size: 14px; } }
-        @media (min-width: 1024px) { html { font-size: 15px; } }
+        @media (max-width: 640px) { html { font-size: 14px; } }
+        @media (min-width: 640px) and (max-width: 1024px) { html { font-size: 15px; } }
+        @media (min-width: 1024px) { html { font-size: 16px; } }
 
         /* Sidebar transitions for mobile */
         #sidebar {
@@ -55,14 +66,13 @@
             }
         }
 
-        .typing-cursor::after {
-            content: '▋';
-            animation: blink 1s step-end infinite;
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
         }
 
-        @keyframes blink {
-            from, to { color: transparent; }
-            50% { color: black; }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -99,7 +109,7 @@
         </div>
 
         <!-- Chat list (fills remaining height and scrolls) -->
-        <div class="flex-1 min-h-0 overflow-y-auto w-full mt-4 pb-4" style="scrollbar-width:thin; scrollbar-color:#ffffff #1f2937;">
+        <div class="flex-1 min-h-0 overflow-y-auto w-full mt-4 pb-4" style="scrollbar-width:thin; scrollbar-color:#3a424e #1f2937;">
             <p class="text-gray-500 mb-2 text-base md:text-lg">Chat</p>
             @foreach($titles as $title)
             <div class="group w-full transition-all duration-100 flex items-center gap-2 p-2 pr-7 rounded-md cursor-pointer relative @if($title->identifier == $activeChat->identifier) bg-gray-700 text-white @else text-gray-300 hover:bg-gray-700 hover:text-white @endif" onclick="window.location.href = '{{ route('chatbot.chat', $title->identifier) }}'">
@@ -118,12 +128,12 @@
         <!-- Footer / profile (fixed at bottom) -->
         <div class="flex gap-2 items-center justify-between w-full border-t border-gray-700 pt-2 flex-none transition-all duration-300 ease-out">
             <div class="flex items-center gap-4">
-            <img src="{{ $user->profile_picture ?? asset('assets/profile_pict.svg') }}" alt="avatar" class="size-8 rounded-full">
+            <img src="{{ $user->profile_picture ? asset('storage/' . $user->profile_picture) : asset('assets/profile_pict.svg') }}" alt="avatar" class="size-8 rounded-full">
             <p class="text-sm md:text-base font-semibold">{{ $user->username }}</p>
             </div>
         </div>
     </div>
-    <div class="w-full h-full flex flex-col bg-white rounded-md relative overflow-hidden">
+    <div class="w-full h-screen flex flex-col bg-white rounded-md relative overflow-hidden">
         <nav class="w-full h-16 bg-none absolute top-0 px-4 flex items-center gap-4 justify-between" style="background: linear-gradient(180deg,rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 100%);">
             <div class="flex items-center gap-2">
                 <svg id="sidebar-toggle-b" onclick="toggleSidebar()" xmlns="http://www.w3.org/2000/svg" class="h-6 text-gray-400 hover:text-gray-700 cursor-pointer transition-all duration-100 w-0 hidden opacity-0" fill="none" viewBox="0 0 24 24"stroke="currentColor"stroke-width="2"stroke-linecap="round"stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/></svg>
@@ -230,7 +240,7 @@
             @foreach($messages as $message)
                 <div class="flex mb-4 @if($message->role == 'user') justify-end @endif">
                     <div class="p-3 rounded-lg @if($message->role == 'user') bg-[#48a6a6] text-white @else text-black @endif">
-                        <div>
+                        <div @if($message->role != 'user') class="prose" @endif>
                             {!! Illuminate\Support\Str::markdown($message->message) !!}
                         </div>
                     </div>
@@ -362,23 +372,6 @@
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }
 
-        function typeEffect(element, text, callback) {
-            let i = 0;
-            const typingInterval = 1;
-
-            function typing() {
-                if (i < text.length) {
-                    const char = text.charAt(i);
-                    element.insertBefore(document.createTextNode(char), element.querySelector('.typing-cursor'));
-                    i++;
-                    chatContainer.scrollTop = chatContainer.scrollHeight;
-                    setTimeout(typing, typingInterval);
-                } else {
-                    if (callback) callback();
-                }
-            }
-            typing();
-        }
 
         chatForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -394,30 +387,11 @@
             messageBubble.appendChild(messageText);
 
             const messageElement = document.createElement('div');
-            messageElement.classList.add('flex', 'mb-4');
+            messageElement.classList.add('flex', 'mb-4', 'fade-in');
             messageElement.appendChild(messageBubble);
             chatContainer.appendChild(messageElement);
 
-            const cursor = document.createElement('span');
-            cursor.className = 'typing-cursor';
-            messageText.appendChild(cursor);
-
             let fullResponse = '';
-            let textQueue = [];
-            let isTyping = false;
-
-            function processQueue() {
-                if (textQueue.length === 0) {
-                    isTyping = false;
-                    // When typing is done, render the full markdown
-                    messageText.innerHTML = marked.parse(fullResponse);
-                    chatContainer.scrollTop = chatContainer.scrollHeight;
-                    return;
-                }
-                isTyping = true;
-                const textToType = textQueue.shift();
-                typeEffect(messageText, textToType, processQueue);
-            }
 
             const eventSource = new EventSource('{{ route('api.chatbot.stream', $activeChat->identifier) }}?message=' + encodeURIComponent(message));
 
@@ -436,20 +410,19 @@
                             body: JSON.stringify({ message: fullResponse })
                         });
                     }
-                    // Final render after stream is done
-                    if (!isTyping && textQueue.length === 0) {
-                        messageText.innerHTML = marked.parse(fullResponse);
-                        chatContainer.scrollTop = chatContainer.scrollHeight;
-                    }
+                    messageText.parentElement.classList.add('prose');
+                    messageText.parentElement.innerHTML = marked.parse(fullResponse);
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
                     return;
                 }
 
                 if (data.text) {
                     fullResponse += data.text;
-                    textQueue.push(data.text);
-                    if (!isTyping) {
-                        processQueue();
-                    }
+                    const span = document.createElement('span');
+                    span.className = 'fade-in';
+                    span.textContent = data.text;
+                    messageText.appendChild(span);
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
                 }
             };
 

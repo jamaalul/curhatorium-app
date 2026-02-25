@@ -538,7 +538,7 @@
         <!-- Page Header -->
         <div class="page-header">
             <div class="page-header-content">
-                <h1>🧠 Tes Kesehatan Mental</h1>
+                <h1>Skala Kesejahteraan Mental</h1>
                 <p>Evaluasi kesejahteraan mental Anda berdasarkan<br>Health Continuum - Short Form (MHC-SF)</p>
             </div>
         </div>

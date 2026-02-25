@@ -6,6 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>XP Redemption | Curhatorium</title>
+    <link rel="stylesheet" href="{{ asset('css/global.css') }}">
     @vite('resources/css/app.css')
 </head>
 <body class="bg-gray-100">
@@ -39,7 +40,7 @@
                     'mentai_deepcard_unlimited' => 'Ment-AI & Deep Cards',
                     'share_talk_ranger_chat' => 'Share and Talk via Chat w/ Rangers',
                     'share_talk_psy_chat' => 'Share and Talk via Chat w/ Psikolog',
-                    'share_talk_psy_video' => 'Share and Talk via Video Call w/ Psikiater',
+                    'share_talk_psy_video' => 'Share and Talk via Video Call w/ Psikolog',
                 ];
             @endphp
             <div class="overflow-x-auto">

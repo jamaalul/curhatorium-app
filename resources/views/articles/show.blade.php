@@ -19,7 +19,7 @@
     .chip { background: var(--chip-bg); border:1px solid var(--chip-border); color: var(--chip-text); padding:4px 10px; border-radius:999px; font-weight:700; font-size:.8rem; }
     .hero { width:100%; aspect-ratio: 16/9; border-radius:16px; overflow:hidden; background:#f3f4f6; margin: 18px 0 26px; box-shadow: 0 6px 18px rgba(0,0,0,0.08); }
     .hero img { width:100%; height:100%; object-fit: cover; display:block; }
-    .content { color:#0f172a; font-size:1.075rem; line-height:1.85; }
+    .content { color:#0f172a; font-size:1.075rem; line-height:1.85; text-align:justify; }
     .content h2 { font-size:1.5rem; margin:1.25rem 0 .5rem; }
     .content h3 { font-size:1.25rem; margin:1rem 0 .5rem; }
     .content p { margin: 0 0 1rem; }

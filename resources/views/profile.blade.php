@@ -220,8 +220,8 @@
                             </div>
                             <div>
                                 <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email</label>
-                                <input id="email" name="email" type="email" value="{{ old('email', $user['email'] ?? '') }}" required
-                                       class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#48a6a6] focus:border-[#48a6a6] sm:text-sm">
+                                <input id="email" name="email" type="email" value="{{ old('email', $user['email'] ?? '') }}" readonly
+                                       class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-gray-100 cursor-not-allowed sm:text-sm">
                             </div>
                         </div>
                         <div class="flex justify-end">

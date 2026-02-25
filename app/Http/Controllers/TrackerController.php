@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Services\TrackerService;
 use App\Http\Requests\TrackerRequest;
 use App\Models\Stat;
+use App\Models\MonthlyStat;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
@@ -36,9 +37,6 @@ class TrackerController extends Controller
 
     public function track(TrackerRequest $request) {
         try {
-            Log::info('Tracker form submission', $request->all());
-            Log::info('Validated data:', $request->validated());
-            
             $user = Auth::user();
             Log::info('User ID:', ['user_id' => $user->id]);
             

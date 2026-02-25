@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Events\StatusUpdated;
 use App\Events\XpAwarded;
 use App\Listeners\HandleXpAwarded;
 use Illuminate\Auth\Events\Registered;

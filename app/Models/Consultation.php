@@ -12,6 +12,8 @@ class Consultation extends Model
         'room',
         'consultation_type',
         'no_wa',
+        'facilitator_status',
+        'client_status',
     ];
 
     public function professionalScheduleSlot()
