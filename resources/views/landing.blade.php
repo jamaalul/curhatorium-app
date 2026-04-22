@@ -48,15 +48,14 @@
             style="background-image: url(images/background.webp)">
             <div class="flex flex-col items-center text-center gap-4 p-6 md:p-12">
                 <h1 class="text-6xl md:text-9xl font-medium text-[#ffcc00] tracking-tight"
-                    style="text-shadow: 0px 1px 2px rgba(0,0,0,0.1);" data-aos="zoom-out-down" data-aos-duration="1000">
+                    style="text-shadow: 0px 1px 2px rgba(0,0,0,0.1);">
                     Curhatorium</h1>
-                <p class="text-gray-600 text-base text-ellipsis md:text-lg" data-aos="zoom-out" data-aos-duration="1000"
-                    data-aos-delay="100">Curhatorium adalah ruang aman untuk berbagi cerita, mendapatkan dukungan, dan
+                <p class="text-gray-600 text-base text-ellipsis md:text-lg">
+                    Curhatorium adalah ruang aman untuk berbagi cerita, mendapatkan dukungan, dan
                     menemukan ketenangan tanpa rasa takut dihakimi. Mulai perjalananmu menuju kesehatan mental yang
                     lebih baik bersama komunitas yang peduli dan anonim.</p>
             </div>
-            <div class="flex flex-col md:flex-row gap-4 w-full md:w-auto justify-center items-center"
-                data-aos="zoom-out-up" data-aos-duration="1000">
+            <div class="flex flex-col md:flex-row gap-4 w-full md:w-auto justify-center items-center">
                 <button
                     class="px-4 py-2 text-[#48A6A6] border border-[#48A6A6] rounded-md transition-colors duration-200 hover:bg-[#48A6A6] hover:text-white w-full md:w-auto shadow-md"
                     onclick="window.location.href = '#about'">Kenali Lebih Lanjut</button>
@@ -65,8 +64,7 @@
                     onclick="window.location.href = '/register'">Mulai Perjalananmu</button>
             </div>
             <img src="{{ asset('images/platform.png') }}" alt="curhatorium platform"
-                class="w-full max-w-full md:max-w-[70vw] object-cover rounded-md shadow-lg mt-7 hidden md:block"
-                data-aos="fade-up" data-aos-duration="2000" data-aos-delay="200">
+                class="w-full max-w-full md:max-w-[70vw] object-cover rounded-md shadow-lg mt-7 hidden md:block">
         </div>
     </section>
 
@@ -80,8 +78,9 @@
             <img src="images/ahpc.png" alt="Airlangga Health Promotion Center" class="h-10 md:h-16">
             <img src="images/lpm.png" alt="Lembaga Pengabdian Masyarakat" class="h-10 md:h-16">
             <img src="images/hji.png" alt="Halo Jiwa Indonesia" class="h-10 md:h-16">
-            <img src="images/dikti.png" alt="Halo Jiwa Indonesia" class="h-10 md:h-16">
-            <img src="images/belmawa.png" alt="Halo Jiwa Indonesia" class="h-10 md:h-16">
+            <img src="images/dikti.png" alt="Dikti" class="h-10 md:h-16">
+            <img src="images/belmawa.png" alt="Belmawa" class="h-10 md:h-16">
+            <img src="images/venture.png" alt="Venture Studio" class="h-10 md:h-16">
         </div>
     </section>
 
@@ -116,7 +115,7 @@
     <!-- About Us Section -->
     <section id="about" class="w-full bg-white py-12 md:py-24 px-4 overflow-hidden">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-8 md:gap-12">
-            <div class="w-full md:w-1/2" data-aos="fade-right" data-aos-duration="1000">
+            <div class="w-full md:w-1/2">
                 <div class="bg-[#ffcd2d] p-8 rounded-lg shadow-lg">
                     <h3 class="text-3xl font-bold text-[#222222] mb-4">Tentang Curhatorium</h3>
                     <p class="text-stone-800">"Curhatorium hadir sebagai ruang aman untuk generasi muda di seluruh
@@ -125,7 +124,7 @@
                         Di Curhatorium, setiap perjalanan emosional layak dihargai, didengar, dan didampingi."</p>
                 </div>
             </div>
-            <div class="w-full md:w-1/2" data-aos="fade-left" data-aos-duration="1000">
+            <div class="w-full md:w-1/2">
                 <div class="space-y-6">
                     <div>
                         <h4 class="text-2xl font-bold text-[#48A6A6]">Visi</h4>
@@ -174,14 +173,13 @@
     <!-- Features Section -->
     <section id="features" class="w-full bg-stone-200 py-12 md:py-24 px-4">
         <div class="max-w-7xl mx-auto">
-            <div class="text-center mb-12" data-aos="fade-up" data-aos-duration="1000">
+            <div class="text-center mb-12">
                 <h2 class="text-3xl md:text-4xl font-bold text-[#222222]">Semua yang Anda Butuhkan</h2>
                 <p class="text-stone-600 mt-2 text-lg">Dukungan kesejahteraan mental yang komprehensif, dirancang
                     khusus untuk kamu.</p>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <div class="bg-white p-6 rounded-lg shadow-md text-center flex flex-col items-center gap-2"
-                    data-aos="fade-up" data-aos-delay="300" data-aos-duration="1000">
+                <div class="bg-white p-6 rounded-lg shadow-md text-center flex flex-col items-center gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                         stroke="#48a6a6" class="size-12">
                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -191,8 +189,7 @@
                     <p class="text-stone-600">Bergabung dalam grup diskusi anonim yang dipandu profesional. Berbagi
                         pengalaman dan dukungan dengan sesama.</p>
                 </div>
-                <div class="bg-white p-6 rounded-lg shadow-md text-center flex flex-col items-center gap-2"
-                    data-aos="fade-up" data-aos-delay="200" data-aos-duration="1000">
+                <div class="bg-white p-6 rounded-lg shadow-md text-center flex flex-col items-center gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                         stroke="#48a6a6" class="size-12">
                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -202,8 +199,7 @@
                     <p class="text-stone-600">Sesi konsultas dengan peer-supporter atau psikolog profesional melalui
                         chat atau video call yang aman dan rahasia.</p>
                 </div>
-                <div class="bg-white p-6 rounded-lg shadow-md text-center flex flex-col items-center gap-2"
-                    data-aos="fade-up" data-aos-delay="100" data-aos-duration="1000">
+                <div class="bg-white p-6 rounded-lg shadow-md text-center flex flex-col items-center gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                         stroke="currentColor" class="size-12 text-[#48a6a6]">
                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -213,8 +209,7 @@
                     <p class="text-stone-600">Curhat dengan AI 24/7 yang memahami perasaan Anda. Dapatkan dukungan
                         emosional dan saran praktis kapan saja.</p>
                 </div>
-                <div class="bg-white p-6 rounded-lg shadow-md text-center flex flex-col items-center gap-2"
-                    data-aos="fade-up" data-aos-delay="400" data-aos-duration="1000">
+                <div class="bg-white p-6 rounded-lg shadow-md text-center flex flex-col items-center gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                         stroke="currentColor" class="size-12 text-[#48a6a6]">
                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -224,8 +219,7 @@
                     <p class="text-stone-600">Pantau mood, energi, dan produktivitas harian Anda. Dapatkan analisis dan
                         feedback untuk kemajuan yang terukur.</p>
                 </div>
-                <div class="bg-white p-6 rounded-lg shadow-md text-center flex flex-col items-center gap-2"
-                    data-aos="fade-up" data-aos-delay="600" data-aos-duration="1000">
+                <div class="bg-white p-6 rounded-lg shadow-md text-center flex flex-col items-center gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                         stroke="#48a6a6" class="size-12">
                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -235,8 +229,7 @@
                     <p class="text-stone-600">Tes kesejahteraan mental standar untuk mengenali kondisi dan kebutuhan
                         Anda.</p>
                 </div>
-                <div class="bg-white p-6 rounded-lg shadow-md text-center flex flex-col items-center gap-2"
-                    data-aos="fade-up" data-aos-delay="500" data-aos-duration="1000">
+                <div class="bg-white p-6 rounded-lg shadow-md text-center flex flex-col items-center gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                         stroke="#48a6a6" class="size-12">
                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -253,7 +246,7 @@
     <!-- Testimonials Section -->
     <section id="testimonials" class="w-full bg-[#222222] py-12 md:py-24 px-4 relative">
         <div class="max-w-7xl mx-auto">
-            <div class="text-center mb-12" data-aos="fade-up" data-aos-duration="1000">
+            <div class="text-center mb-12">
                 <h2 class="text-3xl md:text-4xl font-bold text-stone-200">Cerita Nyata, <span
                         class="text-[#48A6A6]">Dampak Nyata</span></h2>
                 <p class="text-stone-400 mt-2 text-lg">Lihat bagaimana Curhatorium telah mengubah hidup orang seperti
@@ -313,8 +306,7 @@
                     ];
                 @endphp
                 @foreach ($testimonials as $testimonial)
-                    <div class="bg-stone-200 p-6 rounded-lg shadow-lg flex flex-col" data-aos="fade-up"
-                        data-aos-duration="1000">
+                    <div class="bg-stone-200 p-6 rounded-lg shadow-lg flex flex-col">
                         <p class="text-gray-700 italic mb-auto">"{{ $testimonial['text'] }}"</p>
                         <div class="text-right">
                             <p class="font-bold text-[#222222]">{{ $testimonial['author'] }}</p>
@@ -331,7 +323,7 @@
     <!-- Pricing Section -->
     <section id="pricing" class="w-full bg-stone-200 py-12 md:py-24 px-4">
         <div class="max-w-7xl mx-auto">
-            <div class="text-center mb-12" data-aos="fade-up" data-aos-duration="1000">
+            <div class="text-center mb-12">
                 <h2 class="text-3xl md:text-4xl font-bold text-[#222222]">Paket & Harga</h2>
                 <p class="text-stone-600 mt-2 text-lg">Pilih paket membership sesuai kebutuhanmu.</p>
             </div>
@@ -413,8 +405,7 @@
                             $badge = 'Terpopuler';
                         }
                     @endphp
-                    <div class="bg-white p-6 rounded-lg shadow-md ease-in-out text-center flex flex-col{{ $isTerpopuler ? ' border-2 border-[#48A6A6]' : '' }}"
-                        data-aos="fade-up" data-aos-duration="1000">
+                    <div class="bg-white p-6 rounded-lg shadow-md ease-in-out text-center flex flex-col{{ $isTerpopuler ? ' border-2 border-[#48A6A6]' : '' }}">
                         @if ($badge)
                             <div
                                 class="text-sm font-bold text-white bg-[#48A6A6] py-1 px-3 rounded-full self-center mb-4">
@@ -437,8 +428,7 @@
     <!-- CTA Section -->
     <section class="w-full bg-cover bg-center py-12 md:py-20 px-2 md:px-4 overflow-hidden"
         style="background-image: url('{{ asset('images/background.jpg') }}');">
-        <div class="max-w-4xl mx-auto text-center bg-white/80 backdrop-blur-sm p-4 md:p-10 rounded-lg shadow-xl"
-            data-aos="zoom-out-down" data-aos-duration="1000">
+        <div class="max-w-4xl mx-auto text-center bg-white/80 backdrop-blur-sm p-4 md:p-10 rounded-lg shadow-xl">
             <h2 class="text-2xl md:text-4xl font-bold text-[#222222] mb-4">Siap Memulai Perjalanan Kesehatan Mentalmu?
             </h2>
             <p class="text-gray-700 text-base md:text-lg mb-8">Bergabunglah dengan komunitas kami dan temukan ruang
