@@ -18,7 +18,7 @@
       <p style="text-align: center; color: #666; margin-bottom: 20px;">Access your professional dashboard</p>
         <form method="POST" action="{{ route('professional.login') }}">
          @csrf
-         <input type="text" placeholder="WhatsApp Number (e.g., 6281234567890)" required name="whatsapp_number" autofocus value="{{ old('whatsapp_number') }}"/>
+         <input type="text" placeholder="WhatsApp Number (e.g., 081234567890)" required name="whatsapp_number" autofocus value="{{ old('whatsapp_number') }}"/>
          @error('whatsapp_number')
              <div class="error-message">{{ $message }}</div>
          @enderror
