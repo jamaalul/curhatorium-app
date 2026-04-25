@@ -51,7 +51,7 @@
                     class="bg-[#48A6A6] px-4 py-2 text-white rounded-md transition-colors duration-200 hover:bg-[#357979] w-full md:w-auto shadow-md"
                     onclick="window.location.href = '/register'">Mulai Perjalananmu</button>
             </div>
-            <img src="{{ asset('images/platform.png') }}" alt="curhatorium platform"
+            <img src="{{ asset('images/platform.webp') }}" alt="curhatorium platform"
                 class="w-full max-w-full md:max-w-[70vw] object-cover rounded-md shadow-lg mt-7 hidden md:block">
         </div>
     </section>
@@ -59,16 +59,16 @@
     <section class="flex flex-col items-center justify-center w-full bg-white px-4 py-6 h-fit gap-8">
         <p class="md:text-lg text-center text-stone-600">Berkolaborasi dengan</p>
         <div class="flex flex-wrap items-center justify-center gap-6 md:gap-10 w-full">
-            <img src="images/hc.png" alt="Help Center Unair" class="h-12 md:h-16">
-            <img src="images/kpmw.png" alt="KPMW Unair" class="h-10 md:h-16 filter">
-            <img src="images/upp.png" alt="Unit Pelayanan Psikologi Unair" class="h-10 md:h-16">
-            <img src="images/sdg.png" alt="SDG Center Unair" class="h-10 md:h-16">
-            <img src="images/ahpc.png" alt="Airlangga Health Promotion Center" class="h-10 md:h-16">
-            <img src="images/lpm.png" alt="Lembaga Pengabdian Masyarakat" class="h-10 md:h-16">
-            <img src="images/hji.png" alt="Halo Jiwa Indonesia" class="h-10 md:h-16">
-            <img src="images/dikti.png" alt="Dikti" class="h-10 md:h-16">
-            <img src="images/belmawa.png" alt="Belmawa" class="h-10 md:h-16">
-            <img src="images/venture.png" alt="Venture Studio" class="h-10 md:h-16">
+            <img src="images/hc.webp" alt="Help Center Unair" class="h-12 md:h-16">
+            <img src="images/kpmw.webp" alt="KPMW Unair" class="h-10 md:h-16 filter">
+            <img src="images/upp.webp" alt="Unit Pelayanan Psikologi Unair" class="h-10 md:h-16">
+            <img src="images/sdg.webp" alt="SDG Center Unair" class="h-10 md:h-16">
+            <img src="images/ahpc.webp" alt="Airlangga Health Promotion Center" class="h-10 md:h-16">
+            <img src="images/lpm.webp" alt="Lembaga Pengabdian Masyarakat" class="h-10 md:h-16">
+            <img src="images/hji.webp" alt="Halo Jiwa Indonesia" class="h-10 md:h-16">
+            <img src="images/dikti.webp" alt="Dikti" class="h-10 md:h-16">
+            <img src="images/belmawa.webp" alt="Belmawa" class="h-10 md:h-16">
+            <img src="images/venture.webp" alt="Venture Studio" class="h-10 md:h-16">
         </div>
     </section>
 
