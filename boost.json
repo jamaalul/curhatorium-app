@@ -1,0 +1,13 @@
+{
+    "agents": [
+        "copilot"
+    ],
+    "packages": [
+        "filament/filament"
+    ],
+    "skills": [
+        "laravel-best-practices",
+        "socialite-development",
+        "tailwindcss-development"
+    ]
+}
