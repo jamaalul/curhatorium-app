@@ -1,6 +1,5 @@
 <?php
 
-use App\Events\MessageSent;
 use App\Http\Controllers\AgendaController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
@@ -14,10 +13,10 @@ use App\Http\Controllers\ProfessionalDashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PusherController;
 use App\Http\Controllers\QuoteController;
+use App\Http\Controllers\RescheduleController;
 use App\Http\Controllers\SgdController;
 use App\Http\Controllers\ShareAndTalkController;
 use App\Http\Controllers\SocialiteController;
-use App\Http\Controllers\RescheduleController;
 use App\Http\Controllers\TrackerController;
 use App\Http\Controllers\XpController;
 use App\Http\Controllers\XpRedemptionController;
@@ -25,9 +24,9 @@ use App\Http\Middleware\AuthenticateProfessional;
 use App\Http\Middleware\InnerPeaceMembershipMiddleware;
 use App\Http\Middleware\TicketGateMiddleware;
 use App\Models\Announcement;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-use App\Models\User;
 
 /*
 |--------------------------------------------------------------------------
@@ -83,59 +82,58 @@ Route::get('/info/{feature}', function ($feature) {
             'description' => 'A simple tool based on the Positive and Negative Affect Schedule (PANAS) to record your daily mood and productivity. Helps you recognize your emotional patterns over time. Small reflections can have a big impact.',
             'why_choose' => 'Track your emotional journey and understand your patterns to make better decisions for your mental well-being.',
             'cta' => 'Start Tracking Today',
-            'cta_link' => '/tracker'
+            'cta_link' => '/tracker',
         ],
         'mental-health-test' => [
             'title' => 'Mental Health Test',
             'description' => 'A reflective test based on the Mental Health Continuum - Short Form (MHC-SF), designed to help you recognize your emotional, psychological, and social well-being. The results will provide a complete picture of your mental condition. Not for judgment, but for understanding.',
             'why_choose' => 'Gain insights into your mental health status and understand your emotional, psychological, and social well-being.',
             'cta' => 'Take the Test',
-            'cta_link' => '/mental-test'
+            'cta_link' => '/mental-test',
         ],
         'share-and-talk' => [
             'title' => 'Share and Talk',
             'description' => 'A personal storytelling space where you can choose to be with a Ranger (trained peer-support person) or a professional psychologist. You can share through chat or online face-to-face sessions. It\'s safe, anonymous, and without coercion.',
             'why_choose' => 'Get personalized support from trained professionals or peers in a safe, anonymous environment.',
             'cta' => 'Start Sharing',
-            'cta_link' => '/share-and-talk'
+            'cta_link' => '/share-and-talk',
         ],
         'ment-ai' => [
             'title' => 'Ment-AI',
             'description' => 'Sanny AI is ready to accompany you whenever you need it. It can help with reflection, breathing exercises, or simply accompany you when you\'re feeling down.',
             'why_choose' => 'Get 24/7 AI-powered support for reflection, breathing exercises, and emotional companionship.',
             'cta' => 'Chat with AI',
-            'cta_link' => '/chatbot'
+            'cta_link' => '/chatbot',
         ],
         'missions' => [
             'title' => 'Missions of the Day',
             'description' => 'Simple daily missions that help you reconnect with yourself. Each mission can be a reflection, a small action, or a light exercise. Choose the level that suits your daily rhythm.',
             'why_choose' => 'Stay motivated with simple daily activities that help you reconnect with yourself and maintain mental wellness.',
             'cta' => 'View Missions',
-            'cta_link' => '/missions'
+            'cta_link' => '/missions',
         ],
         'support-group' => [
             'title' => 'Support Group Discussion',
             'description' => 'Reflective discussions in small groups, guided by a Ranger. You can share your story or just listen. Everything is anonymous, and everyone understands each other.',
             'why_choose' => 'Connect with others who understand your journey in a safe, anonymous group setting.',
             'cta' => 'Join Group',
-            'cta_link' => '/sgd'
+            'cta_link' => '/sgd',
         ],
         'deep-cards' => [
             'title' => 'Deep Cards',
             'description' => 'Reflection cards containing deep questions. Draw a card and write down what\'s in your heart. There are no right or wrong answers, only space to be honest with yourself.',
             'why_choose' => 'Explore your thoughts and feelings through guided reflection questions in a judgment-free space.',
             'cta' => 'Draw a Card',
-            'cta_link' => '/deep-cards'
-        ]
+            'cta_link' => '/deep-cards',
+        ],
     ];
 
-    if (!isset($featureData[$feature])) {
+    if (! isset($featureData[$feature])) {
         abort(404);
     }
 
     return view('info.feature', ['feature' => $featureData[$feature]]);
 })->name('info.feature');
-
 
 // Authenticated user routes
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -151,9 +149,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         $user = Auth::user();
         $cards = []; // Cards are now loaded via JavaScript
         $hasCalmStarter = $user->hasActiveCalmStarter();
-        $hasEverHadCalmStarter = $user->userMemberships()->whereHas('membership', function($query) {
+        $hasEverHadCalmStarter = $user->userMemberships()->whereHas('membership', function ($query) {
             $query->where('name', 'Calm Starter');
         })->exists();
+
         return view('main.main', compact('statsData', 'announcement', 'user', 'cards', 'hasCalmStarter', 'hasEverHadCalmStarter'));
     })->name('dashboard');
 
@@ -167,11 +166,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Onboarding routes
     Route::post('/mark-onboarding-completed', function () {
         Auth::user()->update(['onboarding_completed' => true]);
+
         return response()->json(['success' => true]);
     })->name('onboarding.complete');
 
     Route::post('/reset-onboarding', function () {
         Auth::user()->update(['onboarding_completed' => false]);
+
         return response()->json(['success' => true]);
     })->name('onboarding.reset');
 
@@ -184,7 +185,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Feature routes requiring authentication
     Route::get('/support-group-discussion', [SgdController::class, 'show'])->name('sgd');
-    Route::get('/deep-cards', [CardController::class, 'index'])->middleware(TicketGateMiddleware::class . ':deep_cards');
+    Route::get('/deep-cards', [CardController::class, 'index'])->middleware(TicketGateMiddleware::class.':deep_cards');
     Route::get('/mental-support-chatbot', [ChatbotController::class, 'index'])->name('chatbot');
     Route::get('/mental-support-chatbot/{identifier}', [ChatbotController::class, 'chat'])->name('chatbot.chat');
     Route::get('mental-health-test', fn () => view('mental-test.form'))->name('mhc-sf.form');
@@ -202,12 +203,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/chat/{room}', 'chatRoom')->name('chat.room');
         Route::get('/video/{room}', 'videoRoom')->name('video.room');
         Route::post('/update-status', 'updateStatus')->name('updateStatus');
+        Route::post('/facilitator-send', 'facilitatorSend')->name('facilitatorSend');
     });
 
     // Tracker routes
     Route::controller(TrackerController::class)->prefix('tracker')->name('tracker.')->group(function () {
-        Route::get('/', 'index')->middleware(TicketGateMiddleware::class . ':tracker')->name('index');
-        Route::post('/track', 'track')->middleware(TicketGateMiddleware::class . ':tracker')->name('entry');
+        Route::get('/', 'index')->middleware(TicketGateMiddleware::class.':tracker')->name('index');
+        Route::post('/track', 'track')->middleware(TicketGateMiddleware::class.':tracker')->name('entry');
         Route::get('/result', 'result')->name('result');
         Route::get('/history', 'history')->name('history');
         Route::get('/stat/{id}', 'showStat')->name('stat.detail');
@@ -217,7 +219,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Missions routes
     Route::controller(MissionController::class)->prefix('missions-of-the-day')->name('missions.')->group(function () {
-        Route::get('/', 'index')->middleware(TicketGateMiddleware::class . ':missions')->name('index');
+        Route::get('/', 'index')->middleware(TicketGateMiddleware::class.':missions')->name('index');
         Route::post('/{mission}/complete', 'complete')->name('complete');
     });
 
@@ -230,7 +232,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Support Group Discussion routes
     Route::controller(SgdController::class)->prefix('support-group-discussion')->name('group.')->group(function () {
         Route::get('/get', 'getGroups')->name('get');
-        Route::match(['GET', 'POST'], '/join', 'joinGroup')->middleware(TicketGateMiddleware::class . ':support_group')->name('join');
+        Route::match(['GET', 'POST'], '/join', 'joinGroup')->middleware(TicketGateMiddleware::class.':support_group')->name('join');
         Route::post('/enter-meeting', 'enterMeetingRoom')->name('enter-meeting');
         Route::post('/leave', 'leaveGroup')->name('leave');
         // Admin-only SGD Payment Routes
@@ -280,12 +282,14 @@ Route::middleware('auth')->prefix('api')->name('api.')->group(function () {
     Route::controller(ShareAndTalkController::class)->prefix('share-and-talk')->name('share-and-talk.')->group(function () {
         Route::post('/cancel-session/{sessionId}', 'cancelSession')->name('cancel-session');
         Route::post('/end-session/{sessionId}', 'endSession')->name('end-session');
+        Route::get('/session-status/{sessionId}', 'getSessionStatus')->name('session-status');
+        Route::post('/manual-activate/{sessionId}', 'manualActivateSession')->name('manual-activate');
+        Route::get('/messages/{sessionId}', 'getSessionMessages')->name('messages');
     });
 
     // Professional Availability and Schedule APIs
     Route::get('/professionals/{professional}/availability', [ShareAndTalkController::class, 'getAvailabilitySlots'])->name('professionals.availability');
 });
-
 
 // Professional Dashboard routes (Protected)
 Route::middleware([AuthenticateProfessional::class])->prefix('professional')->name('professional.')->group(function () {
@@ -312,4 +316,4 @@ Route::post('/reschedule/{token}/select', [RescheduleController::class, 'selectS
 // Professional Schedule API (no auth required for professionals)
 Route::get('/api/professionals/{professional}/schedule', [ProfessionalDashboardController::class, 'getSchedule'])->name('api.professionals.schedule');
 
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';

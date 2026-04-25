@@ -120,12 +120,33 @@
         // Enable pusher logging - don't include this in production
         Pusher.logToConsole = true;
 
-        var pusher = new Pusher('{{ config('broadcasting.connections.pusher.key') }}', {
-            cluster: '{{ config('broadcasting.connections.pusher.options.cluster') }}',
-            forceTLS: true
-        });
+        const pusherKey = '{{ config('broadcasting.connections.pusher.key') }}';
+        const pusherCluster = '{{ config('broadcasting.connections.pusher.options.cluster') ?: 'mt1' }}';
+        const pusherWsHost = 'ws-' + pusherCluster + '.pusher.com';
 
-        var channel = pusher.subscribe('chat.{{ $room }}');
+        console.log('Pusher config', { pusherKey, pusherCluster, pusherWsHost });
+
+        var channel = {
+            bind: function() {
+                console.error('Pusher channel bind skipped because Pusher is not configured.');
+            }
+        };
+
+        if (!pusherKey) {
+            console.error('Pusher is not configured: PUSHER_APP_KEY is missing from .env');
+        } else {
+            var pusher = new Pusher(pusherKey, {
+                cluster: pusherCluster,
+                forceTLS: true,
+                wsHost: pusherWsHost,
+                wssHost: pusherWsHost,
+                wsPort: 443,
+                wssPort: 443,
+                enabledTransports: ['ws', 'wss'],
+            });
+
+            channel = pusher.subscribe('chat.{{ $room }}');
+        }
 
         // Determine user type and current user ID
         const isProfessional = {{ auth('professional')->check() ? 'true' : 'false' }};
@@ -135,7 +156,7 @@
 
         // Status update function
         function updateStatus(status) {
-            $.post("{{ route('share-and-talk.updateStatus') }}", {
+            $.post("{{ auth('professional')->check() ? route('professional.updateStatus') : route('share-and-talk.updateStatus') }}", {
                 _token: '{{ csrf_token() }}',
                 room: '{{ $room }}',
                 status_type: currentUserType,
@@ -191,22 +212,6 @@
         // Listen for status updates
         channel.bind('StatusUpdated', function(data) {
             console.log('Status event received:', data);
-
-            // First, force a re-subscription to the channel to ensure we get the event
-            pusher.unsubscribe('chat.{{ $room }}');
-            channel = pusher.subscribe('chat.{{ $room }}');
-
-            // Re-bind the events
-            channel.bind('StatusUpdated', function(data) {
-                console.log('Status updated (rebound):', data);
-                if (data && data.status_type && data.status) {
-                    updateStatusDisplay(data.status_type, data.status);
-                } else {
-                    console.error('Invalid status update data:', data);
-                }
-            });
-
-            // Handle the original data
             if (data && data.status_type && data.status) {
                 updateStatusDisplay(data.status_type, data.status);
             } else {
@@ -215,7 +220,7 @@
         });
 
         // Listen for messages
-        channel.bind('App\\Events\\MessageSent', function(data) {
+        channel.bind('MessageSent', function(data) {
             const currentUserId = {{ auth()->id() ?? 'null' }};
             const currentProfessionalId = {{ auth('professional')->id() ?? 'null' }};
 
@@ -227,19 +232,16 @@
             const isSender = (senderType === 'App\\Models\\User' && senderId === currentUserId) ||
                 (senderType === 'App\\Models\\Professional' && senderId === currentProfessionalId);
 
+            // Skip rendering own messages — already shown optimistically on send
+            if (isSender) { return; }
+
             // build wrapper
             const wrapper = $('<div>').addClass('w-full mb-2').css('display', 'flex');
             const bubble = $('<div>')
                 .addClass('rounded-2xl p-3 max-w-[70%] break-words shadow-sm text-2xl');
 
-            // set alignment & colors depending on sender
-            if (isSender) {
-                wrapper.addClass('justify-end');
-                bubble.addClass('bg-[#48a6a6] text-white');
-            } else {
-                wrapper.addClass('justify-start');
-                bubble.addClass('bg-stone-200 text-black');
-            }
+            wrapper.addClass('justify-start');
+            bubble.addClass('bg-stone-200 text-black');
 
             // set text safely (this escapes any HTML)
             const safeHtml = $('<div>').text(messageData.message).html().replace(/\n/g, '<br>');

@@ -7,6 +7,7 @@
   <title>Chatroom - Share and Talk</title>
   <link rel="stylesheet" href="{{ asset('css/global.css') }}">
   <link rel="stylesheet" href="{{ asset('css/share-and-talk/chat.css') }}">
+  <script src="https://js.pusher.com/7.0/pusher.min.js"></script>
 </head>
 <body style="height: 100vh; overflow: hidden; margin: 0; padding: 0;">
   <div class="app">
@@ -286,6 +287,40 @@
       console.error('Polling error:', err);
     }
   }, 2500);
+
+  // Pusher real-time setup
+  Pusher.logToConsole = true;
+  const pusherKey = '{{ config('broadcasting.connections.pusher.key') }}';
+  const pusherCluster = '{{ config('broadcasting.connections.pusher.options.cluster') ?: 'mt1' }}';
+
+  if (pusherKey) {
+    const pusher = new Pusher(pusherKey, {
+      cluster: pusherCluster,
+      forceTLS: true,
+    });
+
+    const channel = pusher.subscribe('session.{{ $sessionId }}');
+
+    channel.bind('SessionMessageSent', function (data) {
+      const msg = data.message;
+      if (!msg) { return; }
+
+      // Avoid duplicating a message the facilitator just sent (optimistic UI)
+      const isSelf = (msg.sender_type === 'professional');
+
+      // Only append messages from the user side here;
+      // facilitator's own messages are already shown optimistically on submit.
+      if (!isSelf) {
+        const bubble = document.createElement('div');
+        bubble.className = 'message other';
+        bubble.innerText = msg.message;
+        chatBody.appendChild(bubble);
+        chatBody.scrollTop = chatBody.scrollHeight;
+      }
+    });
+  } else {
+    console.error('Pusher key is not configured.');
+  }
   </script>
 </body>
 </html>
