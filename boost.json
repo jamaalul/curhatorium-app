@@ -2,6 +2,7 @@
     "agents": [
         "copilot"
     ],
+    "cloud": false,
     "packages": [
         "filament/filament"
     ],
