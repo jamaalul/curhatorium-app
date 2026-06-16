@@ -11,6 +11,7 @@ class MembershipPlan extends Model
         'name',
         'price_idr',
         'billing_cycle',
+        'ai_window_hours',
     ];
 
     public function getPriceInIDR(): string

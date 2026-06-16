@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->decimal('price_idr', 15, 2)->default(0.00);
             $table->string('billing_cycle', 20)->default('monthly');
+            $table->integer('ai_window_hours')->default(168);
             $table->timestamps();
         });
     }
