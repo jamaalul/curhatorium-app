@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\OrderPaid;
 use App\Models\Order;
 use App\Models\Payment;
 use App\Services\MidtransService;
@@ -74,6 +75,10 @@ class MidtransWebhookController extends Controller
 
         if ($order->status !== $orderStatus) {
             $order->update(['status' => $orderStatus]);
+
+            if ($orderStatus === 'paid') {
+                OrderPaid::dispatch($order);
+            }
         }
 
         Log::info('Midtrans notification processed', [

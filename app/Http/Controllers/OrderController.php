@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\OrderPaid;
 use App\Models\MembershipPlan;
 use App\Models\Order;
 use App\Services\MidtransService;
@@ -92,7 +93,7 @@ class OrderController extends Controller
      * AJAX endpoint: check current order/payment status.
      * It pulls the latest status from Midtrans to support local development without ngrok webhooks.
      */
-    public function checkStatus(Order $order): \Illuminate\Http\JsonResponse
+    public function checkStatus(Order $order): JsonResponse
     {
         $user = Auth::user();
 
@@ -122,6 +123,10 @@ class OrderController extends Controller
 
                 if ($order->status !== $orderStatus) {
                     $order->update(['status' => $orderStatus]);
+
+                    if ($orderStatus === 'paid') {
+                        OrderPaid::dispatch($order);
+                    }
                 }
             } catch (\Exception $e) {
                 Log::warning('Failed to check Midtrans transaction status inline', ['error' => $e->getMessage()]);

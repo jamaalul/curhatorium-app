@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class UserEntitlement extends Model
 {
-    protected $filable = [
+    protected $fillable = [
         'user_id',
         'user_subscription_id',
         'benefit',
