@@ -164,7 +164,6 @@
             const selectedType = document.querySelector('input[name="consultation_type"]:checked').value;
             const availableTickets = selectedType === 'chat' ? userTickets.chat : userTickets.video;
             const consumedAmount = 1;
-            const remainingTickets = availableTickets - consumedAmount;
 
             let ticketTypeName = '';
             if (selectedType === 'chat') {
@@ -174,16 +173,20 @@
             }
 
             document.getElementById('summary-ticket-type').textContent = ticketTypeName;
-            document.getElementById('summary-available-tickets').textContent = `${availableTickets} Tiket`;
-            document.getElementById('summary-remaining-tickets').textContent = `${remainingTickets} Tiket`;
+            
+            let isUnlimited = availableTickets === 'Tak Terbatas';
+            let remainingTickets = isUnlimited ? 'Tak Terbatas' : (availableTickets - consumedAmount);
+            let hasEnoughTickets = isUnlimited || (remainingTickets >= 0);
+
+            document.getElementById('summary-available-tickets').textContent = isUnlimited ? 'Tak Terbatas' : `${availableTickets} Tiket`;
+            document.getElementById('summary-remaining-tickets').textContent = isUnlimited ? 'Tak Terbatas' : `${remainingTickets} Tiket`;
 
             const submitButton = document.querySelector('button[type="submit"]');
-            if (remainingTickets < 0) {
+            if (!hasEnoughTickets) {
                 document.getElementById('summary-remaining-tickets').classList.add('text-red-500');
                 submitButton.disabled = true;
                 submitButton.classList.add('bg-gray-400', 'cursor-not-allowed');
                 submitButton.classList.remove('bg-[#48A6A6]', 'hover:bg-[#357979]');
-
             } else {
                 document.getElementById('summary-remaining-tickets').classList.remove('text-red-500');
                 submitButton.disabled = false;

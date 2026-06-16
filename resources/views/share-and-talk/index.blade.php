@@ -88,39 +88,32 @@
                                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                                                 {{ $consultation->professional->name }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                {{ \Carbon\Carbon::parse($consultation->slot_start_time)->format('d M Y, H:i') }}
+                                                {{ \Carbon\Carbon::parse($consultation->start)->format('d M Y, H:i') }}
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                {{ $consultation->consultation->consultation_type }}</td>
+                                                {{ $consultation->consultation_type }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                @if ($consultation->status == 'pending_confirmation')
-                                                    <span
-                                                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Menunggu
-                                                        Konfirmasi</span>
-                                                @elseif($consultation->status == 'booked')
-                                                    <span
-                                                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Terjadwal</span>
+                                                @if ($consultation->status == 'waiting')
+                                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Menunggu</span>
+                                                @elseif($consultation->status == 'pending')
+                                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">Pending</span>
+                                                @elseif($consultation->status == 'active')
+                                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Aktif</span>
                                                 @endif
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                                 @php
-                                                    $slotStart = \Carbon\Carbon::parse($consultation->slot_start_time);
+                                                    $slotStart = \Carbon\Carbon::parse($consultation->start);
                                                     $minutesUntil = now()->diffInMinutes($slotStart, false);
-                                                    $status = strtolower(trim($consultation->status ?? ''));
-                                                    $disabled = $minutesUntil > 5 || $status === 'pending_confirmation';
-                                                    $isVideo =
-                                                        stripos(
-                                                            $consultation->consultation->consultation_type,
-                                                            'video',
-                                                        ) !== false;
+                                                    $disabled = $minutesUntil > 5;
+                                                    $isVideo = stripos($consultation->consultation_type, 'video') !== false;
                                                 @endphp
 
                                                 <button
-                                                    @if ($isVideo) onclick="if(!this.disabled) window.location.href='/share-and-talk/video/{{ $consultation->consultation->room }}'"
-                                            @else
-                                                onclick="if(!this.disabled) window.location.href='/share-and-talk/chat/{{ $consultation->consultation->room }}'" @endif
+                                                    @if ($isVideo) onclick="if(!this.disabled) window.location.href='/share-and-talk/video/{{ $consultation->room }}'"
+                                                    @else onclick="if(!this.disabled) window.location.href='/share-and-talk/chat/{{ $consultation->room }}'" @endif
                                                     class="goto-room-btn bg-[#48a6a6] hover:bg-[#357979] text-white py-2 px-4 rounded-md transition-colors duration-200 disabled:bg-gray-400 disabled:cursor-not-allowed"
-                                                    data-schedule-time="{{ $consultation->slot_start_time }}"
+                                                    data-schedule-time="{{ $consultation->start }}"
                                                     @if ($disabled) disabled @endif>
                                                     Masuk Ruangan
                                                 </button>

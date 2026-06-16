@@ -131,6 +131,11 @@
                 console.error('Pusher channel bind skipped because Pusher is not configured.');
             }
         };
+        var sessionChannel = {
+            bind: function() {
+                console.error('Pusher sessionChannel bind skipped because Pusher is not configured.');
+            }
+        };
 
         if (!pusherKey) {
             console.error('Pusher is not configured: PUSHER_APP_KEY is missing from .env');
@@ -146,6 +151,7 @@
             });
 
             channel = pusher.subscribe('chat.{{ $room }}');
+            sessionChannel = pusher.subscribe('session.{{ $room }}');
         }
 
         // Determine user type and current user ID
@@ -220,14 +226,14 @@
         });
 
         // Listen for messages
-        channel.bind('MessageSent', function(data) {
+        sessionChannel.bind('SessionMessageSent', function(data) {
             const currentUserId = {{ auth()->id() ?? 'null' }};
             const currentProfessionalId = {{ auth('professional')->id() ?? 'null' }};
 
             // Access the message data correctly
             const messageData = data.message;
-            const senderId = messageData.sender.id;
-            const senderType = messageData.sender.type;
+            const senderId = messageData.sender_id;
+            const senderType = messageData.sender_type;
 
             const isSender = (senderType === 'App\\Models\\User' && senderId === currentUserId) ||
                 (senderType === 'App\\Models\\Professional' && senderId === currentProfessionalId);
@@ -270,7 +276,7 @@
                 $('#chat-messages').append(wrapper);
                 $('#chat-messages').scrollTop($('#chat-messages')[0].scrollHeight);
 
-                $.post("{{ route('pusher.sendMessage') }}", {
+                $.post("{{ auth('professional')->check() ? route('professional.sendMessage') : route('share-and-talk.sendMessage') }}", {
                     _token: '{{ csrf_token() }}',
                     message: message,
                     room: '{{ $room }}'
