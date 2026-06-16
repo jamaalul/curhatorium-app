@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class MembershipPlan extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'name',
         'price_idr',
@@ -17,7 +20,7 @@ class MembershipPlan extends Model
 
     public function getPriceInIDR(): string
     {
-        return "Rp " . number_format($this->price_idr, 2, ",", ".");
+        return 'Rp '.number_format($this->price_idr, 2, ',', '.');
     }
 
     public function planBenefits(): HasMany

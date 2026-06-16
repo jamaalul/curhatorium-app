@@ -53,9 +53,12 @@
                 <p class="mb-1 font-semibold text-xl">
                     {{ $plan->getPriceInIDR() }}
                 </p>
-                <button class="bg-blue-500 py-2 rounded-md w-full text-white">
-                    Purchase
-                </button>
+                <form action="{{ route('order.create', $plan) }}" method="POST">
+                    @csrf
+                    <button type="submit" class="bg-blue-500 py-2 rounded-md w-full text-white hover:bg-blue-600 transition-colors">
+                        Purchase
+                    </button>
+                </form>
             @endif
         </div>
     @endforeach
