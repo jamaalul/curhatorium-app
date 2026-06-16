@@ -42,7 +42,7 @@
                 <p>
                     @if ($plan->name == 'Free')
                         Base limit
-                    @elseif ($plan->name = 'Calm')
+                    @elseif ($plan->name == 'Calm')
                         Extended limit
                     @else
                         Longer limit

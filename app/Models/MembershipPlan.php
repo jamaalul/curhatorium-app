@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class MembershipPlan extends Model
 {
@@ -22,5 +23,10 @@ class MembershipPlan extends Model
     public function planBenefits(): HasMany
     {
         return $this->hasMany(PlanBenefit::class);
+    }
+
+    public function orders(): MorphMany
+    {
+        return $this->morphMany(Order::class, 'orderable');
     }
 }
