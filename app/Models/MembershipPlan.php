@@ -19,7 +19,7 @@ class MembershipPlan extends Model
         return "Rp " . number_format($this->price_idr, 2, ",", ".");
     }
 
-    public function planBenefit(): HasMany
+    public function planBenefits(): HasMany
     {
         return $this->hasMany(PlanBenefit::class);
     }

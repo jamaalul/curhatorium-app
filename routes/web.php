@@ -307,3 +307,4 @@ Route::post('/reschedule/{token}/select', [RescheduleController::class, 'selectS
 Route::get('/api/professionals/{professional}/schedule', [ProfessionalDashboardController::class, 'getSchedule'])->name('api.professionals.schedule');
 
 require __DIR__.'/auth.php';
+require __DIR__.'/membership.php';
