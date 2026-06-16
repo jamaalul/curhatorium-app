@@ -6,7 +6,6 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\ProfessionalAuthenticatedSessionController;
 use App\Http\Controllers\CardController;
 use App\Http\Controllers\ChatbotController;
-use App\Http\Controllers\MembershipController;
 use App\Http\Controllers\MentalTestController;
 use App\Http\Controllers\MissionController;
 use App\Http\Controllers\ProfessionalDashboardController;
@@ -21,8 +20,6 @@ use App\Http\Controllers\TrackerController;
 use App\Http\Controllers\XpController;
 use App\Http\Controllers\XpRedemptionController;
 use App\Http\Middleware\AuthenticateProfessional;
-use App\Http\Middleware\InnerPeaceMembershipMiddleware;
-use App\Http\Middleware\TicketGateMiddleware;
 use App\Models\Announcement;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -148,10 +145,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
             ->first();
         $user = Auth::user();
         $cards = []; // Cards are now loaded via JavaScript
-        $hasCalmStarter = $user->hasActiveCalmStarter();
-        $hasEverHadCalmStarter = $user->userMemberships()->whereHas('membership', function ($query) {
-            $query->where('name', 'Calm Starter');
-        })->exists();
+        $hasCalmStarter = false;
+        $hasEverHadCalmStarter = false;
 
         return view('main.main', compact('statsData', 'announcement', 'user', 'cards', 'hasCalmStarter', 'hasEverHadCalmStarter'));
     })->name('dashboard');
@@ -176,16 +171,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return response()->json(['success' => true]);
     })->name('onboarding.reset');
 
-    // Membership routes
-    Route::controller(MembershipController::class)->prefix('membership')->name('membership.')->group(function () {
-        Route::get('/', 'index')->name('index');
-        Route::post('/buy/{id}', 'buy')->name('buy');
-        Route::get('/claim-starter', 'claimCalmStarter')->name('claim-starter');
-    });
+
 
     // Feature routes requiring authentication
     Route::get('/support-group-discussion', [SgdController::class, 'show'])->name('sgd');
-    Route::get('/deep-cards', [CardController::class, 'index'])->middleware(TicketGateMiddleware::class.':deep_cards');
+    Route::get('/deep-cards', [CardController::class, 'index']);
     Route::get('/mental-support-chatbot', [ChatbotController::class, 'index'])->name('chatbot');
     Route::get('/mental-support-chatbot/{identifier}', [ChatbotController::class, 'chat'])->name('chatbot.chat');
     Route::get('mental-health-test', fn () => view('mental-test.form'))->name('mhc-sf.form');
@@ -208,18 +198,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Tracker routes
     Route::controller(TrackerController::class)->prefix('tracker')->name('tracker.')->group(function () {
-        Route::get('/', 'index')->middleware(TicketGateMiddleware::class.':tracker')->name('index');
-        Route::post('/track', 'track')->middleware(TicketGateMiddleware::class.':tracker')->name('entry');
+        Route::get('/', 'index')->name('index');
+        Route::post('/track', 'track')->name('entry');
         Route::get('/result', 'result')->name('result');
         Route::get('/history', 'history')->name('history');
         Route::get('/stat/{id}', 'showStat')->name('stat.detail');
-        Route::get('/weekly-stat/{id}', 'showWeeklyStat')->middleware(InnerPeaceMembershipMiddleware::class)->name('weekly-stat.detail');
-        Route::get('/monthly-stat/{id}', 'showMonthlyStat')->middleware(InnerPeaceMembershipMiddleware::class)->name('monthly-stat.detail');
+        Route::get('/weekly-stat/{id}', 'showWeeklyStat')->name('weekly-stat.detail');
+        Route::get('/monthly-stat/{id}', 'showMonthlyStat')->name('monthly-stat.detail');
     });
 
     // Missions routes
     Route::controller(MissionController::class)->prefix('missions-of-the-day')->name('missions.')->group(function () {
-        Route::get('/', 'index')->middleware(TicketGateMiddleware::class.':missions')->name('index');
+        Route::get('/', 'index')->name('index');
         Route::post('/{mission}/complete', 'complete')->name('complete');
     });
 
@@ -232,7 +222,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Support Group Discussion routes
     Route::controller(SgdController::class)->prefix('support-group-discussion')->name('group.')->group(function () {
         Route::get('/get', 'getGroups')->name('get');
-        Route::match(['GET', 'POST'], '/join', 'joinGroup')->middleware(TicketGateMiddleware::class.':support_group')->name('join');
+        Route::match(['GET', 'POST'], '/join', 'joinGroup')->name('join');
         Route::post('/enter-meeting', 'enterMeetingRoom')->name('enter-meeting');
         Route::post('/leave', 'leaveGroup')->name('leave');
         // Admin-only SGD Payment Routes
@@ -264,8 +254,8 @@ Route::middleware('auth')->prefix('api')->name('api.')->group(function () {
     // Tracker API routes
     Route::controller(TrackerController::class)->prefix('tracker')->name('tracker.')->group(function () {
         Route::get('/stats', 'getStats')->name('stats');
-        Route::get('/weekly-stats', 'getWeeklyStats')->middleware(InnerPeaceMembershipMiddleware::class)->name('weekly-stats');
-        Route::get('/monthly-stats', 'getMonthlyStats')->middleware(InnerPeaceMembershipMiddleware::class)->name('monthly-stats');
+        Route::get('/weekly-stats', 'getWeeklyStats')->name('weekly-stats');
+        Route::get('/monthly-stats', 'getMonthlyStats')->name('monthly-stats');
     });
 
     // XP System API routes
@@ -317,3 +307,4 @@ Route::post('/reschedule/{token}/select', [RescheduleController::class, 'selectS
 Route::get('/api/professionals/{professional}/schedule', [ProfessionalDashboardController::class, 'getSchedule'])->name('api.professionals.schedule');
 
 require __DIR__.'/auth.php';
+require __DIR__.'/membership.php';

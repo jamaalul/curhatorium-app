@@ -76,13 +76,7 @@ class XpService
      */
     public function getUserMembershipType(User $user): string
     {
-        $hasPremiumMembership = $user->activeMemberships()
-            ->whereHas('membership', function($query) {
-                $query->whereIn('name', config('xp.subscription_memberships'));
-            })
-            ->exists();
-
-        return $hasPremiumMembership ? 'subscription' : 'free';
+        return 'free';
     }
 
     /**

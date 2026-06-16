@@ -72,13 +72,7 @@ class SgdGroup extends Model
         return now()->lt($this->schedule);
     }
 
-    /**
-     * Get the ticket consumptions for this SGD group.
-     */
-    public function sgdTicketConsumptions()
-    {
-        return $this->hasMany(\App\Models\SgdTicketConsumption::class);
-    }
+
 
     /**
      * Get the host (professional) for this SGD group.

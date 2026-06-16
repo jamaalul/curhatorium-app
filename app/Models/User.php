@@ -73,52 +73,7 @@ class User extends Authenticatable implements FilamentUser
         return $this->sgdGroups()->where('sgd_group_id', $sgdGroupId)->exists();
     }
 
-    /**
-     * Get the tickets owned by the user.
-     */
-    public function userTickets()
-    {
-        return $this->hasMany(\App\Models\UserTicket::class, 'user_id');
-    }
 
-    /**
-     * Get the user memberships.
-     */
-    public function userMemberships()
-    {
-        return $this->hasMany(\App\Models\UserMembership::class, 'user_id');
-    }
-
-    /**
-     * Get active memberships for the user.
-     */
-    public function activeMemberships()
-    {
-        return $this->userMemberships()
-            ->where('expires_at', '>', now())
-            ->with('membership');
-    }
-
-    /**
-     * Check if user has active Inner Peace membership.
-     */
-    public function hasActiveInnerPeaceMembership()
-    {
-        return $this->activeMemberships()
-            ->whereHas('membership', function($query) {
-                $query->where('name', 'Inner Peace');
-            })
-            ->exists();
-    }
-
-    public function hasActiveCalmStarter()
-    {
-        return $this->activeMemberships()
-            ->whereHas('membership', function($query) {
-                $query->where('name', 'Calm Starter');
-            })
-            ->exists();
-    }
 
      public function canAccessPanel(\Filament\Panel $panel): bool
     {
@@ -187,25 +142,7 @@ class User extends Authenticatable implements FilamentUser
         return $xpService->getXpHistory($this, $days);
     }
 
-    /**
-     * Get active tickets for the user
-     */
-    public function activeTickets()
-    {
-        return $this->hasMany(\App\Models\UserTicket::class)
-            ->where('expires_at', '>', now())
-            ->where('remaining_value', '>', 0);
-    }
 
-    /**
-     * Check if user can access a specific feature
-     */
-    public function canAccessFeature(string $feature): bool
-    {
-        return $this->activeTickets()
-            ->where('ticket_type', $feature)
-            ->exists();
-    }
 
     /**
      * Get chat sessions for the user
@@ -232,24 +169,7 @@ class User extends Authenticatable implements FilamentUser
         return "{$this->name} ({$this->username})";
     }
 
-    /**
-     * Check if user has any active membership
-     */
-    public function hasActiveMembership(): bool
-    {
-        return $this->activeMemberships()->exists();
-    }
 
-    /**
-     * Get user's primary active membership
-     */
-    public function getPrimaryMembershipAttribute()
-    {
-        return $this->activeMemberships()
-            ->with('membership')
-            ->orderBy('expires_at', 'desc')
-            ->first();
-    }
 
     /**
      * Scope for active users
@@ -259,21 +179,7 @@ class User extends Authenticatable implements FilamentUser
         return $query->where('is_active', true);
     }
 
-    /**
-     * Scope for users with memberships
-     */
-    public function scopeWithMemberships($query)
-    {
-        return $query->with('userMemberships.membership');
-    }
 
-    /**
-     * Scope for users with active tickets
-     */
-    public function scopeWithActiveTickets($query)
-    {
-        return $query->with('activeTickets');
-    }
     /**
      * Get all of the user's messages.
      */

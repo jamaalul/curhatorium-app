@@ -6,7 +6,6 @@ use App\Models\Professional;
 use App\Models\ChatSession;
 use App\Models\Message;
 use App\Models\User;
-use App\Models\ShareTalkTicketConsumption;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
@@ -94,8 +93,6 @@ class ShareAndTalkService
                 'pending_end' => now()->addMinutes(5),
             ]);
 
-            // Track ticket consumption
-            $this->trackTicketConsumption($user, $session->id, $professional->type);
 
             // Send WhatsApp notification
             $this->sendProfessionalNotification($professional, $sessionId);
@@ -144,8 +141,6 @@ class ShareAndTalkService
                 'jitsi_room' => $jitsiRoom,
             ]);
 
-            // Track ticket consumption
-            $this->trackTicketConsumption($user, $session->id, $professional->type);
 
             // Send WhatsApp notification
             $this->sendVideoNotification($professional, $sessionId);
@@ -219,8 +214,6 @@ class ShareAndTalkService
             $session->status = 'cancelled';
             $session->save();
 
-            // Refund ticket
-            $this->refundTicket($user, $session);
 
             // Set professional back to online
             $professional = $session->professional;
@@ -251,8 +244,7 @@ class ShareAndTalkService
                 $session->status = 'cancelled';
                 $session->save();
                 
-                // Refund ticket
-                $this->refundTicket($session->user, $session);
+
                 $cancelledCount++;
             });
         }
@@ -296,8 +288,6 @@ class ShareAndTalkService
             $session->status = 'cancelled';
             $session->save();
 
-            // Refund ticket
-            $this->refundTicket($user, $session);
 
             return true;
         });
@@ -389,22 +379,6 @@ class ShareAndTalkService
     }
 
     /**
-     * Track ticket consumption for payment
-     */
-    private function trackTicketConsumption(User $user, int $sessionId, string $professionalType): void
-    {
-        $isFirstWithCalmStarter = $this->isFirstShareTalkWithCalmStarter($user);
-        $ticketSource = $isFirstWithCalmStarter ? 'calm_starter' : 'paid';
-        
-        ShareTalkTicketConsumption::create([
-            'user_id' => $user->id,
-            'chat_session_id' => $sessionId,
-            'ticket_source' => $ticketSource,
-            'consumed_at' => now(),
-        ]);
-    }
-
-    /**
      * Send WhatsApp notification to professional
      */
     private function sendProfessionalNotification(Professional $professional, string $sessionId): void
@@ -446,71 +420,5 @@ class ShareAndTalkService
         } catch (\Exception $e) {
             Log::error('Failed to send video WhatsApp notification: ' . $e->getMessage());
         }
-    }
-
-    /**
-     * Refund ticket to user
-     */
-    private function refundTicket(User $user, ChatSession $session): void
-    {
-        $ticketType = $this->getTicketType($session);
-        
-        $ticket = $user->userTickets()
-            ->where('ticket_type', $ticketType)
-            ->where(function($q) {
-                $q->whereNull('limit_type')->orWhere('limit_type', '!=', 'unlimited');
-            })
-            ->orderByDesc('expires_at')
-            ->first();
-
-        if ($ticket && $ticket->remaining_value !== null) {
-            $ticket->remaining_value += 1;
-            $ticket->save();
-            
-            Log::info("Ticket refunded for user {$user->id}, ticket type: {$ticketType}");
-        } else {
-            Log::warning("No ticket found to refund for user {$user->id}, ticket type: {$ticketType}");
-        }
-    }
-
-    /**
-     * Get ticket type based on session
-     */
-    private function getTicketType(ChatSession $session): string
-    {
-        if ($session->type === 'video') {
-            return 'share_talk_psy_video';
-        }
-        
-        return $session->professional->type === 'psychiatrist' ? 'share_talk_psy_chat' : 'share_talk_ranger_chat';
-    }
-
-    /**
-     * Check if this is user's first Share & Talk with Calm Starter
-     */
-    private function isFirstShareTalkWithCalmStarter(User $user): bool
-    {
-        $now = Carbon::now();
-        
-        $currentCalmStarter = $user->userMemberships()
-            ->whereHas('membership', function($query) {
-                $query->where('name', 'Calm Starter');
-            })
-            ->where('started_at', '<=', $now)
-            ->where('expires_at', '>=', $now)
-            ->orderBy('started_at', 'desc')
-            ->first();
-            
-        if (!$currentCalmStarter) {
-            return false;
-        }
-        
-        $hasPreviousShareTalkThisCycle = ShareTalkTicketConsumption::where('user_id', $user->id)
-            ->where('ticket_source', 'calm_starter')
-            ->where('consumed_at', '>=', $currentCalmStarter->started_at)
-            ->where('consumed_at', '<=', $currentCalmStarter->expires_at)
-            ->exists();
-        
-        return !$hasPreviousShareTalkThisCycle;
     }
 } 

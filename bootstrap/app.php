@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Middleware\CheckForMaintenanceMode;
+use App\Http\Middleware\ProfileUploadRateLimit;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -12,9 +14,12 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        $middleware->prepend(\App\Http\Middleware\CheckForMaintenanceMode::class);
+        $middleware->prepend(CheckForMaintenanceMode::class);
         $middleware->alias([
-            'profile.upload.limit' => \App\Http\Middleware\ProfileUploadRateLimit::class,
+            'profile.upload.limit' => ProfileUploadRateLimit::class,
+        ]);
+        $middleware->validateCsrfTokens(except: [
+            'api/midtrans/notification',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

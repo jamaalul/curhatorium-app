@@ -1,6 +1,6 @@
 {
     "agents": [
-        "copilot"
+        "gemini"
     ],
     "cloud": false,
     "packages": [

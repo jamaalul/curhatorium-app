@@ -7,18 +7,9 @@ use App\Models\SgdGroup;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
-use App\Services\SgdPaymentService;
-use Carbon\Carbon;
 
 class SgdController extends Controller
 {
-    protected $paymentService;
-
-    public function __construct(SgdPaymentService $paymentService)
-    {
-        $this->paymentService = $paymentService;
-    }
-
     public function show(Request $request) {
         $query = SgdGroup::query();
         
@@ -164,55 +155,7 @@ class SgdController extends Controller
         return redirect()->route('sgd')->with('success', 'Successfully left the group.');
     }
 
-    /**
-     * Get payment data for a specific SGD group (admin only)
-     */
-    public function getPaymentData($groupId)
-    {
-        // Check if user is admin
-        if (!auth()->user()->is_admin) {
-            return response()->json(['error' => 'Unauthorized'], 403);
-        }
 
-        $paymentData = $this->paymentService->calculateHostPayment($groupId);
-        return response()->json($paymentData);
-    }
-
-    /**
-     * Get consumption details for a specific SGD group (admin only)
-     */
-    public function getConsumptionDetails($groupId)
-    {
-        // Check if user is admin
-        if (!auth()->user()->is_admin) {
-            return response()->json(['error' => 'Unauthorized'], 403);
-        }
-
-        $details = $this->paymentService->getGroupConsumptionDetails($groupId);
-        return response()->json($details);
-    }
-
-    /**
-     * Get payment summary for a date range (admin only)
-     */
-    public function getPaymentSummary(Request $request)
-    {
-        // Check if user is admin
-        if (!auth()->user()->is_admin) {
-            return response()->json(['error' => 'Unauthorized'], 403);
-        }
-
-        $request->validate([
-            'start_date' => 'required|date',
-            'end_date' => 'required|date|after:start_date',
-        ]);
-
-        $startDate = Carbon::parse($request->start_date);
-        $endDate = Carbon::parse($request->end_date);
-
-        $summary = $this->paymentService->getPaymentSummary($startDate, $endDate);
-        return response()->json($summary);
-    }
 
     // public function groupMeet(Request $request, $address) {
     //     $user = Auth::user();
