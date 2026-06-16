@@ -103,8 +103,6 @@
                 <!-- Daily Progress Card -->
                 @php
                   $dailyXpSummary = $user->getDailyXpSummary();
-                  $xpService = app(\App\Services\XpService::class);
-                  $membershipType = $xpService->getUserMembershipType($user);
                 @endphp
                 <div class="bg-white rounded-lg shadow border p-6">
                     <h4 class="text-lg font-semibold text-gray-900 mb-4">Progress Harian</h4>
@@ -121,10 +119,7 @@
                         </div>
                     </div>
                     <div class="text-sm space-y-2">
-                        <div class="flex justify-between">
-                            <span class="text-gray-600">Membership:</span>
-                            <span class="font-medium">{{ $membershipType === 'subscription' ? 'Paid' : 'Free' }}</span>
-                        </div>
+
                         <div class="flex justify-between">
                             <span class="text-gray-600">Batas Harian:</span>
                             <span class="font-medium">{{ $dailyXpSummary['max_daily_xp'] }} XP</span>

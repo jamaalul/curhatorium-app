@@ -14,16 +14,15 @@
     @include('components.navbar')
     @include('main.announcement')
     @include('components.error', ['msg' => $errors])
-    @include('components.starter-claimer')
     <section
-        class="w-full h-fit px-4 py-8 flex flex-col gap-2 items-center justify-center bg-cover shadow-inner relative"
+        class="relative flex flex-col justify-center items-center gap-2 bg-cover shadow-inner px-4 py-8 w-full h-fit"
         style="background-image: url('{{ asset('images/background.webp') }}');">
-        <h1 class="text-3xl md:text-5xl font-bold text-center text-[#222222]">
+        <h1 class="font-bold text-[#222222] text-3xl md:text-5xl text-center">
             Halo {{ $user->username }} !
         </h1>
-        <p class="text-base text-center text-[#222222]">Siap untuk mencari tempat nyamanmu di Curhatorium?</p>
+        <p class="text-[#222222] text-base text-center">Siap untuk mencari tempat nyamanmu di Curhatorium?</p>
         <button
-            class="bg-[#48A6A6] px-6 py-3 text-white rounded-md transition-colors duration-200 hover:bg-[#357979] w-fit md:w-auto mt-4 shadow-md flex items-center justify-center gap-2"
+            class="flex justify-center items-center gap-2 bg-[#48A6A6] hover:bg-[#357979] shadow-md mt-4 px-6 py-3 rounded-md w-fit md:w-auto text-white transition-colors duration-200"
             onclick="window.location.href='/share-and-talk'">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                 stroke="currentColor" class="size-6">

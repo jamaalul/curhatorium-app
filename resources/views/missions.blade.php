@@ -65,15 +65,10 @@
                         $totalCount = $missionsList->count();
                         $progress = $totalCount > 0 ? round(($completedCount / $totalCount) * 100) : 0;
                         
-                        // Get XP values based on user's membership type
-                        $user = auth()->user();
-                        $xpService = app(\App\Services\XpService::class);
-                        $membershipType = $xpService->getUserMembershipType($user);
-                        
                         $xpValues = [
-                            'easy' => $membershipType === 'subscription' ? 6 : 6,
-                            'medium' => $membershipType === 'subscription' ? 8 : 8,
-                            'hard' => $membershipType === 'subscription' ? 16 : 16
+                            'easy' => 6,
+                            'medium' => 8,
+                            'hard' => 16
                         ];
                         
                         $totalXp = $xpValues[$difficulty] * $totalCount;

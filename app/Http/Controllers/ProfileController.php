@@ -18,49 +18,10 @@ class ProfileController extends Controller
     public function edit(Request $request): View
     {
         $user = Auth::user();
-        // Group tickets by type and aggregate info for each type, excluding tickets with 0 values
-        $tickets = $user->userTickets
-            ->filter(function ($ticket) {
-                // Exclude tickets with 0 limit_value
-                // For remaining_value: exclude 0, but allow null (unlimited tickets)
-                return $ticket->limit_value !== 0 && ($ticket->remaining_value === null || $ticket->remaining_value > 0) && $ticket->created_at < now();
-            })
-            ->groupBy('ticket_type')
-            ->map(function ($group) {
-                // Check if any ticket in the group is unlimited
-                $hasUnlimited = $group->contains(function ($t) {
-                    return $t->limit_type === 'unlimited' || is_null($t->remaining_value);
-                });
-                
-                // If any ticket is unlimited, return unlimited ticket info
-                if ($hasUnlimited) {
-                    $unlimitedTicket = $group->first(function ($t) {
-                        return $t->limit_type === 'unlimited' || is_null($t->remaining_value);
-                    });
-                    return [
-                        'ticket_type' => $unlimitedTicket->ticket_type,
-                        'limit_type' => 'unlimited',
-                        'remaining_value' => null,
-                        'expires_at' => $unlimitedTicket->expires_at,
-                    ];
-                }
-                
-                // Otherwise, aggregate limited tickets
-                $first = $group->first();
-                return [
-                    'ticket_type' => $first->ticket_type,
-                    'limit_type' => $first->limit_type,
-                    'remaining_value' => $group->sum('remaining_value'),
-                    'expires_at' => $first->expires_at,
-                ];
-            })
-            ->filter(function ($ticket) {
-                // Additional filter to remove tickets with 0 remaining_value after aggregation
-                return $ticket['remaining_value'] === null || $ticket['remaining_value'] > 0;
-            });
+
         return view('profile', [
             'user' => $user,
-            'tickets' => $tickets,
+            'tickets' => collect(),
         ]);
     }
 

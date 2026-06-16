@@ -455,10 +455,8 @@
         <!-- View Toggle -->
         <div class="view-toggle">
             <button class="toggle-btn active" data-view="daily">Harian</button>
-            @if(Auth::user()->hasActiveInnerPeaceMembership())
-                <button class="toggle-btn" data-view="weekly">Mingguan</button>
-                <button class="toggle-btn" data-view="monthly">Bulanan</button>
-            @endif
+            <button class="toggle-btn" data-view="weekly">Mingguan</button>
+            <button class="toggle-btn" data-view="monthly">Bulanan</button>
         </div>
 
         <!-- History Container -->
@@ -656,9 +654,9 @@
                 return `
                     <div class="empty-state">
                         <div class="empty-state-icon">📊</div>
-                        <h3>Fitur Mingguan Hanya untuk Inner Peace</h3>
-                        <p>Upgrade ke membership Inner Peace untuk mengakses laporan mingguan dan analisis mendalam.</p>
-                        <a href="/membership" class="empty-state-btn">Lihat Membership</a>
+                        <h3>Tidak Ada Catatan Mingguan</h3>
+                        <p>Anda belum memiliki data mingguan yang cukup.</p>
+                        <a href="/tracker" class="empty-state-btn">Lacak Mood Anda</a>
                     </div>
                 `;
             }
@@ -701,9 +699,9 @@
                 return `
                     <div class="empty-state">
                         <div class="empty-state-icon">📈</div>
-                        <h3>Fitur Bulanan Hanya untuk Inner Peace</h3>
-                        <p>Upgrade ke membership Inner Peace untuk mengakses laporan bulanan dan analisis mendalam.</p>
-                        <a href="/membership" class="empty-state-btn">Lihat Membership</a>
+                        <h3>Tidak Ada Catatan Bulanan</h3>
+                        <p>Anda belum memiliki data bulanan yang cukup.</p>
+                        <a href="/tracker" class="empty-state-btn">Lacak Mood Anda</a>
                     </div>
                 `;
             }

@@ -36,11 +36,5 @@ class ChatSession extends Model
         return $this->belongsTo(Professional::class);
     }
 
-    /**
-     * Get the ticket consumptions for this chat session.
-     */
-    public function shareTalkTicketConsumptions()
-    {
-        return $this->hasMany(\App\Models\ShareTalkTicketConsumption::class);
-    }
+
 }
