@@ -38,7 +38,10 @@ use Illuminate\Support\Facades\Route;
 */
 
 // Publicly accessible routes
-Route::get('/', fn () => view('landing'))->name('land');
+Route::get('/', function () {
+    $plans = \App\Models\MembershipPlan::with('planBenefits')->get();
+    return view('landing', compact('plans'));
+})->name('land');
 Route::get('/portal', fn () => view('auth.login'))->name('start');
 Route::get('/terms-and-conditions', fn () => view('terms-and-conditions'))->name('terms-and-conditions');
 Route::get('/privacy-policy', fn () => view('privacy-policy'))->name('privacy-policy');
@@ -300,3 +303,4 @@ Route::get('/api/professionals/{professional}/schedule', [ProfessionalDashboardC
 
 require __DIR__.'/auth.php';
 require __DIR__.'/membership.php';
+require __DIR__.'/order.php';
