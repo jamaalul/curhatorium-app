@@ -1,25 +1,19 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Misssions of The Day | Curhatorium</title>
-    <link rel="stylesheet" href="{{ asset('css/global.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/missions.css') }}">
-    <style>
-        .button-loading { opacity: 0.8; pointer-events: none; }
-        .button-loading .spinner { 
-            width: 16px; height: 16px; border-radius: 50%;
-            border: 2px solid rgba(255,255,255,0.35);
-            border-top-color: #fff;
-            display: inline-block; vertical-align: middle; margin-right: 8px;
-            animation: spin 0.8s linear infinite;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
-    </style>
-</head>
-<body>
+<x-layout title="Misssions of The Day | Curhatorium">
+    <x-slot:head>
+        <link rel="stylesheet" href="{{ asset('css/missions.css') }}">
+        <style>
+            .button-loading { opacity: 0.8; pointer-events: none; }
+            .button-loading .spinner { 
+                width: 16px; height: 16px; border-radius: 50%;
+                border: 2px solid rgba(255,255,255,0.35);
+                border-top-color: #fff;
+                display: inline-block; vertical-align: middle; margin-right: 8px;
+                animation: spin 0.8s linear infinite;
+            }
+            @keyframes spin { to { transform: rotate(360deg); } }
+        </style>
+    </x-slot:head>
+
     <!-- Navbar -->
     @include('components.navbar')
 
@@ -32,8 +26,6 @@
             </div>
         </div>
 
-
-
         <!-- Main Content -->
         <div class="missions-container">
             <div class="tabs">
@@ -44,7 +36,7 @@
 
             @foreach(['easy', 'medium', 'hard'] as $difficulty)
                 <div id="{{ $difficulty }}-content" class="tab-content{{ $difficulty == 'easy' ? ' active' : '' }}">
-                <div class="difficulty-header">
+                    <div class="difficulty-header">
                         <h2 class="difficulty-title {{ $difficulty }}">
                             @if($difficulty == 'easy') Misi Mudah
                             @elseif($difficulty == 'medium') Misi Sedang
@@ -57,7 +49,7 @@
                             @else Tugas menantang untuk pertumbuhan diri yang signifikan
                             @endif
                         </p>
-                </div>
+                    </div>
 
                     @php
                         $missionsList = $missions[$difficulty] ?? collect();
@@ -74,54 +66,54 @@
                         $totalXp = $xpValues[$difficulty] * $totalCount;
                     @endphp
 
-                <div class="stats">
-                    <div class="stat-item">
+                    <div class="stats">
+                        <div class="stat-item">
                             <div class="stat-number" style="color: var(--{{ $difficulty == 'easy' ? 'success' : ($difficulty == 'medium' ? 'warning' : 'error') }});">
                                 {{ $completedCount }}/{{ $totalCount }}
-                    </div>
-                        <div class="stat-label">Selesai</div>
-                    </div>
-                    <div class="stat-item">
+                            </div>
+                            <div class="stat-label">Selesai</div>
+                        </div>
+                        <div class="stat-item">
                             <div class="stat-number" style="color: var(--{{ $difficulty == 'easy' ? 'success' : ($difficulty == 'medium' ? 'warning' : 'error') }});">
                                 {{ $totalXp }}
                             </div>
-                        <div class="stat-label">Total XP</div>
+                            <div class="stat-label">Total XP</div>
+                        </div>
                     </div>
-                </div>
 
-                <div class="progress-bar">
+                    <div class="progress-bar">
                         <div class="progress-fill {{ $difficulty }}" style="width: {{ $progress }}%"></div>
-                </div>
+                    </div>
 
-                <div class="missions-grid">
+                    <div class="missions-grid">
                         @foreach($missionsList as $mission)
                             @php $isCompleted = in_array($mission->id, $completedMissions); @endphp
                             <div class="mission-card {{ $difficulty }}{{ $isCompleted ? ' completed' : '' }}">
-                        <div class="mission-header">
-                            <div class="mission-info">
+                                <div class="mission-header">
+                                    <div class="mission-info">
                                         <h3 class="mission-title">{{ $mission->title }}</h3>
                                         <p class="mission-description">{{ $mission->description }}</p>
-                            </div>
-                        </div>
-                        <div class="mission-footer">
+                                    </div>
+                                </div>
+                                <div class="mission-footer">
                                     <div class="mission-points {{ $difficulty }}">
                                         {{ $xpValues[$difficulty] }} XP
-                            </div>
-                            <div class="completion-toggle">
+                                    </div>
+                                    <div class="completion-toggle">
                                         @if($isCompleted)
                                             <span class="badge badge-success">Selesai</span>
                                         @else
                                             <button class="complete-btn" data-mission-id="{{ $mission->id }}" data-mission-title="{{ $mission->title }}" data-difficulty="{{ $difficulty }}" onclick="openCompletionModal(this)">Selesaikan</button>
                                         @endif
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
                         @endforeach
-                            </div>
-                        </div>
-            @endforeach
-                        </div>
                     </div>
+                </div>
+            @endforeach
+        </div>
+    </div>
 
     <!-- Completion Modal -->
     <div id="completion-modal">
@@ -158,103 +150,104 @@
         <x-xp-notification :xp-awarded="$xpAwarded" :message="$message" />
     @endif
 
-    <script>
-        function switchTab(difficulty) {
-            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-            document.querySelector(`.tab.${difficulty}`).classList.add('active');
-            document.getElementById(`${difficulty}-content`).classList.add('active');
-        }
-
-        // Modal logic
-        let currentMissionId = null;
-        function openCompletionModal(btn) {
-            currentMissionId = btn.getAttribute('data-mission-id');
-            const missionTitle = btn.getAttribute('data-mission-title');
-            document.getElementById('modal-mission-title').textContent = missionTitle;
-            document.getElementById('completion-modal').style.display = 'flex';
-            document.getElementById('completion-form').setAttribute('action', `/missions-of-the-day/${currentMissionId}/complete`);
-            document.getElementById('reflection').value = '';
-            document.getElementById('feeling').value = '';
-        }
-        function closeCompletionModal() {
-            document.getElementById('completion-modal').style.display = 'none';
-        }
-        // Close modal on outside click
-        document.getElementById('completion-modal').addEventListener('click', function(e) {
-            if (e.target === this) closeCompletionModal();
-        });
-
-        // Handle form submission
-        document.getElementById('completion-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const formData = new FormData(this);
-            const missionId = currentMissionId;
-            const submitBtn = document.getElementById('completion-submit-btn');
-            const originalHtml = submitBtn ? submitBtn.innerHTML : '';
-            if (submitBtn) {
-                submitBtn.classList.add('button-loading');
-                submitBtn.disabled = true;
-                submitBtn.innerHTML = '<span class="spinner"></span><span>Mengirim...</span>';
+    <x-slot:scripts>
+        <script>
+            function switchTab(difficulty) {
+                document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+                document.querySelector(`.tab.${difficulty}`).classList.add('active');
+                document.getElementById(`${difficulty}-content`).classList.add('active');
             }
-            
-            fetch(this.action, {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                    'Accept': 'application/json'
-                }
-            })
-            .then(async (response) => {
-                if (!response.ok) {
-                    const err = await response.json().catch(() => ({}));
-                    throw new Error(err.message || 'Gagal menyelesaikan misi');
-                }
-                return response.json();
-            })
-            .then(data => {
-                // Close modal
-                closeCompletionModal();
+
+            // Modal logic
+            let currentMissionId = null;
+            function openCompletionModal(btn) {
+                currentMissionId = btn.getAttribute('data-mission-id');
+                const missionTitle = btn.getAttribute('data-mission-title');
+                document.getElementById('modal-mission-title').textContent = missionTitle;
+                document.getElementById('completion-modal').style.display = 'flex';
+                document.getElementById('completion-form').setAttribute('action', `/missions-of-the-day/${currentMissionId}/complete`);
+                document.getElementById('reflection').value = '';
+                document.getElementById('feeling').value = '';
+            }
+            function closeCompletionModal() {
+                document.getElementById('completion-modal').style.display = 'none';
+            }
+            // Close modal on outside click
+            document.getElementById('completion-modal').addEventListener('click', function(e) {
+                if (e.target === this) closeCompletionModal();
+            });
+
+            // Handle form submission
+            document.getElementById('completion-form').addEventListener('submit', function(e) {
+                e.preventDefault();
                 
-                // Update UI without full reload
-                const btn = document.querySelector(`.complete-btn[data-mission-id="${missionId}"]`);
-                if (btn) {
-                    const footer = btn.closest('.mission-footer');
-                    if (footer) {
-                        const toggle = footer.querySelector('.completion-toggle');
-                        if (toggle) {
-                            toggle.innerHTML = '<span class="badge badge-success">Selesai</span>';
+                const formData = new FormData(this);
+                const missionId = currentMissionId;
+                const submitBtn = document.getElementById('completion-submit-btn');
+                const originalHtml = submitBtn ? submitBtn.innerHTML : '';
+                if (submitBtn) {
+                    submitBtn.classList.add('button-loading');
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<span class="spinner"></span><span>Mengirim...</span>';
+                }
+                
+                fetch(this.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(async (response) => {
+                    if (!response.ok) {
+                        const err = await response.json().catch(() => ({}));
+                        throw new Error(err.message || 'Gagal menyelesaikan misi');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Close modal
+                    closeCompletionModal();
+                    
+                    // Update UI without full reload
+                    const btn = document.querySelector(`.complete-btn[data-mission-id="${missionId}"]`);
+                    if (btn) {
+                        const footer = btn.closest('.mission-footer');
+                        if (footer) {
+                            const toggle = footer.querySelector('.completion-toggle');
+                            if (toggle) {
+                                toggle.innerHTML = '<span class="badge badge-success">Selesai</span>';
+                            }
                         }
                     }
-                }
-                const card = document.querySelector(`.mission-card .complete-btn[data-mission-id="${missionId}"]`);
-                if (card) {
-                    const missionCard = card.closest('.mission-card');
-                    missionCard && missionCard.classList.add('completed');
-                }
+                    const card = document.querySelector(`.mission-card .complete-btn[data-mission-id="${missionId}"]`);
+                    if (card) {
+                        const missionCard = card.closest('.mission-card');
+                        missionCard && missionCard.classList.add('completed');
+                    }
 
-                // Simple toast
-                const toast = document.createElement('div');
-                toast.id = 'toast-success';
-                toast.style.cssText = 'position:fixed;top:24px;right:24px;z-index:9999;background:#10b981;color:#fff;padding:12px 16px;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.15)';
-                toast.textContent = data.message || 'Misi selesai!';
-                document.body.appendChild(toast);
-                setTimeout(() => { toast.remove(); }, 3000);
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Terjadi kesalahan saat menyelesaikan misi. Silakan coba lagi.');
-            })
-            .finally(() => {
-                if (submitBtn) {
-                    submitBtn.classList.remove('button-loading');
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = originalHtml || '<span class="btn-content">Kirim</span>';
-                }
+                    // Simple toast
+                    const toast = document.createElement('div');
+                    toast.id = 'toast-success';
+                    toast.style.cssText = 'position:fixed;top:24px;right:24px;z-index:9999;background:#10b981;color:#fff;padding:12px 16px;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.15)';
+                    toast.textContent = data.message || 'Misi selesai!';
+                    document.body.appendChild(toast);
+                    setTimeout(() => { toast.remove(); }, 3000);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Terjadi kesalahan saat menyelesaikan misi. Silakan coba lagi.');
+                })
+                .finally(() => {
+                    if (submitBtn) {
+                        submitBtn.classList.remove('button-loading');
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = originalHtml || '<span class="btn-content">Kirim</span>';
+                    }
+                });
             });
-        });
-    </script>
-</body>
-</html>
+        </script>
+    </x-slot:scripts>
+</x-layout>

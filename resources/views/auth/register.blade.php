@@ -1,74 +1,68 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Curhatorium | Signup</title>
-    <link rel="stylesheet" href="{{ asset('css/register.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/global.css') }}">
-    <style>
-      /* Social Login Styles */
-      .social-login {
-          display: flex;
-          flex-direction: column;
-          gap: 10px;
-          margin-bottom: 20px;
-      }
+<x-layout title="Curhatorium | Signup">
+    <x-slot:head>
+        <link rel="stylesheet" href="{{ asset('css/register.css') }}">
+        <style>
+          /* Social Login Styles */
+          .social-login {
+              display: flex;
+              flex-direction: column;
+              gap: 10px;
+              margin-bottom: 20px;
+          }
 
-      .social-btn {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          padding: 12px 20px;
-          border: 1px solid #ddd;
-          border-radius: 5px;
-          text-decoration: none;
-          color: #333;
-          font-size: 14px;
-          font-weight: 500;
-          transition: all 0.3s ease;
-          background: white;
-      }
+          .social-btn {
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              padding: 12px 20px;
+              border: 1px solid #ddd;
+              border-radius: 5px;
+              text-decoration: none;
+              color: #333;
+              font-size: 14px;
+              font-weight: 500;
+              transition: all 0.3s ease;
+              background: white;
+          }
 
-      .social-btn:hover {
-          border-color: #ccc;
-          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      }
+          .social-btn:hover {
+              border-color: #ccc;
+              box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+          }
 
-      .social-icon {
-          width: 18px;
-          height: 18px;
-          margin-right: 10px;
-      }
+          .social-icon {
+              width: 18px;
+              height: 18px;
+              margin-right: 10px;
+          }
 
-      .google-btn:hover {
-          background-color: #f8f9fa;
-      }
+          .google-btn:hover {
+              background-color: #f8f9fa;
+          }
 
-      .divider {
-          display: flex;
-          align-items: center;
-          margin: 20px 0;
-          text-align: center;
-      }
+          .divider {
+              display: flex;
+              align-items: center;
+              margin: 20px 0;
+              text-align: center;
+          }
 
-      .divider::before,
-      .divider::after {
-          content: '';
-          flex: 1;
-          height: 1px;
-          background-color: #ddd;
-      }
+          .divider::before,
+          .divider::after {
+              content: '';
+              flex: 1;
+              height: 1px;
+              background-color: #ddd;
+          }
 
-      .divider span {
-          padding: 0 10px;
-          color: #666;
-          font-size: 14px;
-      }
-    </style>
-</head>
-<body>
+          .divider span {
+              padding: 0 10px;
+              color: #666;
+              font-size: 14px;
+          }
+        </style>
+    </x-slot:head>
+
     <div class="container">
     <div class="illustration">
       <img src="/assets/logo.svg" alt="logo" />
@@ -114,5 +108,4 @@
       </form>
     </div>
   </div>
-</body>
-</html>
+</x-layout>

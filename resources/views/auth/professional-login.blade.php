@@ -1,14 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Curhatorium | Professional Login</title>
-    <link rel="stylesheet" href="{{ asset('css/login.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/global.css') }}">
-</head>
-<body>
+<x-layout title="Curhatorium | Professional Login">
+    <x-slot:head>
+        <link rel="stylesheet" href="{{ asset('css/login.css') }}">
+    </x-slot:head>
+
   <div class="container">
     <div class="illustration">
       <img src="/assets/logo.svg" alt="logo" />
@@ -43,5 +37,4 @@
       </div>
     </div>
   </div>
-</body>
-</html> 
+</x-layout> 

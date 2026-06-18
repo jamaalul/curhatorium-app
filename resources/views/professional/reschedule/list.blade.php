@@ -1,16 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
+<x-layout title="Reschedules | {{ $professional->name }}" bodyClass="bg-gray-100">
+    <x-slot:head>
+        @vite('resources/css/app.css')
+    </x-slot:head>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Reschedules | {{ $professional->name }}</title>
-    @vite('resources/css/app.css')
-    <link rel="stylesheet" href="{{ asset('css/global.css') }}">
-</head>
-
-<body class="bg-gray-100">
     <div class="flex flex-col md:flex-row h-screen">
         <!-- Sidebar -->
         <aside class="w-full md:w-64 bg-white shadow-md flex-shrink-0">
@@ -159,11 +151,11 @@
         </main>
     </div>
 
-    <script>
-        document.getElementById('mobile-menu-button').addEventListener('click', function() {
-            document.getElementById('mobile-menu').classList.toggle('hidden');
-        });
-    </script>
-</body>
-
-</html>
+    <x-slot:scripts>
+        <script>
+            document.getElementById('mobile-menu-button').addEventListener('click', function() {
+                document.getElementById('mobile-menu').classList.toggle('hidden');
+            });
+        </script>
+    </x-slot:scripts>
+</x-layout>

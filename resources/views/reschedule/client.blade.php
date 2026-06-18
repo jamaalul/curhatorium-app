@@ -1,15 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
+<x-layout title="Reschedule Consultation - {{ $originalSlot->professional->name ?? 'Professional' }}" bodyClass="bg-gray-50 text-gray-800">
+    <x-slot:head>
+        @vite('resources/css/app.css')
+    </x-slot:head>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reschedule Consultation - {{ $originalSlot->professional->name ?? 'Professional' }}</title>
-    @vite('resources/css/app.css')
-    <link rel="stylesheet" href="{{ asset('css/global.css') }}">
-</head>
-
-<body class="bg-gray-50 text-gray-800">
     <div class="max-w-xl mx-auto p-4">
         <div class="text-center mb-8 py-5">
             <div class="text-2xl font-bold text-[#48A6A6] mb-2">Curhatorium</div>
@@ -82,48 +75,48 @@
         </div>
     </div>
 
-    <script>
-        let selectedSlotId = null;
+    <x-slot:scripts>
+        <script>
+            let selectedSlotId = null;
 
-        function selectSlot(slotId) {
-            // Remove selection from all slots
-            document.querySelectorAll('.slot-card').forEach(card => {
-                card.classList.remove('selected', 'border-[#48A6A6]', 'bg-teal-50');
-            });
+            function selectSlot(slotId) {
+                // Remove selection from all slots
+                document.querySelectorAll('.slot-card').forEach(card => {
+                    card.classList.remove('selected', 'border-[#48A6A6]', 'bg-teal-50');
+                });
 
-            // Add selection to the clicked slot
-            const selectedCard = document.querySelector(`.slot-card[data-slot-id="${slotId}"]`);
-            if (selectedCard) {
-                selectedCard.classList.add('selected', 'border-[#48A6A6]', 'bg-teal-50');
-                selectedSlotId = slotId;
+                // Add selection to the clicked slot
+                const selectedCard = document.querySelector(`.slot-card[data-slot-id="${slotId}"]`);
+                if (selectedCard) {
+                    selectedCard.classList.add('selected', 'border-[#48A6A6]', 'bg-teal-50');
+                    selectedSlotId = slotId;
 
-                // Enable the confirm button
-                document.getElementById('confirm-button').disabled = false;
-            }
-        }
-
-        function confirmSelection() {
-            if (!selectedSlotId) {
-                alert('Please select a time slot first.');
-                return;
+                    // Enable the confirm button
+                    document.getElementById('confirm-button').disabled = false;
+                }
             }
 
-            // Set the form action and values
-            document.getElementById('action-input').value = 'accept';
-            document.getElementById('slot-id-input').value = selectedSlotId;
+            function confirmSelection() {
+                if (!selectedSlotId) {
+                    alert('Please select a time slot first.');
+                    return;
+                }
 
-            // Submit the form
-            document.getElementById('reschedule-form').submit();
-        }
+                // Set the form action and values
+                document.getElementById('action-input').value = 'accept';
+                document.getElementById('slot-id-input').value = selectedSlotId;
 
-        function cancelBooking() {
-            // Set the form action to cancel
-            document.getElementById('action-input').value = 'cancel';
+                // Submit the form
+                document.getElementById('reschedule-form').submit();
+            }
 
-            // Submit the form
-            document.getElementById('reschedule-form').submit();
-        }
-    </script>
-</body>
+            function cancelBooking() {
+                // Set the form action to cancel
+                document.getElementById('action-input').value = 'cancel';
 
-</html>
+                // Submit the form
+                document.getElementById('reschedule-form').submit();
+            }
+        </script>
+    </x-slot:scripts>
+</x-layout>

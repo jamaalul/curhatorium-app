@@ -1,15 +1,8 @@
-<!DOCTYPE html>
-<html lang="id">
+<x-layout title="Checkout — {{ $order->order_ref }}" bodyClass="flex justify-center items-center bg-zinc-100 p-4 w-screen min-h-screen">
+    <x-slot:head>
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
+    </x-slot:head>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Checkout — {{ $order->order_ref }}</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-</head>
-
-<body class="flex justify-center items-center bg-zinc-100 p-4 w-screen min-h-screen">
     <div class="bg-white shadow-sm p-8 border rounded-xl w-full max-w-md">
 
         {{-- Order Header --}}
@@ -94,53 +87,53 @@
     </div>
 
     @if ($order->isPending() && $latestPayment && $latestPayment->isPending())
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                const statusUrl = "{{ route('order.check-status', $order) }}";
-                const timerEl = document.getElementById('countdown-timer');
-                const expiresAt = new Date(timerEl.dataset.expiresAt);
+        <x-slot:scripts>
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    const statusUrl = "{{ route('order.check-status', $order) }}";
+                    const timerEl = document.getElementById('countdown-timer');
+                    const expiresAt = new Date(timerEl.dataset.expiresAt);
 
-                // Countdown timer
-                const timerInterval = setInterval(function () {
-                    const now = new Date();
-                    const diff = expiresAt - now;
+                    // Countdown timer
+                    const timerInterval = setInterval(function () {
+                        const now = new Date();
+                        const diff = expiresAt - now;
 
-                    if (diff <= 0) {
-                        timerEl.textContent = '00:00';
-                        clearInterval(timerInterval);
-                        clearInterval(pollInterval);
-                        location.reload();
-                        return;
-                    }
+                        if (diff <= 0) {
+                            timerEl.textContent = '00:00';
+                            clearInterval(timerInterval);
+                            clearInterval(pollInterval);
+                            location.reload();
+                            return;
+                        }
 
-                    const minutes = Math.floor(diff / 60000);
-                    const seconds = Math.floor((diff % 60000) / 1000);
-                    timerEl.textContent =
-                        String(minutes).padStart(2, '0') + ':' +
-                        String(seconds).padStart(2, '0');
-                }, 1000);
+                        const minutes = Math.floor(diff / 60000);
+                        const seconds = Math.floor((diff % 60000) / 1000);
+                        timerEl.textContent =
+                            String(minutes).padStart(2, '0') + ':' +
+                            String(seconds).padStart(2, '0');
+                    }, 1000);
 
-                // Poll status every 5 seconds
-                const pollInterval = setInterval(function () {
-                    fetch(statusUrl)
-                        .then(r => r.json())
-                        .then(data => {
-                            if (data.order_status === 'paid' || data.payment_status === 'settlement') {
-                                clearInterval(timerInterval);
-                                clearInterval(pollInterval);
-                                location.reload();
-                            } else if (['expired', 'cancelled'].includes(data.order_status) ||
-                                ['expire', 'cancel', 'deny'].includes(data.payment_status)) {
-                                clearInterval(timerInterval);
-                                clearInterval(pollInterval);
-                                location.reload();
-                            }
-                        })
-                        .catch(() => { });
-                }, 2000);
-            });
-        </script>
+                    // Poll status every 5 seconds
+                    const pollInterval = setInterval(function () {
+                        fetch(statusUrl)
+                            .then(r => r.json())
+                            .then(data => {
+                                if (data.order_status === 'paid' || data.payment_status === 'settlement') {
+                                    clearInterval(timerInterval);
+                                    clearInterval(pollInterval);
+                                    location.reload();
+                                } else if (['expired', 'cancelled'].includes(data.order_status) ||
+                                    ['expire', 'cancel', 'deny'].includes(data.payment_status)) {
+                                    clearInterval(timerInterval);
+                                    clearInterval(pollInterval);
+                                    location.reload();
+                                }
+                            })
+                            .catch(() => { });
+                    }, 2000);
+                });
+            </script>
+        </x-slot:scripts>
     @endif
-</body>
-
-</html>
+</x-layout>

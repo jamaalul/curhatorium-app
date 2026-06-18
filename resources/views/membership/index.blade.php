@@ -1,114 +1,106 @@
-<!DOCTYPE html>
-<html lang="id">
+<x-layout title="Pilih Paket | Curhatorium" bodyClass="pt-16 w-full overflow-x-hidden">
+    <x-slot:head>
+        <meta name="description" content="Pilih paket membership Curhatorium yang sesuai dengan kebutuhanmu dan mulai perjalanan kesehatan mentalmu.">
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
+        <style>
+            .plan-card {
+                transition: transform 0.25s ease, box-shadow 0.25s ease;
+            }
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Pilih Paket | Curhatorium</title>
-    <meta name="description" content="Pilih paket membership Curhatorium yang sesuai dengan kebutuhanmu dan mulai perjalanan kesehatan mentalmu.">
-    <link rel="stylesheet" href="{{ asset('css/global.css') }}">
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <style>
-        .plan-card {
-            transition: transform 0.25s ease, box-shadow 0.25s ease;
-        }
+            .plan-card:hover {
+                transform: translateY(-6px);
+                box-shadow: 0 20px 40px -10px rgba(72, 166, 166, 0.25);
+            }
 
-        .plan-card:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 20px 40px -10px rgba(72, 166, 166, 0.25);
-        }
+            .plan-card.featured {
+                border: 2px solid #48A6A6;
+            }
 
-        .plan-card.featured {
-            border: 2px solid #48A6A6;
-        }
+            .plan-card.featured::before {
+                content: 'Terpopuler';
+                position: absolute;
+                top: -1px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: #48A6A6;
+                color: white;
+                font-size: 0.75rem;
+                font-weight: 600;
+                padding: 4px 18px;
+                border-radius: 0 0 10px 10px;
+                letter-spacing: 0.05em;
+            }
 
-        .plan-card.featured::before {
-            content: 'Terpopuler';
-            position: absolute;
-            top: -1px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #48A6A6;
-            color: white;
-            font-size: 0.75rem;
-            font-weight: 600;
-            padding: 4px 18px;
-            border-radius: 0 0 10px 10px;
-            letter-spacing: 0.05em;
-        }
+            .benefit-row {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 8px 0;
+                border-bottom: 1px solid #f0ede8;
+                font-size: 0.9rem;
+                color: #555;
+            }
 
-        .benefit-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 8px 0;
-            border-bottom: 1px solid #f0ede8;
-            font-size: 0.9rem;
-            color: #555;
-        }
+            .benefit-row:last-of-type {
+                border-bottom: none;
+            }
 
-        .benefit-row:last-of-type {
-            border-bottom: none;
-        }
+            .benefit-value {
+                font-weight: 600;
+                color: #222222;
+                white-space: nowrap;
+            }
 
-        .benefit-value {
-            font-weight: 600;
-            color: #222222;
-            white-space: nowrap;
-        }
+            .purchase-btn {
+                display: block;
+                width: 100%;
+                padding: 12px 0;
+                border-radius: 8px;
+                font-weight: 600;
+                font-size: 0.95rem;
+                text-align: center;
+                cursor: pointer;
+                border: none;
+                transition: background 0.2s ease, box-shadow 0.2s ease;
+            }
 
-        .purchase-btn {
-            display: block;
-            width: 100%;
-            padding: 12px 0;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 0.95rem;
-            text-align: center;
-            cursor: pointer;
-            border: none;
-            transition: background 0.2s ease, box-shadow 0.2s ease;
-        }
+            .purchase-btn-primary {
+                background: #48A6A6;
+                color: white;
+            }
 
-        .purchase-btn-primary {
-            background: #48A6A6;
-            color: white;
-        }
+            .purchase-btn-primary:hover {
+                background: #357979;
+                box-shadow: 0 4px 14px rgba(72, 166, 166, 0.4);
+            }
 
-        .purchase-btn-primary:hover {
-            background: #357979;
-            box-shadow: 0 4px 14px rgba(72, 166, 166, 0.4);
-        }
+            .purchase-btn-outline {
+                background: transparent;
+                color: #48A6A6;
+                border: 2px solid #48A6A6;
+            }
 
-        .purchase-btn-outline {
-            background: transparent;
-            color: #48A6A6;
-            border: 2px solid #48A6A6;
-        }
+            .purchase-btn-outline:hover {
+                background: #f0fafa;
+            }
 
-        .purchase-btn-outline:hover {
-            background: #f0fafa;
-        }
+            .badge-free {
+                background: #f3f4f6;
+                color: #6b7280;
+            }
 
-        .badge-free {
-            background: #f3f4f6;
-            color: #6b7280;
-        }
+            .badge-calm {
+                background: linear-gradient(135deg, #d8efef, #b5dede);
+                color: #2a7070;
+            }
 
-        .badge-calm {
-            background: linear-gradient(135deg, #d8efef, #b5dede);
-            color: #2a7070;
-        }
+            .badge-serene {
+                background: linear-gradient(135deg, #48A6A6, #357979);
+                color: white;
+            }
+        </style>
+    </x-slot:head>
 
-        .badge-serene {
-            background: linear-gradient(135deg, #48A6A6, #357979);
-            color: white;
-        }
-    </style>
-</head>
-
-<body class="pt-16 w-full overflow-x-hidden">
     @include('components.navbar')
 
     {{-- Hero Section --}}
@@ -233,6 +225,4 @@
     </section>
 
     @include('components.footer')
-</body>
-
-</html>
+</x-layout>

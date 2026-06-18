@@ -1,16 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
+<x-layout title="Dashboard | Curhatorium" bodyClass="pt-16 w-full overflow-x-hidden">
+    <x-slot:head>
+        @vite('resources/css/app.css')
+    </x-slot:head>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Dashboard | Curhatorium</title>
-    <link rel="stylesheet" href="{{ asset('css/global.css') }}">
-    @vite('resources/css/app.css')
-</head>
-
-<body class="pt-16 w-full overflow-x-hidden">
     @include('components.navbar')
     @include('main.announcement')
     @include('components.error', ['msg' => $errors])
@@ -39,6 +31,4 @@
     @include('main.article-list')
     @include('main.xp-redemption')
     @include('components.footer')
-</body>
-
-</html>
+</x-layout>

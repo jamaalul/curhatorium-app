@@ -1,64 +1,56 @@
-<!DOCTYPE html>
-<html lang="en">
+<x-layout title="Dashboard | {{ $professional->name }}" bodyClass="bg-gray-100">
+    <x-slot:head>
+        @vite('resources/css/app.css')
+        <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js'></script>
+        <style>
+            /* Custom styles for FullCalendar */
+            :root {
+                --fc-border-color: #e5e7eb;
+                --fc-daygrid-event-dot-width: 8px;
+                --fc-list-event-hover-bg-color: #f3f4f6;
+            }
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Dashboard | {{ $professional->name }}</title>
-    @vite('resources/css/app.css')
-    <link rel="stylesheet" href="{{ asset('css/global.css') }}">
-    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js'></script>
-    <style>
-        /* Custom styles for FullCalendar */
-        :root {
-            --fc-border-color: #e5e7eb;
-            --fc-daygrid-event-dot-width: 8px;
-            --fc-list-event-hover-bg-color: #f3f4f6;
-        }
-
-        .fc .fc-toolbar-title {
-            font-size: 1.1rem;
-            /* Smaller for mobile */
-            font-weight: 600;
-        }
-
-        @media (min-width: 768px) {
             .fc .fc-toolbar-title {
-                font-size: 1.25rem;
+                font-size: 1.1rem;
+                /* Smaller for mobile */
+                font-weight: 600;
             }
-        }
 
-        .fc .fc-button-primary {
-            background-color: #48A6A6;
-            border-color: #48A6A6;
-        }
+            @media (min-width: 768px) {
+                .fc .fc-toolbar-title {
+                    font-size: 1.25rem;
+                }
+            }
 
-        .fc .fc-button-primary:hover {
-            background-color: #357979;
-            border-color: #357979;
-        }
+            .fc .fc-button-primary {
+                background-color: #48A6A6;
+                border-color: #48A6A6;
+            }
 
-        .fc .fc-daygrid-day.fc-day-today {
-            background-color: #f0fdfa;
-        }
+            .fc .fc-button-primary:hover {
+                background-color: #357979;
+                border-color: #357979;
+            }
 
-        .fc-popover {
-            max-width: 90vw;
-            max-height: 60vh;
-            overflow-y: auto;
-        }
+            .fc .fc-daygrid-day.fc-day-today {
+                background-color: #f0fdfa;
+            }
 
-        @media (min-width: 768px) {
             .fc-popover {
-                max-width: 400px;
-                max-height: 400px;
+                max-width: 90vw;
+                max-height: 60vh;
+                overflow-y: auto;
             }
-        }
-    </style>
-</head>
 
-<body class="bg-gray-100">
+            @media (min-width: 768px) {
+                .fc-popover {
+                    max-width: 400px;
+                    max-height: 400px;
+                }
+            }
+        </style>
+    </x-slot:head>
+
     <div class="flex flex-col md:flex-row h-screen">
         <!-- Sidebar -->
         <aside class="w-full md:w-64 bg-white shadow-md flex-shrink-0">
@@ -418,151 +410,151 @@
         </div>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const navSchedule = document.getElementById('nav-schedule');
-            const navProfile = document.getElementById('nav-profile');
-            const scheduleSection = document.getElementById('schedule-section');
-            const profileSection = document.getElementById('profile-section');
-            const pageTitle = document.getElementById('page-title');
+    <x-slot:scripts>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const navSchedule = document.getElementById('nav-schedule');
+                const navProfile = document.getElementById('nav-profile');
+                const scheduleSection = document.getElementById('schedule-section');
+                const profileSection = document.getElementById('profile-section');
+                const pageTitle = document.getElementById('page-title');
 
-            function showSection(sectionToShow) {
-                scheduleSection.classList.add('hidden');
-                profileSection.classList.add('hidden');
-                navSchedule.classList.remove('bg-gray-200');
-                navProfile.classList.remove('bg-gray-200');
+                function showSection(sectionToShow) {
+                    scheduleSection.classList.add('hidden');
+                    profileSection.classList.add('hidden');
+                    navSchedule.classList.remove('bg-gray-200');
+                    navProfile.classList.remove('bg-gray-200');
 
-                if (sectionToShow === 'schedule') {
-                    scheduleSection.classList.remove('hidden');
-                    navSchedule.classList.add('bg-gray-200');
-                    pageTitle.textContent = 'Jadwal Saya';
-                } else {
-                    profileSection.classList.remove('hidden');
-                    navProfile.classList.add('bg-gray-200');
-                    pageTitle.textContent = 'Profil & Pengaturan';
-                }
-            }
-
-            navSchedule.addEventListener('click', (e) => {
-                e.preventDefault();
-                showSection('schedule');
-            });
-            navProfile.addEventListener('click', (e) => {
-                e.preventDefault();
-                showSection('profile');
-            });
-
-            const calendarEl = document.getElementById('calendar');
-            const manageToggle = document.getElementById('manage-schedule-toggle');
-            const calendarOverlay = document.getElementById('calendar-management-overlay');
-            const deleteModal = document.getElementById('delete-modal');
-            const cancelDeleteBtn = document.getElementById('cancel-delete-btn');
-            const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
-            const deleteModalText = document.getElementById('delete-modal-text');
-            let slotToDelete = null;
-            let manageMode = false;
-
-            const calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'dayGridMonth',
-                headerToolbar: {
-                    left: 'prev,next today',
-                    center: 'title',
-                    right: ''
-                },
-                events: `/api/professionals/{{ $professional->id }}/schedule`,
-                dayMaxEventRows: 2,
-                dayMaxEvents: 2,
-                moreLinkClick: 'popover',
-                dayPopoverFormat: {
-                    weekday: 'long',
-                    month: 'long',
-                    day: 'numeric',
-                    year: 'numeric'
-                },
-                eventClick: function(info) {
-                    if (!manageMode || info.event.title !== 'Available') {
-                        return;
+                    if (sectionToShow === 'schedule') {
+                        scheduleSection.classList.remove('hidden');
+                        navSchedule.classList.add('bg-gray-200');
+                        pageTitle.textContent = 'Jadwal Saya';
+                    } else {
+                        profileSection.classList.remove('hidden');
+                        navProfile.classList.add('bg-gray-200');
+                        pageTitle.textContent = 'Profil & Pengaturan';
                     }
-
-                    slotToDelete = info.event;
-                    deleteModalText.innerHTML =
-                        `Apakah Anda yakin ingin menghapus slot jadwal pada <br> <span class="font-semibold">${slotToDelete.start.toLocaleString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })}</span>?`;
-                    deleteModal.classList.remove('hidden');
                 }
-            });
-            calendar.render();
+
+                navSchedule.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    showSection('schedule');
+                });
+                navProfile.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    showSection('profile');
+                });
+
+                const calendarEl = document.getElementById('calendar');
+                const manageToggle = document.getElementById('manage-schedule-toggle');
+                const calendarOverlay = document.getElementById('calendar-management-overlay');
+                const deleteModal = document.getElementById('delete-modal');
+                const cancelDeleteBtn = document.getElementById('cancel-delete-btn');
+                const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
+                const deleteModalText = document.getElementById('delete-modal-text');
+                let slotToDelete = null;
+                let manageMode = false;
+
+                const calendar = new FullCalendar.Calendar(calendarEl, {
+                    initialView: 'dayGridMonth',
+                    headerToolbar: {
+                        left: 'prev,next today',
+                        center: 'title',
+                        right: ''
+                    },
+                    events: `/api/professionals/{{ $professional->id }}/schedule`,
+                    dayMaxEventRows: 2,
+                    dayMaxEvents: 2,
+                    moreLinkClick: 'popover',
+                    dayPopoverFormat: {
+                        weekday: 'long',
+                        month: 'long',
+                        day: 'numeric',
+                        year: 'numeric'
+                    },
+                    eventClick: function(info) {
+                        if (!manageMode || info.event.title !== 'Available') {
+                            return;
+                        }
+
+                        slotToDelete = info.event;
+                        deleteModalText.innerHTML =
+                            `Apakah Anda yakin ingin menghapus slot jadwal pada <br> <span class="font-semibold">${slotToDelete.start.toLocaleString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })}</span>?`;
+                        deleteModal.classList.remove('hidden');
+                    }
+                });
+                calendar.render();
 
 
-            // Toggle Manage Mode
-            manageToggle.addEventListener('change', function() {
-                manageMode = this.checked;
-                calendarOverlay.classList.toggle('hidden', !manageMode);
-            });
+                // Toggle Manage Mode
+                manageToggle.addEventListener('change', function() {
+                    manageMode = this.checked;
+                    calendarOverlay.classList.toggle('hidden', !manageMode);
+                });
 
-            // Modal Controls
-            cancelDeleteBtn.addEventListener('click', () => {
-                deleteModal.classList.add('hidden');
-                slotToDelete = null;
-            });
+                // Modal Controls
+                cancelDeleteBtn.addEventListener('click', () => {
+                    deleteModal.classList.add('hidden');
+                    slotToDelete = null;
+                });
 
-            confirmDeleteBtn.addEventListener('click', () => {
-                if (!slotToDelete) return;
+                confirmDeleteBtn.addEventListener('click', () => {
+                    if (!slotToDelete) return;
 
-                fetch(`/professional/slots/${slotToDelete.id}`, {
-                        method: 'DELETE',
+                    fetch(`/professional/slots/${slotToDelete.id}`, {
+                            method: 'DELETE',
+                            headers: {
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
+                                    .getAttribute('content')
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                calendar.refetchEvents();
+                            } else {
+                                alert(data.message); // Or a more elegant notification
+                            }
+                            deleteModal.classList.add('hidden');
+                            slotToDelete = null;
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('An error occurred.');
+                            deleteModal.classList.add('hidden');
+                            slotToDelete = null;
+                        });
+                });
+
+                // Password Change Form
+                document.getElementById('passwordForm').addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const formData = new FormData(this);
+                    const data = {
+                        current_password: formData.get('current_password'),
+                        new_password: formData.get('new_password'),
+                        new_password_confirmation: formData.get('new_password_confirmation')
+                    };
+                    fetch(`/professional/{{ $professional->id }}/change-password`, {
+                        method: 'POST',
                         headers: {
+                            'Content-Type': 'application/json',
                             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
                                 .getAttribute('content')
-                        }
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            calendar.refetchEvents();
-                        } else {
-                            alert(data.message); // Or a more elegant notification
-                        }
-                        deleteModal.classList.add('hidden');
-                        slotToDelete = null;
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        alert('An error occurred.');
-                        deleteModal.classList.add('hidden');
-                        slotToDelete = null;
-                    });
+                        },
+                        body: JSON.stringify(data)
+                    }).then(res => res.json()).then(data => {
+                        const msgDiv = document.getElementById('passwordMessage');
+                        msgDiv.innerHTML =
+                            `<p class="${data.success ? 'text-green-600' : 'text-red-600'}">${data.message}</p>`;
+                        if (data.success) this.reset();
+                    }).catch(err => console.error(err));
+                });
             });
 
-            // Password Change Form
-            document.getElementById('passwordForm').addEventListener('submit', function(e) {
-                e.preventDefault();
-                const formData = new FormData(this);
-                const data = {
-                    current_password: formData.get('current_password'),
-                    new_password: formData.get('new_password'),
-                    new_password_confirmation: formData.get('new_password_confirmation')
-                };
-                fetch(`/professional/{{ $professional->id }}/change-password`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
-                            .getAttribute('content')
-                    },
-                    body: JSON.stringify(data)
-                }).then(res => res.json()).then(data => {
-                    const msgDiv = document.getElementById('passwordMessage');
-                    msgDiv.innerHTML =
-                        `<p class="${data.success ? 'text-green-600' : 'text-red-600'}">${data.message}</p>`;
-                    if (data.success) this.reset();
-                }).catch(err => console.error(err));
+            document.getElementById('mobile-menu-button').addEventListener('click', function() {
+                document.getElementById('mobile-menu').classList.toggle('hidden');
             });
-        });
-
-        document.getElementById('mobile-menu-button').addEventListener('click', function() {
-            document.getElementById('mobile-menu').classList.toggle('hidden');
-        });
-    </script>
-</body>
-
-</html>
+        </script>
+    </x-slot:scripts>
+</x-layout>

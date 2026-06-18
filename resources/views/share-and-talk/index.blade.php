@@ -1,27 +1,20 @@
-<!DOCTYPE html>
-<html lang="id">
+<x-layout title="Curhatorium | Share and Talk" bodyClass="pt-16 w-full overflow-x-hidden bg-gray-50">
+    <x-slot:head>
+        @vite('resources/css/app.css')
+        <style>
+            /* Custom styles can be added here if needed */
+            .professional-card {
+                transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            }
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Curhatorium | Share and Talk</title>
-    @vite('resources/css/app.css')
-    <link rel="stylesheet" href="{{ asset('css/global.css') }}">
-    <style>
-        /* Custom styles can be added here if needed */
-        .professional-card {
-            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-        }
+            .professional-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            }
+        </style>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    </x-slot:head>
 
-        .professional-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        }
-    </style>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-</head>
-
-<body class="pt-16 w-full overflow-x-hidden bg-gray-50">
     @include('components.navbar')
 
     <!-- Toast container for notifications -->
@@ -150,7 +143,7 @@
                         <p class="text-gray-600 mb-4 flex-grow">
                             Dapatkan layanan konsultasi dari psikolog berlisensi yang siap membantumu memahami kondisi
                             emosional, memberikan saran psikologis, serta merekomendasikan strategi pemulihan
-                            sesuai kebutuhanmu
+                            sesuai kebutuhanmu
                         </p>
                         <div class="mb-4">
                             <p class="font-semibold mb-2">Pilihan Tersedia:</p>
@@ -233,132 +226,132 @@
 
     @include('components.footer')
 
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <script>
-        let allProfessionals = [];
-        let currentProfessionalType = '';
+    <x-slot:scripts>
+        <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+        <script>
+            let allProfessionals = [];
+            let currentProfessionalType = '';
 
-        async function fetchProfessionals(type = '', date = '') {
-            let url = new URL(window.location.origin + '/share-and-talk/professionals');
-            if (type) url.searchParams.append('type', type);
-            if (date) url.searchParams.append('date', date);
+            async function fetchProfessionals(type = '', date = '') {
+                let url = new URL(window.location.origin + '/share-and-talk/professionals');
+                if (type) url.searchParams.append('type', type);
+                if (date) url.searchParams.append('date', date);
 
-            try {
-                const response = await fetch(url);
-                if (!response.ok) {
-                    console.error('Failed to load professionals');
-                    return [];
-                }
-                return await response.json();
-            } catch (error) {
-                console.error('Error fetching professionals:', error);
-                return [];
-            }
-        }
-
-        async function showProfessionals(type, date = '') {
-            currentProfessionalType = type;
-            allProfessionals = await fetchProfessionals(type, date);
-
-            const section = document.getElementById('professionals-section');
-            const title = document.getElementById('professionals-title');
-
-            title.textContent = type === 'psychiatrist' ? 'Daftar Psikolog' : 'Daftar Rangers';
-
-            section.style.display = 'block';
-            renderProfessionals(allProfessionals);
-
-            if (!date) { // Only scroll into view on the initial click
-                section.scrollIntoView({
-                    behavior: 'smooth'
-                });
-            }
-        }
-
-        function getSpecialtiesArray(specialties) {
-            if (Array.isArray(specialties)) return specialties;
-            if (typeof specialties === 'string') {
                 try {
-                    return JSON.parse(specialties);
-                } catch {
+                    const response = await fetch(url);
+                    if (!response.ok) {
+                        console.error('Failed to load professionals');
+                        return [];
+                    }
+                    return await response.json();
+                } catch (error) {
+                    console.error('Error fetching professionals:', error);
                     return [];
                 }
             }
-            return [];
-        }
 
-        function renderProfessionals(professionals) {
-            const grid = document.getElementById('professionals-grid');
+            async function showProfessionals(type, date = '') {
+                currentProfessionalType = type;
+                allProfessionals = await fetchProfessionals(type, date);
 
-            if (professionals.length === 0) {
-                grid.innerHTML =
-                    `<div class="col-span-full text-center py-8 text-gray-500">Tidak ada profesional yang tersedia saat ini.</div>`;
-                return;
+                const section = document.getElementById('professionals-section');
+                const title = document.getElementById('professionals-title');
+
+                title.textContent = type === 'psychiatrist' ? 'Daftar Psikolog' : 'Daftar Rangers';
+
+                section.style.display = 'block';
+                renderProfessionals(allProfessionals);
+
+                if (!date) { // Only scroll into view on the initial click
+                    section.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
             }
 
-            grid.innerHTML = professionals.map(p => `
-                <div class="professional-card bg-white p-5 rounded-lg shadow-md border border-gray-200">
-                    <div class="flex items-center gap-4 mb-4">
-                        <div>
-                            <h4 class="font-bold text-lg">${p.name}</h4>
-                            <p class="text-gray-500">${p.title}</p>
-                        </div>
-                    </div>
-                    <div class="mb-4">
-                        <p class="font-semibold text-sm mb-2">Spesialisasi:</p>
-                        <div class="flex flex-wrap gap-2">
-                            ${getSpecialtiesArray(p.specialties).map(s => `<span class="bg-gray-200 text-gray-800 text-xs font-medium px-2 py-1 rounded-full">${s}</span>`).join('')}
-                        </div>
-                    </div>
-                    <div class="flex justify-between items-center mb-4 text-sm">
-                        <p class="font-semibold">Jadwal terdekat:</p>
-                        <div class="flex items-center gap-2">
-                            <span class="font-medium text-gray-700">${p.next_availability_formatted}</span>
-                        </div>
-                    </div>
-                    <button class="w-full bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-md transition-colors duration-200" onclick="startConsultation(${p.id})">
-                        Pesan Sesi
-                    </button>
-                </div>
-            `).join('');
-        }
-
-        function startConsultation(professionalId) {
-            window.location.href = `/share-and-talk/checkout/${professionalId}`;
-        }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            flatpickr("#date-filter", {
-                dateFormat: "Y-m-d",
-                onChange: function(selectedDates, dateStr, instance) {
-                    if (currentProfessionalType) {
-                        showProfessionals(currentProfessionalType, dateStr);
+            function getSpecialtiesArray(specialties) {
+                if (Array.isArray(specialties)) return specialties;
+                if (typeof specialties === 'string') {
+                    try {
+                        return JSON.parse(specialties);
+                    } catch {
+                        return [];
                     }
                 }
-            });
-        });
+                return [];
+            }
 
-        function checkConsultationSchedule() {
-            const now = new Date();
-            document.querySelectorAll('.goto-room-btn').forEach(button => {
-                const scheduleTime = new Date(button.dataset.scheduleTime);
-                const diffMinutes = (scheduleTime.getTime() - now.getTime()) / 60000;
+            function renderProfessionals(professionals) {
+                const grid = document.getElementById('professionals-grid');
 
-                if (diffMinutes <= 5 && diffMinutes > -60) { // -60 to allow access for 1 hour after start
-                    button.disabled = false;
-                    button.classList.remove('disabled:bg-gray-400', 'disabled:cursor-not-allowed');
-                } else {
-                    button.disabled = true;
-                    button.classList.add('disabled:bg-gray-400', 'disabled:cursor-not-allowed');
+                if (professionals.length === 0) {
+                    grid.innerHTML =
+                        `<div class="col-span-full text-center py-8 text-gray-500">Tidak ada profesional yang tersedia saat ini.</div>`;
+                    return;
                 }
+
+                grid.innerHTML = professionals.map(p => `
+                    <div class="professional-card bg-white p-5 rounded-lg shadow-md border border-gray-200">
+                        <div class="flex items-center gap-4 mb-4">
+                            <div>
+                                <h4 class="font-bold text-lg">${p.name}</h4>
+                                <p class="text-gray-500">${p.title}</p>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <p class="font-semibold text-sm mb-2">Spesialisasi:</p>
+                            <div class="flex flex-wrap gap-2">
+                                ${getSpecialtiesArray(p.specialties).map(s => `<span class="bg-gray-200 text-gray-800 text-xs font-medium px-2 py-1 rounded-full">${s}</span>`).join('')}
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center mb-4 text-sm">
+                            <p class="font-semibold">Jadwal terdekat:</p>
+                            <div class="flex items-center gap-2">
+                                <span class="font-medium text-gray-700">${p.next_availability_formatted}</span>
+                            </div>
+                        </div>
+                        <button class="w-full bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-md transition-colors duration-200" onclick="startConsultation(${p.id})">
+                            Pesan Sesi
+                        </button>
+                    </div>
+                `).join('');
+            }
+
+            function startConsultation(professionalId) {
+                window.location.href = `/share-and-talk/checkout/${professionalId}`;
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
+                flatpickr("#date-filter", {
+                    dateFormat: "Y-m-d",
+                    onChange: function(selectedDates, dateStr, instance) {
+                        if (currentProfessionalType) {
+                            showProfessionals(currentProfessionalType, dateStr);
+                        }
+                    }
+                });
             });
-        }
 
-        document.addEventListener('DOMContentLoaded', function() {
-            checkConsultationSchedule();
-            setInterval(checkConsultationSchedule, 60000); // Check every minute
-        });
-    </script>
-</body>
+            function checkConsultationSchedule() {
+                const now = new Date();
+                document.querySelectorAll('.goto-room-btn').forEach(button => {
+                    const scheduleTime = new Date(button.dataset.scheduleTime);
+                    const diffMinutes = (scheduleTime.getTime() - now.getTime()) / 60000;
 
-</html>
+                    if (diffMinutes <= 5 && diffMinutes > -60) { // -60 to allow access for 1 hour after start
+                        button.disabled = false;
+                        button.classList.remove('disabled:bg-gray-400', 'disabled:cursor-not-allowed');
+                    } else {
+                        button.disabled = true;
+                        button.classList.add('disabled:bg-gray-400', 'disabled:cursor-not-allowed');
+                    }
+                });
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
+                checkConsultationSchedule();
+                setInterval(checkConsultationSchedule, 60000); // Check every minute
+            });
+        </script>
+    </x-slot:scripts>
+</x-layout>

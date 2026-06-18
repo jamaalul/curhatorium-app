@@ -1,16 +1,9 @@
-<!DOCTYPE html>
-<html lang="id">
+<x-layout title="Your Safest Place | Curhatorium" bodyClass="w-full">
+    <x-slot:head>
+        <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
+    </x-slot:head>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
-    <title>Your Safest Place | Curhatorium</title>
-    <link rel="stylesheet" href="{{ asset('css/global.css') }}">
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-</head>
-
-<body class="w-full">
     <nav class="top-0 left-0 z-50 fixed flex items-center gap-6 bg-white px-4 w-full h-16">
         <div class="flex justify-center items-center gap-2 mr-auto py-3 h-full" onclick="window.location.href = '/'">
             <img src="{{ asset('assets/mini_logo.png') }}" alt="mini_logo" class="h-full">
@@ -461,30 +454,30 @@
         </div>
     </div>
 
-    <script>
-        const btn = document.getElementById('tutorial-btn');
-        const modal = document.getElementById('tutorial-modal');
-        const close = document.getElementById('close-modal');
-        const video = document.getElementById('tutorial-video');
+    <x-slot:scripts>
+        <script>
+            const btn = document.getElementById('tutorial-btn');
+            const modal = document.getElementById('tutorial-modal');
+            const close = document.getElementById('close-modal');
+            const video = document.getElementById('tutorial-video');
 
-        btn.addEventListener('click', () => {
-            modal.style.display = 'flex';
-            video.src = "https://www.youtube.com/embed/C2pjXtknQSI?si=icjaTmb1-iZbrjSl";
-        });
+            btn.addEventListener('click', () => {
+                modal.style.display = 'flex';
+                video.src = "https://www.youtube.com/embed/C2pjXtknQSI?si=icjaTmb1-iZbrjSl";
+            });
 
-        close.addEventListener('click', () => {
-            modal.style.display = 'none';
-            video.src = ""; // stop video when closing
-        });
-
-        // Optional: close modal when clicking outside
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) {
+            close.addEventListener('click', () => {
                 modal.style.display = 'none';
-                video.src = "";
-            }
-        });
-    </script>
-</body>
+                video.src = ""; // stop video when closing
+            });
 
-</html>
+            // Optional: close modal when clicking outside
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.style.display = 'none';
+                    video.src = "";
+                }
+            });
+        </script>
+    </x-slot:scripts>
+</x-layout>

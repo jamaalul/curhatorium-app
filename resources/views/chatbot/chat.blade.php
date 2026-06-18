@@ -4,80 +4,74 @@
     });
     $mode = $activeChat->mode;
 @endphp
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Ment-AI | Curhatorium</title>
-    <link rel="stylesheet" href="{{ asset('css/global.css') }}">
-    @vite('resources/css/app.css')
-    <!-- Mouseflow Tracking Script -->
-    <script type="text/javascript">
-      window._mfq = window._mfq || [];
-      (function() {
-        var mf = document.createElement("script");
-        mf.type = "text/javascript"; mf.defer = true;
-        mf.src = "//cdn.mouseflow.com/projects/c5eb0d0a-6b75-427c-81f3-ee3c9e946eca.js";
-        document.getElementsByTagName("head")[0].appendChild(mf);
-      })();
-    </script>
+<x-layout title="Ment-AI | Curhatorium" bodyClass="w-screen h-screen flex bg-gray-800">
+    <x-slot:head>
+        @vite('resources/css/app.css')
+        <!-- Mouseflow Tracking Script -->
+        <script type="text/javascript">
+          window._mfq = window._mfq || [];
+          (function() {
+            var mf = document.createElement("script");
+            mf.type = "text/javascript"; mf.defer = true;
+            mf.src = "//cdn.mouseflow.com/projects/c5eb0d0a-6b75-427c-81f3-ee3c9e946eca.js";
+            document.getElementsByTagName("head")[0].appendChild(mf);
+          })();
+        </script>
 
-    <style>
-        /* Responsive font sizes */
-        html { font-size: 16px; }
-        @media (max-width: 640px) { html { font-size: 14px; } }
-        @media (min-width: 640px) and (max-width: 1024px) { html { font-size: 15px; } }
-        @media (min-width: 1024px) { html { font-size: 16px; } }
+        <style>
+            /* Responsive font sizes */
+            html { font-size: 16px; }
+            @media (max-width: 640px) { html { font-size: 14px; } }
+            @media (min-width: 640px) and (max-width: 1024px) { html { font-size: 15px; } }
+            @media (min-width: 1024px) { html { font-size: 16px; } }
 
-        /* Sidebar transitions for mobile */
-        #sidebar {
-            width: 256px;
-            padding: 16px;
-        }
-        @media (max-width: 768px) {
+            /* Sidebar transitions for mobile */
             #sidebar {
-                width: 0px;
-                padding: 0px;
-                position: fixed;
-                z-index: 40;
-                left: 0;
-                top: 0;
-                height: 100vh;
-                background: #1f2937;
-                transition: width 0.3s, padding 0.3s;
+                width: 256px;
+                padding: 16px;
             }
-        }
-        /* Overlay for sidebar on mobile */
-        #sidebar-overlay {
-            display: none;
-        }
-        @media (max-width: 768px) {
-            #sidebar-overlay.active {
-                display: block;
-                position: fixed;
-                z-index: 30;
-                left: 0;
-                top: 0;
-                width: 100vw;
-                height: 100vh;
-                background: rgba(0,0,0,0.4);
+            @media (max-width: 768px) {
+                #sidebar {
+                    width: 0px;
+                    padding: 0px;
+                    position: fixed;
+                    z-index: 40;
+                    left: 0;
+                    top: 0;
+                    height: 100vh;
+                    background: #1f2937;
+                    transition: width 0.3s, padding 0.3s;
+                }
             }
-        }
+            /* Overlay for sidebar on mobile */
+            #sidebar-overlay {
+                display: none;
+            }
+            @media (max-width: 768px) {
+                #sidebar-overlay.active {
+                    display: block;
+                    position: fixed;
+                    z-index: 30;
+                    left: 0;
+                    top: 0;
+                    width: 100vw;
+                    height: 100vh;
+                    background: rgba(0,0,0,0.4);
+                }
+            }
 
-        .fade-in {
-            animation: fadeIn 0.5s ease-in-out;
-        }
+            .fade-in {
+                animation: fadeIn 0.5s ease-in-out;
+            }
 
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-    </style>
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-</head>
-<body class="w-screen h-screen flex bg-gray-800">
+            @keyframes fadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+        </style>
+        <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    </x-slot:head>
+
     <div id="sidebar-overlay"></div>
     <div id="sidebar" class="bg-gray-800 text-white flex flex-col p-4 w-64 transition-all duration-300 ease-out overflow-hidden">
         <!-- Header -->
@@ -188,6 +182,38 @@
             </div>
         </div>
 
+        </nav>
+
+        <div id="chat-container" class="flex w-full md:w-3/4 flex-col mx-auto overflow-y-auto p-4 pt-24 pb-24" style="scrollbar-width:thin; scrollbar-color:#d1d5db #f9fafb;">
+            @foreach($messages as $message)
+                <div class="flex mb-4 @if($message->role == 'user') justify-end @endif">
+                    <div class="p-3 rounded-lg @if($message->role == 'user') bg-[#48a6a6] text-white @else text-black @endif">
+                        <div @if($message->role != 'user') class="prose" @endif>
+                            {!! Illuminate\Support\Str::markdown($message->message) !!}
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+        <div class="w-full h-fit flex items-center justify-center absolute bottom-0 py-2" style="background: linear-gradient(180deg,rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%);">
+            <div class="h-fit w-full md:w-2/3 flex flex-col items-center justify-center p-4 md:p-0">
+                <form id="chat-form" method="POST" class="flex gap-1 rounded-full shadow-md p-2 w-full h-full border border-gray-300 hover:shadow-lg transition-all duration-100 bg-white">
+                    @csrf
+                    <input type="hidden" name="mode" id="ai-mode-input" value="{{ $mode }}">
+                    <div class="h-11 aspect-square rounded-full flex items-center justify-center p-1 cursor-pointer">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" class="h-full aspect-square rounded-full text-gray-500"><path stroke-linecap="round" stroke-linejoin="round" d="M15.182 15.182a4.5 4.5 0 0 1-6.364 0M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0ZM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75Zm-.375 0h.008v.015h-.008V9.75Zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75Zm-.375 0h.008v.015h-.008V9.75Z" /></svg>
+                    </div>
+                    <input type="text" name="message" id="message-input" placeholder="Ceritakan apa saja..." class="w-full py-2 px-0 border-none focus:outline-none focus:ring-0 text-base md:text-lg">
+                    <button id="send-button" type="submit" class="size-11 aspect-square bg-[#48a6a6] rounded-full flex items-center justify-center p-2 cursor-pointer hover:bg-[#357979] transition-all duration-100">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-full aspect-square rounded-full text-white" viewBox="0 0 20 20" fill="#ffffff"><g fill="#ffffff" fill-rule="evenodd" clip-rule="evenodd"><path d="M5.232 8.974a1 1 0 0 1 .128-1.409l4-3.333a1 1 0 1 1 1.28 1.536l-4 3.334a1 1 0 0 1-1.408-.128Z"/><path d="M14.768 8.974a1 1 0 0 1-1.408.128l-4-3.334a1 1 0 1 1 1.28-1.536l4 3.333a1 1 0 0 1 .128 1.409Z"/><path d="M10 6a1 1 0 0 1 1 1v8a1 1 0 1 1-2 0V7a1 1 0 0 1 1-1Z"/></g></svg>
+                    </button>
+                </form>
+                <p class="text-sm mt-2 text-gray-500 hidden md:block text-center">Respon Ment-AI bisa saja keliru. Selalu verifikasi informasi dan utamakan konsultasi profesional.</p>
+            </div>
+        </div>
+    </div>
+
+    <x-slot:scripts>
         <script>
             const aiModeBtn = document.getElementById('ai-mode-btn');
             const aiModeDropdown = document.getElementById('ai-mode-dropdown');
@@ -234,203 +260,172 @@
                 }
             });
         </script>
-        </nav>
-
-        <div id="chat-container" class="flex w-full md:w-3/4 flex-col mx-auto overflow-y-auto p-4 pt-24 pb-24" style="scrollbar-width:thin; scrollbar-color:#d1d5db #f9fafb;">
-            @foreach($messages as $message)
-                <div class="flex mb-4 @if($message->role == 'user') justify-end @endif">
-                    <div class="p-3 rounded-lg @if($message->role == 'user') bg-[#48a6a6] text-white @else text-black @endif">
-                        <div @if($message->role != 'user') class="prose" @endif>
-                            {!! Illuminate\Support\Str::markdown($message->message) !!}
-                        </div>
-                    </div>
-                </div>
-            @endforeach
-        </div>
-        <div class="w-full h-fit flex items-center justify-center absolute bottom-0 py-2" style="background: linear-gradient(180deg,rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%);">
-            <div class="h-fit w-full md:w-2/3 flex flex-col items-center justify-center p-4 md:p-0">
-                <form id="chat-form" method="POST" class="flex gap-1 rounded-full shadow-md p-2 w-full h-full border border-gray-300 hover:shadow-lg transition-all duration-100 bg-white">
-                    @csrf
-                    <input type="hidden" name="mode" id="ai-mode-input" value="{{ $mode }}">
-                    <div class="h-11 aspect-square rounded-full flex items-center justify-center p-1 cursor-pointer">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" class="h-full aspect-square rounded-full text-gray-500"><path stroke-linecap="round" stroke-linejoin="round" d="M15.182 15.182a4.5 4.5 0 0 1-6.364 0M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0ZM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75Zm-.375 0h.008v.015h-.008V9.75Zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75Zm-.375 0h.008v.015h-.008V9.75Z" /></svg>
-                    </div>
-                    <input type="text" name="message" id="message-input" placeholder="Ceritakan apa saja..." class="w-full py-2 px-0 border-none focus:outline-none focus:ring-0 text-base md:text-lg">
-                    <button id="send-button" type="submit" class="size-11 aspect-square bg-[#48a6a6] rounded-full flex items-center justify-center p-2 cursor-pointer hover:bg-[#357979] transition-all duration-100">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-full aspect-square rounded-full text-white" viewBox="0 0 20 20" fill="#ffffff"><g fill="#ffffff" fill-rule="evenodd" clip-rule="evenodd"><path d="M5.232 8.974a1 1 0 0 1 .128-1.409l4-3.333a1 1 0 1 1 1.28 1.536l-4 3.334a1 1 0 0 1-1.408-.128Z"/><path d="M14.768 8.974a1 1 0 0 1-1.408.128l-4-3.334a1 1 0 1 1 1.28-1.536l4 3.333a1 1 0 0 1 .128 1.409Z"/><path d="M10 6a1 1 0 0 1 1 1v8a1 1 0 1 1-2 0V7a1 1 0 0 1 1-1Z"/></g></svg>
-                    </button>
-                </form>
-                <p class="text-sm mt-2 text-gray-500 hidden md:block text-center">Respon Ment-AI bisa saja keliru. Selalu verifikasi informasi dan utamakan konsultasi profesional.</p>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        // Responsive sidebar logic
-        function isMobile() {
-            return window.innerWidth <= 768;
-        }
-
-        function openSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebar-overlay');
-            const toggleA = document.getElementById('sidebar-toggle-a');
-            const toggleB = document.getElementById('sidebar-toggle-b');
-            sidebar.style.width = '256px';
-            sidebar.style.padding = '16px';
-            overlay.classList.add('active');
-            toggleA.classList.remove('hidden');
-            toggleB.style.width = '0px';
-            toggleB.style.opacity = '0';
-            toggleB.classList.add('hidden');
-        }
-
-        function closeSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebar-overlay');
-            const toggleA = document.getElementById('sidebar-toggle-a');
-            const toggleB = document.getElementById('sidebar-toggle-b');
-            sidebar.style.width = '0px';
-            sidebar.style.paddingInline = '0px';
-            overlay.classList.remove('active');
-            toggleA.classList.add('hidden');
-            toggleB.classList.remove('hidden');
-            toggleB.style.width = '24px';
-            toggleB.style.opacity = '1';
-        }
-
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            if (sidebar.style.width === '0px' || sidebar.style.width === '') {
-                openSidebar();
-            } else {
-                closeSidebar();
+        <script>
+            // Responsive sidebar logic
+            function isMobile() {
+                return window.innerWidth <= 768;
             }
-        }
 
-        // Overlay click closes sidebar
-        document.getElementById('sidebar-overlay').addEventListener('click', closeSidebar);
-
-        // Set sidebar default state on load and resize
-        function setSidebarDefault() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebar-overlay');
-            const toggleA = document.getElementById('sidebar-toggle-a');
-            const toggleB = document.getElementById('sidebar-toggle-b');
-            if (isMobile()) {
-                sidebar.style.width = '0px';
-                sidebar.style.padding = '0px';
-                overlay.classList.remove('active');
-                toggleA.classList.add('hidden');
-                toggleB.classList.remove('hidden');
-                toggleB.style.width = '24px';
-                toggleB.style.opacity = '1';
-            } else {
+            function openSidebar() {
+                const sidebar = document.getElementById('sidebar');
+                const overlay = document.getElementById('sidebar-overlay');
+                const toggleA = document.getElementById('sidebar-toggle-a');
+                const toggleB = document.getElementById('sidebar-toggle-b');
                 sidebar.style.width = '256px';
                 sidebar.style.padding = '16px';
-                overlay.classList.remove('active');
+                overlay.classList.add('active');
                 toggleA.classList.remove('hidden');
                 toggleB.style.width = '0px';
                 toggleB.style.opacity = '0';
                 toggleB.classList.add('hidden');
             }
-        }
 
-        window.addEventListener('resize', setSidebarDefault);
-        window.addEventListener('DOMContentLoaded', () => {
-            setSidebarDefault();
+            function closeSidebar() {
+                const sidebar = document.getElementById('sidebar');
+                const overlay = document.getElementById('sidebar-overlay');
+                const toggleA = document.getElementById('sidebar-toggle-a');
+                const toggleB = document.getElementById('sidebar-toggle-b');
+                sidebar.style.width = '0px';
+                sidebar.style.paddingInline = '0px';
+                overlay.classList.remove('active');
+                toggleA.classList.add('hidden');
+                toggleB.classList.remove('hidden');
+                toggleB.style.width = '24px';
+                toggleB.style.opacity = '1';
+            }
+
+            function toggleSidebar() {
+                const sidebar = document.getElementById('sidebar');
+                if (sidebar.style.width === '0px' || sidebar.style.width === '') {
+                    openSidebar();
+                } else {
+                    closeSidebar();
+                }
+            }
+
+            // Overlay click closes sidebar
+            document.getElementById('sidebar-overlay').addEventListener('click', closeSidebar);
+
+            // Set sidebar default state on load and resize
+            function setSidebarDefault() {
+                const sidebar = document.getElementById('sidebar');
+                const overlay = document.getElementById('sidebar-overlay');
+                const toggleA = document.getElementById('sidebar-toggle-a');
+                const toggleB = document.getElementById('sidebar-toggle-b');
+                if (isMobile()) {
+                    sidebar.style.width = '0px';
+                    sidebar.style.padding = '0px';
+                    overlay.classList.remove('active');
+                    toggleA.classList.add('hidden');
+                    toggleB.classList.remove('hidden');
+                    toggleB.style.width = '24px';
+                    toggleB.style.opacity = '1';
+                } else {
+                    sidebar.style.width = '256px';
+                    sidebar.style.padding = '16px';
+                    overlay.classList.remove('active');
+                    toggleA.classList.remove('hidden');
+                    toggleB.style.width = '0px';
+                    toggleB.style.opacity = '0';
+                    toggleB.classList.add('hidden');
+                }
+            }
+
+            window.addEventListener('resize', setSidebarDefault);
+            window.addEventListener('DOMContentLoaded', () => {
+                setSidebarDefault();
+                const chatContainer = document.getElementById('chat-container');
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            });
+
+            function deleteChat(element) {
+                element.parentElement.remove();
+            }
+
             const chatContainer = document.getElementById('chat-container');
-            chatContainer.scrollTop = chatContainer.scrollHeight;
-        });
+            const chatForm = document.getElementById('chat-form');
+            const messageInput = document.getElementById('message-input');
 
-        function deleteChat(element) {
-            element.parentElement.remove();
-        }
+            function appendMessage(message, role) {
+                const messageElement = document.createElement('div');
+                messageElement.classList.add('flex', 'mb-4');
+                if (role === 'user') {
+                    messageElement.classList.add('justify-end');
+                }
 
-        const chatContainer = document.getElementById('chat-container');
-        const chatForm = document.getElementById('chat-form');
-        const messageInput = document.getElementById('message-input');
+                const messageBubble = document.createElement('div');
+                messageBubble.classList.add('p-3', 'rounded-lg');
+                if (role === 'user') {
+                    messageBubble.classList.add('bg-[#48a6a6]', 'text-white');
+                } else {
+                    messageBubble.classList.add('text-[#222222]');
+                }
 
-        function appendMessage(message, role) {
-            const messageElement = document.createElement('div');
-            messageElement.classList.add('flex', 'mb-4');
-            if (role === 'user') {
-                messageElement.classList.add('justify-end');
+                messageBubble.innerHTML = marked.parse(message);
+                messageElement.appendChild(messageBubble);
+                chatContainer.appendChild(messageElement);
+                chatContainer.scrollTop = chatContainer.scrollHeight;
             }
 
-            const messageBubble = document.createElement('div');
-            messageBubble.classList.add('p-3', 'rounded-lg');
-            if (role === 'user') {
-                messageBubble.classList.add('bg-[#48a6a6]', 'text-white');
-            } else {
-                messageBubble.classList.add('text-[#222222]');
-            }
 
-            messageBubble.innerHTML = marked.parse(message);
-            messageElement.appendChild(messageBubble);
-            chatContainer.appendChild(messageElement);
-            chatContainer.scrollTop = chatContainer.scrollHeight;
-        }
+            chatForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const message = messageInput.value;
+                if (!message.trim()) return;
 
+                appendMessage(message, 'user');
+                messageInput.value = '';
 
-        chatForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const message = messageInput.value;
-            if (!message.trim()) return;
+                const messageBubble = document.createElement('div');
+                messageBubble.classList.add('p-3', 'rounded-lg', 'text-[#222222]');
+                const messageText = document.createElement('div');
+                messageBubble.appendChild(messageText);
 
-            appendMessage(message, 'user');
-            messageInput.value = '';
+                const messageElement = document.createElement('div');
+                messageElement.classList.add('flex', 'mb-4', 'fade-in');
+                messageElement.appendChild(messageBubble);
+                chatContainer.appendChild(messageElement);
 
-            const messageBubble = document.createElement('div');
-            messageBubble.classList.add('p-3', 'rounded-lg', 'text-[#222222]');
-            const messageText = document.createElement('div');
-            messageBubble.appendChild(messageText);
+                let fullResponse = '';
 
-            const messageElement = document.createElement('div');
-            messageElement.classList.add('flex', 'mb-4', 'fade-in');
-            messageElement.appendChild(messageBubble);
-            chatContainer.appendChild(messageElement);
+                const eventSource = new EventSource('{{ route('api.chatbot.stream', $activeChat->identifier) }}?message=' + encodeURIComponent(message));
 
-            let fullResponse = '';
+                eventSource.onmessage = function(event) {
+                    const data = JSON.parse(event.data);
 
-            const eventSource = new EventSource('{{ route('api.chatbot.stream', $activeChat->identifier) }}?message=' + encodeURIComponent(message));
-
-            eventSource.onmessage = function(event) {
-                const data = JSON.parse(event.data);
-
-                if (data.done) {
-                    eventSource.close();
-                    if (fullResponse.trim()) {
-                        fetch('{{ route('api.chatbot.save', $activeChat->identifier) }}', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                            },
-                            body: JSON.stringify({ message: fullResponse })
-                        });
+                    if (data.done) {
+                        eventSource.close();
+                        if (fullResponse.trim()) {
+                            fetch('{{ route('api.chatbot.save', $activeChat->identifier) }}', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                },
+                                body: JSON.stringify({ message: fullResponse })
+                            });
+                        }
+                        messageText.parentElement.classList.add('prose');
+                        messageText.parentElement.innerHTML = marked.parse(fullResponse);
+                        chatContainer.scrollTop = chatContainer.scrollHeight;
+                        return;
                     }
-                    messageText.parentElement.classList.add('prose');
-                    messageText.parentElement.innerHTML = marked.parse(fullResponse);
-                    chatContainer.scrollTop = chatContainer.scrollHeight;
-                    return;
-                }
 
-                if (data.text) {
-                    fullResponse += data.text;
-                    const span = document.createElement('span');
-                    span.className = 'fade-in';
-                    span.textContent = data.text;
-                    messageText.appendChild(span);
-                    chatContainer.scrollTop = chatContainer.scrollHeight;
-                }
-            };
+                    if (data.text) {
+                        fullResponse += data.text;
+                        const span = document.createElement('span');
+                        span.className = 'fade-in';
+                        span.textContent = data.text;
+                        messageText.appendChild(span);
+                        chatContainer.scrollTop = chatContainer.scrollHeight;
+                    }
+                };
 
-            eventSource.onerror = function(err) {
-                console.error("EventSource failed:", err);
-                eventSource.close();
-            };
-        });
-    </script>
-</body>
-</html>
+                eventSource.onerror = function(err) {
+                    console.error("EventSource failed:", err);
+                    eventSource.close();
+                };
+            });
+        </script>
+    </x-slot:scripts>
+</x-layout>
