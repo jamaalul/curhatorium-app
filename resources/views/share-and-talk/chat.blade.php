@@ -1,5 +1,10 @@
-<x-layout title="Chat Room: {{ $room }}" bodyClass="bg-stone-200 flex items-center h-screen justify-center w-screen p-0 md:p-2">
-    <x-slot:head>
+@extends('layouts.app')
+
+@section('title', 'Chat Room: ' . $room)
+
+@section('bodyClass', 'bg-stone-200 flex items-center h-screen justify-center w-screen p-0 md:p-2')
+
+@section('head')
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
         <style>
             /* body { padding-top: 20px; }
@@ -9,8 +14,9 @@
             } */
         </style>
         @vite('resources/css/app.css')
-    </x-slot:head>
+@endsection
 
+@section('content')
     <div
         class="w-0 md:w-1/5 md:min-w-80 h-full bg-stone-200 overflow-hidden p-0 md:p-4 flex flex-col gap-2 items-center">
         <div class="flex gap-2 items-center justify-center">
@@ -107,7 +113,9 @@
         </div>
     </div>
 
-    <x-slot:scripts>
+@endsection
+
+@section('scripts')
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script src="https://js.pusher.com/7.0/pusher.min.js"></script>
         <script>
@@ -311,5 +319,4 @@
                 $('#confirmation-modal').addClass('hidden');
             });
         </script>
-    </x-slot:scripts>
-</x-layout>
+@endsection

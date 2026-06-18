@@ -1,8 +1,12 @@
-<x-layout title="Curhatorium | Lupa Password">
-    <x-slot:head>
-        <link rel="stylesheet" href="{{ asset('css/forgot-password.css') }}">
-    </x-slot:head>
+@extends('layouts.app')
 
+@section('title', 'Curhatorium | Lupa Password')
+
+@section('head')
+    <link rel="stylesheet" href="{{ asset('css/forgot-password.css') }}">
+@endsection
+
+@section('content')
     <div class="icon">
       <!-- Replace with your icon image if needed -->
       <img src="/assets/logo.svg" alt="Hand Icon">
@@ -16,4 +20,4 @@
       <button type="submit">Ajukan Perubahan Password</button>
     </form>
   </div>
-</x-layout>
+@endsection

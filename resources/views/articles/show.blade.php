@@ -1,5 +1,8 @@
-<x-layout title="{{ $article->title }} - Artikel">
-  <x-slot:head>
+@extends('layouts.app')
+
+@section('title', $article->title . ' - Artikel')
+
+@section('head')
     <style>
       :root {
         --text: #0f172a; /* slate-900 */
@@ -22,8 +25,9 @@
       .content blockquote { border-left: 4px solid #c7e7e8; padding: .5rem 1rem; margin: 1rem 0; color:#374151; background:#f8fcfc; border-radius:8px; }
       .back { display:inline-block; margin-top:28px; color:#256e6e; text-decoration:none; font-weight:600; }
     </style>
-  </x-slot:head>
+@endsection
 
+@section('content')
   <div class="container">
     <header class="page-header">
       <h1 class="title">{{ $article->title }}</h1>
@@ -44,4 +48,4 @@
     <a class="back" href="/dashboard">← Kembali</a>
   </div>
   @include('components.footer', ['publicVariant' => true])
-</x-layout>
+@endsection

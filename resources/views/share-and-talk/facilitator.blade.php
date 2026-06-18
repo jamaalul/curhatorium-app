@@ -1,9 +1,15 @@
-<x-layout title="Chatroom - Share and Talk" bodyClass="">
-    <x-slot:head>
+@extends('layouts.app')
+
+@section('title', 'Chatroom - Share and Talk')
+
+@section('bodyClass', '')
+
+@section('head')
         <link rel="stylesheet" href="{{ asset('css/share-and-talk/chat.css') }}">
         <script src="https://js.pusher.com/7.0/pusher.min.js"></script>
-    </x-slot:head>
+@endsection
 
+@section('content')
     <div class="app" style="height: 100vh; overflow: hidden;">
         <!-- Sidebar -->
         <div class="sidebar">
@@ -51,7 +57,9 @@
         </div>
     </div>
 
-    <x-slot:scripts>
+@endsection
+
+@section('scripts')
         <script>
             // Mobile viewport fix
             function setViewportHeight() {
@@ -274,5 +282,4 @@
                 console.error('Pusher key is not configured.');
             }
         </script>
-    </x-slot:scripts>
-</x-layout>
+@endsection

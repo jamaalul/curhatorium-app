@@ -1,5 +1,8 @@
-<x-layout title="Facilitator Video Session">
-    <x-slot:head>
+@extends('layouts.app')
+
+@section('title', 'Facilitator Video Session')
+
+@section('head')
         <script src='https://8x8.vc/vpaas-magic-cookie-ac9ee141fc8a4c308ac24f5ec225af3f/external_api.js' async></script>
         <style>html, body, #jaas-container { height: 100%; }</style>
         <script type="text/javascript">
@@ -10,8 +13,9 @@
             });
           }
         </script>
-    </x-slot:head>
+@endsection
 
+@section('content')
     <div id="timer-container" style="position:fixed;bottom:32px;right:32px;z-index:9999;">
       <div id="session-timer" style="background:#222;color:#fff;padding:12px 28px;border-radius:16px;box-shadow:0 2px 12px #0002;display:flex;flex-direction:column;align-items:center;min-width:110px;font-family:'FigtreeReg', Figtree, Arial,sans-serif;">
         <span id="timer-label" style="font-size:0.85em;color:#9acbd0;font-family:'FigtreeBold', Figtree, Arial,sans-serif;font-weight:600;letter-spacing:0.5px;">Session: </span>
@@ -30,7 +34,9 @@
     </div>
     <div id="jaas-container" />
 
-    <x-slot:scripts>
+@endsection
+
+@section('scripts')
         <script>
             // --- Timer Logic for Professional ---
             const interval = {{ $interval }};
@@ -50,5 +56,4 @@
 
             setInterval(updateTimer, 1000);
         </script>
-    </x-slot:scripts>
-</x-layout>
+@endsection

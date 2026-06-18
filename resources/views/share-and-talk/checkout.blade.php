@@ -1,5 +1,10 @@
-<x-layout title="Curhatorium | Checkout" bodyClass="pt-16 w-full overflow-x-hidden bg-gray-100">
-    <x-slot:head>
+@extends('layouts.app')
+
+@section('title', 'Curhatorium | Checkout')
+
+@section('bodyClass', 'pt-16 w-full overflow-x-hidden bg-gray-100')
+
+@section('head')
         @vite('resources/css/app.css')
         <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js'></script>
         <style>
@@ -52,8 +57,9 @@
                 }
             }
         </style>
-    </x-slot:head>
+@endsection
 
+@section('content')
     @include('components.navbar')
     @include('components.error', ['msg' => $errors])
     <div class="container mx-auto px-4 py-4 md:py-8">
@@ -149,7 +155,9 @@
         </form>
     </div>
 
-    <x-slot:scripts>
+@endsection
+
+@section('scripts')
         <script>
             const userTickets = @json($tickets);
             const professionalType = @json($professional->type);
@@ -261,5 +269,4 @@
                 updateSummary();
             });
         </script>
-    </x-slot:scripts>
-</x-layout>
+@endsection

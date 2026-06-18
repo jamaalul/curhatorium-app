@@ -1,5 +1,8 @@
-<x-layout title="Video Session">
-    <x-slot:head>
+@extends('layouts.app')
+
+@section('title', 'Video Session')
+
+@section('head')
         <script src='https://8x8.vc/vpaas-magic-cookie-ac9ee141fc8a4c308ac24f5ec225af3f/external_api.js' async></script>
         <style>html, body, #jaas-container { height: 100%; }</style>
         <script type="text/javascript">
@@ -10,8 +13,9 @@
             });
           }
         </script>
-    </x-slot:head>
+@endsection
 
+@section('content')
     @include('components.navbar')
     {{-- <div id="timer-container" style="position:fixed;bottom:32px;right:32px;z-index:9999;">
       <div id="session-timer" style="background:#222;color:#fff;padding:12px 28px;border-radius:16px;box-shadow:0 2px 12px #0002;display:flex;flex-direction:column;align-items:center;min-width:110px;font-family:'FigtreeReg', Figtree, Arial,sans-serif;">
@@ -25,7 +29,8 @@
     <div id="jaas-container" />
     <meta name="session-id" content="{{ $room }}">
 
-    <x-slot:scripts>
+@endsection
+
+@section('scripts')
         <script src="/js/modules/video-session.js"></script>
-    </x-slot:scripts>
-</x-layout>
+@endsection

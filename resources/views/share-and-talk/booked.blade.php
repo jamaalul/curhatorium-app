@@ -1,9 +1,15 @@
-<x-layout title="Curhatorium | Booking Terkirim" bodyClass="bg-gray-100 flex flex-col items-center min-h-screen justify-center gap-4">
-    <x-slot:head>
+@extends('layouts.app')
+
+@section('title', 'Curhatorium | Booking Terkirim')
+
+@section('bodyClass', 'bg-gray-100 flex flex-col items-center min-h-screen justify-center gap-4')
+
+@section('head')
         @vite('resources/css/app.css')
         <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    </x-slot:head>
+@endsection
 
+@section('content')
     <div class="container px-4 py-12">
         <div class="max-w-lg mx-auto bg-white p-8 rounded-lg shadow-lg">
             <div class="text-center mb-8">
@@ -78,7 +84,9 @@
         </a>
     </div>
 
-    <x-slot:scripts>
+@endsection
+
+@section('scripts')
         <script>
             document.getElementById('download-receipt').addEventListener('click', function() {
                 const receiptElement = document.getElementById('downloadable-receipt');
@@ -99,5 +107,4 @@
                 });
             });
         </script>
-    </x-slot:scripts>
-</x-layout>
+@endsection

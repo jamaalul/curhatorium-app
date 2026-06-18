@@ -1,8 +1,14 @@
-<x-layout title="Reschedules | {{ $professional->name }}" bodyClass="bg-gray-100">
-    <x-slot:head>
-        @vite('resources/css/app.css')
-    </x-slot:head>
+@extends('layouts.app')
 
+@section('title', 'Reschedules | ' . $professional->name)
+
+@section('bodyClass', 'bg-gray-100')
+
+@section('head')
+        @vite('resources/css/app.css')
+@endsection
+
+@section('content')
     <div class="flex flex-col md:flex-row h-screen">
         <!-- Sidebar -->
         <aside class="w-full md:w-64 bg-white shadow-md flex-shrink-0">
@@ -151,11 +157,12 @@
         </main>
     </div>
 
-    <x-slot:scripts>
+@endsection
+
+@section('scripts')
         <script>
             document.getElementById('mobile-menu-button').addEventListener('click', function() {
                 document.getElementById('mobile-menu').classList.toggle('hidden');
             });
         </script>
-    </x-slot:scripts>
-</x-layout>
+@endsection

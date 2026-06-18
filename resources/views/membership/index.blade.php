@@ -1,106 +1,112 @@
-<x-layout title="Pilih Paket | Curhatorium" bodyClass="pt-16 w-full overflow-x-hidden">
-    <x-slot:head>
-        <meta name="description" content="Pilih paket membership Curhatorium yang sesuai dengan kebutuhanmu dan mulai perjalanan kesehatan mentalmu.">
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
-        <style>
-            .plan-card {
-                transition: transform 0.25s ease, box-shadow 0.25s ease;
-            }
+@extends('layouts.app')
 
-            .plan-card:hover {
-                transform: translateY(-6px);
-                box-shadow: 0 20px 40px -10px rgba(72, 166, 166, 0.25);
-            }
+@section('title', 'Pilih Paket | Curhatorium')
 
-            .plan-card.featured {
-                border: 2px solid #48A6A6;
-            }
+@section('bodyClass', 'pt-16 w-full overflow-x-hidden')
 
-            .plan-card.featured::before {
-                content: 'Terpopuler';
-                position: absolute;
-                top: -1px;
-                left: 50%;
-                transform: translateX(-50%);
-                background: #48A6A6;
-                color: white;
-                font-size: 0.75rem;
-                font-weight: 600;
-                padding: 4px 18px;
-                border-radius: 0 0 10px 10px;
-                letter-spacing: 0.05em;
-            }
+@section('head')
+    <meta name="description" content="Pilih paket membership Curhatorium yang sesuai dengan kebutuhanmu dan mulai perjalanan kesehatan mentalmu.">
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <style>
+        .plan-card {
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
 
-            .benefit-row {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                padding: 8px 0;
-                border-bottom: 1px solid #f0ede8;
-                font-size: 0.9rem;
-                color: #555;
-            }
+        .plan-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 40px -10px rgba(72, 166, 166, 0.25);
+        }
 
-            .benefit-row:last-of-type {
-                border-bottom: none;
-            }
+        .plan-card.featured {
+            border: 2px solid #48A6A6;
+        }
 
-            .benefit-value {
-                font-weight: 600;
-                color: #222222;
-                white-space: nowrap;
-            }
+        .plan-card.featured::before {
+            content: 'Terpopuler';
+            position: absolute;
+            top: -1px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #48A6A6;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 4px 18px;
+            border-radius: 0 0 10px 10px;
+            letter-spacing: 0.05em;
+        }
 
-            .purchase-btn {
-                display: block;
-                width: 100%;
-                padding: 12px 0;
-                border-radius: 8px;
-                font-weight: 600;
-                font-size: 0.95rem;
-                text-align: center;
-                cursor: pointer;
-                border: none;
-                transition: background 0.2s ease, box-shadow 0.2s ease;
-            }
+        .benefit-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0ede8;
+            font-size: 0.9rem;
+            color: #555;
+        }
 
-            .purchase-btn-primary {
-                background: #48A6A6;
-                color: white;
-            }
+        .benefit-row:last-of-type {
+            border-bottom: none;
+        }
 
-            .purchase-btn-primary:hover {
-                background: #357979;
-                box-shadow: 0 4px 14px rgba(72, 166, 166, 0.4);
-            }
+        .benefit-value {
+            font-weight: 600;
+            color: #222222;
+            white-space: nowrap;
+        }
 
-            .purchase-btn-outline {
-                background: transparent;
-                color: #48A6A6;
-                border: 2px solid #48A6A6;
-            }
+        .purchase-btn {
+            display: block;
+            width: 100%;
+            padding: 12px 0;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            text-align: center;
+            cursor: pointer;
+            border: none;
+            transition: background 0.2s ease, box-shadow 0.2s ease;
+        }
 
-            .purchase-btn-outline:hover {
-                background: #f0fafa;
-            }
+        .purchase-btn-primary {
+            background: #48A6A6;
+            color: white;
+        }
 
-            .badge-free {
-                background: #f3f4f6;
-                color: #6b7280;
-            }
+        .purchase-btn-primary:hover {
+            background: #357979;
+            box-shadow: 0 4px 14px rgba(72, 166, 166, 0.4);
+        }
 
-            .badge-calm {
-                background: linear-gradient(135deg, #d8efef, #b5dede);
-                color: #2a7070;
-            }
+        .purchase-btn-outline {
+            background: transparent;
+            color: #48A6A6;
+            border: 2px solid #48A6A6;
+        }
 
-            .badge-serene {
-                background: linear-gradient(135deg, #48A6A6, #357979);
-                color: white;
-            }
-        </style>
-    </x-slot:head>
+        .purchase-btn-outline:hover {
+            background: #f0fafa;
+        }
 
+        .badge-free {
+            background: #f3f4f6;
+            color: #6b7280;
+        }
+
+        .badge-calm {
+            background: linear-gradient(135deg, #d8efef, #b5dede);
+            color: #2a7070;
+        }
+
+        .badge-serene {
+            background: linear-gradient(135deg, #48A6A6, #357979);
+            color: white;
+        }
+    </style>
+@endsection
+
+@section('content')
     @include('components.navbar')
 
     {{-- Hero Section --}}
@@ -225,4 +231,4 @@
     </section>
 
     @include('components.footer')
-</x-layout>
+@endsection

@@ -1,5 +1,8 @@
-<x-layout title="Kebijakan Privasi | Curhatorium">
-    <x-slot:head>
+@extends('layouts.app')
+
+@section('title', 'Kebijakan Privasi | Curhatorium')
+
+@section('head')
         <style>
             :root {
                 --primary-color: #8ecbcf;
@@ -323,8 +326,9 @@
                 }
             }
         </style>
-    </x-slot:head>
+@endsection
 
+@section('content')
     <div class="container">
         <!-- Page Header -->
         <div class="page-header">
@@ -526,4 +530,4 @@
             &copy; 2025 Curhatorium. Seluruh hak cipta dilindungi undang-undang.
         </div>
     </div>
-</x-layout>
+@endsection

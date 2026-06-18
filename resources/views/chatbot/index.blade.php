@@ -2,8 +2,13 @@
     $titles = $chats;
     $mode = 'friendly'; // default mode
 @endphp
-<x-layout title="Ment-AI | Curhatorium" bodyClass="w-screen h-screen flex bg-gray-800">
-    <x-slot:head>
+@extends('layouts.app')
+
+@section('title', 'Ment-AI | Curhatorium')
+
+@section('bodyClass', 'w-screen h-screen flex bg-gray-800')
+
+@section('head')
         @vite('resources/css/app.css')
         <!-- Mouseflow Tracking Script -->
         <script type="text/javascript">
@@ -58,8 +63,9 @@
                 }
             }
         </style>
-    </x-slot:head>
+@endsection
 
+@section('content')
     <div id="sidebar-overlay"></div>
     <div id="sidebar" class="bg-gray-800 text-white flex flex-col p-4 w-64 transition-all duration-300 ease-out overflow-hidden">
         <!-- Header -->
@@ -188,7 +194,9 @@
         </div>
     </div>
 
-    <x-slot:scripts>
+@endsection
+
+@section('scripts')
         <script>
             const aiModeBtn = document.getElementById('ai-mode-btn');
             const aiModeDropdown = document.getElementById('ai-mode-dropdown');
@@ -319,5 +327,4 @@
                 document.getElementById('send-button').disabled = true;
             });
         </script>
-    </x-slot:scripts>
-</x-layout>
+@endsection

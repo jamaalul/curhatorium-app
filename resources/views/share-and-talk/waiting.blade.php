@@ -1,7 +1,14 @@
-<x-layout title="Menunggu | Curhatorium" bodyClass="bg-teal-50 min-h-screen flex items-center justify-center p-4">
-    <x-slot:head>
+@extends('layouts.app')
+
+@section('title', 'Menunggu | Curhatorium')
+
+@section('bodyClass', 'bg-teal-50 min-h-screen flex items-center justify-center p-4')
+
+@section('head')
         @vite('resources/css/app.css')
-    </x-slot:head>
+@endsection
+
+@section('content')
 
     <main class="text-center">
         <div class="relative inline-flex items-center justify-center" aria-live="polite">
@@ -28,4 +35,4 @@
         <h1 class="mt-8 text-2xl font-bold text-gray-700">Menunggu respon...</h1>
         <p class="mt-2 text-gray-500 max-w-lg mx-auto">Harap tunggu sebentar. Ranger kamu lagi dihubungi.</p>
     </main>
-</x-layout>
+@endsection

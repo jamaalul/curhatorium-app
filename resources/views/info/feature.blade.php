@@ -1,5 +1,10 @@
-<x-layout title="Fitur & Layanan - Curhatorium" bodyClass="">
-    <x-slot:head>
+@extends('layouts.app')
+
+@section('title', 'Fitur & Layanan - Curhatorium')
+
+@section('bodyClass', '')
+
+@section('head')
         <style>
             * {
                 margin: 0;
@@ -304,8 +309,9 @@
                 }
             }
         </style>
-    </x-slot:head>
+@endsection
 
+@section('content')
     <div class="layout">
         <!-- Left Sidebar -->
         <div class="sidebar">
@@ -592,7 +598,9 @@
         </div>
     </div>
 
-    <x-slot:scripts>
+@endsection
+
+@section('scripts')
         <script>
             // Feature navigation
             document.querySelectorAll('.nav-link').forEach(link => {
@@ -619,5 +627,4 @@
                 });
             });
         </script>
-    </x-slot:scripts>
-</x-layout>
+@endsection

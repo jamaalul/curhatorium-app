@@ -1,8 +1,12 @@
-<x-layout title="Curhatorium | Support Group Discussion">
-    <x-slot:head>
-        <link rel="stylesheet" href="{{ asset('/css/sgd.css') }}">
-    </x-slot:head>
+@extends('layouts.app')
 
+@section('title', 'Curhatorium | Support Group Discussion')
+
+@section('head')
+    <link rel="stylesheet" href="{{ asset('/css/sgd.css') }}">
+@endsection
+
+@section('content')
     @include('components.navbar')
    
    <h1 class="page-title">Support Group Discussion</h1>
@@ -172,4 +176,4 @@
             </div>
         </div>
     </div>
-</x-layout>
+@endsection

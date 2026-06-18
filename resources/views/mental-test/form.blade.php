@@ -1,5 +1,8 @@
-<x-layout title="Tes Kesehatan Mental - Curhatorium">
-    <x-slot:head>
+@extends('layouts.app')
+
+@section('title', 'Tes Kesehatan Mental - Curhatorium')
+
+@section('head')
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -524,8 +527,9 @@
                 }
             }
         </style>
-    </x-slot:head>
+@endsection
 
+@section('content')
     @include('components.navbar')
 
     <div class="container">
@@ -1604,5 +1608,4 @@
         // Initialize progress on page load
         updateProgress();
     </script>
-    </x-slot:scripts>
-</x-layout>
+@endsection

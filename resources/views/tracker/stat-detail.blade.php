@@ -1,14 +1,14 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detail Catatan Mood - Curhatorium</title>
+@extends('layouts.app')
+
+@section('title', 'Detail Catatan Mood - Curhatorium')
+
+@section('head')
     <link rel="stylesheet" href="{{ asset('css/global.css') }}">
     <link rel="stylesheet" href="{{ asset('css/tracker/result.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-</head>
-<body>
+@endsection
+
+@section('content')
     <!-- Navbar -->
     @include('components.navbar')
 
@@ -142,5 +142,4 @@
             </a>
         </div>
     </div>
-</body>
-</html> 
+@endsection 

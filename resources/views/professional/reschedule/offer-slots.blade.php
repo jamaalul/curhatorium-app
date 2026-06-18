@@ -1,5 +1,8 @@
-<x-layout title="Offer Reschedule Slots | {{ $professional->name }}">
-    <x-slot:head>
+@extends('layouts.app')
+
+@section('title', 'Offer Reschedule Slots | ' . $professional->name)
+
+@section('head')
         @vite('resources/css/app.css')
         <style>
             body {
@@ -157,8 +160,9 @@
                 margin-bottom: 20px;
             }
         </style>
-    </x-slot:head>
+@endsection
 
+@section('content')
     <div class="container">
         <div class="header">
             <h1 class="header-title">Offer Reschedule Slots</h1>
@@ -237,4 +241,4 @@
             </div>
         </form>
     </div>
-</x-layout>
+@endsection

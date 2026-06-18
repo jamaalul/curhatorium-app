@@ -1,9 +1,15 @@
-<x-layout title="Your Safest Place | Curhatorium" bodyClass="w-full">
-    <x-slot:head>
+@extends('layouts.app')
+
+@section('title', 'Your Safest Place | Curhatorium')
+
+@section('bodyClass', 'w-full')
+
+@section('head')
         <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
         @vite(['resources/css/app.css', 'resources/js/app.js'])
-    </x-slot:head>
+@endsection
 
+@section('content')
     <nav class="top-0 left-0 z-50 fixed flex items-center gap-6 bg-white px-4 w-full h-16">
         <div class="flex justify-center items-center gap-2 mr-auto py-3 h-full" onclick="window.location.href = '/'">
             <img src="{{ asset('assets/mini_logo.png') }}" alt="mini_logo" class="h-full">
@@ -454,7 +460,9 @@
         </div>
     </div>
 
-    <x-slot:scripts>
+@endsection
+
+@section('scripts')
         <script>
             const btn = document.getElementById('tutorial-btn');
             const modal = document.getElementById('tutorial-modal');
@@ -479,5 +487,4 @@
                 }
             });
         </script>
-    </x-slot:scripts>
-</x-layout>
+@endsection

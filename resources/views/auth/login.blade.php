@@ -1,8 +1,12 @@
-<x-layout title="Curhatorium | Login">
-    <x-slot:head>
-        <link rel="stylesheet" href="{{ asset('css/login.css') }}?v=1.0.0">
-    </x-slot:head>
+@extends('layouts.app')
 
+@section('title', 'Curhatorium | Login')
+
+@section('head')
+    <link rel="stylesheet" href="{{ asset('css/login.css') }}?v=1.0.0">
+@endsection
+
+@section('content')
   <div class="container">
     <div class="illustration">
       <img src="/assets/logo.svg" alt="logo" />
@@ -44,4 +48,4 @@
       </form>
     </div>
   </div>
-</x-layout>
+@endsection

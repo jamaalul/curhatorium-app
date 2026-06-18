@@ -1,5 +1,10 @@
-<x-layout title="Dashboard | {{ $professional->name }}" bodyClass="bg-gray-100">
-    <x-slot:head>
+@extends('layouts.app')
+
+@section('title', 'Dashboard | ' . $professional->name)
+
+@section('bodyClass', 'bg-gray-100')
+
+@section('head')
         @vite('resources/css/app.css')
         <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js'></script>
         <style>
@@ -49,8 +54,9 @@
                 }
             }
         </style>
-    </x-slot:head>
+@endsection
 
+@section('content')
     <div class="flex flex-col md:flex-row h-screen">
         <!-- Sidebar -->
         <aside class="w-full md:w-64 bg-white shadow-md flex-shrink-0">
@@ -410,7 +416,9 @@
         </div>
     </div>
 
-    <x-slot:scripts>
+@endsection
+
+@section('scripts')
         <script>
             document.addEventListener('DOMContentLoaded', function() {
                 const navSchedule = document.getElementById('nav-schedule');
@@ -556,5 +564,4 @@
                 document.getElementById('mobile-menu').classList.toggle('hidden');
             });
         </script>
-    </x-slot:scripts>
-</x-layout>
+@endsection

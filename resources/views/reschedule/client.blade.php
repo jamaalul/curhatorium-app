@@ -1,8 +1,14 @@
-<x-layout title="Reschedule Consultation - {{ $originalSlot->professional->name ?? 'Professional' }}" bodyClass="bg-gray-50 text-gray-800">
-    <x-slot:head>
-        @vite('resources/css/app.css')
-    </x-slot:head>
+@extends('layouts.app')
 
+@section('title', 'Reschedule Consultation - ' . ($originalSlot->professional->name ?? 'Professional'))
+
+@section('bodyClass', 'bg-gray-50 text-gray-800')
+
+@section('head')
+    @vite('resources/css/app.css')
+@endsection
+
+@section('content')
     <div class="max-w-xl mx-auto p-4">
         <div class="text-center mb-8 py-5">
             <div class="text-2xl font-bold text-[#48A6A6] mb-2">Curhatorium</div>
@@ -74,49 +80,49 @@
             <p>&copy; {{ date('Y') }} Curhatorium. All rights reserved.</p>
         </div>
     </div>
+@endsection
 
-    <x-slot:scripts>
-        <script>
-            let selectedSlotId = null;
+@section('scripts')
+    <script>
+        let selectedSlotId = null;
 
-            function selectSlot(slotId) {
-                // Remove selection from all slots
-                document.querySelectorAll('.slot-card').forEach(card => {
-                    card.classList.remove('selected', 'border-[#48A6A6]', 'bg-teal-50');
-                });
+        function selectSlot(slotId) {
+            // Remove selection from all slots
+            document.querySelectorAll('.slot-card').forEach(card => {
+                card.classList.remove('selected', 'border-[#48A6A6]', 'bg-teal-50');
+            });
 
-                // Add selection to the clicked slot
-                const selectedCard = document.querySelector(`.slot-card[data-slot-id="${slotId}"]`);
-                if (selectedCard) {
-                    selectedCard.classList.add('selected', 'border-[#48A6A6]', 'bg-teal-50');
-                    selectedSlotId = slotId;
+            // Add selection to the clicked slot
+            const selectedCard = document.querySelector(`.slot-card[data-slot-id="${slotId}"]`);
+            if (selectedCard) {
+                selectedCard.classList.add('selected', 'border-[#48A6A6]', 'bg-teal-50');
+                selectedSlotId = slotId;
 
-                    // Enable the confirm button
-                    document.getElementById('confirm-button').disabled = false;
-                }
+                // Enable the confirm button
+                document.getElementById('confirm-button').disabled = false;
+            }
+        }
+
+        function confirmSelection() {
+            if (!selectedSlotId) {
+                alert('Please select a time slot first.');
+                return;
             }
 
-            function confirmSelection() {
-                if (!selectedSlotId) {
-                    alert('Please select a time slot first.');
-                    return;
-                }
+            // Set the form action and values
+            document.getElementById('action-input').value = 'accept';
+            document.getElementById('slot-id-input').value = selectedSlotId;
 
-                // Set the form action and values
-                document.getElementById('action-input').value = 'accept';
-                document.getElementById('slot-id-input').value = selectedSlotId;
+            // Submit the form
+            document.getElementById('reschedule-form').submit();
+        }
 
-                // Submit the form
-                document.getElementById('reschedule-form').submit();
-            }
+        function cancelBooking() {
+            // Set the form action to cancel
+            document.getElementById('action-input').value = 'cancel';
 
-            function cancelBooking() {
-                // Set the form action to cancel
-                document.getElementById('action-input').value = 'cancel';
-
-                // Submit the form
-                document.getElementById('reschedule-form').submit();
-            }
-        </script>
-    </x-slot:scripts>
-</x-layout>
+            // Submit the form
+            document.getElementById('reschedule-form').submit();
+        }
+    </script>
+@endsection

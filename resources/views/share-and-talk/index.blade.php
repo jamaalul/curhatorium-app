@@ -1,5 +1,10 @@
-<x-layout title="Curhatorium | Share and Talk" bodyClass="pt-16 w-full overflow-x-hidden bg-gray-50">
-    <x-slot:head>
+@extends('layouts.app')
+
+@section('title', 'Curhatorium | Share and Talk')
+
+@section('bodyClass', 'pt-16 w-full overflow-x-hidden bg-gray-50')
+
+@section('head')
         @vite('resources/css/app.css')
         <style>
             /* Custom styles can be added here if needed */
@@ -13,8 +18,9 @@
             }
         </style>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    </x-slot:head>
+@endsection
 
+@section('content')
     @include('components.navbar')
 
     <!-- Toast container for notifications -->
@@ -226,7 +232,9 @@
 
     @include('components.footer')
 
-    <x-slot:scripts>
+@endsection
+
+@section('scripts')
         <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
         <script>
             let allProfessionals = [];
@@ -353,5 +361,4 @@
                 setInterval(checkConsultationSchedule, 60000); // Check every minute
             });
         </script>
-    </x-slot:scripts>
-</x-layout>
+@endsection

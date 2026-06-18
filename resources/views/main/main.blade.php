@@ -1,8 +1,14 @@
-<x-layout title="Dashboard | Curhatorium" bodyClass="pt-16 w-full overflow-x-hidden">
-    <x-slot:head>
-        @vite('resources/css/app.css')
-    </x-slot:head>
+@extends('layouts.app')
 
+@section('title', 'Dashboard | Curhatorium')
+
+@section('bodyClass', 'pt-16 w-full overflow-x-hidden')
+
+@section('head')
+    @vite('resources/css/app.css')
+@endsection
+
+@section('content')
     @include('components.navbar')
     @include('main.announcement')
     @include('components.error', ['msg' => $errors])
@@ -31,4 +37,4 @@
     @include('main.article-list')
     @include('main.xp-redemption')
     @include('components.footer')
-</x-layout>
+@endsection

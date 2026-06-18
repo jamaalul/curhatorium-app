@@ -1,5 +1,10 @@
-<x-layout title="Profil Saya" bodyClass="bg-gray-50">
-    <x-slot:head>
+@extends('layouts.app')
+
+@section('title', 'Profil Saya')
+
+@section('bodyClass', 'bg-gray-50')
+
+@section('head')
         @php
             $vite_hmr_host = '';
             if (app()->environment('local') && file_exists(public_path('hot'))) {
@@ -7,8 +12,9 @@
             }
         @endphp
         <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline' {{ $vite_hmr_host }}; script-src 'self' 'unsafe-inline' {{ $vite_hmr_host }}; connect-src 'self' {{ $vite_hmr_host }} ws: wss:;">
-    </x-slot:head>
+@endsection
 
+@section('content')
     @include('components.navbar')
     
     <main class="max-w-7xl mx-auto py-24 px-4 sm:px-6 lg:px-8">
@@ -273,20 +279,20 @@
 
     @include('components.footer')
 
+@endsection
+
+@section('scripts')
     @if ($errors->any())
-        <x-slot:scripts>
-            <script>
-                document.addEventListener('DOMContentLoaded', function() {
-                    @foreach ($errors->all() as $error)
-                        showError('{{ addslashes($error) }}');
-                    @endforeach
-                });
-            </script>
-        </x-slot:scripts>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                @foreach ($errors->all() as $error)
+                    showError('{{ addslashes($error) }}');
+                @endforeach
+            });
+        </script>
     @endif
 
-    <x-slot:scripts>
-        <script>
+    <script>
             // Profile picture preview and validation
             const input = document.getElementById('profilePicInput');
             const preview = document.getElementById('profilePicPreview');
@@ -456,5 +462,4 @@
                 }
             });
         </script>
-    </x-slot:scripts>
-</x-layout>
+@endsection

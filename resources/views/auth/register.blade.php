@@ -1,68 +1,72 @@
-<x-layout title="Curhatorium | Signup">
-    <x-slot:head>
-        <link rel="stylesheet" href="{{ asset('css/register.css') }}">
-        <style>
-          /* Social Login Styles */
-          .social-login {
-              display: flex;
-              flex-direction: column;
-              gap: 10px;
-              margin-bottom: 20px;
-          }
+@extends('layouts.app')
 
-          .social-btn {
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              padding: 12px 20px;
-              border: 1px solid #ddd;
-              border-radius: 5px;
-              text-decoration: none;
-              color: #333;
-              font-size: 14px;
-              font-weight: 500;
-              transition: all 0.3s ease;
-              background: white;
-          }
+@section('title', 'Curhatorium | Signup')
 
-          .social-btn:hover {
-              border-color: #ccc;
-              box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-          }
+@section('head')
+    <link rel="stylesheet" href="{{ asset('css/register.css') }}">
+    <style>
+      /* Social Login Styles */
+      .social-login {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+          margin-bottom: 20px;
+      }
 
-          .social-icon {
-              width: 18px;
-              height: 18px;
-              margin-right: 10px;
-          }
+      .social-btn {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 12px 20px;
+          border: 1px solid #ddd;
+          border-radius: 5px;
+          text-decoration: none;
+          color: #333;
+          font-size: 14px;
+          font-weight: 500;
+          transition: all 0.3s ease;
+          background: white;
+      }
 
-          .google-btn:hover {
-              background-color: #f8f9fa;
-          }
+      .social-btn:hover {
+          border-color: #ccc;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
 
-          .divider {
-              display: flex;
-              align-items: center;
-              margin: 20px 0;
-              text-align: center;
-          }
+      .social-icon {
+          width: 18px;
+          height: 18px;
+          margin-right: 10px;
+      }
 
-          .divider::before,
-          .divider::after {
-              content: '';
-              flex: 1;
-              height: 1px;
-              background-color: #ddd;
-          }
+      .google-btn:hover {
+          background-color: #f8f9fa;
+      }
 
-          .divider span {
-              padding: 0 10px;
-              color: #666;
-              font-size: 14px;
-          }
-        </style>
-    </x-slot:head>
+      .divider {
+          display: flex;
+          align-items: center;
+          margin: 20px 0;
+          text-align: center;
+      }
 
+      .divider::before,
+      .divider::after {
+          content: '';
+          flex: 1;
+          height: 1px;
+          background-color: #ddd;
+      }
+
+      .divider span {
+          padding: 0 10px;
+          color: #666;
+          font-size: 14px;
+      }
+    </style>
+@endsection
+
+@section('content')
     <div class="container">
     <div class="illustration">
       <img src="/assets/logo.svg" alt="logo" />
@@ -108,4 +112,4 @@
       </form>
     </div>
   </div>
-</x-layout>
+@endsection

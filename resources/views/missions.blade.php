@@ -1,5 +1,8 @@
-<x-layout title="Misssions of The Day | Curhatorium">
-    <x-slot:head>
+@extends('layouts.app')
+
+@section('title', 'Missions of The Day | Curhatorium')
+
+@section('head')
         <link rel="stylesheet" href="{{ asset('css/missions.css') }}">
         <style>
             .button-loading { opacity: 0.8; pointer-events: none; }
@@ -12,8 +15,9 @@
             }
             @keyframes spin { to { transform: rotate(360deg); } }
         </style>
-    </x-slot:head>
+@endsection
 
+@section('content')
     <!-- Navbar -->
     @include('components.navbar')
 
@@ -150,7 +154,9 @@
         <x-xp-notification :xp-awarded="$xpAwarded" :message="$message" />
     @endif
 
-    <x-slot:scripts>
+@endsection
+
+@section('scripts')
         <script>
             function switchTab(difficulty) {
                 document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
@@ -249,5 +255,4 @@
                 });
             });
         </script>
-    </x-slot:scripts>
-</x-layout>
+@endsection
