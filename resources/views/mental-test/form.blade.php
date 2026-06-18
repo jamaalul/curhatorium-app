@@ -1,10 +1,8 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Tes Kesehatan Mental - Curhatorium</title>
+@extends('layouts.dashboard')
+
+@section('title', 'Tes Kesehatan Mental - Curhatorium')
+
+@section('head')
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -223,7 +221,7 @@
             font-weight: 500;
         }
 
-        .likert-option input[type="radio"]:checked + .likert-label {
+        .likert-option input[type="radio"]:checked+.likert-label {
             background: var(--primary-color);
             color: white;
             border-color: var(--primary-color);
@@ -293,8 +291,15 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .results h3 {
@@ -529,11 +534,9 @@
             }
         }
     </style>
-</head>
-<body>
-    <!-- Navbar -->
-    @include('components.navbar')
+@endsection
 
+@section('dashboard-content')
     <div class="container">
         <!-- Page Header -->
         <div class="page-header">
@@ -548,13 +551,15 @@
             <!-- Intro Section -->
             <div class="intro-section">
                 <h3>📋 Tentang Tes Ini</h3>
-                <p><strong>Mental Health Continuum - Short Form (MHC-SF)</strong> adalah alat penilaian yang dikembangkan oleh Keyes (2009) untuk mengukur kesejahteraan mental dalam tiga aspek:</p>
+                <p><strong>Mental Health Continuum - Short Form (MHC-SF)</strong> adalah alat penilaian yang dikembangkan
+                    oleh Keyes (2009) untuk mengukur kesejahteraan mental dalam tiga aspek:</p>
                 <ul>
                     <li><strong>Kesejahteraan Emosional</strong> - Perasaan bahagia dan kepuasan hidup</li>
                     <li><strong>Kesejahteraan Sosial</strong> - Hubungan dengan masyarakat dan kontribusi sosial</li>
                     <li><strong>Kesejahteraan Psikologis</strong> - Pertumbuhan pribadi dan makna hidup</li>
                 </ul>
-                <p>Tes ini terdiri dari 14 pertanyaan yang akan membantu Anda memahami kondisi kesehatan mental saat ini.</p>
+                <p>Tes ini terdiri dari 14 pertanyaan yang akan membantu Anda memahami kondisi kesehatan mental saat ini.
+                </p>
             </div>
 
             <form id="mhcForm">
@@ -563,7 +568,7 @@
                     <div class="section-title">
                         😊 Kesejahteraan Emosional
                     </div>
-                    
+
                     <div class="question">
                         <div class="question-text">
                             <span class="question-number">1.</span>
@@ -727,7 +732,8 @@
                     <div class="question">
                         <div class="question-text">
                             <span class="question-number">4.</span>
-                            Dalam sebulan terakhir, seberapa sering Anda merasa bahwa Anda <strong>memiliki sesuatu yang penting untuk dikontribusikan kepada masyarakat</strong>?
+                            Dalam sebulan terakhir, seberapa sering Anda merasa bahwa Anda <strong>memiliki sesuatu yang
+                                penting untuk dikontribusikan kepada masyarakat</strong>?
                         </div>
                         <div class="likert-scale">
                             <div class="likert-option">
@@ -778,7 +784,8 @@
                     <div class="question">
                         <div class="question-text">
                             <span class="question-number">5.</span>
-                            Dalam sebulan terakhir, seberapa sering Anda merasa bahwa Anda <strong>adalah bagian dari komunitas</strong>?
+                            Dalam sebulan terakhir, seberapa sering Anda merasa bahwa Anda <strong>adalah bagian dari
+                                komunitas</strong>?
                         </div>
                         <div class="likert-scale">
                             <div class="likert-option">
@@ -829,7 +836,8 @@
                     <div class="question">
                         <div class="question-text">
                             <span class="question-number">6.</span>
-                            Dalam sebulan terakhir, seberapa sering Anda merasa bahwa <strong>masyarakat menjadi tempat yang lebih baik berkat Anda</strong>?
+                            Dalam sebulan terakhir, seberapa sering Anda merasa bahwa <strong>masyarakat menjadi tempat yang
+                                lebih baik berkat Anda</strong>?
                         </div>
                         <div class="likert-scale">
                             <div class="likert-option">
@@ -880,7 +888,8 @@
                     <div class="question">
                         <div class="question-text">
                             <span class="question-number">7.</span>
-                            Dalam sebulan terakhir, seberapa sering Anda merasa <strong>percaya kepada orang lain di masyarakat</strong>?
+                            Dalam sebulan terakhir, seberapa sering Anda merasa <strong>percaya kepada orang lain di
+                                masyarakat</strong>?
                         </div>
                         <div class="likert-scale">
                             <div class="likert-option">
@@ -931,7 +940,8 @@
                     <div class="question">
                         <div class="question-text">
                             <span class="question-number">8.</span>
-                            Dalam sebulan terakhir, seberapa sering Anda merasa bahwa <strong>masyarakat memiliki arah atau tujuan yang jelas</strong>?
+                            Dalam sebulan terakhir, seberapa sering Anda merasa bahwa <strong>masyarakat memiliki arah atau
+                                tujuan yang jelas</strong>?
                         </div>
                         <div class="likert-scale">
                             <div class="likert-option">
@@ -989,7 +999,8 @@
                     <div class="question">
                         <div class="question-text">
                             <span class="question-number">9.</span>
-                            Dalam sebulan terakhir, seberapa sering Anda merasa bahwa Anda <strong>tumbuh dan berkembang sebagai pribadi</strong>?
+                            Dalam sebulan terakhir, seberapa sering Anda merasa bahwa Anda <strong>tumbuh dan berkembang
+                                sebagai pribadi</strong>?
                         </div>
                         <div class="likert-scale">
                             <div class="likert-option">
@@ -1040,7 +1051,8 @@
                     <div class="question">
                         <div class="question-text">
                             <span class="question-number">10.</span>
-                            Dalam sebulan terakhir, seberapa sering Anda merasa bahwa Anda <strong>memiliki hubungan hangat dan penuh kasih</strong>?
+                            Dalam sebulan terakhir, seberapa sering Anda merasa bahwa Anda <strong>memiliki hubungan hangat
+                                dan penuh kasih</strong>?
                         </div>
                         <div class="likert-scale">
                             <div class="likert-option">
@@ -1091,7 +1103,8 @@
                     <div class="question">
                         <div class="question-text">
                             <span class="question-number">11.</span>
-                            Dalam sebulan terakhir, seberapa sering Anda merasa bahwa Anda <strong>memiliki kehidupan yang bermakna</strong>?
+                            Dalam sebulan terakhir, seberapa sering Anda merasa bahwa Anda <strong>memiliki kehidupan yang
+                                bermakna</strong>?
                         </div>
                         <div class="likert-scale">
                             <div class="likert-option">
@@ -1142,7 +1155,8 @@
                     <div class="question">
                         <div class="question-text">
                             <span class="question-number">12.</span>
-                            Dalam sebulan terakhir, seberapa sering Anda merasa bahwa Anda <strong>bisa menangani tanggung jawab sehari-hari</strong>?
+                            Dalam sebulan terakhir, seberapa sering Anda merasa bahwa Anda <strong>bisa menangani tanggung
+                                jawab sehari-hari</strong>?
                         </div>
                         <div class="likert-scale">
                             <div class="likert-option">
@@ -1193,7 +1207,8 @@
                     <div class="question">
                         <div class="question-text">
                             <span class="question-number">13.</span>
-                            Dalam sebulan terakhir, seberapa sering Anda merasa bahwa Anda <strong>mampu mengelola waktu dan tantangan hidup</strong>?
+                            Dalam sebulan terakhir, seberapa sering Anda merasa bahwa Anda <strong>mampu mengelola waktu dan
+                                tantangan hidup</strong>?
                         </div>
                         <div class="likert-scale">
                             <div class="likert-option">
@@ -1244,7 +1259,8 @@
                     <div class="question">
                         <div class="question-text">
                             <span class="question-number">14.</span>
-                            Dalam sebulan terakhir, seberapa sering Anda merasa bahwa Anda <strong>percaya pada diri sendiri</strong>?
+                            Dalam sebulan terakhir, seberapa sering Anda merasa bahwa Anda <strong>percaya pada diri
+                                sendiri</strong>?
                         </div>
                         <div class="likert-scale">
                             <div class="likert-option">
@@ -1302,7 +1318,7 @@
         <!-- Results Section -->
         <div id="results" class="results">
             <h3>🎯 Hasil Tes Kesehatan Mental Anda</h3>
-            
+
             <div class="score-grid">
                 <div class="score-card">
                     <div class="score-value" id="totalScore">0</div>
@@ -1346,13 +1362,16 @@
         <!-- Disclaimer -->
         <div class="disclaimer">
             <h4>⚠️ Penting untuk Diketahui</h4>
-            <p><strong>Tes ini bukan alat diagnosis medis.</strong> Ini adalah self-assessment berdasarkan Mental Health Continuum - Short Form (MHC-SF) yang dikembangkan oleh Keyes (2009). Hasil tes ini hanya memberikan gambaran umum tentang kesejahteraan mental Anda saat ini.</p>
-            <p>Jika Anda mengalami masalah kesehatan mental yang serius atau berkelanjutan, sangat disarankan untuk berkonsultasi dengan profesional kesehatan mental seperti psikolog atau psikiater.</p>
+            <p><strong>Tes ini bukan alat diagnosis medis.</strong> Ini adalah self-assessment berdasarkan Mental Health
+                Continuum - Short Form (MHC-SF) yang dikembangkan oleh Keyes (2009). Hasil tes ini hanya memberikan gambaran
+                umum tentang kesejahteraan mental Anda saat ini.</p>
+            <p>Jika Anda mengalami masalah kesehatan mental yang serius atau berkelanjutan, sangat disarankan untuk
+                berkonsultasi dengan profesional kesehatan mental seperti psikolog atau psikiater.</p>
         </div>
     </div>
 
     <script>
-        document.getElementById('mhcForm').addEventListener('submit', async function(e) {
+        document.getElementById('mhcForm').addEventListener('submit', async function (e) {
             e.preventDefault();
             await submitTestResult();
         });
@@ -1422,37 +1441,37 @@
 
         function calculateResults() {
             const formData = new FormData(document.getElementById('mhcForm'));
-            
+
             // Calculate scores
             let totalScore = 0;
             let emotionalScore = 0;
             let socialScore = 0;
             let psychologicalScore = 0;
-            
+
             // Emotional well-being (questions 1-3)
             for (let i = 1; i <= 3; i++) {
                 const value = parseInt(formData.get(`q${i}`)) || 0;
                 emotionalScore += value;
                 totalScore += value;
             }
-            
+
             // Social well-being (questions 4-8)
             for (let i = 4; i <= 8; i++) {
                 const value = parseInt(formData.get(`q${i}`)) || 0;
                 socialScore += value;
                 totalScore += value;
             }
-            
+
             // Psychological well-being (questions 9-14)
             for (let i = 9; i <= 14; i++) {
                 const value = parseInt(formData.get(`q${i}`)) || 0;
                 psychologicalScore += value;
                 totalScore += value;
             }
-            
+
             // Determine category
             const category = determineCategory(formData);
-            
+
             // Display results
             displayResults(totalScore, emotionalScore, socialScore, psychologicalScore, category);
         }
@@ -1464,34 +1483,34 @@
                 const value = parseInt(formData.get(`q${i}`)) || 0;
                 if (value >= 4) emotionalHigh++;
             }
-            
+
             let socialPsychHigh = 0;
             for (let i = 4; i <= 14; i++) {
                 const value = parseInt(formData.get(`q${i}`)) || 0;
                 if (value >= 4) socialPsychHigh++;
             }
-            
+
             if (emotionalHigh >= 1 && socialPsychHigh >= 6) {
                 return 'flourishing';
             }
-            
+
             // Check for Languishing
             let emotionalLow = 0;
             for (let i = 1; i <= 3; i++) {
                 const value = parseInt(formData.get(`q${i}`)) || 0;
                 if (value <= 1) emotionalLow++;
             }
-            
+
             let socialPsychLow = 0;
             for (let i = 4; i <= 14; i++) {
                 const value = parseInt(formData.get(`q${i}`)) || 0;
                 if (value <= 1) socialPsychLow++;
             }
-            
+
             if (emotionalLow >= 1 && socialPsychLow >= 6) {
                 return 'languishing';
             }
-            
+
             return 'moderate';
         }
 
@@ -1501,59 +1520,59 @@
             document.getElementById('emotionalScore').textContent = emotional;
             document.getElementById('socialScore').textContent = social;
             document.getElementById('psychologicalScore').textContent = psychological;
-            
+
             // Update category
             const categoryResult = document.getElementById('categoryResult');
             const categoryTitle = document.getElementById('categoryTitle');
             const categoryDescription = document.getElementById('categoryDescription');
             const suggestions = document.getElementById('suggestions');
-            
+
             // Remove existing classes
             categoryResult.classList.remove('flourishing', 'moderate', 'languishing');
-            
+
             if (category === 'flourishing') {
                 categoryResult.classList.add('flourishing');
                 categoryTitle.textContent = '🌟 Flourishing (Berkembang Optimal)';
                 categoryDescription.textContent = 'Selamat! Anda berada dalam kondisi kesehatan mental yang sangat baik. Anda merasakan tingkat kebahagiaan, kepuasan hidup, dan fungsi psikologis yang tinggi.';
                 suggestions.innerHTML = `
-                    <ul>
-                        <li>Pertahankan rutinitas positif yang sudah Anda jalani</li>
-                        <li>Berbagi pengalaman positif dengan orang lain</li>
-                        <li>Tetap terbuka untuk pertumbuhan dan tantangan baru</li>
-                        <li>Jadilah mentor atau dukungan bagi orang lain</li>
-                        <li>Lanjutkan aktivitas yang memberikan makna dalam hidup</li>
-                    </ul>
-                `;
+                                <ul>
+                                    <li>Pertahankan rutinitas positif yang sudah Anda jalani</li>
+                                    <li>Berbagi pengalaman positif dengan orang lain</li>
+                                    <li>Tetap terbuka untuk pertumbuhan dan tantangan baru</li>
+                                    <li>Jadilah mentor atau dukungan bagi orang lain</li>
+                                    <li>Lanjutkan aktivitas yang memberikan makna dalam hidup</li>
+                                </ul>
+                            `;
             } else if (category === 'languishing') {
                 categoryResult.classList.add('languishing');
                 categoryTitle.textContent = '🥀 Languishing (Kurang Berkembang)';
                 categoryDescription.textContent = 'Anda mungkin merasa "kosong" atau kurang bersemangat dalam hidup. Ini bukan depresi, tetapi juga bukan kondisi mental yang optimal.';
                 suggestions.innerHTML = `
-                    <ul>
-                        <li>Mulai dengan aktivitas kecil yang memberikan kepuasan</li>
-                        <li>Cari dukungan dari keluarga, teman, atau profesional</li>
-                        <li>Tetapkan tujuan kecil yang dapat dicapai setiap hari</li>
-                        <li>Lakukan aktivitas fisik ringan secara teratur</li>
-                        <li>Pertimbangkan untuk berkonsultasi dengan psikolog</li>
-                        <li>Fokus pada membangun satu hubungan yang bermakna</li>
-                    </ul>
-                `;
+                                <ul>
+                                    <li>Mulai dengan aktivitas kecil yang memberikan kepuasan</li>
+                                    <li>Cari dukungan dari keluarga, teman, atau profesional</li>
+                                    <li>Tetapkan tujuan kecil yang dapat dicapai setiap hari</li>
+                                    <li>Lakukan aktivitas fisik ringan secara teratur</li>
+                                    <li>Pertimbangkan untuk berkonsultasi dengan psikolog</li>
+                                    <li>Fokus pada membangun satu hubungan yang bermakna</li>
+                                </ul>
+                            `;
             } else {
                 categoryResult.classList.add('moderate');
                 categoryTitle.textContent = '⚖️ Moderate Mental Health (Kesehatan Mental Sedang)';
                 categoryDescription.textContent = 'Anda berada dalam kondisi kesehatan mental yang cukup stabil, namun masih ada ruang untuk perbaikan dalam beberapa aspek kehidupan.';
                 suggestions.innerHTML = `
-                    <ul>
-                        <li>Identifikasi area yang ingin Anda tingkatkan</li>
-                        <li>Bangun rutinitas harian yang konsisten</li>
-                        <li>Perkuat hubungan sosial yang sudah ada</li>
-                        <li>Cari aktivitas yang memberikan rasa pencapaian</li>
-                        <li>Praktikkan mindfulness atau meditasi</li>
-                        <li>Tetap aktif secara fisik dan sosial</li>
-                    </ul>
-                `;
+                                <ul>
+                                    <li>Identifikasi area yang ingin Anda tingkatkan</li>
+                                    <li>Bangun rutinitas harian yang konsisten</li>
+                                    <li>Perkuat hubungan sosial yang sudah ada</li>
+                                    <li>Cari aktivitas yang memberikan rasa pencapaian</li>
+                                    <li>Praktikkan mindfulness atau meditasi</li>
+                                    <li>Tetap aktif secara fisik dan sosial</li>
+                                </ul>
+                            `;
             }
-            
+
             // Show results
             document.getElementById('results').classList.add('show');
             document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
@@ -1567,12 +1586,12 @@
 
         // Add form validation
         document.querySelectorAll('input[type="radio"]').forEach(input => {
-            input.addEventListener('change', function() {
+            input.addEventListener('change', function () {
                 // Add visual feedback when option is selected
                 const question = this.closest('.question');
                 question.style.borderColor = 'var(--primary-color)';
                 question.style.backgroundColor = 'var(--white)';
-                
+
                 setTimeout(() => {
                     question.style.backgroundColor = 'var(--bg-secondary)';
                 }, 300);
@@ -1583,16 +1602,16 @@
         function updateProgress() {
             const totalQuestions = 14;
             let answeredQuestions = 0;
-            
+
             for (let i = 1; i <= totalQuestions; i++) {
                 const radios = document.querySelectorAll(`input[name="q${i}"]`);
                 const isAnswered = Array.from(radios).some(radio => radio.checked);
                 if (isAnswered) answeredQuestions++;
             }
-            
+
             const progress = (answeredQuestions / totalQuestions) * 100;
             const submitBtn = document.querySelector('.submit-btn');
-            
+
             if (answeredQuestions === totalQuestions) {
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Analisis Hasil Tes';
@@ -1610,5 +1629,4 @@
         // Initialize progress on page load
         updateProgress();
     </script>
-</body>
-</html>
+@endsection

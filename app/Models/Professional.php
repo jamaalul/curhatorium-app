@@ -2,18 +2,15 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Support\Facades\Storage;
 
 class Professional extends Authenticatable
 {
     protected $fillable = [
         'name', 'password', 'title', 'avatar', 'specialties', 'type', 'rating',
-        'whatsapp_number', 'bank_account_number', 'bank_name'
+        'whatsapp_number', 'bank_account_number', 'bank_name',
     ];
 
     protected $hidden = [
@@ -49,19 +46,18 @@ class Professional extends Authenticatable
      */
     public function hasActiveSession()
     {
-        return $this->chatSessions()
+        return $this->consultations()
             ->whereIn('status', ['active', 'pending'])
             ->where('start', '>', Carbon::now('Asia/Jakarta')->subMinutes(5))
             ->exists();
     }
 
-
     /**
-     * Relationship with chat sessions
+     * Relationship with consultations
      */
-    public function chatSessions()
+    public function consultations()
     {
-        return $this->hasMany(ChatSession::class);
+        return $this->hasMany(Consultation::class);
     }
 
     /**
@@ -71,11 +67,12 @@ class Professional extends Authenticatable
     {
         return $this->hasMany(ProfessionalScheduleSlot::class);
     }
+
     /**
-     * Get all of the professional's messages.
+     * Get all of the professional's consultation messages.
      */
-    public function messages()
+    public function consultationMessages()
     {
-        return $this->morphMany(MessageV2::class, 'sender');
+        return $this->morphMany(ConsultationMessage::class, 'sender');
     }
 }

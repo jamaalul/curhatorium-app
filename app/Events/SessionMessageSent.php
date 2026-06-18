@@ -2,7 +2,7 @@
 
 namespace App\Events;
 
-use App\Models\Message;
+use App\Models\ConsultationMessage;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
@@ -13,11 +13,11 @@ class SessionMessageSent implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public Message $message;
+    public ConsultationMessage $message;
 
     public string $sessionId;
 
-    public function __construct(Message $message, string $sessionId)
+    public function __construct(ConsultationMessage $message, string $sessionId)
     {
         $this->message = $message;
         $this->sessionId = $sessionId;

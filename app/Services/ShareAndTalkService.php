@@ -2,15 +2,15 @@
 
 namespace App\Services;
 
+use App\Models\Consultation;
+use App\Models\ConsultationMessage;
 use App\Models\Professional;
-use App\Models\ChatSession;
-use App\Models\Message;
 use App\Models\User;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Str;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class ShareAndTalkService
 {
@@ -28,14 +28,14 @@ class ShareAndTalkService
         if ($date) {
             $query->whereHas('scheduleSlots', function ($q) use ($date) {
                 $q->where('status', 'available')
-                  ->whereDate('slot_start_time', $date);
+                    ->whereDate('slot_start_time', $date);
             });
         }
 
         $professionals = $query->with(['scheduleSlots' => function ($q) {
             $q->where('status', 'available')
-              ->where('slot_start_time', '>=', now())
-              ->orderBy('slot_start_time', 'asc');
+                ->where('slot_start_time', '>=', now())
+                ->orderBy('slot_start_time', 'asc');
         }])->get();
 
         return $professionals->map(function ($professional) {
@@ -44,9 +44,9 @@ class ShareAndTalkService
             if ($nextSlot) {
                 $slotTime = Carbon::parse($nextSlot->slot_start_time)->locale('id');
                 if ($slotTime->isToday()) {
-                    $nextAvailabilityFormatted = 'Hari ini, ' . $slotTime->format('H:i');
+                    $nextAvailabilityFormatted = 'Hari ini, '.$slotTime->format('H:i');
                 } elseif ($slotTime->isTomorrow()) {
-                    $nextAvailabilityFormatted = 'Besok, ' . $slotTime->format('H:i');
+                    $nextAvailabilityFormatted = 'Besok, '.$slotTime->format('H:i');
                 } else {
                     $nextAvailabilityFormatted = $slotTime->translatedFormat('l, j F, H:i');
                 }
@@ -66,117 +66,123 @@ class ShareAndTalkService
     }
 
     /**
-     * Create a new chat consultation session
+     * Create a new instant chat consultation session
      */
-    public function createChatSession(int $professionalId, User $user): ChatSession
+    public function createInstantChatConsultation(int $professionalId, User $user): Consultation
     {
         return DB::transaction(function () use ($professionalId, $user) {
             $professional = Professional::findOrFail($professionalId);
-            
+
             // Check for existing active session
-            $existingSession = $this->findExistingSession($user->id, $professional->id);
-            
+            $existingSession = $this->findExistingConsultation($user->id, $professional->id, 'chat');
+
             if ($existingSession) {
                 return $existingSession;
             }
 
-            $sessionId = Str::uuid();
+            $room = 'sharetalk_'.uniqid().'_'.Str::random(5);
+            $fullConsultationType = $professional->type === 'psychiatrist' ? 'Chat w/ Psikolog' : 'Chat w/ Rangers';
 
-            $session = ChatSession::create([
-                'session_id' => $sessionId,
+            $consultation = Consultation::create([
                 'user_id' => $user->id,
                 'professional_id' => $professional->id,
+                'room' => $room,
+                'consultation_type' => $fullConsultationType,
+                'status' => 'waiting',
                 'start' => now(),
                 'end' => now()->addMinutes(65),
-                'status' => 'waiting',
-                'type' => 'chat',
                 'pending_end' => now()->addMinutes(5),
             ]);
 
-
             // Send WhatsApp notification
-            $this->sendProfessionalNotification($professional, $sessionId);
+            $this->sendProfessionalNotification($professional, $room);
 
-            return $session;
+            return $consultation;
         });
     }
 
     /**
      * Create a new video consultation session
      */
-    public function createVideoSession(int $professionalId, User $user): ChatSession
+    public function createInstantVideoConsultation(int $professionalId, User $user): Consultation
     {
         return DB::transaction(function () use ($professionalId, $user) {
             $professional = Professional::findOrFail($professionalId);
-            
+
             // Validate professional type
             if ($professional->type !== 'psychiatrist') {
                 throw new \Exception('Video consultations are only available with psychiatrists.');
             }
-            
+
             // Check availability
             if ($professional->getEffectiveAvailability() !== 'online') {
                 throw new \Exception('This professional is currently not available for video consultations.');
             }
-            
+
             // Check for existing active session
-            $existingSession = $this->findExistingVideoSession($user->id, $professional->id);
-            
+            $existingSession = $this->findExistingConsultation($user->id, $professional->id, 'video');
+
             if ($existingSession) {
                 return $existingSession;
             }
 
-            $sessionId = Str::uuid();
-            $jitsiRoom = 'curhatorium_video_' . Str::random(16) . '_' . $sessionId;
+            $room = 'sharetalk_video_'.uniqid().'_'.Str::random(5);
+            $jitsiRoom = 'curhatorium_video_'.Str::random(16);
 
-            $session = ChatSession::create([
-                'session_id' => $sessionId,
+            $consultation = Consultation::create([
                 'user_id' => $user->id,
                 'professional_id' => $professional->id,
+                'room' => $room,
+                'consultation_type' => 'Video Call w/ Psikolog',
+                'status' => 'pending',
                 'start' => now(),
                 'end' => now()->addMinutes(60),
-                'status' => 'pending',
-                'type' => 'video',
                 'pending_end' => now()->addMinutes(5),
                 'jitsi_room' => $jitsiRoom,
             ]);
 
-
             // Send WhatsApp notification
-            $this->sendVideoNotification($professional, $sessionId);
+            $this->sendVideoNotification($professional, $room);
 
-            return $session;
+            return $consultation;
         });
     }
 
     /**
-     * Send a message in a chat session
+     * Send a message in a consultation
      */
-    public function sendMessage(string $sessionId, string $message, string $senderType = 'user', ?int $senderId = null): Message
+    public function sendMessage(string $room, string $message, string $senderType = 'user', ?int $senderId = null): ConsultationMessage
     {
-        return DB::transaction(function () use ($sessionId, $message, $senderType, $senderId) {
-            $session = ChatSession::where('session_id', $sessionId)->firstOrFail();
-            
+        return DB::transaction(function () use ($room, $message, $senderType, $senderId) {
+            $consultation = Consultation::where('room', $room)->firstOrFail();
+
             // Update session status if needed
-            if ($session->status === 'waiting' && $senderType === 'professional') {
-                $session->update(['status' => 'active']);
+            if ($consultation->status === 'waiting' && $senderType === 'professional') {
+                $consultation->update(['status' => 'active']);
             }
 
-            return Message::create([
+            $morphType = $senderType === 'user' ? User::class : Professional::class;
+
+            return ConsultationMessage::create([
                 'sender_id' => $senderId,
-                'sender_type' => $senderType,
-                'session_id' => $sessionId,
+                'sender_type' => $morphType,
+                'consultation_id' => $consultation->id,
                 'message' => $message,
             ]);
         });
     }
 
     /**
-     * Get messages for a session
+     * Get messages for a consultation
      */
-    public function getSessionMessages(string $sessionId): array
+    public function getSessionMessages(string $room): array
     {
-        return Message::where('session_id', $sessionId)
+        $consultation = Consultation::where('room', $room)->first();
+        if (! $consultation) {
+            return [];
+        }
+
+        return ConsultationMessage::where('consultation_id', $consultation->id)
             ->orderBy('created_at', 'asc')
             ->get()
             ->toArray();
@@ -185,41 +191,43 @@ class ShareAndTalkService
     /**
      * Get session status
      */
-    public function getSessionStatus(string $sessionId): ?array
+    public function getSessionStatus(string $room): ?array
     {
-        $session = ChatSession::where('session_id', $sessionId)->first();
-        
-        if (!$session) {
+        $consultation = Consultation::where('room', $room)->first();
+
+        if (! $consultation) {
             return null;
         }
 
         return [
-            'status' => $session->status,
-            'created_at' => $session->created_at->format('Y-m-d H:i:s'),
+            'status' => $consultation->status,
+            'start' => $consultation->start?->toIso8601String(),
+            'end' => $consultation->end?->toIso8601String(),
         ];
     }
 
     /**
      * Cancel a session by user
      */
-    public function cancelSessionByUser(string $sessionId, User $user): bool
+    public function cancelSessionByUser(string $room, User $user): bool
     {
-        return DB::transaction(function () use ($sessionId, $user) {
-            $session = ChatSession::where('session_id', $sessionId)->first();
-            
-            if (!$session || !in_array($session->status, ['waiting', 'pending'])) {
+        return DB::transaction(function () use ($room) {
+            $consultation = Consultation::where('room', $room)->first();
+
+            if (! $consultation || ! in_array($consultation->status, ['waiting', 'pending'])) {
                 return false;
             }
 
-            $session->status = 'cancelled';
-            $session->save();
+            $consultation->status = 'cancelled';
+            $consultation->save();
 
-
-            // Set professional back to online
-            $professional = $session->professional;
-            $professional->availability = 'online';
-            $professional->availabilityText = 'Tersedia';
-            $professional->save();
+            // Set professional back to online if instant
+            if ($consultation->professional) {
+                $professional = $consultation->professional;
+                $professional->availability = 'online';
+                $professional->availabilityText = 'Tersedia';
+                $professional->save();
+            }
 
             return true;
         });
@@ -230,21 +238,19 @@ class ShareAndTalkService
      */
     public function cancelExpiredSessions(): int
     {
-        $expiredSessions = ChatSession::whereIn('status', ['waiting', 'pending'])
-            ->where(function($query) {
+        $expiredSessions = Consultation::whereIn('status', ['waiting', 'pending'])
+            ->where(function ($query) {
                 $query->where('start', '<', now()->subMinutes(5))
-                      ->orWhere('pending_end', '<', now());
+                    ->orWhere('pending_end', '<', now());
             })
             ->get();
 
         $cancelledCount = 0;
-            
+
         foreach ($expiredSessions as $session) {
             DB::transaction(function () use ($session, &$cancelledCount) {
                 $session->status = 'cancelled';
                 $session->save();
-                
-
                 $cancelledCount++;
             });
         }
@@ -258,8 +264,8 @@ class ShareAndTalkService
     public function setProfessionalOnline(int $professionalId): bool
     {
         $professional = Professional::find($professionalId);
-        
-        if (!$professional) {
+
+        if (! $professional) {
             return false;
         }
 
@@ -273,21 +279,20 @@ class ShareAndTalkService
     /**
      * Cancel session (for API)
      */
-    public function cancelSession(string $sessionId, User $user): bool
+    public function cancelSession(string $room, User $user): bool
     {
-        return DB::transaction(function () use ($sessionId, $user) {
-            $session = ChatSession::where('session_id', $sessionId)
+        return DB::transaction(function () use ($room, $user) {
+            $consultation = Consultation::where('room', $room)
                 ->where('user_id', $user->id)
                 ->whereIn('status', ['waiting', 'pending'])
                 ->first();
 
-            if (!$session) {
+            if (! $consultation) {
                 return false;
             }
 
-            $session->status = 'cancelled';
-            $session->save();
-
+            $consultation->status = 'cancelled';
+            $consultation->save();
 
             return true;
         });
@@ -296,26 +301,26 @@ class ShareAndTalkService
     /**
      * End session and award XP
      */
-    public function endSession(string $sessionId, User $user): array
+    public function endSession(string $room, User $user): array
     {
-        return DB::transaction(function () use ($sessionId, $user) {
-            $session = ChatSession::where('session_id', $sessionId)
+        return DB::transaction(function () use ($room, $user) {
+            $consultation = Consultation::where('room', $room)
                 ->where('user_id', $user->id)
                 ->where('status', 'active')
                 ->first();
 
-            if (!$session) {
+            if (! $consultation) {
                 return ['success' => false, 'message' => 'Session not found or not active'];
             }
 
-            $session->status = 'completed';
-            $session->end = now();
-            $session->save();
+            $consultation->status = 'completed';
+            $consultation->end = now();
+            $consultation->save();
 
             // Award XP based on professional type
-            $professional = $session->professional;
+            $professional = $consultation->professional;
             $xpResult = ['xp_awarded' => 0, 'message' => ''];
-            
+
             if ($professional) {
                 if ($professional->type === 'psychiatrist') {
                     $xpResult = $user->awardXp('share_talk_psychiatrist');
@@ -328,7 +333,7 @@ class ShareAndTalkService
                 'success' => true,
                 'message' => 'Session ended successfully.',
                 'xp_awarded' => $xpResult['xp_awarded'] ?? 0,
-                'xp_message' => $xpResult['message'] ?? ''
+                'xp_message' => $xpResult['message'] ?? '',
             ];
         });
     }
@@ -336,20 +341,20 @@ class ShareAndTalkService
     /**
      * Activate session manually
      */
-    public function activateSession(string $sessionId): bool
+    public function activateSession(string $room): bool
     {
-        return DB::transaction(function () use ($sessionId) {
-            $session = ChatSession::where('session_id', $sessionId)->first();
-            
-            if (!$session || !in_array($session->status, ['waiting', 'pending'])) {
+        return DB::transaction(function () use ($room) {
+            $consultation = Consultation::where('room', $room)->first();
+
+            if (! $consultation || ! in_array($consultation->status, ['waiting', 'pending'])) {
                 return false;
             }
 
-            $session->status = 'active';
-            $session->start = now();
-            $session->end = now()->addMinutes(65);
-            $session->pending_end = null;
-            $session->save();
+            $consultation->status = 'active';
+            $consultation->start = now();
+            $consultation->end = now()->addMinutes(65);
+            $consultation->pending_end = null;
+            $consultation->save();
 
             return true;
         });
@@ -358,22 +363,13 @@ class ShareAndTalkService
     /**
      * Find existing session
      */
-    private function findExistingSession(int $userId, int $professionalId): ?ChatSession
+    private function findExistingConsultation(int $userId, int $professionalId, string $type): ?Consultation
     {
-        return ChatSession::where('user_id', $userId)
-            ->where('professional_id', $professionalId)
-            ->whereIn('status', ['waiting', 'pending', 'active'])
-            ->first();
-    }
+        $matchString = $type === 'video' ? 'Video' : 'Chat';
 
-    /**
-     * Find existing video session
-     */
-    private function findExistingVideoSession(int $userId, int $professionalId): ?ChatSession
-    {
-        return ChatSession::where('user_id', $userId)
+        return Consultation::where('user_id', $userId)
             ->where('professional_id', $professionalId)
-            ->where('type', 'video')
+            ->where('consultation_type', 'LIKE', "%$matchString%")
             ->whereIn('status', ['waiting', 'pending', 'active'])
             ->first();
     }
@@ -381,13 +377,13 @@ class ShareAndTalkService
     /**
      * Send WhatsApp notification to professional
      */
-    private function sendProfessionalNotification(Professional $professional, string $sessionId): void
+    private function sendProfessionalNotification(Professional $professional, string $room): void
     {
         try {
-            $message = 
-                "Kamu mendapat pesanan konsultasi baru.\n" .
-                "Akses URL berikut sebelum " . now()->addMinutes(5)->format('H:i') . " agar pesanannya tidak dibatalkan.\n\n" .
-                "https://curhatorium.com/share-and-talk/activate-session/" . $sessionId;
+            $message =
+                "Kamu mendapat pesanan konsultasi baru.\n".
+                'Akses URL berikut sebelum '.now()->addMinutes(5)->format('H:i')." agar pesanannya tidak dibatalkan.\n\n".
+                'https://curhatorium.com/share-and-talk/activate-session/'.$room;
 
             Http::withHeaders([
                 'Authorization' => env('FONNTE_TOKEN'),
@@ -396,20 +392,20 @@ class ShareAndTalkService
                 'message' => $message,
             ]);
         } catch (\Exception $e) {
-            Log::error('Failed to send WhatsApp notification: ' . $e->getMessage());
+            Log::error('Failed to send WhatsApp notification: '.$e->getMessage());
         }
     }
 
     /**
      * Send video consultation notification
      */
-    private function sendVideoNotification(Professional $professional, string $sessionId): void
+    private function sendVideoNotification(Professional $professional, string $room): void
     {
         try {
-            $message = 
-                "Kamu mendapat pesanan konsultasi VIDEO baru.\n" .
-                "Akses URL berikut sebelum " . now()->addMinutes(5)->format('H:i') . " agar pesanannya tidak dibatalkan.\n\n" .
-                "Dashboard: https://curhatorium.com/share-and-talk/activate-session/" . $sessionId;
+            $message =
+                "Kamu mendapat pesanan konsultasi VIDEO baru.\n".
+                'Akses URL berikut sebelum '.now()->addMinutes(5)->format('H:i')." agar pesanannya tidak dibatalkan.\n\n".
+                'Dashboard: https://curhatorium.com/share-and-talk/activate-session/'.$room;
 
             Http::withHeaders([
                 'Authorization' => env('FONNTE_TOKEN'),
@@ -418,7 +414,7 @@ class ShareAndTalkService
                 'message' => $message,
             ]);
         } catch (\Exception $e) {
-            Log::error('Failed to send video WhatsApp notification: ' . $e->getMessage());
+            Log::error('Failed to send video WhatsApp notification: '.$e->getMessage());
         }
     }
-} 
+}

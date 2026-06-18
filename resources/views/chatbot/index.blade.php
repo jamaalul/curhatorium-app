@@ -2,70 +2,70 @@
     $titles = $chats;
     $mode = 'friendly'; // default mode
 @endphp
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Ment-AI | Curhatorium</title>
-    <link rel="stylesheet" href="{{ asset('css/global.css') }}">
-    @vite('resources/css/app.css')
-    <!-- Mouseflow Tracking Script -->
-    <script type="text/javascript">
-      window._mfq = window._mfq || [];
-      (function() {
-        var mf = document.createElement("script");
-        mf.type = "text/javascript"; mf.defer = true;
-        mf.src = "//cdn.mouseflow.com/projects/c5eb0d0a-6b75-427c-81f3-ee3c9e946eca.js";
-        document.getElementsByTagName("head")[0].appendChild(mf);
-      })();
-    </script>
+@extends('layouts.app')
 
-    <style>
-        /* Responsive font sizes */
-        html { font-size: 16px; }
-        @media (max-width: 640px) { html { font-size: 14px; } }
-        @media (min-width: 640px) and (max-width: 1024px) { html { font-size: 15px; } }
-        @media (min-width: 1024px) { html { font-size: 16px; } }
+@section('title', 'Ment-AI | Curhatorium')
 
-        /* Sidebar transitions for mobile */
-        #sidebar {
-            width: 256px;
-            padding: 16px;
-        }
-        @media (max-width: 768px) {
+@section('bodyClass', 'w-screen h-screen flex bg-gray-800')
+
+@section('head')
+        @vite('resources/css/app.css')
+        <!-- Mouseflow Tracking Script -->
+        <script type="text/javascript">
+          window._mfq = window._mfq || [];
+          (function() {
+            var mf = document.createElement("script");
+            mf.type = "text/javascript"; mf.defer = true;
+            mf.src = "//cdn.mouseflow.com/projects/c5eb0d0a-6b75-427c-81f3-ee3c9e946eca.js";
+            document.getElementsByTagName("head")[0].appendChild(mf);
+          })();
+        </script>
+
+        <style>
+            /* Responsive font sizes */
+            html { font-size: 16px; }
+            @media (max-width: 640px) { html { font-size: 14px; } }
+            @media (min-width: 640px) and (max-width: 1024px) { html { font-size: 15px; } }
+            @media (min-width: 1024px) { html { font-size: 16px; } }
+
+            /* Sidebar transitions for mobile */
             #sidebar {
-                width: 0px;
-                padding: 0px;
-                position: fixed;
-                z-index: 40;
-                left: 0;
-                top: 0;
-                height: 100vh;
-                background: #1f2937;
-                transition: width 0.3s, padding 0.3s;
+                width: 256px;
+                padding: 16px;
             }
-        }
-        /* Overlay for sidebar on mobile */
-        #sidebar-overlay {
-            display: none;
-        }
-        @media (max-width: 768px) {
-            #sidebar-overlay.active {
-                display: block;
-                position: fixed;
-                z-index: 30;
-                left: 0;
-                top: 0;
-                width: 100vw;
-                height: 100vh;
-                background: rgba(0,0,0,0.4);
+            @media (max-width: 768px) {
+                #sidebar {
+                    width: 0px;
+                    padding: 0px;
+                    position: fixed;
+                    z-index: 40;
+                    left: 0;
+                    top: 0;
+                    height: 100vh;
+                    background: #1f2937;
+                    transition: width 0.3s, padding 0.3s;
+                }
             }
-        }
-    </style>
-</head>
-<body class="w-screen h-screen flex bg-gray-800">
+            /* Overlay for sidebar on mobile */
+            #sidebar-overlay {
+                display: none;
+            }
+            @media (max-width: 768px) {
+                #sidebar-overlay.active {
+                    display: block;
+                    position: fixed;
+                    z-index: 30;
+                    left: 0;
+                    top: 0;
+                    width: 100vw;
+                    height: 100vh;
+                    background: rgba(0,0,0,0.4);
+                }
+            }
+        </style>
+@endsection
+
+@section('content')
     <div id="sidebar-overlay"></div>
     <div id="sidebar" class="bg-gray-800 text-white flex flex-col p-4 w-64 transition-all duration-300 ease-out overflow-hidden">
         <!-- Header -->
@@ -175,7 +175,28 @@
                 </ul>
             </div>
         </div>
+        </nav>
+        <h1 class="text-[#48a6a6] text-4xl md:text-5xl font-semibold mb-8">Curhatin Ajah</h1>
+        <div class="h-16 w-full md:w-2/3 flex flex-col items-center justify-center">
+            <form id="chat-form" action="{{ route('api.chatbot.create-send') }}" method="POST" class="flex gap-1 rounded-full shadow-md p-2 w-full h-full border border-gray-300 hover:shadow-lg transition-all duration-100">
+                @csrf
+                <input type="hidden" name="mode" id="ai-mode-input" value="{{ $mode }}">
+                <div class="h-full aspect-square rounded-full flex items-center justify-center p-1 cursor-pointer">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" class="h-full aspect-square rounded-full text-gray-500"><path stroke-linecap="round" stroke-linejoin="round" d="M15.182 15.182a4.5 4.5 0 0 1-6.364 0M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0ZM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75Zm-.375 0h.008v.015h-.008V9.75Zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75Zm-.375 0h.008v.015h-.008V9.75Z" /></svg>
+                </div>
+                <input type="text" name="message" placeholder="Ceritakan apa saja..." class="w-full py-2 px-0 border-none focus:outline-none focus:ring-0 text-base md:text-lg">
+                <button id="send-button" type="submit" class="h-full aspect-square bg-[#48a6a6] rounded-full flex items-center justify-center p-1 cursor-pointer hover:bg-[#357979] transition-all duration-100">
+                    <svg id="send-icon" xmlns="http://www.w3.org/2000/svg" class="h-full aspect-square rounded-full text-white" viewBox="0 0 20 20" fill="#ffffff"><g fill="#ffffff" fill-rule="evenodd" clip-rule="evenodd"><path d="M5.232 8.974a1 1 0 0 1 .128-1.409l4-3.333a1 1 0 1 1 1.28 1.536l-4 3.334a1 1 0 0 1-1.408-.128Z"/><path d="M14.768 8.974a1 1 0 0 1-1.408.128l-4-3.334a1 1 0 1 1 1.28-1.536l4 3.333a1 1 0 0 1 .128 1.409Z"/><path d="M10 6a1 1 0 0 1 1 1v8a1 1 0 1 1-2 0V7a1 1 0 0 1 1-1Z"/></g></svg>
+                    <div id="spinner" class="hidden animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                </button>
+            </form>
+            <p class="text-sm mt-2 text-gray-500">Respon Ment-AI bisa saja keliru. Selalu verifikasi informasi dan utamakan konsultasi profesional.</p>
+        </div>
+    </div>
 
+@endsection
+
+@section('scripts')
         <script>
             const aiModeBtn = document.getElementById('ai-mode-btn');
             const aiModeDropdown = document.getElementById('ai-mode-dropdown');
@@ -222,108 +243,88 @@
                 }
             });
         </script>
-        </nav>
-        <h1 class="text-[#48a6a6] text-4xl md:text-5xl font-semibold mb-8">Curhatin Ajah</h1>
-        <div class="h-16 w-full md:w-2/3 flex flex-col items-center justify-center">
-            <form id="chat-form" action="{{ route('api.chatbot.create-send') }}" method="POST" class="flex gap-1 rounded-full shadow-md p-2 w-full h-full border border-gray-300 hover:shadow-lg transition-all duration-100">
-                @csrf
-                <input type="hidden" name="mode" id="ai-mode-input" value="{{ $mode }}">
-                <div class="h-full aspect-square rounded-full flex items-center justify-center p-1 cursor-pointer">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" class="h-full aspect-square rounded-full text-gray-500"><path stroke-linecap="round" stroke-linejoin="round" d="M15.182 15.182a4.5 4.5 0 0 1-6.364 0M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0ZM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75Zm-.375 0h.008v.015h-.008V9.75Zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75Zm-.375 0h.008v.015h-.008V9.75Z" /></svg>
-                </div>
-                <input type="text" name="message" placeholder="Ceritakan apa saja..." class="w-full py-2 px-0 border-none focus:outline-none focus:ring-0 text-base md:text-lg">
-                <button id="send-button" type="submit" class="h-full aspect-square bg-[#48a6a6] rounded-full flex items-center justify-center p-1 cursor-pointer hover:bg-[#357979] transition-all duration-100">
-                    <svg id="send-icon" xmlns="http://www.w3.org/2000/svg" class="h-full aspect-square rounded-full text-white" viewBox="0 0 20 20" fill="#ffffff"><g fill="#ffffff" fill-rule="evenodd" clip-rule="evenodd"><path d="M5.232 8.974a1 1 0 0 1 .128-1.409l4-3.333a1 1 0 1 1 1.28 1.536l-4 3.334a1 1 0 0 1-1.408-.128Z"/><path d="M14.768 8.974a1 1 0 0 1-1.408.128l-4-3.334a1 1 0 1 1 1.28-1.536l4 3.333a1 1 0 0 1 .128 1.409Z"/><path d="M10 6a1 1 0 0 1 1 1v8a1 1 0 1 1-2 0V7a1 1 0 0 1 1-1Z"/></g></svg>
-                    <div id="spinner" class="hidden animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                </button>
-            </form>
-            <p class="text-sm mt-2 text-gray-500">Respon Ment-AI bisa saja keliru. Selalu verifikasi informasi dan utamakan konsultasi profesional.</p>
-        </div>
-    </div>
-
-    <script>
-        // Responsive sidebar logic
-        function isMobile() {
-            return window.innerWidth <= 768;
-        }
-
-        function openSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebar-overlay');
-            const toggleA = document.getElementById('sidebar-toggle-a');
-            const toggleB = document.getElementById('sidebar-toggle-b');
-            sidebar.style.width = '256px';
-            sidebar.style.padding = '16px';
-            overlay.classList.add('active');
-            toggleA.classList.remove('hidden');
-            toggleB.style.width = '0px';
-            toggleB.style.opacity = '0';
-            toggleB.classList.add('hidden');
-        }
-
-        function closeSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebar-overlay');
-            const toggleA = document.getElementById('sidebar-toggle-a');
-            const toggleB = document.getElementById('sidebar-toggle-b');
-            sidebar.style.width = '0px';
-            sidebar.style.paddingInline = '0px';
-            overlay.classList.remove('active');
-            toggleA.classList.add('hidden');
-            toggleB.classList.remove('hidden');
-            toggleB.style.width = '24px';
-            toggleB.style.opacity = '1';
-        }
-
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            if (sidebar.style.width === '0px' || sidebar.style.width === '') {
-                openSidebar();
-            } else {
-                closeSidebar();
+        <script>
+            // Responsive sidebar logic
+            function isMobile() {
+                return window.innerWidth <= 768;
             }
-        }
 
-        // Overlay click closes sidebar
-        document.getElementById('sidebar-overlay').addEventListener('click', closeSidebar);
-
-        // Set sidebar default state on load and resize
-        function setSidebarDefault() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebar-overlay');
-            const toggleA = document.getElementById('sidebar-toggle-a');
-            const toggleB = document.getElementById('sidebar-toggle-b');
-            if (isMobile()) {
-                sidebar.style.width = '0px';
-                sidebar.style.padding = '0px';
-                overlay.classList.remove('active');
-                toggleA.classList.add('hidden');
-                toggleB.classList.remove('hidden');
-                toggleB.style.width = '24px';
-                toggleB.style.opacity = '1';
-            } else {
+            function openSidebar() {
+                const sidebar = document.getElementById('sidebar');
+                const overlay = document.getElementById('sidebar-overlay');
+                const toggleA = document.getElementById('sidebar-toggle-a');
+                const toggleB = document.getElementById('sidebar-toggle-b');
                 sidebar.style.width = '256px';
                 sidebar.style.padding = '16px';
-                overlay.classList.remove('active');
+                overlay.classList.add('active');
                 toggleA.classList.remove('hidden');
                 toggleB.style.width = '0px';
                 toggleB.style.opacity = '0';
                 toggleB.classList.add('hidden');
             }
-        }
 
-        window.addEventListener('resize', setSidebarDefault);
-        window.addEventListener('DOMContentLoaded', setSidebarDefault);
+            function closeSidebar() {
+                const sidebar = document.getElementById('sidebar');
+                const overlay = document.getElementById('sidebar-overlay');
+                const toggleA = document.getElementById('sidebar-toggle-a');
+                const toggleB = document.getElementById('sidebar-toggle-b');
+                sidebar.style.width = '0px';
+                sidebar.style.paddingInline = '0px';
+                overlay.classList.remove('active');
+                toggleA.classList.add('hidden');
+                toggleB.classList.remove('hidden');
+                toggleB.style.width = '24px';
+                toggleB.style.opacity = '1';
+            }
 
-        function deleteChat(element) {
-            element.parentElement.remove();
-        }
+            function toggleSidebar() {
+                const sidebar = document.getElementById('sidebar');
+                if (sidebar.style.width === '0px' || sidebar.style.width === '') {
+                    openSidebar();
+                } else {
+                    closeSidebar();
+                }
+            }
 
-        document.getElementById('chat-form').addEventListener('submit', function() {
-            document.getElementById('send-icon').classList.add('hidden');
-            document.getElementById('spinner').classList.remove('hidden');
-            document.getElementById('send-button').disabled = true;
-        });
-    </script>
-</body>
-</html>
+            // Overlay click closes sidebar
+            document.getElementById('sidebar-overlay').addEventListener('click', closeSidebar);
+
+            // Set sidebar default state on load and resize
+            function setSidebarDefault() {
+                const sidebar = document.getElementById('sidebar');
+                const overlay = document.getElementById('sidebar-overlay');
+                const toggleA = document.getElementById('sidebar-toggle-a');
+                const toggleB = document.getElementById('sidebar-toggle-b');
+                if (isMobile()) {
+                    sidebar.style.width = '0px';
+                    sidebar.style.padding = '0px';
+                    overlay.classList.remove('active');
+                    toggleA.classList.add('hidden');
+                    toggleB.classList.remove('hidden');
+                    toggleB.style.width = '24px';
+                    toggleB.style.opacity = '1';
+                } else {
+                    sidebar.style.width = '256px';
+                    sidebar.style.padding = '16px';
+                    overlay.classList.remove('active');
+                    toggleA.classList.remove('hidden');
+                    toggleB.style.width = '0px';
+                    toggleB.style.opacity = '0';
+                    toggleB.classList.add('hidden');
+                }
+            }
+
+            window.addEventListener('resize', setSidebarDefault);
+            window.addEventListener('DOMContentLoaded', setSidebarDefault);
+
+            function deleteChat(element) {
+                element.parentElement.remove();
+            }
+
+            document.getElementById('chat-form').addEventListener('submit', function() {
+                document.getElementById('send-icon').classList.add('hidden');
+                document.getElementById('spinner').classList.remove('hidden');
+                document.getElementById('send-button').disabled = true;
+            });
+        </script>
+@endsection

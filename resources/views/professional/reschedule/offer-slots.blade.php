@@ -1,172 +1,168 @@
-<!DOCTYPE html>
-<html lang="en">
+@extends('layouts.app')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Offer Reschedule Slots | {{ $professional->name }}</title>
-    @vite('resources/css/app.css')
-    <link rel="stylesheet" href="{{ asset('css/global.css') }}">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f8f9fa;
-            color: #333;
-        }
+@section('title', 'Offer Reschedule Slots | ' . $professional->name)
 
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
+@section('head')
+        @vite('resources/css/app.css')
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #f8f9fa;
+                color: #333;
+            }
 
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid #e5e7eb;
-        }
+            .container {
+                max-width: 800px;
+                margin: 0 auto;
+                padding: 20px;
+                background-color: white;
+                border-radius: 8px;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            }
 
-        .header-title {
-            font-size: 24px;
-            font-weight: bold;
-            color: #2c3e50;
-        }
+            .header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 20px;
+                padding-bottom: 20px;
+                border-bottom: 1px solid #e5e7eb;
+            }
 
-        .back-button {
-            padding: 8px 16px;
-            background-color: #6c757d;
-            color: white;
-            border-radius: 4px;
-            text-decoration: none;
-            font-size: 14px;
-        }
+            .header-title {
+                font-size: 24px;
+                font-weight: bold;
+                color: #2c3e50;
+            }
 
-        .back-button:hover {
-            background-color: #5a6268;
-        }
+            .back-button {
+                padding: 8px 16px;
+                background-color: #6c757d;
+                color: white;
+                border-radius: 4px;
+                text-decoration: none;
+                font-size: 14px;
+            }
 
-        .booking-info {
-            background-color: #f8f9fa;
-            padding: 15px;
-            border-radius: 6px;
-            margin-bottom: 30px;
-            border-left: 4px solid #48A6A6;
-        }
+            .back-button:hover {
+                background-color: #5a6268;
+            }
 
-        .booking-info h3 {
-            margin-top: 0;
-            color: #48A6A6;
-        }
+            .booking-info {
+                background-color: #f8f9fa;
+                padding: 15px;
+                border-radius: 6px;
+                margin-bottom: 30px;
+                border-left: 4px solid #48A6A6;
+            }
 
-        .form-group {
-            margin-bottom: 20px;
-        }
+            .booking-info h3 {
+                margin-top: 0;
+                color: #48A6A6;
+            }
 
-        .form-label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-            color: #495057;
-        }
+            .form-group {
+                margin-bottom: 20px;
+            }
 
-        .form-control {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ced4da;
-            border-radius: 4px;
-            font-size: 16px;
-            box-sizing: border-box;
-        }
+            .form-label {
+                display: block;
+                margin-bottom: 8px;
+                font-weight: bold;
+                color: #495057;
+            }
 
-        .form-control:focus {
-            border-color: #48A6A6;
-            outline: none;
-            box-shadow: 0 0 0 0.2rem rgba(72, 166, 166, 0.25);
-        }
+            .form-control {
+                width: 100%;
+                padding: 10px;
+                border: 1px solid #ced4da;
+                border-radius: 4px;
+                font-size: 16px;
+                box-sizing: border-box;
+            }
 
-        .slots-container {
-            margin-bottom: 30px;
-        }
+            .form-control:focus {
+                border-color: #48A6A6;
+                outline: none;
+                box-shadow: 0 0 0 0.2rem rgba(72, 166, 166, 0.25);
+            }
 
-        .slot-item {
-            border: 1px solid #e5e7eb;
-            border-radius: 6px;
-            padding: 15px;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            transition: all 0.2s ease;
-        }
+            .slots-container {
+                margin-bottom: 30px;
+            }
 
-        .slot-item:hover {
-            border-color: #48A6A6;
-            box-shadow: 0 2px 8px rgba(72, 166, 166, 0.15);
-        }
+            .slot-item {
+                border: 1px solid #e5e7eb;
+                border-radius: 6px;
+                padding: 15px;
+                margin-bottom: 10px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                transition: all 0.2s ease;
+            }
 
-        .slot-date {
-            font-weight: bold;
-            color: #2c3e50;
-            margin-bottom: 5px;
-        }
+            .slot-item:hover {
+                border-color: #48A6A6;
+                box-shadow: 0 2px 8px rgba(72, 166, 166, 0.15);
+            }
 
-        .slot-time {
-            color: #6c757d;
-        }
+            .slot-date {
+                font-weight: bold;
+                color: #2c3e50;
+                margin-bottom: 5px;
+            }
 
-        .btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: all 0.2s ease;
-        }
+            .slot-time {
+                color: #6c757d;
+            }
 
-        .btn-primary {
-            background-color: #48A6A6;
-            color: white;
-        }
+            .btn {
+                padding: 10px 20px;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 16px;
+                transition: all 0.2s ease;
+            }
 
-        .btn-primary:hover {
-            background-color: #357979;
-        }
+            .btn-primary {
+                background-color: #48A6A6;
+                color: white;
+            }
 
-        .btn-secondary {
-            background-color: #6c757d;
-            color: white;
-        }
+            .btn-primary:hover {
+                background-color: #357979;
+            }
 
-        .btn-secondary:hover {
-            background-color: #5a6268;
-        }
+            .btn-secondary {
+                background-color: #6c757d;
+                color: white;
+            }
 
-        .error-message {
-            background-color: #f8d7da;
-            color: #721c24;
-            padding: 10px;
-            border-radius: 4px;
-            margin-bottom: 20px;
-        }
+            .btn-secondary:hover {
+                background-color: #5a6268;
+            }
 
-        .info-message {
-            background-color: #d1ecf1;
-            color: #0c5460;
-            padding: 10px;
-            border-radius: 4px;
-            margin-bottom: 20px;
-        }
-    </style>
-</head>
+            .error-message {
+                background-color: #f8d7da;
+                color: #721c24;
+                padding: 10px;
+                border-radius: 4px;
+                margin-bottom: 20px;
+            }
 
-<body>
+            .info-message {
+                background-color: #d1ecf1;
+                color: #0c5460;
+                padding: 10px;
+                border-radius: 4px;
+                margin-bottom: 20px;
+            }
+        </style>
+@endsection
+
+@section('content')
     <div class="container">
         <div class="header">
             <h1 class="header-title">Offer Reschedule Slots</h1>
@@ -245,6 +241,4 @@
             </div>
         </form>
     </div>
-</body>
-
-</html>
+@endsection

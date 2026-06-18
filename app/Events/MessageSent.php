@@ -2,10 +2,9 @@
 
 namespace App\Events;
 
+use App\Models\ConsultationMessage;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
-use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
@@ -15,25 +14,26 @@ class MessageSent implements ShouldBroadcast
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $message;
+
     public $room;
 
     /**
      * Create a new event instance.
      */
-    public function __construct(\App\Models\MessageV2 $message)
+    public function __construct(ConsultationMessage $message)
     {
         $this->message = $message;
-        $this->room = $message->room;
+        $this->room = $message->consultation->room ?? 'default';
     }
 
     /**
      * Get the channels the event should broadcast on.
      *
-     * @return array<int, \Illuminate\Broadcasting\Channel>
+     * @return array<int, Channel>
      */
     public function broadcastOn()
     {
-        return new Channel('chat.' . $this->room);
+        return new Channel('chat.'.$this->room);
     }
 
     /**

@@ -1,9 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Maintenance</title>
+@extends('layouts.app')
+
+@section('title', 'Maintenance')
+
+@section('head')
     <style>
         body {
             font-family: sans-serif;
@@ -28,8 +27,9 @@
             margin-bottom: 1rem;
         }
     </style>
-</head>
-<body>
+@endsection
+
+@section('content')
     <div class="container">
         <h1>Maintenance</h1>
         <p>{{ config('maintenance.message') }}</p>
@@ -37,5 +37,4 @@
             <p>Estimated downtime: {{ config('maintenance.estimated_downtime') }}</p>
         @endif
     </div>
-</body>
-</html>
+@endsection

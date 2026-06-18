@@ -1,15 +1,14 @@
-<!DOCTYPE html>
-<html lang="en">
+@extends('layouts.app')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reschedule Consultation - {{ $originalSlot->professional->name ?? 'Professional' }}</title>
+@section('title', 'Reschedule Consultation - ' . ($originalSlot->professional->name ?? 'Professional'))
+
+@section('bodyClass', 'bg-gray-50 text-gray-800')
+
+@section('head')
     @vite('resources/css/app.css')
-    <link rel="stylesheet" href="{{ asset('css/global.css') }}">
-</head>
+@endsection
 
-<body class="bg-gray-50 text-gray-800">
+@section('content')
     <div class="max-w-xl mx-auto p-4">
         <div class="text-center mb-8 py-5">
             <div class="text-2xl font-bold text-[#48A6A6] mb-2">Curhatorium</div>
@@ -81,7 +80,9 @@
             <p>&copy; {{ date('Y') }} Curhatorium. All rights reserved.</p>
         </div>
     </div>
+@endsection
 
+@section('scripts')
     <script>
         let selectedSlotId = null;
 
@@ -124,6 +125,4 @@
             document.getElementById('reschedule-form').submit();
         }
     </script>
-</body>
-
-</html>
+@endsection

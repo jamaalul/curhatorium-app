@@ -1,9 +1,8 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ringkasan Bulanan - Curhatorium</title>
+@extends('layouts.dashboard')
+
+@section('title', 'Ringkasan Bulanan - Curhatorium')
+
+@section('head')
     <link rel="stylesheet" href="{{ asset('css/global.css') }}">
     <link rel="stylesheet" href="{{ asset('css/tracker/result.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -680,11 +679,9 @@
             }
         }
     </style>
-</head>
-<body>
-    <!-- Navbar -->
-    @include('components.navbar')
+@endsection
 
+@section('dashboard-content')
     <div class="container">
         <!-- Page Header -->
         <div class="page-header">
@@ -1550,5 +1547,4 @@
             });
         });
     </script>
-</body>
-</html> 
+@endsection 

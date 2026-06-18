@@ -1,15 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-   <meta charset="UTF-8">
-   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-   <title>Curhatorium | Support Group Discussion</title>
-   <link rel="stylesheet" href="{{ asset('/css/sgd.css') }}">
-   <link rel="stylesheet" href="{{ asset('css/global.css') }}">
-</head>
-<body>
-   @include('components.navbar')
+@extends('layouts.dashboard')
+
+@section('title', 'Curhatorium | Support Group Discussion')
+
+@section('head')
+    <link rel="stylesheet" href="{{ asset('/css/sgd.css') }}">
+@endsection
+
+@section('dashboard-content')
    
    <h1 class="page-title">Support Group Discussion</h1>
    <!-- Search and Filter Bar -->
@@ -178,5 +175,4 @@
             </div>
         </div>
     </div>
-</body>
-</html>
+@endsection

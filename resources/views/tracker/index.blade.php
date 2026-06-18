@@ -1,18 +1,15 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pencatat Mood & Produktivitas - Curhatorium</title>
+@extends('layouts.dashboard')
+
+@section('title', 'Pencatat Mood & Produktivitas - Curhatorium')
+
+@section('head')
     <link rel="stylesheet" href="{{ asset('css/global.css') }}">
     <link rel="stylesheet" href="{{ asset('css/tracker/index.css') }}">
     <style>
     </style>
-</head>
-<body>
-    <!-- Navbar -->
-    @include('components.navbar')
+@endsection
 
+@section('dashboard-content')
     <div class="container">
         <!-- Page Header -->
         <div class="page-header">
@@ -198,7 +195,9 @@
     </div>
 
 
+@endsection
 
+@section('scripts')
     <script>
         // State Formulir
         let formData = {
@@ -376,5 +375,4 @@
         // Form submission is handled by Laravel redirect
     </script>
     <script src="/js/modules/tracker-form.js"></script>
-</body>
-</html>
+@endsection

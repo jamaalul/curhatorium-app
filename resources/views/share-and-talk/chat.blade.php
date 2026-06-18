@@ -1,23 +1,22 @@
-<!DOCTYPE html>
-<html lang="en">
+@extends('layouts.app')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat Room: {{ $room }}</title>
-    <link rel="stylesheet" href="{{ asset('css/global.css') }}">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <style>
-        /* body { padding-top: 20px; }
-        #chat-messages {
-            padding: 10px;
-            margin-bottom: 10px;
-        } */
-    </style>
-    @vite('resources/css/app.css')
-</head>
+@section('title', 'Chat Room: ' . $room)
 
-<body class="bg-stone-200 flex items-center h-screen justify-center w-screen p-0 md:p-2">
+@section('bodyClass', 'bg-stone-200 flex items-center h-screen justify-center w-screen p-0 md:p-2')
+
+@section('head')
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <style>
+            /* body { padding-top: 20px; }
+            #chat-messages {
+                padding: 10px;
+                margin-bottom: 10px;
+            } */
+        </style>
+        @vite('resources/css/app.css')
+@endsection
+
+@section('content')
     <div
         class="w-0 md:w-1/5 md:min-w-80 h-full bg-stone-200 overflow-hidden p-0 md:p-4 flex flex-col gap-2 items-center">
         <div class="flex gap-2 items-center justify-center">
@@ -114,203 +113,210 @@
         </div>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://js.pusher.com/7.0/pusher.min.js"></script>
-    <script>
-        // Enable pusher logging - don't include this in production
-        Pusher.logToConsole = true;
+@endsection
 
-        const pusherKey = '{{ config('broadcasting.connections.pusher.key') }}';
-        const pusherCluster = '{{ config('broadcasting.connections.pusher.options.cluster') ?: 'mt1' }}';
-        const pusherWsHost = 'ws-' + pusherCluster + '.pusher.com';
+@section('scripts')
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://js.pusher.com/7.0/pusher.min.js"></script>
+        <script>
+            // Enable pusher logging - don't include this in production
+            Pusher.logToConsole = true;
 
-        console.log('Pusher config', { pusherKey, pusherCluster, pusherWsHost });
+            const pusherKey = '{{ config('broadcasting.connections.pusher.key') }}';
+            const pusherCluster = '{{ config('broadcasting.connections.pusher.options.cluster') ?: 'mt1' }}';
+            const pusherWsHost = 'ws-' + pusherCluster + '.pusher.com';
 
-        var channel = {
-            bind: function() {
-                console.error('Pusher channel bind skipped because Pusher is not configured.');
-            }
-        };
+            console.log('Pusher config', { pusherKey, pusherCluster, pusherWsHost });
 
-        if (!pusherKey) {
-            console.error('Pusher is not configured: PUSHER_APP_KEY is missing from .env');
-        } else {
-            var pusher = new Pusher(pusherKey, {
-                cluster: pusherCluster,
-                forceTLS: true,
-                wsHost: pusherWsHost,
-                wssHost: pusherWsHost,
-                wsPort: 443,
-                wssPort: 443,
-                enabledTransports: ['ws', 'wss'],
-            });
-
-            channel = pusher.subscribe('chat.{{ $room }}');
-        }
-
-        // Determine user type and current user ID
-        const isProfessional = {{ auth('professional')->check() ? 'true' : 'false' }};
-        const currentUserId =
-            {{ auth('professional')->check() ? auth('professional')->id() : (auth()->check() ? auth()->id() : 'null') }};
-        const currentUserType = isProfessional ? 'facilitator' : 'client';
-
-        // Status update function
-        function updateStatus(status) {
-            $.post("{{ auth('professional')->check() ? route('professional.updateStatus') : route('share-and-talk.updateStatus') }}", {
-                _token: '{{ csrf_token() }}',
-                room: '{{ $room }}',
-                status_type: currentUserType,
-                status: status
-            }).done(function(response) {
-                console.log('Status updated to:', status);
-            }).fail(function() {
-                console.error('Failed to update status');
-            });
-        }
-
-        // Update status display
-        function updateStatusDisplay(statusType, status) {
-            // Add a small delay to ensure the DOM is ready
-            setTimeout(() => {
-                const statusText = $('.' + statusType + '-status-text');
-                const indicator = $('.' + statusType + '-indicator');
-
-                if (statusText.length === 0 || indicator.length === 0) {
-                    console.error('Could not find status elements for:', statusType);
-                    return;
+            var channel = {
+                bind: function() {
+                    console.error('Pusher channel bind skipped because Pusher is not configured.');
                 }
-
-                statusText.text(status.charAt(0).toUpperCase() + status.slice(1));
-                console.log(`Status updated: ${statusType} is now ${status}`);
-
-                if (status === 'online') {
-                    indicator.removeClass('bg-gray-400').addClass('bg-green-500');
-                } else {
-                    indicator.removeClass('bg-green-500').addClass('bg-gray-400');
+            };
+            var sessionChannel = {
+                bind: function() {
+                    console.error('Pusher sessionChannel bind skipped because Pusher is not configured.');
                 }
-            }, 100);
-        }
+            };
 
-        // On page load, set user as online
-        $(document).ready(function() {
-            // Small delay to ensure DOM is ready
-            setTimeout(() => {
-                // Initialize status display with current consultation data
-                updateStatusDisplay('facilitator', '{{ $consultation->facilitator_status ?? 'offline' }}');
-                updateStatusDisplay('client', '{{ $consultation->client_status ?? 'offline' }}');
-
-                // Set current user as online
-                updateStatus('online');
-            }, 300);
-        });
-
-        // On page unload, set user as offline
-        $(window).on('beforeunload', function() {
-            updateStatus('offline');
-        });
-
-        // Listen for status updates
-        channel.bind('StatusUpdated', function(data) {
-            console.log('Status event received:', data);
-            if (data && data.status_type && data.status) {
-                updateStatusDisplay(data.status_type, data.status);
+            if (!pusherKey) {
+                console.error('Pusher is not configured: PUSHER_APP_KEY is missing from .env');
             } else {
-                console.error('Invalid status update data:', data);
+                var pusher = new Pusher(pusherKey, {
+                    cluster: pusherCluster,
+                    forceTLS: true,
+                    wsHost: pusherWsHost,
+                    wssHost: pusherWsHost,
+                    wsPort: 443,
+                    wssPort: 443,
+                    enabledTransports: ['ws', 'wss'],
+                });
+
+                channel = pusher.subscribe('chat.{{ $room }}');
+                sessionChannel = pusher.subscribe('session.{{ $room }}');
             }
-        });
 
-        // Listen for messages
-        channel.bind('MessageSent', function(data) {
-            const currentUserId = {{ auth()->id() ?? 'null' }};
-            const currentProfessionalId = {{ auth('professional')->id() ?? 'null' }};
+            // Determine user type and current user ID
+            const isProfessional = {{ auth('professional')->check() ? 'true' : 'false' }};
+            const currentUserId =
+                {{ auth('professional')->check() ? auth('professional')->id() : (auth()->check() ? auth()->id() : 'null') }};
+            const currentUserType = isProfessional ? 'facilitator' : 'client';
 
-            // Access the message data correctly
-            const messageData = data.message;
-            const senderId = messageData.sender.id;
-            const senderType = messageData.sender.type;
+            // Status update function
+            function updateStatus(status) {
+                $.post("{{ auth('professional')->check() ? route('professional.updateStatus') : route('share-and-talk.updateStatus') }}", {
+                    _token: '{{ csrf_token() }}',
+                    room: '{{ $room }}',
+                    status_type: currentUserType,
+                    status: status
+                }).done(function(response) {
+                    console.log('Status updated to:', status);
+                }).fail(function() {
+                    console.error('Failed to update status');
+                });
+            }
 
-            const isSender = (senderType === 'App\\Models\\User' && senderId === currentUserId) ||
-                (senderType === 'App\\Models\\Professional' && senderId === currentProfessionalId);
+            // Update status display
+            function updateStatusDisplay(statusType, status) {
+                // Add a small delay to ensure the DOM is ready
+                setTimeout(() => {
+                    const statusText = $('.' + statusType + '-status-text');
+                    const indicator = $('.' + statusType + '-indicator');
 
-            // Skip rendering own messages — already shown optimistically on send
-            if (isSender) { return; }
+                    if (statusText.length === 0 || indicator.length === 0) {
+                        console.error('Could not find status elements for:', statusType);
+                        return;
+                    }
 
-            // build wrapper
-            const wrapper = $('<div>').addClass('w-full mb-2').css('display', 'flex');
-            const bubble = $('<div>')
-                .addClass('rounded-2xl p-3 max-w-[70%] break-words shadow-sm text-2xl');
+                    statusText.text(status.charAt(0).toUpperCase() + status.slice(1));
+                    console.log(`Status updated: ${statusType} is now ${status}`);
 
-            wrapper.addClass('justify-start');
-            bubble.addClass('bg-stone-200 text-black');
+                    if (status === 'online') {
+                        indicator.removeClass('bg-gray-400').addClass('bg-green-500');
+                    } else {
+                        indicator.removeClass('bg-green-500').addClass('bg-gray-400');
+                    }
+                }, 100);
+            }
 
-            // set text safely (this escapes any HTML)
-            const safeHtml = $('<div>').text(messageData.message).html().replace(/\n/g, '<br>');
-            bubble.html(safeHtml);
+            // On page load, set user as online
+            $(document).ready(function() {
+                // Small delay to ensure DOM is ready
+                setTimeout(() => {
+                    // Initialize status display with current consultation data
+                    updateStatusDisplay('facilitator', '{{ $consultation->facilitator_status ?? 'offline' }}');
+                    updateStatusDisplay('client', '{{ $consultation->client_status ?? 'offline' }}');
 
-            wrapper.append(bubble);
-            $('#chat-messages').append(wrapper);
-            $('#chat-messages').scrollTop($('#chat-messages')[0].scrollHeight);
-        });
+                    // Set current user as online
+                    updateStatus('online');
+                }, 300);
+            });
 
-        function sendMessage() {
-            var message = $('#chat-input').val();
-            if (message) {
-                // Optimistic UI: Show message immediately
-                const tempId = 'temp_' + Date.now();
-                const wrapper = $('<div>').addClass('w-full mb-2 flex justify-end').attr('id', tempId);
-                const bubble = $('<div>').addClass(
-                    'rounded-2xl p-3 max-w-[70%] break-words shadow-sm text-2xl bg-[#48a6a6] text-white flex flex-col items-end gap-2'
-                );
-                const safeHtml = $('<div>').text(message).html().replace(/\n/g, '<br>');
-                const clockIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-5">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                                    </svg>`;
-                bubble.html(safeHtml + ' ' + clockIcon);
+            // On page unload, set user as offline
+            $(window).on('beforeunload', function() {
+                updateStatus('offline');
+            });
+
+            // Listen for status updates
+            channel.bind('StatusUpdated', function(data) {
+                console.log('Status event received:', data);
+                if (data && data.status_type && data.status) {
+                    updateStatusDisplay(data.status_type, data.status);
+                } else {
+                    console.error('Invalid status update data:', data);
+                }
+            });
+
+            // Listen for messages
+            sessionChannel.bind('SessionMessageSent', function(data) {
+                const currentUserId = {{ auth()->id() ?? 'null' }};
+                const currentProfessionalId = {{ auth('professional')->id() ?? 'null' }};
+
+                // Access the message data correctly
+                const messageData = data.message;
+                const senderId = messageData.sender_id;
+                const senderType = messageData.sender_type;
+
+                const isSender = (senderType === 'App\\Models\\User' && senderId === currentUserId) ||
+                    (senderType === 'App\\Models\\Professional' && senderId === currentProfessionalId);
+
+                // Skip rendering own messages — already shown optimistically on send
+                if (isSender) { return; }
+
+                // build wrapper
+                const wrapper = $('<div>').addClass('w-full mb-2').css('display', 'flex');
+                const bubble = $('<div>')
+                    .addClass('rounded-2xl p-3 max-w-[70%] break-words shadow-sm text-2xl');
+
+                wrapper.addClass('justify-start');
+                bubble.addClass('bg-stone-200 text-black');
+
+                // set text safely (this escapes any HTML)
+                const safeHtml = $('<div>').text(messageData.message).html().replace(/\n/g, '<br>');
+                bubble.html(safeHtml);
+
                 wrapper.append(bubble);
                 $('#chat-messages').append(wrapper);
                 $('#chat-messages').scrollTop($('#chat-messages')[0].scrollHeight);
+            });
 
-                $.post("{{ route('pusher.sendMessage') }}", {
-                    _token: '{{ csrf_token() }}',
-                    message: message,
-                    room: '{{ $room }}'
-                }).done(function(response) {
-                    $('#chat-input').val('');
-                    // On success, find the temp message and update its icon
-                    const sentBubble = $('#' + tempId).find('div');
-                    const checkIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-5">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-                                        </svg>`;
-                    sentBubble.html(safeHtml + ' ' + checkIcon);
-                }).fail(function() {
-                    alert(
-                        'Pesan tidak dapat terkirim. Pastikan anda sudah login dan koneksi internet anda stabil. Coba muat ulang halaman ini.'
+            function sendMessage() {
+                var message = $('#chat-input').val();
+                if (message) {
+                    // Optimistic UI: Show message immediately
+                    const tempId = 'temp_' + Date.now();
+                    const wrapper = $('<div>').addClass('w-full mb-2 flex justify-end').attr('id', tempId);
+                    const bubble = $('<div>').addClass(
+                        'rounded-2xl p-3 max-w-[70%] break-words shadow-sm text-2xl bg-[#48a6a6] text-white flex flex-col items-end gap-2'
                     );
-                    // Optionally remove the optimistic message on failure
-                    $('#' + tempId).remove();
-                });
+                    const safeHtml = $('<div>').text(message).html().replace(/\n/g, '<br>');
+                    const clockIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-5">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                        </svg>`;
+                    bubble.html(safeHtml + ' ' + clockIcon);
+                    wrapper.append(bubble);
+                    $('#chat-messages').append(wrapper);
+                    $('#chat-messages').scrollTop($('#chat-messages')[0].scrollHeight);
+
+                    $.post("{{ auth('professional')->check() ? route('professional.sendMessage') : route('share-and-talk.sendMessage') }}", {
+                        _token: '{{ csrf_token() }}',
+                        message: message,
+                        room: '{{ $room }}'
+                    }).done(function(response) {
+                        $('#chat-input').val('');
+                        // On success, find the temp message and update its icon
+                        const sentBubble = $('#' + tempId).find('div');
+                        const checkIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-5">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                                            </svg>`;
+                        sentBubble.html(safeHtml + ' ' + checkIcon);
+                    }).fail(function() {
+                        alert(
+                            'Pesan tidak dapat terkirim. Pastikan anda sudah login dan koneksi internet anda stabil. Coba muat ulang halaman ini.'
+                        );
+                        // Optionally remove the optimistic message on failure
+                        $('#' + tempId).remove();
+                    });
+                }
             }
-        }
 
-        $('#chat-send').on('click', function() {
-            sendMessage();
-        });
-
-        $('#chat-input').on('keypress', function(e) {
-            if (e.which == 13) {
-                e.preventDefault(); // Prevents form submission
+            $('#chat-send').on('click', function() {
                 sendMessage();
-            }
-        });
+            });
 
-        $('.end-session-button').on('click', function() {
-            $('#confirmation-modal').removeClass('hidden');
-        });
+            $('#chat-input').on('keypress', function(e) {
+                if (e.which == 13) {
+                    e.preventDefault(); // Prevents form submission
+                    sendMessage();
+                }
+            });
 
-        $('#cancel-button').on('click', function() {
-            $('#confirmation-modal').addClass('hidden');
-        });
-    </script>
-</body>
+            $('.end-session-button').on('click', function() {
+                $('#confirmation-modal').removeClass('hidden');
+            });
 
-</html>
+            $('#cancel-button').on('click', function() {
+                $('#confirmation-modal').addClass('hidden');
+            });
+        </script>
+@endsection

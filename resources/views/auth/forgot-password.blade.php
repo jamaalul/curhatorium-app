@@ -1,14 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Curhatorium | Lupa Password</title>
+@extends('layouts.app')
+
+@section('title', 'Curhatorium | Lupa Password')
+
+@section('head')
     <link rel="stylesheet" href="{{ asset('css/forgot-password.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/global.css') }}">
-</head>
-<body>
+@endsection
+
+@section('content')
     <div class="icon">
       <!-- Replace with your icon image if needed -->
       <img src="/assets/logo.svg" alt="Hand Icon">
@@ -22,5 +20,4 @@
       <button type="submit">Ajukan Perubahan Password</button>
     </form>
   </div>
-</body>
-</html>
+@endsection

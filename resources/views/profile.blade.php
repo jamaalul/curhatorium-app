@@ -1,24 +1,20 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    @php
-        $vite_hmr_host = '';
-        if (app()->environment('local') && file_exists(public_path('hot'))) {
-            $vite_hmr_host = rtrim(file_get_contents(public_path('hot')));
-        }
-    @endphp
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline' {{ $vite_hmr_host }}; script-src 'self' 'unsafe-inline' {{ $vite_hmr_host }}; connect-src 'self' {{ $vite_hmr_host }} ws: wss:;">
-    <title>Profil Saya</title>
-    <link rel="stylesheet" href="{{ asset('css/global.css') }}">
-    
-</head>
-<body class="bg-gray-50">
-    @include('components.navbar')
-    
+@extends('layouts.dashboard')
+
+@section('title', 'Profil Saya')
+
+@section('bodyClass', 'bg-gray-50')
+
+@section('head')
+        @php
+            $vite_hmr_host = '';
+            if (app()->environment('local') && file_exists(public_path('hot'))) {
+                $vite_hmr_host = rtrim(file_get_contents(public_path('hot')));
+            }
+        @endphp
+        <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline' {{ $vite_hmr_host }}; script-src 'self' 'unsafe-inline' {{ $vite_hmr_host }}; connect-src 'self' {{ $vite_hmr_host }} ws: wss:;">
+@endsection
+
+@section('dashboard-content')
     <main class="max-w-7xl mx-auto py-24 px-4 sm:px-6 lg:px-8">
         <!-- Page Header -->
         <div class="mb-8">
@@ -279,8 +275,9 @@
         </div>
     </main>
 
-    @include('components.footer')
-    
+@endsection
+
+@section('scripts')
     @if ($errors->any())
         <script>
             document.addEventListener('DOMContentLoaded', function() {
@@ -290,176 +287,175 @@
             });
         </script>
     @endif
-    
+
     <script>
-        // Profile picture preview and validation
-        const input = document.getElementById('profilePicInput');
-        const preview = document.getElementById('profilePicPreview');
-        
-        const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
-        const ALLOWED_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
-        const MAX_DIMENSIONS = { width: 2048, height: 2048 };
-        
-        function showError(message) {
-            const errorDiv = document.createElement('div');
-            errorDiv.className = 'fixed top-4 right-4 bg-red-500 text-white px-4 py-3 rounded-lg shadow-lg z-50 max-w-sm';
-            errorDiv.innerHTML = `
-                <div class="flex items-center justify-between">
-                    <span class="text-sm">${message}</span>
-                    <button onclick="this.parentElement.parentElement.remove()" class="ml-2 text-white hover:text-gray-200">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
-                    </button>
-                </div>
-            `;
-            document.body.appendChild(errorDiv);
+            // Profile picture preview and validation
+            const input = document.getElementById('profilePicInput');
+            const preview = document.getElementById('profilePicPreview');
             
-            setTimeout(() => {
-                if (errorDiv.parentNode) {
-                    errorDiv.parentNode.removeChild(errorDiv);
-                }
-            }, 5000);
+            const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
+            const ALLOWED_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+            const MAX_DIMENSIONS = { width: 2048, height: 2048 };
             
-            input.value = '';
-        }
-        
-        function showLoading() {
-            const loadingDiv = document.createElement('div');
-            loadingDiv.id = 'upload-loading';
-            loadingDiv.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
-            loadingDiv.innerHTML = `
-                <div class="bg-white rounded-lg p-6 flex items-center space-x-3">
-                    <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
-                    <span class="text-gray-900">Uploading profile picture...</span>
-                </div>
-            `;
-            document.body.appendChild(loadingDiv);
-        }
-        
-        function hideLoading() {
-            const loadingDiv = document.getElementById('upload-loading');
-            if (loadingDiv && loadingDiv.parentNode) {
-                loadingDiv.parentNode.removeChild(loadingDiv);
+            function showError(message) {
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'fixed top-4 right-4 bg-red-500 text-white px-4 py-3 rounded-lg shadow-lg z-50 max-w-sm';
+                errorDiv.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm">${message}</span>
+                        <button onclick="this.parentElement.parentElement.remove()" class="ml-2 text-white hover:text-gray-200">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                `;
+                document.body.appendChild(errorDiv);
+                
+                setTimeout(() => {
+                    if (errorDiv.parentNode) {
+                        errorDiv.parentNode.removeChild(errorDiv);
+                    }
+                }, 5000);
+                
+                input.value = '';
             }
-        }
-        
-        function validateFormSubmission(event) {
-            const form = event.target;
-            const fileInput = form.querySelector('input[type="file"]');
             
-            if (fileInput && fileInput.files.length > 0) {
-                const file = fileInput.files[0];
-                if (!validateFile(file)) {
-                    event.preventDefault();
+            function showLoading() {
+                const loadingDiv = document.createElement('div');
+                loadingDiv.id = 'upload-loading';
+                loadingDiv.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+                loadingDiv.innerHTML = `
+                    <div class="bg-white rounded-lg p-6 flex items-center space-x-3">
+                        <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+                        <span class="text-gray-900">Uploading profile picture...</span>
+                    </div>
+                `;
+                document.body.appendChild(loadingDiv);
+            }
+            
+            function hideLoading() {
+                const loadingDiv = document.getElementById('upload-loading');
+                if (loadingDiv && loadingDiv.parentNode) {
+                    loadingDiv.parentNode.removeChild(loadingDiv);
+                }
+            }
+            
+            function validateFormSubmission(event) {
+                const form = event.target;
+                const fileInput = form.querySelector('input[type="file"]');
+                
+                if (fileInput && fileInput.files.length > 0) {
+                    const file = fileInput.files[0];
+                    if (!validateFile(file)) {
+                        event.preventDefault();
+                        return false;
+                    }
+                }
+                
+                return true;
+            }
+            
+            function validateFile(file) {
+                if (!ALLOWED_TYPES.includes(file.type)) {
+                    showError('Hanya file JPEG, PNG, atau WebP yang diperbolehkan.');
                     return false;
                 }
-            }
-            
-            return true;
-        }
-        
-        function validateFile(file) {
-            if (!ALLOWED_TYPES.includes(file.type)) {
-                showError('Hanya file JPEG, PNG, atau WebP yang diperbolehkan.');
-                return false;
-            }
-            
-            if (file.size > MAX_FILE_SIZE) {
-                showError('Ukuran file tidak boleh lebih dari 2MB.');
-                return false;
-            }
-            
-            const fileName = file.name.toLowerCase();
-            if (fileName.includes('..') || fileName.includes('/') || fileName.includes('\\')) {
-                showError('Nama file tidak valid.');
-                return false;
-            }
-            
-            const allowedExtensions = ['.jpg', '.jpeg', '.png', '.webp'];
-            const fileExtension = fileName.substring(fileName.lastIndexOf('.'));
-            if (!allowedExtensions.includes(fileExtension)) {
-                showError('Ekstensi file tidak diperbolehkan.');
-                return false;
-            }
-            
-            return true;
-        }
-        
-        function validateImageDimensions(file) {
-            return new Promise((resolve, reject) => {
-                const img = new Image();
-                const url = URL.createObjectURL(file);
                 
-                img.onload = function() {
-                    URL.revokeObjectURL(url);
-                    if (img.width > MAX_DIMENSIONS.width || img.height > MAX_DIMENSIONS.height) {
-                        reject('Dimensi gambar tidak boleh lebih dari 2048x2048 pixel.');
-                    } else {
-                        resolve(true);
-                    }
-                };
+                if (file.size > MAX_FILE_SIZE) {
+                    showError('Ukuran file tidak boleh lebih dari 2MB.');
+                    return false;
+                }
                 
-                img.onerror = function() {
-                    URL.revokeObjectURL(url);
-                    reject('File tidak dapat dibaca sebagai gambar.');
-                };
+                const fileName = file.name.toLowerCase();
+                if (fileName.includes('..') || fileName.includes('/') || fileName.includes('\\')) {
+                    showError('Nama file tidak valid.');
+                    return false;
+                }
                 
-                img.src = url;
-            });
-        }
-        
-        if(input && preview) {
-            input.addEventListener('change', async () => {
-                const file = input.files[0];
-                if (file) {
-                    if (!validateFile(file)) {
-                        return;
-                    }
+                const allowedExtensions = ['.jpg', '.jpeg', '.png', '.webp'];
+                const fileExtension = fileName.substring(fileName.lastIndexOf('.'));
+                if (!allowedExtensions.includes(fileExtension)) {
+                    showError('Ekstensi file tidak diperbolehkan.');
+                    return false;
+                }
+                
+                return true;
+            }
+            
+            function validateImageDimensions(file) {
+                return new Promise((resolve, reject) => {
+                    const img = new Image();
+                    const url = URL.createObjectURL(file);
                     
-                    try {
-                        await validateImageDimensions(file);
-                        showLoading();
+                    img.onload = function() {
+                        URL.revokeObjectURL(url);
+                        if (img.width > MAX_DIMENSIONS.width || img.height > MAX_DIMENSIONS.height) {
+                            reject('Dimensi gambar tidak boleh lebih dari 2048x2048 pixel.');
+                        } else {
+                            resolve(true);
+                        }
+                    };
+                    
+                    img.onerror = function() {
+                        URL.revokeObjectURL(url);
+                        reject('File tidak dapat dibaca sebagai gambar.');
+                    };
+                    
+                    img.src = url;
+                });
+            }
+            
+            if(input && preview) {
+                input.addEventListener('change', async () => {
+                    const file = input.files[0];
+                    if (file) {
+                        if (!validateFile(file)) {
+                            return;
+                        }
                         
-                        const reader = new FileReader();
-                        reader.onload = e => preview.src = e.target.result;
-                        reader.readAsDataURL(file);
-                        
-                        document.getElementById('profilePicForm').submit();
-                    } catch (error) {
-                        hideLoading();
-                        showError(error);
+                        try {
+                            await validateImageDimensions(file);
+                            showLoading();
+                            
+                            const reader = new FileReader();
+                            reader.onload = e => preview.src = e.target.result;
+                            reader.readAsDataURL(file);
+                            
+                            document.getElementById('profilePicForm').submit();
+                        } catch (error) {
+                            hideLoading();
+                            showError(error);
+                        }
+                    }
+                });
+            }
+            
+            // Update daily XP progress circle
+            document.addEventListener('DOMContentLoaded', function() {
+                const dailyXpCircle = document.getElementById('profile-daily-xp-circle');
+                const dailyXpCurrent = document.getElementById('profile-daily-xp-current');
+                const dailyXpMax = document.querySelector('#profile-daily-xp-current + .text-xs');
+                const dailyXpPercentage = document.getElementById('profile-daily-xp-percentage');
+                
+                if (dailyXpCircle && dailyXpCurrent) {
+                    const current = parseInt(dailyXpCurrent.textContent);
+                    const maxText = dailyXpMax ? dailyXpMax.textContent.replace('/ ', '') : '100';
+                    const max = parseInt(maxText);
+                    const progress = (current / max) * 100;
+                    
+                    const circumference = 219.91;
+                    const offset = circumference - (progress / 100) * circumference;
+                    dailyXpCircle.style.strokeDashoffset = offset;
+                    
+                    if (progress >= 90) {
+                        dailyXpCircle.style.stroke = "#ef4444";
+                    } else if (progress >= 70) {
+                        dailyXpCircle.style.stroke = "#f59e0b";
+                    } else {
+                        dailyXpCircle.style.stroke = "#10b981";
                     }
                 }
             });
-        }
-        
-        // Update daily XP progress circle
-        document.addEventListener('DOMContentLoaded', function() {
-            const dailyXpCircle = document.getElementById('profile-daily-xp-circle');
-            const dailyXpCurrent = document.getElementById('profile-daily-xp-current');
-            const dailyXpMax = document.querySelector('#profile-daily-xp-current + .text-xs');
-            const dailyXpPercentage = document.getElementById('profile-daily-xp-percentage');
-            
-            if (dailyXpCircle && dailyXpCurrent) {
-                const current = parseInt(dailyXpCurrent.textContent);
-                const maxText = dailyXpMax ? dailyXpMax.textContent.replace('/ ', '') : '100';
-                const max = parseInt(maxText);
-                const progress = (current / max) * 100;
-                
-                const circumference = 219.91;
-                const offset = circumference - (progress / 100) * circumference;
-                dailyXpCircle.style.strokeDashoffset = offset;
-                
-                if (progress >= 90) {
-                    dailyXpCircle.style.stroke = "#ef4444";
-                } else if (progress >= 70) {
-                    dailyXpCircle.style.stroke = "#f59e0b";
-                } else {
-                    dailyXpCircle.style.stroke = "#10b981";
-                }
-            }
-        });
-    </script>
-</body>
-</html>
+        </script>
+@endsection

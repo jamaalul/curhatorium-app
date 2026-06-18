@@ -1,14 +1,15 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Curhatorium | Booking Terkirim</title>
-    @vite('resources/css/app.css')
-    <link rel="stylesheet" href="{{ asset('css/global.css') }}">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-</head>
-<body class="bg-gray-100 flex flex-col items-center min-h-screen justify-center gap-4">
+@extends('layouts.app')
+
+@section('title', 'Curhatorium | Booking Terkirim')
+
+@section('bodyClass', 'bg-gray-100 flex flex-col items-center min-h-screen justify-center gap-4')
+
+@section('head')
+        @vite('resources/css/app.css')
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+@endsection
+
+@section('content')
     <div class="container px-4 py-12">
         <div class="max-w-lg mx-auto bg-white p-8 rounded-lg shadow-lg">
             <div class="text-center mb-8">
@@ -83,25 +84,27 @@
         </a>
     </div>
 
-    <script>
-        document.getElementById('download-receipt').addEventListener('click', function() {
-            const receiptElement = document.getElementById('downloadable-receipt');
-            
-            // Temporarily make it visible for capture
-            receiptElement.classList.remove('hidden');
+@endsection
 
-            html2canvas(receiptElement, {
-                scale: 2, // Increase scale for better quality
-            }).then(canvas => {
-                // Hide it again after capture
-                receiptElement.classList.add('hidden');
+@section('scripts')
+        <script>
+            document.getElementById('download-receipt').addEventListener('click', function() {
+                const receiptElement = document.getElementById('downloadable-receipt');
+                
+                // Temporarily make it visible for capture
+                receiptElement.classList.remove('hidden');
 
-                const link = document.createElement('a');
-                link.download = 'bukti-booking-curhatorium.png';
-                link.href = canvas.toDataURL('image/png');
-                link.click();
+                html2canvas(receiptElement, {
+                    scale: 2, // Increase scale for better quality
+                }).then(canvas => {
+                    // Hide it again after capture
+                    receiptElement.classList.add('hidden');
+
+                    const link = document.createElement('a');
+                    link.download = 'bukti-booking-curhatorium.png';
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+                });
             });
-        });
-    </script>
-</body>
-</html>
+        </script>
+@endsection

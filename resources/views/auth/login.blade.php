@@ -1,14 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Curhatorium | Login</title>
+@extends('layouts.app')
+
+@section('title', 'Curhatorium | Login')
+
+@section('head')
     <link rel="stylesheet" href="{{ asset('css/login.css') }}?v=1.0.0">
-    <link rel="stylesheet" href="{{ asset('css/global.css') }}">
-</head>
-<body>
+@endsection
+
+@section('content')
   <div class="container">
     <div class="illustration">
       <img src="/assets/logo.svg" alt="logo" />
@@ -50,5 +48,4 @@
       </form>
     </div>
   </div>
-</body>
-</html>
+@endsection

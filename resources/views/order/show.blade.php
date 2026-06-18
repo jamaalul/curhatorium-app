@@ -1,15 +1,10 @@
-<!DOCTYPE html>
-<html lang="id">
+@extends('layouts.app')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Checkout — {{ $order->order_ref }}</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-</head>
+@section('title', 'Checkout — ' . $order->order_ref)
 
-<body class="flex justify-center items-center bg-zinc-100 p-4 w-screen min-h-screen">
+@section('bodyClass', 'flex justify-center items-center bg-zinc-100 p-4 w-screen min-h-screen')
+
+@section('content')
     <div class="bg-white shadow-sm p-8 border rounded-xl w-full max-w-md">
 
         {{-- Order Header --}}
@@ -92,8 +87,10 @@
             @endif
         </div>
     </div>
+@endsection
 
-    @if ($order->isPending() && $latestPayment && $latestPayment->isPending())
+@if ($order->isPending() && $latestPayment && $latestPayment->isPending())
+    @section('scripts')
         <script>
             document.addEventListener('DOMContentLoaded', function () {
                 const statusUrl = "{{ route('order.check-status', $order) }}";
@@ -140,7 +137,5 @@
                 }, 2000);
             });
         </script>
-    @endif
-</body>
-
-</html>
+    @endsection
+@endif

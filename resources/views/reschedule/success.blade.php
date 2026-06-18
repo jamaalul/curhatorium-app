@@ -1,15 +1,15 @@
-<!DOCTYPE html>
-<html lang="en">
+@extends('layouts.app')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reschedule Successful</title>
+@section('title', 'Reschedule Successful')
+
+@section('bodyClass', 'bg-gray-50 text-gray-800')
+
+@section('head')
     @vite('resources/css/app.css')
     <link rel="stylesheet" href="{{ asset('css/global.css') }}">
-</head>
+@endsection
 
-<body class="bg-gray-50 text-gray-800">
+@section('content')
     <div class="max-w-xl mx-auto p-4">
         <div class="text-center mb-8 py-5">
             <div class="text-2xl font-bold text-[#48A6A6] mb-2">Curhatorium</div>
@@ -17,8 +17,7 @@
 
         <div class="bg-white rounded-lg p-5 shadow-md mb-5 text-center">
             <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-green-500" fill="none"
-                    viewBox="0 0 24 24" stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                 </svg>
             </div>
@@ -45,6 +44,4 @@
             <p>&copy; {{ date('Y') }} Curhatorium. All rights reserved.</p>
         </div>
     </div>
-</body>
-
-</html>
+@endsection

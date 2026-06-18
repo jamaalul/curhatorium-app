@@ -3,15 +3,17 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Services\XpService;
+use Database\Factories\UserFactory;
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use App\Models\SgdGroup;
-use Filament\Models\Contracts\FilamentUser;
 
 class User extends Authenticatable implements FilamentUser
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
+    /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
     /**
@@ -61,8 +63,8 @@ class User extends Authenticatable implements FilamentUser
     public function sgdGroups()
     {
         return $this->belongsToMany(SgdGroup::class, 'sgd_group_user')
-                    ->withPivot('joined_at')
-                    ->withTimestamps();
+            ->withPivot('joined_at')
+            ->withTimestamps();
     }
 
     /**
@@ -73,9 +75,7 @@ class User extends Authenticatable implements FilamentUser
         return $this->sgdGroups()->where('sgd_group_id', $sgdGroupId)->exists();
     }
 
-
-
-     public function canAccessPanel(\Filament\Panel $panel): bool
+    public function canAccessPanel(Panel $panel): bool
     {
         return $this->is_admin;
     }
@@ -85,7 +85,7 @@ class User extends Authenticatable implements FilamentUser
      */
     public function dailyXpLogs()
     {
-        return $this->hasMany(\App\Models\DailyXpLog::class);
+        return $this->hasMany(DailyXpLog::class);
     }
 
     /**
@@ -93,7 +93,8 @@ class User extends Authenticatable implements FilamentUser
      */
     public function awardXp(string $activity, int $quantity = 1): array
     {
-        $xpService = app(\App\Services\XpService::class);
+        $xpService = app(XpService::class);
+
         return $xpService->awardXp($this, $activity, $quantity);
     }
 
@@ -102,7 +103,8 @@ class User extends Authenticatable implements FilamentUser
      */
     public function getXpProgress(): array
     {
-        $xpService = app(\App\Services\XpService::class);
+        $xpService = app(XpService::class);
+
         return $xpService->getXpProgress($this);
     }
 
@@ -111,7 +113,8 @@ class User extends Authenticatable implements FilamentUser
      */
     public function canAccessPsychologist(): bool
     {
-        $xpService = app(\App\Services\XpService::class);
+        $xpService = app(XpService::class);
+
         return $xpService->canAccessPsychologist($this);
     }
 
@@ -120,7 +123,8 @@ class User extends Authenticatable implements FilamentUser
      */
     public function getDailyXpSummary(): array
     {
-        $xpService = app(\App\Services\XpService::class);
+        $xpService = app(XpService::class);
+
         return $xpService->getDailyXpSummary($this);
     }
 
@@ -129,7 +133,8 @@ class User extends Authenticatable implements FilamentUser
      */
     public function getXpBreakdown(): array
     {
-        $xpService = app(\App\Services\XpService::class);
+        $xpService = app(XpService::class);
+
         return $xpService->getXpBreakdown($this);
     }
 
@@ -138,26 +143,25 @@ class User extends Authenticatable implements FilamentUser
      */
     public function getXpHistory(int $days = 30): array
     {
-        $xpService = app(\App\Services\XpService::class);
+        $xpService = app(XpService::class);
+
         return $xpService->getXpHistory($this, $days);
     }
 
-
-
     /**
-     * Get chat sessions for the user
+     * Get consultations for the user
      */
-    public function chatSessions()
+    public function consultations()
     {
-        return $this->hasMany(\App\Models\ChatSession::class);
+        return $this->hasMany(Consultation::class);
     }
 
     /**
-     * Get active chat sessions
+     * Get active consultations
      */
-    public function activeChatSessions()
+    public function activeConsultations()
     {
-        return $this->chatSessions()
+        return $this->consultations()
             ->whereIn('status', ['waiting', 'pending', 'active']);
     }
 
@@ -169,8 +173,6 @@ class User extends Authenticatable implements FilamentUser
         return "{$this->name} ({$this->username})";
     }
 
-
-
     /**
      * Scope for active users
      */
@@ -179,12 +181,11 @@ class User extends Authenticatable implements FilamentUser
         return $query->where('is_active', true);
     }
 
-
     /**
-     * Get all of the user's messages.
+     * Get all of the user's consultation messages.
      */
-    public function messages()
+    public function consultationMessages()
     {
-        return $this->morphMany(MessageV2::class, 'sender');
+        return $this->morphMany(ConsultationMessage::class, 'sender');
     }
 }
