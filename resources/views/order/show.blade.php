@@ -4,10 +4,6 @@
 
 @section('bodyClass', 'flex justify-center items-center bg-zinc-100 p-4 w-screen min-h-screen')
 
-@section('head')
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-@endsection
-
 @section('content')
     <div class="bg-white shadow-sm p-8 border rounded-xl w-full max-w-md">
 

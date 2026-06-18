@@ -1,25 +1,36 @@
-@extends('layouts.app')
+@extends('layouts.dashboard')
 
 @section('title', 'Missions of The Day | Curhatorium')
 
 @section('head')
-        <link rel="stylesheet" href="{{ asset('css/missions.css') }}">
-        <style>
-            .button-loading { opacity: 0.8; pointer-events: none; }
-            .button-loading .spinner { 
-                width: 16px; height: 16px; border-radius: 50%;
-                border: 2px solid rgba(255,255,255,0.35);
-                border-top-color: #fff;
-                display: inline-block; vertical-align: middle; margin-right: 8px;
-                animation: spin 0.8s linear infinite;
+    <link rel="stylesheet" href="{{ asset('css/missions.css') }}">
+    <style>
+        .button-loading {
+            opacity: 0.8;
+            pointer-events: none;
+        }
+
+        .button-loading .spinner {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.35);
+            border-top-color: #fff;
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 8px;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
             }
-            @keyframes spin { to { transform: rotate(360deg); } }
-        </style>
+        }
+    </style>
 @endsection
 
-@section('content')
-    <!-- Navbar -->
-    @include('components.navbar')
+@section('dashboard-content')
 
     <div class="container">
         <!-- Page Header -->
@@ -60,25 +71,27 @@
                         $completedCount = $missionsList->whereIn('id', $completedMissions)->count();
                         $totalCount = $missionsList->count();
                         $progress = $totalCount > 0 ? round(($completedCount / $totalCount) * 100) : 0;
-                        
+
                         $xpValues = [
                             'easy' => 6,
                             'medium' => 8,
                             'hard' => 16
                         ];
-                        
+
                         $totalXp = $xpValues[$difficulty] * $totalCount;
                     @endphp
 
                     <div class="stats">
                         <div class="stat-item">
-                            <div class="stat-number" style="color: var(--{{ $difficulty == 'easy' ? 'success' : ($difficulty == 'medium' ? 'warning' : 'error') }});">
+                            <div class="stat-number"
+                                style="color: var(--{{ $difficulty == 'easy' ? 'success' : ($difficulty == 'medium' ? 'warning' : 'error') }});">
                                 {{ $completedCount }}/{{ $totalCount }}
                             </div>
                             <div class="stat-label">Selesai</div>
                         </div>
                         <div class="stat-item">
-                            <div class="stat-number" style="color: var(--{{ $difficulty == 'easy' ? 'success' : ($difficulty == 'medium' ? 'warning' : 'error') }});">
+                            <div class="stat-number"
+                                style="color: var(--{{ $difficulty == 'easy' ? 'success' : ($difficulty == 'medium' ? 'warning' : 'error') }});">
                                 {{ $totalXp }}
                             </div>
                             <div class="stat-label">Total XP</div>
@@ -107,7 +120,9 @@
                                         @if($isCompleted)
                                             <span class="badge badge-success">Selesai</span>
                                         @else
-                                            <button class="complete-btn" data-mission-id="{{ $mission->id }}" data-mission-title="{{ $mission->title }}" data-difficulty="{{ $difficulty }}" onclick="openCompletionModal(this)">Selesaikan</button>
+                                            <button class="complete-btn" data-mission-id="{{ $mission->id }}"
+                                                data-mission-title="{{ $mission->title }}" data-difficulty="{{ $difficulty }}"
+                                                onclick="openCompletionModal(this)">Selesaikan</button>
                                         @endif
                                     </div>
                                 </div>
@@ -128,11 +143,13 @@
                 @csrf
                 <div class="completion-modal-form-group">
                     <label for="reflection" class="completion-modal-label">Bagaimana kamu menyelesaikan misi ini?</label>
-                    <textarea name="reflection" id="reflection" rows="5" class="completion-modal-textarea reflection" required></textarea>
+                    <textarea name="reflection" id="reflection" rows="5" class="completion-modal-textarea reflection"
+                        required></textarea>
                 </div>
                 <div class="completion-modal-form-group">
                     <label for="feeling" class="completion-modal-label">Bagaimana perasaanmu setelahnya?</label>
-                    <textarea name="feeling" id="feeling" rows="2" class="completion-modal-textarea feeling" required></textarea>
+                    <textarea name="feeling" id="feeling" rows="2" class="completion-modal-textarea feeling"
+                        required></textarea>
                 </div>
                 <button type="submit" class="completion-modal-submit" id="completion-submit-btn">
                     <span class="btn-content">Kirim</span>
@@ -157,55 +174,55 @@
 @endsection
 
 @section('scripts')
-        <script>
-            function switchTab(difficulty) {
-                document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-                document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-                document.querySelector(`.tab.${difficulty}`).classList.add('active');
-                document.getElementById(`${difficulty}-content`).classList.add('active');
+    <script>
+        function switchTab(difficulty) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.querySelector(`.tab.${difficulty}`).classList.add('active');
+            document.getElementById(`${difficulty}-content`).classList.add('active');
+        }
+
+        // Modal logic
+        let currentMissionId = null;
+        function openCompletionModal(btn) {
+            currentMissionId = btn.getAttribute('data-mission-id');
+            const missionTitle = btn.getAttribute('data-mission-title');
+            document.getElementById('modal-mission-title').textContent = missionTitle;
+            document.getElementById('completion-modal').style.display = 'flex';
+            document.getElementById('completion-form').setAttribute('action', `/missions-of-the-day/${currentMissionId}/complete`);
+            document.getElementById('reflection').value = '';
+            document.getElementById('feeling').value = '';
+        }
+        function closeCompletionModal() {
+            document.getElementById('completion-modal').style.display = 'none';
+        }
+        // Close modal on outside click
+        document.getElementById('completion-modal').addEventListener('click', function (e) {
+            if (e.target === this) closeCompletionModal();
+        });
+
+        // Handle form submission
+        document.getElementById('completion-form').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+            const missionId = currentMissionId;
+            const submitBtn = document.getElementById('completion-submit-btn');
+            const originalHtml = submitBtn ? submitBtn.innerHTML : '';
+            if (submitBtn) {
+                submitBtn.classList.add('button-loading');
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span class="spinner"></span><span>Mengirim...</span>';
             }
 
-            // Modal logic
-            let currentMissionId = null;
-            function openCompletionModal(btn) {
-                currentMissionId = btn.getAttribute('data-mission-id');
-                const missionTitle = btn.getAttribute('data-mission-title');
-                document.getElementById('modal-mission-title').textContent = missionTitle;
-                document.getElementById('completion-modal').style.display = 'flex';
-                document.getElementById('completion-form').setAttribute('action', `/missions-of-the-day/${currentMissionId}/complete`);
-                document.getElementById('reflection').value = '';
-                document.getElementById('feeling').value = '';
-            }
-            function closeCompletionModal() {
-                document.getElementById('completion-modal').style.display = 'none';
-            }
-            // Close modal on outside click
-            document.getElementById('completion-modal').addEventListener('click', function(e) {
-                if (e.target === this) closeCompletionModal();
-            });
-
-            // Handle form submission
-            document.getElementById('completion-form').addEventListener('submit', function(e) {
-                e.preventDefault();
-                
-                const formData = new FormData(this);
-                const missionId = currentMissionId;
-                const submitBtn = document.getElementById('completion-submit-btn');
-                const originalHtml = submitBtn ? submitBtn.innerHTML : '';
-                if (submitBtn) {
-                    submitBtn.classList.add('button-loading');
-                    submitBtn.disabled = true;
-                    submitBtn.innerHTML = '<span class="spinner"></span><span>Mengirim...</span>';
+            fetch(this.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Accept': 'application/json'
                 }
-                
-                fetch(this.action, {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                        'Accept': 'application/json'
-                    }
-                })
+            })
                 .then(async (response) => {
                     if (!response.ok) {
                         const err = await response.json().catch(() => ({}));
@@ -216,7 +233,7 @@
                 .then(data => {
                     // Close modal
                     closeCompletionModal();
-                    
+
                     // Update UI without full reload
                     const btn = document.querySelector(`.complete-btn[data-mission-id="${missionId}"]`);
                     if (btn) {
@@ -253,6 +270,6 @@
                         submitBtn.innerHTML = originalHtml || '<span class="btn-content">Kirim</span>';
                     }
                 });
-            });
-        </script>
+        });
+    </script>
 @endsection

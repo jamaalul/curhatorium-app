@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.dashboard')
 
 @section('title', 'Hasil Mood Hari Ini - Curhatorium')
 
@@ -8,10 +8,7 @@
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 @endsection
 
-@section('content')
-    <!-- Navbar -->
-    @include('components.navbar')
-
+@section('dashboard-content')
     <div class="container">
         <!-- Page Header -->
         <div class="page-header">

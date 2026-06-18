@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.dashboard')
 
 @section('title', 'Pencatat Mood & Produktivitas - Curhatorium')
 
@@ -9,10 +9,7 @@
     </style>
 @endsection
 
-@section('content')
-    <!-- Navbar -->
-    @include('components.navbar')
-
+@section('dashboard-content')
     <div class="container">
         <!-- Page Header -->
         <div class="page-header">

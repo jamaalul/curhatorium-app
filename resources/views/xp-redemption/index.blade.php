@@ -1,17 +1,15 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>XP Redemption | Curhatorium</title>
+@extends('layouts.dashboard')
+
+@section('title', 'XP Redemption | Curhatorium')
+
+@section('bodyClass', 'bg-gray-100')
+
+@section('head')
     <link rel="stylesheet" href="{{ asset('css/global.css') }}">
     @vite('resources/css/app.css')
-</head>
-<body class="bg-gray-100">
-    @include('components.navbar')
+@endsection
 
+@section('dashboard-content')
     <main class="container mx-auto px-4 py-8">
         <section class="bg-white rounded-lg shadow-md p-6 md:p-8">
             <h1 class="text-3xl md:text-4xl font-bold text-center text-gray-800 mb-4">Tukarkan XP-mu dengan<br>reward yang kamu inginkan!</h1>
@@ -117,9 +115,9 @@
             </div>
         </section>
     </main>
+@endsection
 
-    @include('components.footer')
-
+@section('scripts')
     <script>
         // Auto-hide alerts after 5 seconds
         document.addEventListener('DOMContentLoaded', function() {
@@ -132,5 +130,4 @@
             });
         });
     </script>
-</body>
-</html> 
+@endsection

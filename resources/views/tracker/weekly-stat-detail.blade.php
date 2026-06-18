@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.dashboard')
 
 @section('title', 'Ringkasan Mingguan - Curhatorium')
 
@@ -826,10 +826,7 @@
     </style>
 @endsection
 
-@section('content')
-    <!-- Navbar -->
-    @include('components.navbar')
-
+@section('dashboard-content')
     <div class="container">
         <!-- Page Header -->
         <div class="page-header">

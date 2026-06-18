@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.dashboard')
 
 @section('title', 'Curhatorium | Share and Talk')
 
@@ -20,38 +20,36 @@
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 @endsection
 
-@section('content')
-    @include('components.navbar')
-
+@section('dashboard-content')
     <!-- Toast container for notifications -->
-    <div class="toast-container fixed top-20 right-5 z-50" id="toast-container"></div>
+    <div class="top-20 right-5 z-50 fixed toast-container" id="toast-container"></div>
 
     <!-- Hero Section -->
     <section
-        class="w-full h-fit px-4 py-12 flex flex-col gap-2 items-center justify-center bg-cover shadow-inner relative text-white"
+        class="relative flex flex-col justify-center items-center gap-2 bg-cover shadow-inner px-4 py-12 w-full h-fit text-white"
         style="background-image: url('{{ asset('images/background.webp') }}');">
         <div class="absolute inset-0 bg-none"></div>
-        <div class="relative z-10 text-center text-[#222222]">
-            <h1 class="text-3xl md:text-5xl font-bold">Share and Talk</h1>
-            <p class="text-base mt-2">Terhubung dengan psikolog profesional atau mitra kesehatan mental terlatih untuk
+        <div class="z-10 relative text-[#222222] text-center">
+            <h1 class="font-bold text-3xl md:text-5xl">Share and Talk</h1>
+            <p class="mt-2 text-base">Terhubung dengan psikolog profesional atau mitra kesehatan mental terlatih untuk
                 dukungan dan konsultasi profesional.</p>
         </div>
     </section>
 
     <!-- Main Content -->
-    <div class="container mx-auto px-4 py-8">
+    <div class="mx-auto px-4 py-8 container">
         <!-- Success and Error Messages -->
         @if (session('success'))
-            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4"
+            <div class="relative bg-green-100 mb-4 px-4 py-3 border border-green-400 rounded text-green-700"
                 role="alert">{{ session('success') }}</div>
         @endif
         @if (session('error'))
-            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+            <div class="relative bg-red-100 mb-4 px-4 py-3 border border-red-400 rounded text-red-700" role="alert">
                 {{ session('error') }}</div>
         @endif
         @if ($errors->any())
             @foreach ($errors->all() as $error)
-                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4"
+                <div class="relative bg-red-100 mb-4 px-4 py-3 border border-red-400 rounded text-red-700"
                     role="alert">{{ $error }}</div>
             @endforeach
         @endif
@@ -59,24 +57,24 @@
         <div class="main-content">
             <!-- Upcoming Consultations -->
             @if (isset($upcomingConsultations) && $upcomingConsultations->isNotEmpty())
-                <div class="upcoming-consultations mb-12">
-                    <h2 class="text-2xl md:text-3xl font-bold text-center mb-8">Jadwal Konsultasi Anda</h2>
-                    <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+                <div class="mb-12 upcoming-consultations">
+                    <h2 class="mb-8 font-bold text-2xl md:text-3xl text-center">Jadwal Konsultasi Anda</h2>
+                    <div class="bg-white shadow-md p-6 border border-gray-200 rounded-lg">
                         <div class="overflow-x-auto">
-                            <table class="min-w-full divide-y divide-gray-200">
+                            <table class="divide-y divide-gray-200 min-w-full">
                                 <thead class="bg-gray-50">
                                     <tr>
                                         <th scope="col"
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            class="px-6 py-3 font-medium text-gray-500 text-xs text-left uppercase tracking-wider">
                                             Fasilitator</th>
                                         <th scope="col"
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            class="px-6 py-3 font-medium text-gray-500 text-xs text-left uppercase tracking-wider">
                                             Jadwal</th>
                                         <th scope="col"
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            class="px-6 py-3 font-medium text-gray-500 text-xs text-left uppercase tracking-wider">
                                             Tipe</th>
                                         <th scope="col"
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            class="px-6 py-3 font-medium text-gray-500 text-xs text-left uppercase tracking-wider">
                                             Status</th>
                                         <th scope="col" class="relative px-6 py-3"></th>
                                     </tr>
@@ -84,23 +82,23 @@
                                 <tbody class="bg-white divide-y divide-gray-200">
                                     @foreach ($upcomingConsultations as $consultation)
                                         <tr id="consultation-{{ $consultation->id }}">
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                            <td class="px-6 py-4 font-medium text-gray-900 text-sm whitespace-nowrap">
                                                 {{ $consultation->professional->name }}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <td class="px-6 py-4 text-gray-500 text-sm whitespace-nowrap">
                                                 {{ \Carbon\Carbon::parse($consultation->start)->format('d M Y, H:i') }}
                                             </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <td class="px-6 py-4 text-gray-500 text-sm whitespace-nowrap">
                                                 {{ $consultation->consultation_type }}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <td class="px-6 py-4 text-gray-500 text-sm whitespace-nowrap">
                                                 @if ($consultation->status == 'waiting')
-                                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Menunggu</span>
+                                                    <span class="inline-flex bg-yellow-100 px-2 rounded-full font-semibold text-yellow-800 text-xs leading-5">Menunggu</span>
                                                 @elseif($consultation->status == 'pending')
-                                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">Pending</span>
+                                                    <span class="inline-flex bg-blue-100 px-2 rounded-full font-semibold text-blue-800 text-xs leading-5">Pending</span>
                                                 @elseif($consultation->status == 'active')
-                                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Aktif</span>
+                                                    <span class="inline-flex bg-green-100 px-2 rounded-full font-semibold text-green-800 text-xs leading-5">Aktif</span>
                                                 @endif
                                             </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                            <td class="px-6 py-4 font-medium text-sm text-right whitespace-nowrap">
                                                 @php
                                                     $slotStart = \Carbon\Carbon::parse($consultation->start);
                                                     $minutesUntil = now()->diffInMinutes($slotStart, false);
@@ -111,7 +109,7 @@
                                                 <button
                                                     @if ($isVideo) onclick="if(!this.disabled) window.location.href='/share-and-talk/video/{{ $consultation->room }}'"
                                                     @else onclick="if(!this.disabled) window.location.href='/share-and-talk/chat/{{ $consultation->room }}'" @endif
-                                                    class="goto-room-btn bg-[#48a6a6] hover:bg-[#357979] text-white py-2 px-4 rounded-md transition-colors duration-200 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                                                    class="bg-[#48a6a6] hover:bg-[#357979] disabled:bg-gray-400 px-4 py-2 rounded-md text-white transition-colors duration-200 disabled:cursor-not-allowed goto-room-btn"
                                                     data-schedule-time="{{ $consultation->start }}"
                                                     @if ($disabled) disabled @endif>
                                                     Masuk Ruangan
@@ -121,7 +119,7 @@
                                     @endforeach
                                 </tbody>
                             </table>
-                            <p class="text-sm text-right text-red-400">Anda bisa masuk ke ruangan 5 menit sebelum jadwal
+                            <p class="text-red-400 text-sm text-right">Anda bisa masuk ke ruangan 5 menit sebelum jadwal
                             </p>
                         </div>
                     </div>
@@ -129,40 +127,40 @@
             @endif
 
             <!-- Consultation Types -->
-            <div class="consultation-types mb-12">
-                <h2 class="text-2xl md:text-3xl font-bold text-center mb-8">Pilih Jenis Konsultasi Anda</h2>
+            <div class="mb-12 consultation-types">
+                <h2 class="mb-8 font-bold text-2xl md:text-3xl text-center">Pilih Jenis Konsultasi Anda</h2>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="gap-8 grid grid-cols-1 md:grid-cols-2">
                     <!-- Psychologist Card -->
-                    <div class="type-card bg-white p-6 rounded-lg shadow-md border border-gray-200 flex flex-col">
+                    <div class="flex flex-col bg-white shadow-md p-6 border border-gray-200 rounded-lg type-card">
                         <div class="flex items-center gap-4 mb-4">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                stroke-width="1.5" stroke="currentColor" class="md:size-12 size-10">
+                                stroke-width="1.5" stroke="currentColor" class="size-10 md:size-12">
                                 <path stroke-linecap="round" stroke-linejoin="round"
                                     d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 0 0 .75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 0 0-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0 1 12 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 0 1-.673-.38m0 0A2.18 2.18 0 0 1 3 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 0 1 3.413-.387m7.5 0V5.25A2.25 2.25 0 0 0 13.5 3h-3a2.25 2.25 0 0 0-2.25 2.25v.894m7.5 0a48.667 48.667 0 0 0-7.5 0M12 12.75h.008v.008H12v-.008Z" />
                             </svg>
                             <div>
-                                <h3 class="text-xl font-bold">Psikolog Profesional</h3>
+                                <h3 class="font-bold text-xl">Psikolog Profesional</h3>
                                 <p class="text-gray-500">Psikolog klinis berlisensi</p>
                             </div>
                         </div>
-                        <p class="text-gray-600 mb-4 flex-grow">
+                        <p class="flex-grow mb-4 text-gray-600">
                             Dapatkan layanan konsultasi dari psikolog berlisensi yang siap membantumu memahami kondisi
                             emosional, memberikan saran psikologis, serta merekomendasikan strategi pemulihan
                             sesuai kebutuhanmu
                         </p>
                         <div class="mb-4">
-                            <p class="font-semibold mb-2">Pilihan Tersedia:</p>
+                            <p class="mb-2 font-semibold">Pilihan Tersedia:</p>
                             <div class="flex gap-2">
                                 <span
-                                    class="bg-blue-100 text-blue-800 text-sm font-medium mr-2 px-2.5 py-0.5 rounded">Chat</span>
+                                    class="bg-blue-100 mr-2 px-2.5 py-0.5 rounded font-medium text-blue-800 text-sm">Chat</span>
                                 <span
-                                    class="bg-purple-100 text-purple-800 text-sm font-medium mr-2 px-2.5 py-0.5 rounded">Video
+                                    class="bg-purple-100 mr-2 px-2.5 py-0.5 rounded font-medium text-purple-800 text-sm">Video
                                     Call</span>
                             </div>
                         </div>
                         <button
-                            class="w-full bg-[#48A6A6] text-white py-2 px-4 rounded-md hover:bg-[#357979] transition-colors duration-200 flex items-center justify-center gap-2"
+                            class="flex justify-center items-center gap-2 bg-[#48A6A6] hover:bg-[#357979] px-4 py-2 rounded-md w-full text-white transition-colors duration-200"
                             onclick="showProfessionals('psychiatrist')">
                             Pilih Profesional
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -173,31 +171,31 @@
                     </div>
 
                     <!-- Trained Partner Card -->
-                    <div class="type-card bg-white p-6 rounded-lg shadow-md border border-gray-200 flex flex-col">
+                    <div class="flex flex-col bg-white shadow-md p-6 border border-gray-200 rounded-lg type-card">
                         <div class="flex items-center gap-4 mb-4">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                stroke-width="1.5" stroke="currentColor" class="md:size-12 size-10">
+                                stroke-width="1.5" stroke="currentColor" class="size-10 md:size-12">
                                 <path stroke-linecap="round" stroke-linejoin="round"
                                     d="M15.182 15.182a4.5 4.5 0 0 1-6.364 0M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0ZM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75Zm-.375 0h.008v.015h-.008V9.75Zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75Zm-.375 0h.008v.015h-.008V9.75Z" />
                             </svg>
                             <div>
-                                <h3 class="text-xl font-bold">Rangers</h3>
+                                <h3 class="font-bold text-xl">Rangers</h3>
                                 <p class="text-gray-500">Mitra Curhatorium terlatih</p>
                             </div>
                         </div>
-                        <p class="text-gray-600 mb-4 flex-grow">
+                        <p class="flex-grow mb-4 text-gray-600">
                             Terhubung dengan mitra kesehatan mental terlatih yang memberikan peer support, dukungan
                             emosional, dan percakapan supportif untuk membantu Anda dengan apapun.
                         </p>
                         <div class="mb-4">
-                            <p class="font-semibold mb-2">Pilihan Tersedia:</p>
+                            <p class="mb-2 font-semibold">Pilihan Tersedia:</p>
                             <div class="flex gap-2">
                                 <span
-                                    class="bg-blue-100 text-blue-800 text-sm font-medium mr-2 px-2.5 py-0.5 rounded">Chat</span>
+                                    class="bg-blue-100 mr-2 px-2.5 py-0.5 rounded font-medium text-blue-800 text-sm">Chat</span>
                             </div>
                         </div>
                         <button
-                            class="w-full bg-[#48A6A6] text-white py-2 px-4 rounded-md hover:bg-[#357979] transition-colors duration-200 flex items-center justify-center gap-2"
+                            class="flex justify-center items-center gap-2 bg-[#48A6A6] hover:bg-[#357979] px-4 py-2 rounded-md w-full text-white transition-colors duration-200"
                             onclick="showProfessionals('partner')">
                             Pilih Ranger
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
@@ -212,25 +210,22 @@
 
             <!-- Professionals Section -->
             <div class="professionals-section" id="professionals-section" style="display: none;">
-                <div class="flex flex-col md:flex-row justify-between items-center mb-8">
-                    <h2 class="text-2xl md:text-3xl font-bold text-center" id="professionals-title">Profesional
+                <div class="flex md:flex-row flex-col justify-between items-center mb-8">
+                    <h2 class="font-bold text-2xl md:text-3xl text-center" id="professionals-title">Profesional
                         Tersedia</h2>
                     <div class="relative mt-4 md:mt-0">
-                        <input type="text" id="date-filter" class="border border-gray-300 rounded-md py-2 px-4"
+                        <input type="text" id="date-filter" class="px-4 py-2 border border-gray-300 rounded-md"
                             placeholder="Filter by date...">
                     </div>
                 </div>
 
                 <!-- Professionals Grid -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="professionals-grid">
+                <div class="gap-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3" id="professionals-grid">
                     <!-- Akan diisi oleh JavaScript -->
                 </div>
             </div>
         </div>
     </div>
-
-
-    @include('components.footer')
 
 @endsection
 
@@ -294,12 +289,12 @@
 
                 if (professionals.length === 0) {
                     grid.innerHTML =
-                        `<div class="col-span-full text-center py-8 text-gray-500">Tidak ada profesional yang tersedia saat ini.</div>`;
+                        `<div class="col-span-full py-8 text-gray-500 text-center">Tidak ada profesional yang tersedia saat ini.</div>`;
                     return;
                 }
 
                 grid.innerHTML = professionals.map(p => `
-                    <div class="professional-card bg-white p-5 rounded-lg shadow-md border border-gray-200">
+                    <div class="bg-white shadow-md p-5 border border-gray-200 rounded-lg professional-card">
                         <div class="flex items-center gap-4 mb-4">
                             <div>
                                 <h4 class="font-bold text-lg">${p.name}</h4>
@@ -307,9 +302,9 @@
                             </div>
                         </div>
                         <div class="mb-4">
-                            <p class="font-semibold text-sm mb-2">Spesialisasi:</p>
+                            <p class="mb-2 font-semibold text-sm">Spesialisasi:</p>
                             <div class="flex flex-wrap gap-2">
-                                ${getSpecialtiesArray(p.specialties).map(s => `<span class="bg-gray-200 text-gray-800 text-xs font-medium px-2 py-1 rounded-full">${s}</span>`).join('')}
+                                ${getSpecialtiesArray(p.specialties).map(s => `<span class="bg-gray-200 px-2 py-1 rounded-full font-medium text-gray-800 text-xs">${s}</span>`).join('')}
                             </div>
                         </div>
                         <div class="flex justify-between items-center mb-4 text-sm">
@@ -318,7 +313,7 @@
                                 <span class="font-medium text-gray-700">${p.next_availability_formatted}</span>
                             </div>
                         </div>
-                        <button class="w-full bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-md transition-colors duration-200" onclick="startConsultation(${p.id})">
+                        <button class="bg-green-500 hover:bg-green-600 px-4 py-2 rounded-md w-full text-white transition-colors duration-200" onclick="startConsultation(${p.id})">
                             Pesan Sesi
                         </button>
                     </div>

@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.dashboard')
 
 @section('title', 'Profil Saya')
 
@@ -14,9 +14,7 @@
         <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline' {{ $vite_hmr_host }}; script-src 'self' 'unsafe-inline' {{ $vite_hmr_host }}; connect-src 'self' {{ $vite_hmr_host }} ws: wss:;">
 @endsection
 
-@section('content')
-    @include('components.navbar')
-    
+@section('dashboard-content')
     <main class="max-w-7xl mx-auto py-24 px-4 sm:px-6 lg:px-8">
         <!-- Page Header -->
         <div class="mb-8">
@@ -276,8 +274,6 @@
             </div>
         </div>
     </main>
-
-    @include('components.footer')
 
 @endsection
 

@@ -1,11 +1,12 @@
-@extends('layouts.app')
+@extends('layouts.dashboard')
 
 @section('title', 'Pilih Paket | Curhatorium')
 
 @section('bodyClass', 'pt-16 w-full overflow-x-hidden')
 
 @section('head')
-    <meta name="description" content="Pilih paket membership Curhatorium yang sesuai dengan kebutuhanmu dan mulai perjalanan kesehatan mentalmu.">
+    <meta name="description"
+        content="Pilih paket membership Curhatorium yang sesuai dengan kebutuhanmu dan mulai perjalanan kesehatan mentalmu.">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         .plan-card {
@@ -106,43 +107,41 @@
     </style>
 @endsection
 
-@section('content')
-    @include('components.navbar')
-
+@section('dashboard-content')
     {{-- Hero Section --}}
-    <section
-        class="relative flex flex-col justify-center items-center gap-3 bg-cover shadow-inner px-4 py-14 w-full h-fit"
+    <section class="relative flex flex-col justify-center items-center gap-3 bg-cover shadow-inner px-4 py-14 w-full h-fit"
         style="background-image: url('{{ asset('images/background.webp') }}');">
-        <span class="inline-block bg-[#48A6A6]/15 text-[#2a7070] text-sm font-semibold px-4 py-1 rounded-full mb-1">
+        <span class="inline-block bg-[#48A6A6]/15 mb-1 px-4 py-1 rounded-full font-semibold text-[#2a7070] text-sm">
             Membership
         </span>
         <h1 class="font-bold text-[#222222] text-3xl md:text-5xl text-center leading-tight">
             Pilih Paket yang Tepat<br class="hidden md:block"> Untukmu
         </h1>
-        <p class="text-[#444444] text-base text-center max-w-lg mt-1">
+        <p class="mt-1 max-w-lg text-[#444444] text-base text-center">
             Mulai gratis, atau upgrade untuk pengalaman kesehatan mental yang lebih lengkap dan personal.
         </p>
     </section>
 
     {{-- Pricing Section --}}
-    <section class="bg-stone-200 w-full px-4 py-12">
-        <div class="max-w-5xl mx-auto">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
+    <section class="bg-stone-200 px-4 py-12 w-full">
+        <div class="mx-auto max-w-5xl">
+            <div class="items-start gap-6 grid grid-cols-1 md:grid-cols-3">
                 @foreach ($plans as $index => $plan)
                     @php
                         $isFeatured = $plan->name === 'Calm';
-                        $badgeClass = match($plan->name) {
-                            'Free'   => 'badge-free',
-                            'Calm'   => 'badge-calm',
-                            default  => 'badge-serene',
+                        $badgeClass = match ($plan->name) {
+                            'Free' => 'badge-free',
+                            'Calm' => 'badge-calm',
+                            default => 'badge-serene',
                         };
-                        $mentAiLabel = match($plan->name) {
-                            'Free'   => 'Base limit',
-                            'Calm'   => 'Extended limit',
-                            default  => 'Longer limit',
+                        $mentAiLabel = match ($plan->name) {
+                            'Free' => 'Base limit',
+                            'Calm' => 'Extended limit',
+                            default => 'Longer limit',
                         };
                     @endphp
-                    <div class="plan-card relative bg-white rounded-2xl shadow-md p-7 flex flex-col gap-0 {{ $isFeatured ? 'featured mt-0 md:-mt-4' : '' }}">
+                    <div
+                        class="plan-card relative bg-white rounded-2xl shadow-md p-7 flex flex-col gap-0 {{ $isFeatured ? 'featured mt-0 md:-mt-4' : '' }}">
 
                         {{-- Plan Header --}}
                         <div class="mb-5">
@@ -151,10 +150,10 @@
                             </span>
                             <div class="flex items-end gap-1 mb-1">
                                 @if ($plan->price_idr > 0)
-                                    <span class="text-3xl font-bold text-[#222222]">{{ $plan->getPriceInIDR() }}</span>
-                                    <span class="text-gray-400 text-sm mb-1">/bulan</span>
+                                    <span class="font-bold text-[#222222] text-3xl">{{ $plan->getPriceInIDR() }}</span>
+                                    <span class="mb-1 text-gray-400 text-sm">/bulan</span>
                                 @else
-                                    <span class="text-3xl font-bold text-[#222222]">Gratis</span>
+                                    <span class="font-bold text-[#222222] text-3xl">Gratis</span>
                                 @endif
                             </div>
                             <p class="text-gray-500 text-sm">
@@ -169,7 +168,7 @@
                         </div>
 
                         {{-- Divider --}}
-                        <div class="border-t border-stone-100 mb-4"></div>
+                        <div class="mb-4 border-stone-100 border-t"></div>
 
                         {{-- Benefits --}}
                         <div class="flex flex-col flex-1 mb-6">
@@ -212,7 +211,7 @@
                                 </button>
                             </form>
                         @else
-                            <button type="button" disabled class="purchase-btn purchase-btn-outline opacity-60 cursor-default">
+                            <button type="button" disabled class="opacity-60 purchase-btn-outline cursor-default purchase-btn">
                                 Paket Saat Ini
                             </button>
                         @endif
@@ -221,14 +220,14 @@
             </div>
 
             {{-- Trust note --}}
-            <p class="text-center text-sm text-gray-500 mt-10">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4 inline-block mr-1 text-[#48A6A6]">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" />
+            <p class="mt-10 text-gray-500 text-sm text-center">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                    stroke="currentColor" class="inline-block mr-1 size-4 text-[#48A6A6]">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" />
                 </svg>
                 Pembayaran aman. Batalkan kapan saja.
             </p>
         </div>
     </section>
-
-    @include('components.footer')
 @endsection

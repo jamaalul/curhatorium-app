@@ -79,12 +79,12 @@
 
 @section('content')
     <div id="sidebar-overlay"></div>
-    <div id="sidebar" class="bg-gray-800 text-white flex flex-col p-4 w-64 transition-all duration-300 ease-out overflow-hidden">
+    <div id="sidebar" class="flex flex-col bg-gray-800 p-4 w-64 overflow-hidden text-white transition-all duration-300 ease-out">
         <!-- Header -->
-        <div class="flex items-center justify-between w-full flex-none">
+        <div class="flex flex-none justify-between items-center w-full">
             <img src="{{ asset('assets/mini_logo.png') }}" alt="mini_logo" class="size-8 cursor-pointer" onclick="window.location.href='/dashboard'">
             <svg id="sidebar-toggle-a" onclick="toggleSidebar()" xmlns="http://www.w3.org/2000/svg"
-                class="size-6 text-gray-400 hover:text-gray-100 cursor-pointer transition-all duration-100"
+                class="size-6 text-gray-400 hover:text-gray-100 transition-all duration-100 cursor-pointer"
                 fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <rect width="18" height="18" x="3" y="3" rx="2"/>
             <path d="M9 3v18"/>
@@ -92,15 +92,15 @@
         </div>
 
         <!-- Buttons -->
-        <div class="flex flex-col w-full mt-4 pb-2 border-b border-gray-700 flex-none">
-            <button class="w-full hover:bg-gray-700 transition-all duration-100 flex items-center gap-2 p-2 rounded-md text-gray-300 hover:text-white text-base md:text-lg" onclick="window.location.href = '{{ route('chatbot') }}'">
+        <div class="flex flex-col flex-none mt-4 pb-2 border-gray-700 border-b w-full">
+            <button class="flex items-center gap-2 hover:bg-gray-700 p-2 rounded-md w-full text-gray-300 hover:text-white text-base md:text-lg transition-all duration-100" onclick="window.location.href = '{{ route('chatbot') }}'">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
                 <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
             </svg>
             Chat baru
             </button>
 
-            <button class="w-full hover:bg-gray-700 transition-all duration-100 flex items-center gap-2 p-2 rounded-md text-gray-300 hover:text-white text-base md:text-lg">
+            <button class="flex items-center gap-2 hover:bg-gray-700 p-2 rounded-md w-full text-gray-300 hover:text-white text-base md:text-lg transition-all duration-100">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
                 <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
             </svg>
@@ -109,15 +109,15 @@
         </div>
 
         <!-- Chat list (fills remaining height and scrolls) -->
-        <div class="flex-1 min-h-0 overflow-y-auto w-full mt-4 pb-4" style="scrollbar-width:thin; scrollbar-color:#3a424e #1f2937;">
-            <p class="text-gray-500 mb-2 text-base md:text-lg">Chat</p>
+        <div class="flex-1 mt-4 pb-4 w-full min-h-0 overflow-y-auto" style="scrollbar-width:thin; scrollbar-color:#3a424e #1f2937;">
+            <p class="mb-2 text-gray-500 text-base md:text-lg">Chat</p>
             @foreach($titles as $title)
             <div class="group w-full transition-all duration-100 flex items-center gap-2 p-2 pr-7 rounded-md cursor-pointer relative @if($title->identifier == $activeChat->identifier) bg-gray-700 text-white @else text-gray-300 hover:bg-gray-700 hover:text-white @endif" onclick="window.location.href = '{{ route('chatbot.chat', $title->identifier) }}'">
-                <p class="truncate text-sm md:text-base">{{ $title->title }}</p>
+                <p class="text-sm md:text-base truncate">{{ $title->title }}</p>
                 <!-- show on hover via group-hover -->
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                     stroke-width="1.5" stroke="currentColor"
-                    class="size-4 absolute right-2 top-3 text-gray-500 hover:text-gray-300 cursor-pointer hidden group-hover:block"
+                    class="hidden group-hover:block top-3 right-2 absolute size-4 text-gray-500 hover:text-gray-300 cursor-pointer"
                     onclick="deleteChat(this)">
                 <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
                 </svg>
@@ -126,18 +126,18 @@
         </div>
 
         <!-- Footer / profile (fixed at bottom) -->
-        <div class="flex gap-2 items-center justify-between w-full border-t border-gray-700 pt-2 flex-none transition-all duration-300 ease-out">
+        <div class="flex flex-none justify-between items-center gap-2 pt-2 border-gray-700 border-t w-full transition-all duration-300 ease-out">
             <div class="flex items-center gap-4">
-            <img src="{{ $user->profile_picture ? asset('storage/' . $user->profile_picture) : asset('assets/profile_pict.svg') }}" alt="avatar" class="size-8 rounded-full">
-            <p class="text-sm md:text-base font-semibold">{{ $user->username }}</p>
+            <img src="{{ $user->profile_picture ? asset('storage/' . $user->profile_picture) : asset('assets/profile_pict.svg') }}" alt="avatar" class="rounded-full size-8">
+            <p class="font-semibold text-sm md:text-base">{{ $user->username }}</p>
             </div>
         </div>
     </div>
-    <div class="w-full h-screen flex flex-col bg-white rounded-md relative overflow-hidden">
-        <nav class="w-full h-16 bg-none absolute top-0 px-4 flex items-center gap-4 justify-between" style="background: linear-gradient(180deg,rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 100%);">
+    <div class="relative flex flex-col bg-white rounded-md w-full h-screen overflow-hidden">
+        <nav class="top-0 absolute flex justify-between items-center gap-4 bg-none px-4 w-full h-16" style="background: linear-gradient(180deg,rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 100%);">
             <div class="flex items-center gap-2">
-                <svg id="sidebar-toggle-b" onclick="toggleSidebar()" xmlns="http://www.w3.org/2000/svg" class="h-6 text-gray-400 hover:text-gray-700 cursor-pointer transition-all duration-100 w-0 hidden opacity-0" fill="none" viewBox="0 0 24 24"stroke="currentColor"stroke-width="2"stroke-linecap="round"stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/></svg>
-                <h3 class="text-2xl md:text-3xl font-semibold">Ment-AI</h3>
+                <svg id="sidebar-toggle-b" onclick="toggleSidebar()" xmlns="http://www.w3.org/2000/svg" class="hidden opacity-0 w-0 h-6 text-gray-400 hover:text-gray-700 transition-all duration-100 cursor-pointer" fill="none" viewBox="0 0 24 24"stroke="currentColor"stroke-width="2"stroke-linecap="round"stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/></svg>
+                <h3 class="font-semibold text-2xl md:text-3xl">Ment-AI</h3>
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 text-[#48a6a6]">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z" />
                 </svg>
@@ -146,16 +146,16 @@
             <button id="ai-mode-btn" type="button" class="hidden"
                 @switch($mode)
                     @case('friendly')
-                        class="bg-green-200 text-green-800 px-3 py-1 rounded-full shadow-sm text-base md:text-lg flex items-center gap-2"
+                        class="flex items-center gap-2 bg-green-200 shadow-sm px-3 py-1 rounded-full text-green-800 text-base md:text-lg"
                         @break
                     @case('professional')
-                        class="bg-blue-200 text-blue-800 px-3 py-1 rounded-full shadow-sm text-base md:text-lg flex items-center gap-2"
+                        class="flex items-center gap-2 bg-blue-200 shadow-sm px-3 py-1 rounded-full text-blue-800 text-base md:text-lg"
                         @break
                     @case('empathetic')
-                        class="bg-yellow-200 text-yellow-800 px-3 py-1 rounded-full shadow-sm text-base md:text-lg flex items-center gap-2"
+                        class="flex items-center gap-2 bg-yellow-200 shadow-sm px-3 py-1 rounded-full text-yellow-800 text-base md:text-lg"
                         @break
                     @case('motivational')
-                        class="bg-purple-200 text-purple-800 px-3 py-1 rounded-full shadow-sm text-base md:text-lg flex items-center gap-2"
+                        class="flex items-center gap-2 bg-purple-200 shadow-sm px-3 py-1 rounded-full text-purple-800 text-base md:text-lg"
                         @break
                 @endswitch>
                 <span id="ai-mode-label">{{ ucfirst($mode) }}</span>
@@ -178,19 +178,19 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                 </svg>
             </button>
-            <div id="ai-mode-dropdown" class="absolute right-0 mt-2 w-40 bg-white rounded-md shadow-lg border border-gray-200 z-50 hidden">
+            <div id="ai-mode-dropdown" class="hidden right-0 z-50 absolute bg-white shadow-lg mt-2 border border-gray-200 rounded-md w-40">
                 <ul>
-                    <li><button type="button" class="w-full text-left px-4 py-2 hover:bg-green-100 text-green-800" onclick="setAIMode('Friendly')">Friendly</button></li>
-                    <li><button type="button" class="w-full text-left px-4 py-2 hover:bg-blue-100 text-blue-800" onclick="setAIMode('Professional')">Professional</button></li>
-                    <li><button type="button" class="w-full text-left px-4 py-2 hover:bg-yellow-100 text-yellow-800" onclick="setAIMode('Empathetic')">Empathetic</button></li>
-                    <li><button type="button" class="w-full text-left px-4 py-2 hover:bg-purple-100 text-purple-800" onclick="setAIMode('Motivational')">Motivational</button></li>
+                    <li><button type="button" class="hover:bg-green-100 px-4 py-2 w-full text-green-800 text-left" onclick="setAIMode('Friendly')">Friendly</button></li>
+                    <li><button type="button" class="hover:bg-blue-100 px-4 py-2 w-full text-blue-800 text-left" onclick="setAIMode('Professional')">Professional</button></li>
+                    <li><button type="button" class="hover:bg-yellow-100 px-4 py-2 w-full text-yellow-800 text-left" onclick="setAIMode('Empathetic')">Empathetic</button></li>
+                    <li><button type="button" class="hover:bg-purple-100 px-4 py-2 w-full text-purple-800 text-left" onclick="setAIMode('Motivational')">Motivational</button></li>
                 </ul>
             </div>
         </div>
 
         </nav>
 
-        <div id="chat-container" class="flex w-full md:w-3/4 flex-col mx-auto overflow-y-auto p-4 pt-24 pb-24" style="scrollbar-width:thin; scrollbar-color:#d1d5db #f9fafb;">
+        <div id="chat-container" class="flex flex-col mx-auto p-4 pt-24 pb-24 w-full md:w-3/4 overflow-y-auto" style="scrollbar-width:thin; scrollbar-color:#d1d5db #f9fafb;">
             @foreach($messages as $message)
                 <div class="flex mb-4 @if($message->role == 'user') justify-end @endif">
                     <div class="p-3 rounded-lg @if($message->role == 'user') bg-[#48a6a6] text-white @else text-black @endif">
@@ -201,20 +201,20 @@
                 </div>
             @endforeach
         </div>
-        <div class="w-full h-fit flex items-center justify-center absolute bottom-0 py-2" style="background: linear-gradient(180deg,rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%);">
-            <div class="h-fit w-full md:w-2/3 flex flex-col items-center justify-center p-4 md:p-0">
-                <form id="chat-form" method="POST" class="flex gap-1 rounded-full shadow-md p-2 w-full h-full border border-gray-300 hover:shadow-lg transition-all duration-100 bg-white">
+        <div class="bottom-0 absolute flex justify-center items-center py-2 w-full h-fit" style="background: linear-gradient(180deg,rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%);">
+            <div class="flex flex-col justify-center items-center p-4 md:p-0 w-full md:w-2/3 h-fit">
+                <form id="chat-form" method="POST" class="flex gap-1 bg-white shadow-md hover:shadow-lg p-2 border border-gray-300 rounded-full w-full h-full transition-all duration-100">
                     @csrf
                     <input type="hidden" name="mode" id="ai-mode-input" value="{{ $mode }}">
-                    <div class="h-11 aspect-square rounded-full flex items-center justify-center p-1 cursor-pointer">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" class="h-full aspect-square rounded-full text-gray-500"><path stroke-linecap="round" stroke-linejoin="round" d="M15.182 15.182a4.5 4.5 0 0 1-6.364 0M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0ZM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75Zm-.375 0h.008v.015h-.008V9.75Zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75Zm-.375 0h.008v.015h-.008V9.75Z" /></svg>
+                    <div class="flex justify-center items-center p-1 rounded-full h-11 aspect-square cursor-pointer">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" class="rounded-full h-full aspect-square text-gray-500"><path stroke-linecap="round" stroke-linejoin="round" d="M15.182 15.182a4.5 4.5 0 0 1-6.364 0M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0ZM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75Zm-.375 0h.008v.015h-.008V9.75Zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75Zm-.375 0h.008v.015h-.008V9.75Z" /></svg>
                     </div>
-                    <input type="text" name="message" id="message-input" placeholder="Ceritakan apa saja..." class="w-full py-2 px-0 border-none focus:outline-none focus:ring-0 text-base md:text-lg">
-                    <button id="send-button" type="submit" class="size-11 aspect-square bg-[#48a6a6] rounded-full flex items-center justify-center p-2 cursor-pointer hover:bg-[#357979] transition-all duration-100">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-full aspect-square rounded-full text-white" viewBox="0 0 20 20" fill="#ffffff"><g fill="#ffffff" fill-rule="evenodd" clip-rule="evenodd"><path d="M5.232 8.974a1 1 0 0 1 .128-1.409l4-3.333a1 1 0 1 1 1.28 1.536l-4 3.334a1 1 0 0 1-1.408-.128Z"/><path d="M14.768 8.974a1 1 0 0 1-1.408.128l-4-3.334a1 1 0 1 1 1.28-1.536l4 3.333a1 1 0 0 1 .128 1.409Z"/><path d="M10 6a1 1 0 0 1 1 1v8a1 1 0 1 1-2 0V7a1 1 0 0 1 1-1Z"/></g></svg>
+                    <input type="text" name="message" id="message-input" placeholder="Ceritakan apa saja..." class="px-0 py-2 border-none focus:outline-none focus:ring-0 w-full text-base md:text-lg">
+                    <button id="send-button" type="submit" class="flex justify-center items-center bg-[#48a6a6] hover:bg-[#357979] p-2 rounded-full size-11 aspect-square transition-all duration-100 cursor-pointer">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="rounded-full h-full aspect-square text-white" viewBox="0 0 20 20" fill="#ffffff"><g fill="#ffffff" fill-rule="evenodd" clip-rule="evenodd"><path d="M5.232 8.974a1 1 0 0 1 .128-1.409l4-3.333a1 1 0 1 1 1.28 1.536l-4 3.334a1 1 0 0 1-1.408-.128Z"/><path d="M14.768 8.974a1 1 0 0 1-1.408.128l-4-3.334a1 1 0 1 1 1.28-1.536l4 3.333a1 1 0 0 1 .128 1.409Z"/><path d="M10 6a1 1 0 0 1 1 1v8a1 1 0 1 1-2 0V7a1 1 0 0 1 1-1Z"/></g></svg>
                     </button>
                 </form>
-                <p class="text-sm mt-2 text-gray-500 hidden md:block text-center">Respon Ment-AI bisa saja keliru. Selalu verifikasi informasi dan utamakan konsultasi profesional.</p>
+                <p class="hidden md:block mt-2 text-gray-500 text-sm text-center">Respon Ment-AI bisa saja keliru. Selalu verifikasi informasi dan utamakan konsultasi profesional.</p>
             </div>
         </div>
     </div>

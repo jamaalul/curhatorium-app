@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.dashboard')
 
 @section('title', 'Curhatorium | Support Group Discussion')
 
@@ -6,8 +6,7 @@
     <link rel="stylesheet" href="{{ asset('/css/sgd.css') }}">
 @endsection
 
-@section('content')
-    @include('components.navbar')
+@section('dashboard-content')
    
    <h1 class="page-title">Support Group Discussion</h1>
    <!-- Search and Filter Bar -->
