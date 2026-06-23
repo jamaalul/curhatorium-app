@@ -12,7 +12,7 @@
 @endsection
 
 @section('dashboard-content')
-<div class="w-full bg-gray-200 py-11 px-4 flex justify-center items-center min-h-[calc(100vh-64px)]">
+<div class="w-full bg-gray-200 py-11 px-4 sm:px-8 flex justify-center items-center min-h-[calc(100vh-64px)]">
     @if ($order->isPaid())
         {{-- Paid State (1-Column Layout) --}}
         <div class="max-w-[480px] p-6 bg-base-50 rounded-2xl flex flex-col justify-start items-start gap-5">
@@ -56,11 +56,11 @@
         </div>
     @else
         {{-- Existing 2-Column Layout for Pending/Expired --}}
-        <div class="p-6 bg-base-50 rounded-2xl flex flex-col md:flex-row justify-start items-start gap-7 max-w-full overflow-x-hidden">
-            <div class="w-full md:w-[764px] flex flex-col md:flex-row justify-between items-start md:items-stretch gap-7">
+        <div class="p-6 sm:p-8 bg-base-50 rounded-2xl w-full max-w-[850px] mx-auto">
+            <div class="w-full grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
             
             {{-- Left Column: Details --}}
-            <div class="w-full md:w-96 flex flex-col justify-start items-start gap-4">
+            <div class="w-full flex flex-col justify-start items-start gap-4">
                 <div class="flex flex-col justify-start items-start gap-1 w-full">
                     <div class="text-base-900 text-3xl font-semibold font-bricolage leading-9">Detail transaksi</div>
                     <div class="text-text-tertiary text-xs font-normal font-dm leading-4">{{ $order->order_ref }}</div>
@@ -94,7 +94,7 @@
             </div>
 
             {{-- Right Column: Dynamic Status --}}
-            <div class="w-full md:w-96 flex flex-col justify-start items-start gap-4">
+            <div class="w-full flex flex-col justify-start items-start gap-4">
                 @if ($order->isExpired() || ($latestPayment && in_array($latestPayment->transaction_status, ['expire', 'cancel', 'deny'])))
                     {{-- Expired State --}}
                     <div class="w-full h-full flex flex-col justify-center items-center gap-4 text-center py-10">
@@ -156,13 +156,13 @@
                     </div>
                 @endif
             </div>
+            </div>
         </div>
-    </div>
     @endif
 
 {{-- Modal Overlay --}}
-<div id="cancel-modal" class="fixed inset-0 z-50 hidden bg-black/50 justify-center items-center">
-    <div class="w-96 max-w-96 p-6 bg-base-50 rounded-2xl flex flex-col justify-start items-start gap-6 shadow-xl">
+<div id="cancel-modal" class="fixed inset-0 z-50 hidden bg-black/50 justify-center items-center p-4">
+    <div class="w-full max-w-96 p-6 bg-base-50 rounded-2xl flex flex-col justify-start items-start gap-6 shadow-xl">
         <div class="self-stretch flex flex-col justify-start items-center gap-4">
             <div class="size-12 bg-orange-100 rounded-full flex justify-center items-center text-orange-500">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-6">
@@ -187,8 +187,8 @@
 </div>
 
 {{-- Pending Modal Overlay --}}
-<div id="pending-modal" class="fixed inset-0 z-50 hidden bg-black/50 justify-center items-center">
-    <div class="w-96 max-w-96 p-6 bg-base-50 rounded-2xl flex flex-col justify-start items-start gap-6 shadow-xl">
+<div id="pending-modal" class="fixed inset-0 z-50 hidden bg-black/50 justify-center items-center p-4">
+    <div class="w-full max-w-96 p-6 bg-base-50 rounded-2xl flex flex-col justify-start items-start gap-6 shadow-xl">
         <div class="self-stretch flex flex-col justify-start items-center gap-4">
             <div class="size-12 bg-orange-100 rounded-full flex justify-center items-center text-orange-500">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-6">
