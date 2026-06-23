@@ -15,6 +15,14 @@ class MidtransService
         MidtransConfig::$isProduction = config('midtrans.is_production');
         MidtransConfig::$isSanitized = true;
         MidtransConfig::$is3ds = false;
+
+        // Fix SSL certificate error on local development
+    if (app()->environment('local')) {
+        MidtransConfig::$curlOptions = [
+            CURLOPT_SSL_VERIFYHOST => 0,
+            CURLOPT_SSL_VERIFYPEER => false,
+        ];
+    }
     }
 
     /**
