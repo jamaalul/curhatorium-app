@@ -8,6 +8,9 @@
     <meta name="description"
         content="Pilih paket membership Curhatorium yang sesuai dengan kebutuhanmu dan mulai perjalanan kesehatan mentalmu.">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         .plan-card {
             transition: transform 0.25s ease, box-shadow 0.25s ease;
@@ -17,217 +20,165 @@
             transform: translateY(-6px);
             box-shadow: 0 20px 40px -10px rgba(72, 166, 166, 0.25);
         }
-
-        .plan-card.featured {
-            border: 2px solid #48A6A6;
-        }
-
-        .plan-card.featured::before {
-            content: 'Terpopuler';
-            position: absolute;
-            top: -1px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #48A6A6;
-            color: white;
-            font-size: 0.75rem;
-            font-weight: 600;
-            padding: 4px 18px;
-            border-radius: 0 0 10px 10px;
-            letter-spacing: 0.05em;
-        }
-
-        .benefit-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 8px 0;
-            border-bottom: 1px solid #f0ede8;
-            font-size: 0.9rem;
-            color: #555;
-        }
-
-        .benefit-row:last-of-type {
-            border-bottom: none;
-        }
-
-        .benefit-value {
-            font-weight: 600;
-            color: #222222;
-            white-space: nowrap;
-        }
-
-        .purchase-btn {
-            display: block;
-            width: 100%;
-            padding: 12px 0;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 0.95rem;
-            text-align: center;
-            cursor: pointer;
-            border: none;
-            transition: background 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .purchase-btn-primary {
-            background: #48A6A6;
-            color: white;
-        }
-
-        .purchase-btn-primary:hover {
-            background: #357979;
-            box-shadow: 0 4px 14px rgba(72, 166, 166, 0.4);
-        }
-
-        .purchase-btn-outline {
-            background: transparent;
-            color: #48A6A6;
-            border: 2px solid #48A6A6;
-        }
-
-        .purchase-btn-outline:hover {
-            background: #f0fafa;
-        }
-
-        .badge-free {
-            background: #f3f4f6;
-            color: #6b7280;
-        }
-
-        .badge-calm {
-            background: linear-gradient(135deg, #d8efef, #b5dede);
-            color: #2a7070;
-        }
-
-        .badge-serene {
-            background: linear-gradient(135deg, #48A6A6, #357979);
-            color: white;
-        }
     </style>
 @endsection
 
 @section('dashboard-content')
-    {{-- Hero Section --}}
-    <section class="relative flex flex-col justify-center items-center gap-3 bg-cover shadow-inner px-4 py-14 w-full h-fit"
-        style="background-image: url('{{ asset('images/background.webp') }}');">
-        <span class="inline-block bg-[#48A6A6]/15 mb-1 px-4 py-1 rounded-full font-semibold text-[#2a7070] text-sm">
-            Membership
-        </span>
-        <h1 class="font-bold text-[#222222] text-3xl md:text-5xl text-center leading-tight">
-            Pilih Paket yang Tepat<br class="hidden md:block"> Untukmu
-        </h1>
-        <p class="mt-1 max-w-lg text-[#444444] text-base text-center">
-            Mulai gratis, atau upgrade untuk pengalaman kesehatan mental yang lebih lengkap dan personal.
-        </p>
-    </section>
+    <section class="w-full px-6 md:px-28 py-11 bg-gray-200 flex flex-col justify-start items-start gap-2 overflow-hidden">
+        <div class="w-full max-w-[1200px] mx-auto flex flex-col justify-start items-center gap-10">
 
-    {{-- Pricing Section --}}
-    <section class="bg-stone-200 px-4 py-12 w-full">
-        <div class="mx-auto max-w-5xl">
-            <div class="items-start gap-6 grid grid-cols-1 md:grid-cols-3">
-                @foreach ($plans as $index => $plan)
-                    @php
-                        $isFeatured = $plan->name === 'Calm';
-                        $badgeClass = match ($plan->name) {
-                            'Free' => 'badge-free',
-                            'Calm' => 'badge-calm',
-                            default => 'badge-serene',
-                        };
-                        $mentAiLabel = match ($plan->name) {
-                            'Free' => 'Base limit',
-                            'Calm' => 'Extended limit',
-                            default => 'Longer limit',
-                        };
-                    @endphp
-                    <div
-                        class="plan-card relative bg-white rounded-2xl shadow-md p-7 flex flex-col gap-0 {{ $isFeatured ? 'featured mt-0 md:-mt-4' : '' }}">
-
-                        {{-- Plan Header --}}
-                        <div class="mb-5">
-                            <span class="inline-block text-xs font-semibold px-3 py-1 rounded-full mb-3 {{ $badgeClass }}">
-                                {{ $plan->name }}
-                            </span>
-                            <div class="flex items-end gap-1 mb-1">
-                                @if ($plan->price_idr > 0)
-                                    <span class="font-bold text-[#222222] text-3xl">{{ $plan->getPriceInIDR() }}</span>
-                                    <span class="mb-1 text-gray-400 text-sm">/bulan</span>
-                                @else
-                                    <span class="font-bold text-[#222222] text-3xl">Gratis</span>
-                                @endif
-                            </div>
-                            <p class="text-gray-500 text-sm">
-                                @if ($plan->name === 'Free')
-                                    Mulai perjalananmu tanpa biaya
-                                @elseif ($plan->name === 'Calm')
-                                    Lebih banyak akses, lebih tenang
-                                @else
-                                    Dukungan penuh tanpa batas
-                                @endif
-                            </p>
-                        </div>
-
-                        {{-- Divider --}}
-                        <div class="mb-4 border-stone-100 border-t"></div>
-
-                        {{-- Benefits --}}
-                        <div class="flex flex-col flex-1 mb-6">
-                            <div class="benefit-row">
-                                <span>MHC-SF</span>
-                                <span class="benefit-value">&#8734;</span>
-                            </div>
-                            <div class="benefit-row">
-                                <span>Mood Tracker</span>
-                                <span class="benefit-value">&#8734;</span>
-                            </div>
-                            <div class="benefit-row">
-                                <span>Daily Missions</span>
-                                <span class="benefit-value">&#8734;</span>
-                            </div>
-                            <div class="benefit-row">
-                                <span>Deep Cards</span>
-                                <span class="benefit-value">&#8734;</span>
-                            </div>
-                            @foreach ($plan->planBenefits as $benefit)
-                                @if ($benefit->amount >= 1 && $benefit->benefit !== 'ai_window_token')
-                                    <div class="benefit-row">
-                                        <span>{{ ucwords(str_replace('_', ' ', $benefit->benefit)) }}</span>
-                                        <span class="benefit-value">{{ $benefit->amount }}</span>
-                                    </div>
-                                @endif
-                            @endforeach
-                            <div class="benefit-row">
-                                <span>Ment-AI</span>
-                                <span class="benefit-value">{{ $mentAiLabel }}</span>
-                            </div>
-                        </div>
-
-                        {{-- CTA --}}
-                        @if ($plan->price_idr > 0)
-                            <form action="{{ route('order.create', $plan) }}" method="POST">
-                                @csrf
-                                <button type="submit" id="purchase-{{ $plan->id }}" class="purchase-btn purchase-btn-primary">
-                                    Upgrade ke {{ $plan->name }}
-                                </button>
-                            </form>
-                        @else
-                            <button type="button" disabled class="opacity-60 purchase-btn-outline cursor-default purchase-btn">
-                                Paket Saat Ini
-                            </button>
-                        @endif
-                    </div>
-                @endforeach
+            {{-- Header Section --}}
+            <div class="flex flex-col justify-start items-center gap-5">
+                <div class="inline-flex justify-start items-center gap-3">
+                    {{-- Icon --}}
+                    <img src="{{ asset('assets/emoji/11.svg') }}" alt="Curhatorium Logo" class="w-12 h-12"/>
+                    <h2 class="text-base-900 text-2xl font-medium font-bricolage leading-7">Berlangganan</h2>
+                </div>
+                <div class="flex flex-col justify-start items-center gap-2">
+                    <h1 class="text-base-900 text-3xl md:text-4xl font-semibold font-bricolage leading-[48px]">Pilih paketmu</h1>
+                    <p class="max-w-[672px] text-center text-text-secondary text-lg md:text-2xl font-medium font-bricolage leading-7">Temukan paket yang paling pas buat kamu</p>
+                </div>
             </div>
 
-            {{-- Trust note --}}
-            <p class="mt-10 text-gray-500 text-sm text-center">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                    stroke="currentColor" class="inline-block mr-1 size-4 text-[#48A6A6]">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" />
-                </svg>
-                Pembayaran aman. Batalkan kapan saja.
-            </p>
+            {{-- Pricing Cards --}}
+            <div class="w-full grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
+                @foreach ($plans as $plan)
+                    @php
+                        $isFree = $plan->price_idr == 0;
+                        $isCalm = $plan->name === 'Calm';
+                        $isPeaceful = $plan->name === 'Peaceful';
+                        $mentAiLabel = match ($plan->name) {
+                            'Free' => 'Batas dasar',
+                            'Calm' => 'Batas lebih luas',
+                            default => 'Batas lebih bebas',
+                        };
+                        $tagline = match ($plan->name) {
+                            'Free' => 'Fitur dasar siap menemanimu kapan saja.',
+                            'Calm' => 'Lebih banyak ruang buat cerita dan eksplorasi.',
+                            default => 'Akses penuh ke semua yang kamu butuhkan.',
+                        };
+                        $includes = match ($plan->name) {
+                            'Free' => 'Paket Free mencakup:',
+                            'Calm' => 'Paket Calm mencakup:',
+                            default => 'Paket Peaceful mencakup:',
+                        };
+                    @endphp
+
+                    @if ($isCalm)
+                        {{-- Calm card with recommendation wrapper --}}
+                        <div class="plan-card h-auto md:h-[708px] w-full p-2 bg-secondary-300 rounded-2xl flex flex-col items-center gap-2">
+                            <div class="text-center text-base-900 text-2xl font-medium font-bricolage leading-7">Rekomendasi tepat</div>
+                            <div class="w-full flex-1 p-6 bg-base-50 rounded-xl flex flex-col items-start gap-8">
+                                {{-- Plan Name --}}
+                                <div class="w-full flex flex-col justify-start items-start gap-5">
+                                    <div class="w-full inline-flex justify-start items-center gap-2">
+                                        <img src="{{ asset('assets/Calm.svg') }}" alt="Calm" class="w-9 h-9"/>
+                                        <span class="text-base-900 text-3xl font-semibold font-bricolage leading-9">{{ $plan->name }}</span>
+                                    </div>
+                                    <p class="w-full text-base-900 text-2xl font-medium font-bricolage leading-7">{{ $tagline }}</p>
+                                </div>
+
+                                {{-- Price --}}
+                                <div class="w-full flex flex-col justify-start items-start gap-5">
+                                    <div class="w-full inline-flex justify-start items-end gap-1">
+                                        <span class="text-base-900 text-4xl font-semibold font-bricolage leading-[48px]">{{ $plan->getPriceInIDR() }}</span>
+                                        <span class="text-text-secondary text-2xl font-medium font-dm leading-7">/Bulan</span>
+                                    </div>
+                                    <form action="{{ route('order.create', $plan) }}" method="POST" class="w-full">
+                                        @csrf
+                                        <button type="submit" id="purchase-{{ $plan->id }}" class="w-full px-2 py-4 bg-primary-500 hover:bg-primary-600 rounded-xl inline-flex justify-center items-center gap-2 transition-colors duration-200 cursor-pointer">
+                                            <span class="text-base-50 text-lg font-medium font-dm leading-4">Mulai sekarang</span>
+                                        </button>
+                                    </form>
+                                </div>
+
+                                {{-- Benefits --}}
+                                <div class="w-full flex flex-col justify-start items-start gap-1 mb-auto">
+                                    <p class="w-full text-base-900 text-xl font-medium font-dm leading-9">{{ $includes }}</p>
+
+                                    @include('membership._benefit-row', ['label' => 'Tes Kesejahteraan Mental', 'value' => 'check'])
+                                    @include('membership._benefit-row', ['label' => 'Mood Tracker', 'value' => 'check'])
+                                    @include('membership._benefit-row', ['label' => 'Daily Missions', 'value' => 'check'])
+                                    @include('membership._benefit-row', ['label' => 'Deep Cards', 'value' => 'check'])
+
+                                    @foreach ($plan->planBenefits as $benefit)
+                                        @if ($benefit->amount >= 1 && $benefit->benefit !== 'ai_window_token')
+                                            @include('membership._benefit-row', [
+                                                'label' => ucwords(str_replace('_', ' ', $benefit->benefit)),
+                                                'value' => (string) $benefit->amount,
+                                            ])
+                                        @endif
+                                    @endforeach
+
+                                    @include('membership._benefit-row', ['label' => 'Ment-AI', 'value' => $mentAiLabel])
+                                </div>
+                            </div>
+                        </div>
+                    @else
+                        {{-- Free / Peaceful card --}}
+                        <div class="plan-card w-full h-auto md:h-[696px] p-6 bg-base-50 rounded-2xl flex flex-col items-start gap-8">
+                            {{-- Plan Name --}}
+                            <div class="w-full flex flex-col justify-start items-start gap-5">
+                                <div class="w-full inline-flex justify-start items-center gap-2">
+                                    @if ($isFree)
+                                        <img src="{{ asset('assets/Free.svg') }}" alt="Free" class="w-9 h-9"/>
+                                    @else
+                                        <img src="{{ asset('assets/Peaceful.svg') }}" alt="Peaceful" class="w-9 h-9"/>
+                                    @endif
+                                    <span class="text-base-900 text-3xl font-semibold font-bricolage leading-9">{{ $plan->name }}</span>
+                                </div>
+                                <p class="w-full text-base-900 text-2xl font-medium font-bricolage leading-7">{{ $tagline }}</p>
+                            </div>
+
+                            {{-- Price --}}
+                            <div class="w-full flex flex-col justify-start items-start gap-5">
+                                <div class="w-full inline-flex justify-start items-end gap-2">
+                                    @if ($isFree)
+                                        <span class="text-base-900 text-4xl font-semibold font-bricolage leading-[48px]">Gratis</span>
+                                    @else
+                                        <span class="text-base-900 text-4xl font-semibold font-bricolage leading-[48px]">{{ $plan->getPriceInIDR() }}</span>
+                                    @endif
+                                    <span class="text-text-secondary text-2xl font-medium font-dm leading-7">/Bulan</span>
+                                </div>
+
+                                @if ($isFree)
+                                    <button disabled class="w-full px-2 py-4 bg-base-100 rounded-xl inline-flex justify-center items-center gap-2 cursor-not-allowed opacity-80">
+                                        <span class="text-base-900 text-lg font-medium font-dm leading-4">Paket kamu saat ini</span>
+                                    </button>
+                                @else
+                                    <form action="{{ route('order.create', $plan) }}" method="POST" class="w-full">
+                                        @csrf
+                                        <button type="submit" id="purchase-{{ $plan->id }}" class="w-full px-2 py-4 bg-primary-500 hover:bg-primary-600 rounded-xl inline-flex justify-center items-center gap-2 transition-colors duration-200 cursor-pointer">
+                                            <span class="text-base-50 text-lg font-medium font-dm leading-4">Mulai sekarang</span>
+                                        </button>
+                                    </form>
+                                @endif
+                            </div>
+
+                            {{-- Benefits --}}
+                            <div class="w-full flex flex-col justify-start items-start gap-1 mb-auto">
+                                <p class="w-full text-base-900 text-xl font-medium font-dm leading-9">{{ $includes }}</p>
+
+                                @include('membership._benefit-row', ['label' => 'Tes Kesejahteraan Mental', 'value' => 'check'])
+                                @include('membership._benefit-row', ['label' => 'Mood Tracker', 'value' => 'check'])
+                                @include('membership._benefit-row', ['label' => 'Daily Missions', 'value' => 'check'])
+                                @include('membership._benefit-row', ['label' => 'Deep Cards', 'value' => 'check'])
+
+                                @foreach ($plan->planBenefits as $benefit)
+                                    @if ($benefit->amount >= 1 && $benefit->benefit !== 'ai_window_token')
+                                        @include('membership._benefit-row', [
+                                            'label' => ucwords(str_replace('_', ' ', $benefit->benefit)),
+                                            'value' => (string) $benefit->amount,
+                                        ])
+                                    @endif
+                                @endforeach
+
+                                @include('membership._benefit-row', ['label' => 'Ment-AI', 'value' => $mentAiLabel])
+                            </div>
+                        </div>
+                    @endif
+                @endforeach
+            </div>
         </div>
     </section>
 @endsection
