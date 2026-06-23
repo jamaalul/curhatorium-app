@@ -6,6 +6,7 @@ use App\Models\Order;
 use Midtrans\Config as MidtransConfig;
 use Midtrans\CoreApi;
 use Midtrans\Notification;
+use Midtrans\Transaction;
 
 class MidtransService
 {
@@ -17,12 +18,13 @@ class MidtransService
         MidtransConfig::$is3ds = false;
 
         // Fix SSL certificate error on local development
-    if (app()->environment('local')) {
-        MidtransConfig::$curlOptions = [
-            CURLOPT_SSL_VERIFYHOST => 0,
-            CURLOPT_SSL_VERIFYPEER => false,
-        ];
-    }
+        if (app()->environment('local')) {
+            MidtransConfig::$curlOptions = [
+                CURLOPT_SSL_VERIFYHOST => 0,
+                CURLOPT_SSL_VERIFYPEER => false,
+                CURLOPT_HTTPHEADER => [],
+            ];
+        }
     }
 
     /**
@@ -130,7 +132,7 @@ class MidtransService
     public function verifySignature(string $orderId, string $statusCode, string $grossAmount, string $signatureKey): bool
     {
         $serverKey = config('midtrans.server_key');
-        $expectedSignature = hash('sha512', $orderId . $statusCode . $grossAmount . $serverKey);
+        $expectedSignature = hash('sha512', $orderId.$statusCode.$grossAmount.$serverKey);
 
         return hash_equals($expectedSignature, $signatureKey);
     }
@@ -140,7 +142,7 @@ class MidtransService
      */
     public function getTransactionStatus(string $transactionId): object
     {
-        return \Midtrans\Transaction::status($transactionId);
+        return Transaction::status($transactionId);
     }
 
     /**
