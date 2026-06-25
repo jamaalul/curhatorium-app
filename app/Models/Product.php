@@ -26,6 +26,13 @@ class Product extends Model
         ];
     }
 
+    protected static function booted(): void
+    {
+        static::deleting(function (Product $product): void {
+            $product->media()->get()->each->delete();
+        });
+    }
+
     public function scopePublished(Builder $query): Builder
     {
         return $query->where('is_published', true);

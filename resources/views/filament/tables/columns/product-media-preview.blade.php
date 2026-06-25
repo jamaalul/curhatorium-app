@@ -1,9 +1,12 @@
-@php($media = $getRecord())
+@php
+    $media = $getRecord();
+    $mediaUrl = $media->publicUrl();
+@endphp
 
 @if ($media->media_type === 'image')
-    <a href="{{ $media->media_url }}" target="_blank" rel="noopener noreferrer">
+    <a href="{{ $mediaUrl }}" target="_blank" rel="noopener noreferrer">
         <img
-            src="{{ $media->media_url }}"
+            src="{{ $mediaUrl }}"
             alt="Preview media urutan {{ $media->order_number }}"
             width="120"
             height="80"
@@ -13,7 +16,7 @@
     </a>
 @elseif ($media->media_type === 'video')
     <video controls preload="metadata" width="180" class="rounded-lg">
-        <source src="{{ $media->media_url }}">
+        <source src="{{ $mediaUrl }}">
         Browser tidak mendukung preview video.
     </video>
 @endif

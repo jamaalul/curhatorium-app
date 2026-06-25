@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\ProductResource\RelationManagers;
 
+use App\Filament\Resources\ProductResource;
 use App\Models\ProductMedia;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -20,14 +21,7 @@ class MediaRelationManager extends RelationManager
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('media_type')
-                    ->label('Tipe Media')
-                    ->options([
-                        'image' => 'Gambar',
-                        'video' => 'Video',
-                    ])
-                    ->required()
-                    ->native(false),
+                ...ProductResource::mediaUploadSchema(),
                 Forms\Components\TextInput::make('order_number')
                     ->label('Urutan')
                     ->required()
@@ -43,12 +37,6 @@ class MediaRelationManager extends RelationManager
                             $livewire->getOwnerRecord()->getKey(),
                         ),
                     ),
-                Forms\Components\TextInput::make('media_url')
-                    ->label('URL Media')
-                    ->required()
-                    ->url()
-                    ->maxLength(255)
-                    ->columnSpanFull(),
             ]);
     }
 
@@ -64,7 +52,7 @@ class MediaRelationManager extends RelationManager
                     ->label('Tipe')
                     ->badge()
                     ->formatStateUsing(fn (string $state): string => match ($state) {
-                        'image' => 'Gambar',
+                        'image' => 'Foto',
                         'video' => 'Video',
                     })
                     ->color(fn (ProductMedia $record): string => match ($record->media_type) {
@@ -72,15 +60,17 @@ class MediaRelationManager extends RelationManager
                         'video' => 'info',
                     }),
                 Tables\Columns\TextColumn::make('media_url')
-                    ->label('URL Media')
+                    ->label('File Media')
+                    ->formatStateUsing(fn (string $state): string => basename($state))
                     ->limit(50)
-                    ->url(fn (ProductMedia $record): string => $record->media_url)
+                    ->url(fn (ProductMedia $record): string => $record->publicUrl())
                     ->openUrlInNewTab()
                     ->copyable(),
                 Tables\Columns\TextColumn::make('order_number')
                     ->label('Urutan')
                     ->sortable(),
             ])
+            ->defaultSort('order_number')
             ->headerActions([
                 Tables\Actions\CreateAction::make(),
             ])

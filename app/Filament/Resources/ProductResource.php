@@ -16,6 +16,28 @@ use Illuminate\Support\Str;
 
 class ProductResource extends Resource
 {
+    private const MEDIA_IMAGE_FILE_TYPES = [
+        'image/jpeg',
+        'image/png',
+        'image/webp',
+    ];
+
+    private const MEDIA_VIDEO_FILE_TYPES = [
+        'video/mp4',
+        'video/quicktime',
+        'video/webm',
+    ];
+
+    private const MEDIA_FILE_EXTENSIONS = [
+        'jpg',
+        'jpeg',
+        'png',
+        'webp',
+        'mp4',
+        'mov',
+        'webm',
+    ];
+
     protected static ?string $model = Product::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-shopping-bag';
@@ -69,6 +91,16 @@ class ProductResource extends Resource
                 Forms\Components\Toggle::make('is_published')
                     ->label('Published')
                     ->default(false),
+                Forms\Components\Repeater::make('media')
+                    ->label('Media Produk')
+                    ->relationship()
+                    ->schema(static::mediaUploadSchema())
+                    ->orderColumn('order_number')
+                    ->reorderableWithButtons()
+                    ->addActionLabel('Tambah Media')
+                    ->collapsible()
+                    ->defaultItems(0)
+                    ->columnSpanFull(),
             ]);
     }
 
@@ -133,5 +165,53 @@ class ProductResource extends Resource
             'create' => Pages\CreateProduct::route('/create'),
             'edit' => Pages\EditProduct::route('/{record}/edit'),
         ];
+    }
+
+    /**
+     * @return array<int, Forms\Components\Component>
+     */
+    public static function mediaUploadSchema(): array
+    {
+        return [
+            Forms\Components\Select::make('media_type')
+                ->label('Tipe Media')
+                ->options([
+                    'image' => 'Foto',
+                    'video' => 'Video',
+                ])
+                ->default('image')
+                ->required()
+                ->live()
+                ->native(false),
+            Forms\Components\FileUpload::make('media_url')
+                ->label('File Media')
+                ->disk('public')
+                ->directory('product-media')
+                ->visibility('public')
+                ->acceptedFileTypes(fn (Get $get): array => static::acceptedMediaFileTypes($get('media_type')))
+                ->rules(['mimes:'.implode(',', self::MEDIA_FILE_EXTENSIONS)])
+                ->maxSize(51200)
+                ->openable()
+                ->downloadable()
+                ->previewable()
+                ->helperText('File disimpan di storage lokal. Tipe file harus sesuai dengan tipe media.')
+                ->required()
+                ->columnSpanFull(),
+        ];
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private static function acceptedMediaFileTypes(?string $mediaType): array
+    {
+        return match ($mediaType) {
+            'image' => self::MEDIA_IMAGE_FILE_TYPES,
+            'video' => self::MEDIA_VIDEO_FILE_TYPES,
+            default => [
+                ...self::MEDIA_IMAGE_FILE_TYPES,
+                ...self::MEDIA_VIDEO_FILE_TYPES,
+            ],
+        };
     }
 }
