@@ -83,3 +83,4 @@ require __DIR__.'/articles.php';
 require __DIR__.'/moodtracker.php';
 require __DIR__.'/professional.php';
 require __DIR__.'/sharetalk.php';
+require __DIR__.'/marketplace.php';
