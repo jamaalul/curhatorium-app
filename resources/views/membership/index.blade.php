@@ -42,6 +42,16 @@
 
             {{-- Pricing Cards --}}
             <div class="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
+                @php
+                    $formatBenefitName = function ($name) {
+                        return match (strtolower($name)) {
+                            'snt_rgr_chat', 'snt rgr chat' => 'Share & Talk Chat w/ Ranger',
+                            'snt_psy_chat', 'snt psy chat' => 'Share & Talk Chat w/ Psikolog',
+                            'sgd' => 'Support Group Discussion',
+                            default => ucwords(str_replace('_', ' ', $name)),
+                        };
+                    };
+                @endphp
                 @foreach ($plans as $plan)
                     @php
                         $isFree = $plan->price_idr == 0;
@@ -104,7 +114,7 @@
                                     @foreach ($plan->planBenefits as $benefit)
                                         @if ($benefit->amount >= 1 && $benefit->benefit !== 'ai_window_token')
                                             @include('membership._benefit-row', [
-                                                'label' => ucwords(str_replace('_', ' ', $benefit->benefit)),
+                                                'label' => $formatBenefitName($benefit->benefit),
                                                 'value' => (string) $benefit->amount,
                                             ])
                                         @endif
@@ -167,7 +177,7 @@
                                 @foreach ($plan->planBenefits as $benefit)
                                     @if ($benefit->amount >= 1 && $benefit->benefit !== 'ai_window_token')
                                         @include('membership._benefit-row', [
-                                            'label' => ucwords(str_replace('_', ' ', $benefit->benefit)),
+                                            'label' => $formatBenefitName($benefit->benefit),
                                             'value' => (string) $benefit->amount,
                                         ])
                                     @endif
