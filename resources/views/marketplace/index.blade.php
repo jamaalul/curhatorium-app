@@ -56,7 +56,7 @@
                     @foreach($products as $product)
                         <div class="group flex flex-col">
                             <!-- Image -->
-                            <a href="#" class="block relative flex justify-center items-center bg-[#f8f8f8] mb-4 aspect-square overflow-hidden">
+                            <a href="{{ route('marketplace.detail', $product->slug) }}" class="block relative flex justify-center items-center bg-[#f8f8f8] mb-4 aspect-square overflow-hidden">
                                 @if($product->primaryImage)
                                     <img src="{{ $product->primaryImage->publicUrl() }}" alt="{{ $product->name }}" class="w-[80%] h-[80%] object-contain group-hover:scale-105 transition-transform duration-300 mix-blend-multiply">
                                 @else
@@ -68,7 +68,7 @@
 
                             <!-- Details -->
                             <h3 class="mb-1 font-bold text-gray-900 text-sm leading-snug">
-                                <a href="#" class="hover:underline">{{ $product->name }}</a>
+                                <a href="{{ route('marketplace.detail', $product->slug) }}" class="hover:underline">{{ $product->name }}</a>
                             </h3>
                             <p class="mb-4 text-gray-700 text-sm">Rp{{ number_format($product->price, 0, ',', '.') }}</p>
 
