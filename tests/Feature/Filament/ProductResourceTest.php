@@ -7,6 +7,7 @@ use App\Filament\Resources\ProductResource\Pages\CreateProduct;
 use App\Filament\Resources\ProductResource\Pages\EditProduct;
 use App\Filament\Resources\ProductResource\Pages\ListProducts;
 use App\Filament\Resources\ProductResource\RelationManagers\MediaRelationManager;
+use App\Models\EcommerceLink;
 use App\Models\Product;
 use App\Models\ProductCategory;
 use App\Models\ProductMedia;
@@ -71,7 +72,6 @@ class ProductResourceTest extends TestCase
                 'slug' => 'jurnal-refleksi',
                 'description' => 'Jurnal untuk refleksi harian.',
                 'price' => 75000,
-                'ecommerce_url' => 'https://example.com/products/jurnal-refleksi',
                 'is_published' => true,
             ])
             ->call('create')
@@ -93,7 +93,6 @@ class ProductResourceTest extends TestCase
                 'slug' => 'jurnal-refleksi-baru',
                 'description' => 'Jurnal refleksi dengan edisi baru.',
                 'price' => 85000,
-                'ecommerce_url' => 'https://example.com/products/jurnal-refleksi-baru',
                 'is_published' => false,
             ])
             ->call('save')
@@ -172,7 +171,6 @@ class ProductResourceTest extends TestCase
                 'slug' => 'produk-dengan-media',
                 'description' => 'Produk marketplace dengan foto dan video.',
                 'price' => 125000,
-                'ecommerce_url' => 'https://example.com/products/produk-dengan-media',
                 'is_published' => true,
                 'media' => [
                     [
@@ -316,6 +314,29 @@ class ProductResourceTest extends TestCase
             ->assertTableActionExists('delete');
     }
 
+    public function test_product_can_have_many_ecommerce_links_and_cascade_delete_them(): void
+    {
+        $product = $this->createProduct();
+
+        $links = collect([
+            [
+                'ecommerce_name' => 'shopee',
+                'url' => 'https://shopee.co.id/produk-marketplace',
+            ],
+            [
+                'ecommerce_name' => 'tokopedia',
+                'url' => 'https://tokopedia.com/curhatorium/produk-marketplace',
+            ],
+        ])->map(fn (array $attributes): EcommerceLink => $product->ecommerceLinks()->create($attributes));
+
+        $this->assertCount(2, $product->ecommerceLinks()->get());
+
+        $product->delete();
+
+        $this->assertModelMissing($product);
+        $links->each(fn (EcommerceLink $link): mixed => $this->assertModelMissing($link));
+    }
+
     /**
      * @param  array<string, mixed>  $attributes
      */
@@ -329,7 +350,6 @@ class ProductResourceTest extends TestCase
             'slug' => 'produk-marketplace',
             'description' => 'Deskripsi produk marketplace.',
             'price' => 100000,
-            'ecommerce_url' => 'https://example.com/products/produk-marketplace',
             'is_published' => false,
         ], $attributes));
     }
