@@ -16,7 +16,6 @@ class Product extends Model
         'slug',
         'description',
         'price',
-        'ecommerce_url',
         'is_published',
     ];
 
@@ -48,6 +47,11 @@ class Product extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(ProductCategory::class, 'product_category_id');
+    }
+
+    public function ecommerceLinks(): HasMany
+    {
+        return $this->hasMany(EcommerceLink::class);
     }
 
     public function primaryImage(): HasOne

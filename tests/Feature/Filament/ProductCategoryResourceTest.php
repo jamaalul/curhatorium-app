@@ -97,7 +97,6 @@ class ProductCategoryResourceTest extends TestCase
             'slug' => 'worksheet-mindfulness',
             'description' => 'Worksheet produk.',
             'price' => 50000,
-            'ecommerce_url' => 'https://example.com/products/worksheet-mindfulness',
             'is_published' => true,
         ]);
 
