@@ -23,12 +23,10 @@
         <div class="flex-shrink-0 w-full md:w-1/4">
             <h2 class="mb-6 font-bold text-gray-900 text-lg">Kategori produk</h2>
             <ul class="space-y-4 text-gray-700">
-                <li><a href="#" class="hover:text-black transition-colors">All Products</a></li>
-                <li><a href="#" class="hover:text-black transition-colors">T-Shirt</a></li>
-                <li><a href="#" class="hover:text-black transition-colors">Long Sleeve</a></li>
-                <li><a href="#" class="hover:text-black transition-colors">Hoodie</a></li>
-                <li><a href="#" class="hover:text-black transition-colors">Sweater</a></li>
-                <li><a href="#" class="hover:text-black transition-colors">Totebag</a></li>
+                <li><a href="{{ route('marketplace.index') }}" class="hover:text-black transition-colors">Semua Produk</a></li>
+                @foreach($categories as $category)
+                    <li><a href="{{ route('marketplace.index', ['category' => $category->slug]) }}" class="hover:text-black transition-colors">{{ $category->name }}</a></li>
+                @endforeach
             </ul>
         </div>
 
@@ -71,15 +69,6 @@
                                 <a href="{{ route('marketplace.detail', $product->slug) }}" class="hover:underline">{{ $product->name }}</a>
                             </h3>
                             <p class="mb-4 text-gray-700 text-sm">Rp{{ number_format($product->price, 0, ',', '.') }}</p>
-
-                            <!-- Links -->
-                            <div class="flex flex-col gap-1 mt-auto text-[13px]">
-                                <a href="#" class="text-green-500 hover:text-green-600 transition-colors">Tokopedia</a>
-                                <div class="flex items-center gap-2 text-gray-400">
-                                    <span class="border-gray-400 border-t w-6"></span>
-                                    <a href="#" class="text-[#ee4d2d] hover:text-[#d74223] transition-colors">Shopee</a>
-                                </div>
-                            </div>
                         </div>
                     @endforeach
                 </div>

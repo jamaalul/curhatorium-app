@@ -141,33 +141,50 @@
                 {{-- Buy / External Links --}}
                 <div class="flex flex-col gap-3">
                     <p class="font-semibold text-gray-900 text-sm uppercase tracking-wider">Beli di</p>
-                    @if($product->ecommerce_url)
-                        <a href="{{ $product->tokopedia_url }}" target="_blank" rel="noopener noreferrer"
-                            class="flex justify-center items-center gap-3 bg-green-500 hover:bg-green-600 px-6 py-3.5 rounded-sm font-semibold text-white text-sm transition-all duration-200">
-                            <svg class="w-5 h-5" viewBox="0 0 40 40" fill="none">
-                                <circle cx="20" cy="20" r="20" fill="#42B549" />
-                                <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" fill="white"
-                                    font-size="18" font-weight="bold">T</text>
-                            </svg>
-                            Tokopedia
-                        </a>
-                        <a href="{{ $product->shopee_url }}" target="_blank" rel="noopener noreferrer"
-                            class="flex justify-center items-center gap-3 bg-[#ee4d2d] hover:bg-[#d9441f] px-6 py-3.5 rounded-sm font-semibold text-white text-sm transition-all duration-200">
-                            <svg class="w-5 h-5" viewBox="0 0 40 40" fill="none">
-                                <circle cx="20" cy="20" r="20" fill="#EE4D2D" />
-                                <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" fill="white"
-                                    font-size="18" font-weight="bold">S</text>
-                            </svg>
-                            Shopee
-                        </a>
-                        <a href="{{ $product->tiktok_url }}" target="_blank" rel="noopener noreferrer"
-                            class="flex justify-center items-center gap-3 bg-black hover:bg-gray-800 px-6 py-3.5 rounded-sm font-semibold text-white text-sm transition-all duration-200">
-                            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="white">
-                                <path
-                                    d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.32 6.32 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.75a4.85 4.85 0 0 1-1.01-.06Z" />
-                            </svg>
-                            TikTok Shop
-                        </a>
+                    @if($product->ecommerceLinks->isNotEmpty())
+                        @foreach($product->ecommerceLinks as $link)
+                            @php
+                                $btnClass = match($link->ecommerce_name) {
+                                    'tokopedia' => 'bg-green-500 hover:bg-green-600',
+                                    'shopee'    => 'bg-[#ee4d2d] hover:bg-[#d9441f]',
+                                    'tiktok'    => 'bg-black hover:bg-gray-800',
+                                    default     => 'bg-blue-600 hover:bg-blue-700',
+                                };
+                                $label = match($link->ecommerce_name) {
+                                    'tokopedia' => 'Tokopedia',
+                                    'shopee'    => 'Shopee',
+                                    'tiktok'    => 'TikTok Shop',
+                                    default     => 'Beli Sekarang',
+                                };
+                            @endphp
+                            <a href="{{ $link->url }}" target="_blank" rel="noopener noreferrer"
+                                class="flex justify-center items-center gap-3 {{ $btnClass }} px-6 py-3.5 rounded-sm font-semibold text-white text-sm transition-all duration-200">
+                                @if($link->ecommerce_name === 'tokopedia')
+                                    <svg class="w-5 h-5" viewBox="0 0 40 40" fill="none">
+                                        <circle cx="20" cy="20" r="20" fill="#42B549" />
+                                        <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" fill="white"
+                                            font-size="18" font-weight="bold">T</text>
+                                    </svg>
+                                @elseif($link->ecommerce_name === 'shopee')
+                                    <svg class="w-5 h-5" viewBox="0 0 40 40" fill="none">
+                                        <circle cx="20" cy="20" r="20" fill="#EE4D2D" />
+                                        <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" fill="white"
+                                            font-size="18" font-weight="bold">S</text>
+                                    </svg>
+                                @elseif($link->ecommerce_name === 'tiktok')
+                                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="white">
+                                        <path
+                                            d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.32 6.32 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.75a4.85 4.85 0 0 1-1.01-.06Z" />
+                                    </svg>
+                                @else
+                                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-8 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4z" />
+                                    </svg>
+                                @endif
+                                {{ $label }}
+                            </a>
+                        @endforeach
                     @else
                         <p class="text-gray-500 text-sm italic">Link pembelian belum tersedia.</p>
                     @endif
