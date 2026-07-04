@@ -7,7 +7,9 @@ use App\Filament\Resources\ProductResource\Pages\CreateProduct;
 use App\Filament\Resources\ProductResource\Pages\EditProduct;
 use App\Filament\Resources\ProductResource\Pages\ListProducts;
 use App\Filament\Resources\ProductResource\RelationManagers\MediaRelationManager;
+use App\Models\EcommerceLink;
 use App\Models\Product;
+use App\Models\ProductCategory;
 use App\Models\ProductMedia;
 use App\Models\User;
 use Filament\Facades\Filament;
@@ -43,6 +45,15 @@ class ProductResourceTest extends TestCase
 
     public function test_admin_can_create_and_update_a_product(): void
     {
+        $category = $this->createCategory([
+            'name' => 'Jurnal',
+            'slug' => 'jurnal',
+        ]);
+        $newCategory = $this->createCategory([
+            'name' => 'Worksheet',
+            'slug' => 'worksheet',
+        ]);
+
         Livewire::test(CreateProduct::class)
             ->set('data.name', 'Jurnal Refleksi')
             ->assertFormSet([
@@ -57,10 +68,20 @@ class ProductResourceTest extends TestCase
         Livewire::test(CreateProduct::class)
             ->fillForm([
                 'name' => 'Jurnal Refleksi',
+                'product_category_id' => $category->getKey(),
                 'slug' => 'jurnal-refleksi',
                 'description' => 'Jurnal untuk refleksi harian.',
                 'price' => 75000,
-                'ecommerce_url' => 'https://example.com/products/jurnal-refleksi',
+                'ecommerceLinks' => [
+                    [
+                        'ecommerce_name' => 'shopee',
+                        'url' => 'https://shopee.co.id/jurnal-refleksi',
+                    ],
+                    [
+                        'ecommerce_name' => 'tokopedia',
+                        'url' => 'https://tokopedia.com/curhatorium/jurnal-refleksi',
+                    ],
+                ],
                 'is_published' => true,
             ])
             ->call('create')
@@ -71,16 +92,24 @@ class ProductResourceTest extends TestCase
         $product = Product::query()->where('slug', 'jurnal-refleksi')->firstOrFail();
 
         $this->assertTrue($product->is_published);
+        $this->assertTrue($product->category->is($category));
+        $this->assertSame(['shopee', 'tokopedia'], $product->ecommerceLinks()->pluck('ecommerce_name')->all());
 
         Livewire::test(EditProduct::class, [
             'record' => $product->getRouteKey(),
         ])
             ->fillForm([
                 'name' => 'Jurnal Refleksi Baru',
+                'product_category_id' => $newCategory->getKey(),
                 'slug' => 'jurnal-refleksi-baru',
                 'description' => 'Jurnal refleksi dengan edisi baru.',
                 'price' => 85000,
-                'ecommerce_url' => 'https://example.com/products/jurnal-refleksi-baru',
+                'ecommerceLinks' => [
+                    [
+                        'ecommerce_name' => 'other',
+                        'url' => 'https://example.com/products/jurnal-refleksi-baru',
+                    ],
+                ],
                 'is_published' => false,
             ])
             ->call('save')
@@ -91,17 +120,54 @@ class ProductResourceTest extends TestCase
 
         $this->assertSame('Jurnal Refleksi Baru', $product->name);
         $this->assertSame('jurnal-refleksi-baru', $product->slug);
+        $this->assertTrue($product->category->is($newCategory));
         $this->assertFalse($product->is_published);
+        $this->assertSame(['other'], $product->ecommerceLinks()->pluck('ecommerce_name')->all());
+    }
+
+    public function test_product_resource_rejects_invalid_ecommerce_link_url(): void
+    {
+        $category = $this->createCategory();
+
+        Livewire::test(CreateProduct::class)
+            ->fillForm([
+                'name' => 'Produk URL Tidak Valid',
+                'product_category_id' => $category->getKey(),
+                'slug' => 'produk-url-tidak-valid',
+                'description' => 'Produk dengan URL tidak valid.',
+                'price' => 75000,
+                'ecommerceLinks' => [
+                    [
+                        'ecommerce_name' => 'shopee',
+                        'url' => 'bukan-url-valid',
+                    ],
+                ],
+                'is_published' => true,
+            ])
+            ->call('create')
+            ->assertHasFormErrors([
+                'ecommerceLinks.0.url' => 'url',
+            ]);
     }
 
     public function test_product_table_can_search_filter_and_delete_products(): void
     {
+        $category = $this->createCategory([
+            'name' => 'Jurnal',
+            'slug' => 'jurnal',
+        ]);
+        $otherCategory = $this->createCategory([
+            'name' => 'Poster',
+            'slug' => 'poster',
+        ]);
         $publishedProduct = $this->createProduct([
+            'product_category_id' => $category->getKey(),
             'name' => 'Produk Published',
             'slug' => 'produk-published',
             'is_published' => true,
         ]);
         $draftProduct = $this->createProduct([
+            'product_category_id' => $otherCategory->getKey(),
             'name' => 'Produk Draft',
             'slug' => 'slug-draft-yang-dicari',
             'is_published' => false,
@@ -116,6 +182,11 @@ class ProductResourceTest extends TestCase
             ->searchTable('slug-draft-yang-dicari')
             ->assertCanSeeTableRecords([$draftProduct])
             ->assertCanNotSeeTableRecords([$publishedProduct]);
+
+        Livewire::test(ListProducts::class)
+            ->filterTable('product_category_id', $category->getKey())
+            ->assertCanSeeTableRecords([$publishedProduct])
+            ->assertCanNotSeeTableRecords([$draftProduct]);
 
         Livewire::test(ListProducts::class)
             ->filterTable('is_published', true)
@@ -139,10 +210,10 @@ class ProductResourceTest extends TestCase
         Livewire::test(CreateProduct::class)
             ->fillForm([
                 'name' => 'Produk Dengan Media',
+                'product_category_id' => $this->createCategory()->getKey(),
                 'slug' => 'produk-dengan-media',
                 'description' => 'Produk marketplace dengan foto dan video.',
                 'price' => 125000,
-                'ecommerce_url' => 'https://example.com/products/produk-dengan-media',
                 'is_published' => true,
                 'media' => [
                     [
@@ -286,18 +357,54 @@ class ProductResourceTest extends TestCase
             ->assertTableActionExists('delete');
     }
 
+    public function test_product_can_have_many_ecommerce_links_and_cascade_delete_them(): void
+    {
+        $product = $this->createProduct();
+
+        $links = collect([
+            [
+                'ecommerce_name' => 'shopee',
+                'url' => 'https://shopee.co.id/produk-marketplace',
+            ],
+            [
+                'ecommerce_name' => 'tokopedia',
+                'url' => 'https://tokopedia.com/curhatorium/produk-marketplace',
+            ],
+        ])->map(fn (array $attributes): EcommerceLink => $product->ecommerceLinks()->create($attributes));
+
+        $this->assertCount(2, $product->ecommerceLinks()->get());
+
+        $product->delete();
+
+        $this->assertModelMissing($product);
+        $links->each(fn (EcommerceLink $link): mixed => $this->assertModelMissing($link));
+    }
+
     /**
      * @param  array<string, mixed>  $attributes
      */
     private function createProduct(array $attributes = []): Product
     {
+        $categoryId = $attributes['product_category_id'] ?? $this->createCategory()->getKey();
+
         return Product::query()->create(array_merge([
+            'product_category_id' => $categoryId,
             'name' => 'Produk Marketplace',
             'slug' => 'produk-marketplace',
             'description' => 'Deskripsi produk marketplace.',
             'price' => 100000,
-            'ecommerce_url' => 'https://example.com/products/produk-marketplace',
             'is_published' => false,
+        ], $attributes));
+    }
+
+    /**
+     * @param  array<string, mixed>  $attributes
+     */
+    private function createCategory(array $attributes = []): ProductCategory
+    {
+        return ProductCategory::query()->create(array_merge([
+            'name' => 'Kategori Produk',
+            'slug' => 'kategori-produk-'.ProductCategory::query()->count(),
         ], $attributes));
     }
 }

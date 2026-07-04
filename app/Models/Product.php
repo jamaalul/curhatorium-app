@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
@@ -13,10 +14,10 @@ class Product extends Model
     use HasFactory;
     protected $fillable = [
         'name',
+        'product_category_id',
         'slug',
         'description',
         'price',
-        'ecommerce_url',
         'is_published',
     ];
 
@@ -43,6 +44,16 @@ class Product extends Model
     public function media(): HasMany
     {
         return $this->hasMany(ProductMedia::class)->orderBy('order_number');
+    }
+
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(ProductCategory::class, 'product_category_id');
+    }
+
+    public function ecommerceLinks(): HasMany
+    {
+        return $this->hasMany(EcommerceLink::class);
     }
 
     public function primaryImage(): HasOne
