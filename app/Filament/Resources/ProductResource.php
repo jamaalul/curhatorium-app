@@ -66,6 +66,12 @@ class ProductResource extends Resource
 
                         $set('slug', Str::slug((string) $state));
                     }),
+                Forms\Components\Select::make('product_category_id')
+                    ->label('Kategori')
+                    ->relationship('category', 'name')
+                    ->searchable()
+                    ->preload()
+                    ->required(),
                 Forms\Components\TextInput::make('slug')
                     ->required()
                     ->alphaDash()
@@ -115,6 +121,10 @@ class ProductResource extends Resource
                 Tables\Columns\TextColumn::make('slug')
                     ->searchable()
                     ->copyable(),
+                Tables\Columns\TextColumn::make('category.name')
+                    ->label('Kategori')
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('price')
                     ->label('Harga')
                     ->money('IDR')
@@ -134,6 +144,11 @@ class ProductResource extends Resource
                     ->sortable(),
             ])
             ->filters([
+                Tables\Filters\SelectFilter::make('product_category_id')
+                    ->label('Kategori')
+                    ->relationship('category', 'name')
+                    ->searchable()
+                    ->preload(),
                 Tables\Filters\TernaryFilter::make('is_published')
                     ->label('Status')
                     ->placeholder('Semua status')

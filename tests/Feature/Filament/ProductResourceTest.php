@@ -8,6 +8,7 @@ use App\Filament\Resources\ProductResource\Pages\EditProduct;
 use App\Filament\Resources\ProductResource\Pages\ListProducts;
 use App\Filament\Resources\ProductResource\RelationManagers\MediaRelationManager;
 use App\Models\Product;
+use App\Models\ProductCategory;
 use App\Models\ProductMedia;
 use App\Models\User;
 use Filament\Facades\Filament;
@@ -43,6 +44,15 @@ class ProductResourceTest extends TestCase
 
     public function test_admin_can_create_and_update_a_product(): void
     {
+        $category = $this->createCategory([
+            'name' => 'Jurnal',
+            'slug' => 'jurnal',
+        ]);
+        $newCategory = $this->createCategory([
+            'name' => 'Worksheet',
+            'slug' => 'worksheet',
+        ]);
+
         Livewire::test(CreateProduct::class)
             ->set('data.name', 'Jurnal Refleksi')
             ->assertFormSet([
@@ -57,6 +67,7 @@ class ProductResourceTest extends TestCase
         Livewire::test(CreateProduct::class)
             ->fillForm([
                 'name' => 'Jurnal Refleksi',
+                'product_category_id' => $category->getKey(),
                 'slug' => 'jurnal-refleksi',
                 'description' => 'Jurnal untuk refleksi harian.',
                 'price' => 75000,
@@ -71,12 +82,14 @@ class ProductResourceTest extends TestCase
         $product = Product::query()->where('slug', 'jurnal-refleksi')->firstOrFail();
 
         $this->assertTrue($product->is_published);
+        $this->assertTrue($product->category->is($category));
 
         Livewire::test(EditProduct::class, [
             'record' => $product->getRouteKey(),
         ])
             ->fillForm([
                 'name' => 'Jurnal Refleksi Baru',
+                'product_category_id' => $newCategory->getKey(),
                 'slug' => 'jurnal-refleksi-baru',
                 'description' => 'Jurnal refleksi dengan edisi baru.',
                 'price' => 85000,
@@ -91,17 +104,28 @@ class ProductResourceTest extends TestCase
 
         $this->assertSame('Jurnal Refleksi Baru', $product->name);
         $this->assertSame('jurnal-refleksi-baru', $product->slug);
+        $this->assertTrue($product->category->is($newCategory));
         $this->assertFalse($product->is_published);
     }
 
     public function test_product_table_can_search_filter_and_delete_products(): void
     {
+        $category = $this->createCategory([
+            'name' => 'Jurnal',
+            'slug' => 'jurnal',
+        ]);
+        $otherCategory = $this->createCategory([
+            'name' => 'Poster',
+            'slug' => 'poster',
+        ]);
         $publishedProduct = $this->createProduct([
+            'product_category_id' => $category->getKey(),
             'name' => 'Produk Published',
             'slug' => 'produk-published',
             'is_published' => true,
         ]);
         $draftProduct = $this->createProduct([
+            'product_category_id' => $otherCategory->getKey(),
             'name' => 'Produk Draft',
             'slug' => 'slug-draft-yang-dicari',
             'is_published' => false,
@@ -116,6 +140,11 @@ class ProductResourceTest extends TestCase
             ->searchTable('slug-draft-yang-dicari')
             ->assertCanSeeTableRecords([$draftProduct])
             ->assertCanNotSeeTableRecords([$publishedProduct]);
+
+        Livewire::test(ListProducts::class)
+            ->filterTable('product_category_id', $category->getKey())
+            ->assertCanSeeTableRecords([$publishedProduct])
+            ->assertCanNotSeeTableRecords([$draftProduct]);
 
         Livewire::test(ListProducts::class)
             ->filterTable('is_published', true)
@@ -139,6 +168,7 @@ class ProductResourceTest extends TestCase
         Livewire::test(CreateProduct::class)
             ->fillForm([
                 'name' => 'Produk Dengan Media',
+                'product_category_id' => $this->createCategory()->getKey(),
                 'slug' => 'produk-dengan-media',
                 'description' => 'Produk marketplace dengan foto dan video.',
                 'price' => 125000,
@@ -291,13 +321,27 @@ class ProductResourceTest extends TestCase
      */
     private function createProduct(array $attributes = []): Product
     {
+        $categoryId = $attributes['product_category_id'] ?? $this->createCategory()->getKey();
+
         return Product::query()->create(array_merge([
+            'product_category_id' => $categoryId,
             'name' => 'Produk Marketplace',
             'slug' => 'produk-marketplace',
             'description' => 'Deskripsi produk marketplace.',
             'price' => 100000,
             'ecommerce_url' => 'https://example.com/products/produk-marketplace',
             'is_published' => false,
+        ], $attributes));
+    }
+
+    /**
+     * @param  array<string, mixed>  $attributes
+     */
+    private function createCategory(array $attributes = []): ProductCategory
+    {
+        return ProductCategory::query()->create(array_merge([
+            'name' => 'Kategori Produk',
+            'slug' => 'kategori-produk-'.ProductCategory::query()->count(),
         ], $attributes));
     }
 }
