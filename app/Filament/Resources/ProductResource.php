@@ -98,6 +98,7 @@ class ProductResource extends Resource
                             ->options([
                                 'shopee' => 'Shopee',
                                 'tokopedia' => 'Tokopedia',
+                                'tiktok' => 'TikTok Shop',
                                 'other' => 'Lainnya',
                             ])
                             ->required()

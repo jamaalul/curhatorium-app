@@ -20,7 +20,8 @@ return new class extends Migration
             $table->enum('ecommerce_name', [
                 'shopee',
                 'tokopedia',
-                'other',
+                'tiktok',
+                'other'
             ]);
             $table->text('url');
             $table->timestamps();
