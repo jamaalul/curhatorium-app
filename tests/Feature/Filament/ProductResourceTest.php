@@ -7,6 +7,7 @@ use App\Filament\Resources\ProductResource\Pages\CreateProduct;
 use App\Filament\Resources\ProductResource\Pages\EditProduct;
 use App\Filament\Resources\ProductResource\Pages\ListProducts;
 use App\Filament\Resources\ProductResource\RelationManagers\MediaRelationManager;
+use App\Models\EcommerceLink;
 use App\Models\Product;
 use App\Models\ProductCategory;
 use App\Models\ProductMedia;
@@ -71,7 +72,16 @@ class ProductResourceTest extends TestCase
                 'slug' => 'jurnal-refleksi',
                 'description' => 'Jurnal untuk refleksi harian.',
                 'price' => 75000,
-                'ecommerce_url' => 'https://example.com/products/jurnal-refleksi',
+                'ecommerceLinks' => [
+                    [
+                        'ecommerce_name' => 'shopee',
+                        'url' => 'https://shopee.co.id/jurnal-refleksi',
+                    ],
+                    [
+                        'ecommerce_name' => 'tokopedia',
+                        'url' => 'https://tokopedia.com/curhatorium/jurnal-refleksi',
+                    ],
+                ],
                 'is_published' => true,
             ])
             ->call('create')
@@ -83,6 +93,7 @@ class ProductResourceTest extends TestCase
 
         $this->assertTrue($product->is_published);
         $this->assertTrue($product->category->is($category));
+        $this->assertSame(['shopee', 'tokopedia'], $product->ecommerceLinks()->pluck('ecommerce_name')->all());
 
         Livewire::test(EditProduct::class, [
             'record' => $product->getRouteKey(),
@@ -93,7 +104,12 @@ class ProductResourceTest extends TestCase
                 'slug' => 'jurnal-refleksi-baru',
                 'description' => 'Jurnal refleksi dengan edisi baru.',
                 'price' => 85000,
-                'ecommerce_url' => 'https://example.com/products/jurnal-refleksi-baru',
+                'ecommerceLinks' => [
+                    [
+                        'ecommerce_name' => 'other',
+                        'url' => 'https://example.com/products/jurnal-refleksi-baru',
+                    ],
+                ],
                 'is_published' => false,
             ])
             ->call('save')
@@ -106,6 +122,32 @@ class ProductResourceTest extends TestCase
         $this->assertSame('jurnal-refleksi-baru', $product->slug);
         $this->assertTrue($product->category->is($newCategory));
         $this->assertFalse($product->is_published);
+        $this->assertSame(['other'], $product->ecommerceLinks()->pluck('ecommerce_name')->all());
+    }
+
+    public function test_product_resource_rejects_invalid_ecommerce_link_url(): void
+    {
+        $category = $this->createCategory();
+
+        Livewire::test(CreateProduct::class)
+            ->fillForm([
+                'name' => 'Produk URL Tidak Valid',
+                'product_category_id' => $category->getKey(),
+                'slug' => 'produk-url-tidak-valid',
+                'description' => 'Produk dengan URL tidak valid.',
+                'price' => 75000,
+                'ecommerceLinks' => [
+                    [
+                        'ecommerce_name' => 'shopee',
+                        'url' => 'bukan-url-valid',
+                    ],
+                ],
+                'is_published' => true,
+            ])
+            ->call('create')
+            ->assertHasFormErrors([
+                'ecommerceLinks.0.url' => 'url',
+            ]);
     }
 
     public function test_product_table_can_search_filter_and_delete_products(): void
@@ -172,7 +214,6 @@ class ProductResourceTest extends TestCase
                 'slug' => 'produk-dengan-media',
                 'description' => 'Produk marketplace dengan foto dan video.',
                 'price' => 125000,
-                'ecommerce_url' => 'https://example.com/products/produk-dengan-media',
                 'is_published' => true,
                 'media' => [
                     [
@@ -316,6 +357,29 @@ class ProductResourceTest extends TestCase
             ->assertTableActionExists('delete');
     }
 
+    public function test_product_can_have_many_ecommerce_links_and_cascade_delete_them(): void
+    {
+        $product = $this->createProduct();
+
+        $links = collect([
+            [
+                'ecommerce_name' => 'shopee',
+                'url' => 'https://shopee.co.id/produk-marketplace',
+            ],
+            [
+                'ecommerce_name' => 'tokopedia',
+                'url' => 'https://tokopedia.com/curhatorium/produk-marketplace',
+            ],
+        ])->map(fn (array $attributes): EcommerceLink => $product->ecommerceLinks()->create($attributes));
+
+        $this->assertCount(2, $product->ecommerceLinks()->get());
+
+        $product->delete();
+
+        $this->assertModelMissing($product);
+        $links->each(fn (EcommerceLink $link): mixed => $this->assertModelMissing($link));
+    }
+
     /**
      * @param  array<string, mixed>  $attributes
      */
@@ -329,7 +393,6 @@ class ProductResourceTest extends TestCase
             'slug' => 'produk-marketplace',
             'description' => 'Deskripsi produk marketplace.',
             'price' => 100000,
-            'ecommerce_url' => 'https://example.com/products/produk-marketplace',
             'is_published' => false,
         ], $attributes));
     }

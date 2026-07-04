@@ -89,11 +89,30 @@ class ProductResource extends Resource
                     ->minValue(0)
                     ->maxValue(9999999999.99)
                     ->step(0.01),
-                Forms\Components\TextInput::make('ecommerce_url')
-                    ->label('URL E-commerce')
-                    ->required()
-                    ->url()
-                    ->maxLength(255),
+                Forms\Components\Repeater::make('ecommerceLinks')
+                    ->label('Link E-commerce')
+                    ->relationship()
+                    ->schema([
+                        Forms\Components\Select::make('ecommerce_name')
+                            ->label('E-commerce')
+                            ->options([
+                                'shopee' => 'Shopee',
+                                'tokopedia' => 'Tokopedia',
+                                'other' => 'Lainnya',
+                            ])
+                            ->required()
+                            ->native(false),
+                        Forms\Components\TextInput::make('url')
+                            ->label('URL')
+                            ->url()
+                            ->required()
+                            ->maxLength(2048),
+                    ])
+                    ->columns(2)
+                    ->defaultItems(0)
+                    ->addActionLabel('Tambah Link E-commerce')
+                    ->collapsible()
+                    ->columnSpanFull(),
                 Forms\Components\Toggle::make('is_published')
                     ->label('Published')
                     ->default(false),
@@ -132,12 +151,10 @@ class ProductResource extends Resource
                 Tables\Columns\IconColumn::make('is_published')
                     ->label('Published')
                     ->boolean(),
-                Tables\Columns\TextColumn::make('ecommerce_url')
-                    ->label('URL E-commerce')
-                    ->limit(40)
-                    ->url(fn (Product $record): string => $record->ecommerce_url)
-                    ->openUrlInNewTab()
-                    ->copyable(),
+                Tables\Columns\TextColumn::make('ecommerce_links_count')
+                    ->label('Jumlah Link')
+                    ->counts('ecommerceLinks')
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Dibuat')
                     ->dateTime('d M Y H:i')
