@@ -1,31 +1,30 @@
 :root {
-    /* primary — teal, capped at teal-700 */
+    /* primary — teal, capped at teal-600 */
     --fc-monarch-primary: rgb(13 148 136);
-    /* teal-600 */
+    /* teal-600 (darkest allowed) */
     --fc-monarch-primary-foreground: rgb(255 255 255);
     --fc-monarch-primary-over: #14b8a6;
-    /* teal-500, lighter on hover */
+    /* teal-500 */
     --fc-monarch-primary-down: #2dd4bf;
-    /* teal-400, lighter on active */
+    /* teal-400 */
 
     /* secondary — yellow, capped at yellow-400 */
     --fc-monarch-secondary: rgb(254 249 195);
     /* yellow-100 */
     --fc-monarch-secondary-foreground: rgb(41 37 36);
-    /* neutral dark text */
     --fc-monarch-secondary-over: #fde047;
     /* yellow-300 */
     --fc-monarch-secondary-down: #facc15;
     /* yellow-400 (darkest allowed) */
 
-    /* tertiary — deep teal, the darkest teal in the palette */
-    --fc-monarch-tertiary: rgb(15 118 110);
-    /* teal-700 (darkest allowed) */
-    --fc-monarch-tertiary-foreground: rgb(255 255 255);
-    --fc-monarch-tertiary-over: #0d9488;
-    /* teal-600 */
-    --fc-monarch-tertiary-down: #14b8a6;
+    /* tertiary — second teal shade, stays under the 600 cap */
+    --fc-monarch-tertiary: rgb(20 184 166);
     /* teal-500 */
+    --fc-monarch-tertiary-foreground: rgb(255 255 255);
+    --fc-monarch-tertiary-over: #2dd4bf;
+    /* teal-400 */
+    --fc-monarch-tertiary-down: #5eead4;
+    /* teal-300 */
 
     /* calendar content */
     --fc-monarch-event: var(--fc-monarch-primary);
@@ -33,14 +32,14 @@
     --fc-monarch-highlight: #fef9c34D;
     --fc-monarch-now: rgb(186 26 26);
 
-    /* controls — reuse teal so nothing outside the two accents appears */
-    --fc-monarch-selected: rgb(15 118 110);
-    /* teal-700 */
-    --fc-monarch-selected-foreground: rgb(255 255 255);
-    --fc-monarch-selected-over: #0d9488;
+    /* controls */
+    --fc-monarch-selected: rgb(13 148 136);
     /* teal-600 */
-    --fc-monarch-selected-down: #14b8a6;
+    --fc-monarch-selected-foreground: rgb(255 255 255);
+    --fc-monarch-selected-over: #14b8a6;
     /* teal-500 */
+    --fc-monarch-selected-down: #2dd4bf;
+    /* teal-400 */
     --fc-monarch-outline: #0d9488;
 
     /* popover */
@@ -70,7 +69,6 @@
         --fc-monarch-primary: rgb(45 212 191);
         /* teal-400 */
         --fc-monarch-primary-foreground: rgb(17 24 39);
-        /* neutral dark, not a teal shade */
         --fc-monarch-primary-over: #5eead4;
         /* teal-300 */
         --fc-monarch-primary-down: #99f6e4;
@@ -78,7 +76,7 @@
 
         /* secondary */
         --fc-monarch-secondary: rgb(250 204 21);
-        /* yellow-400 (darkest allowed) */
+        /* yellow-400 */
         --fc-monarch-secondary-foreground: rgb(41 37 36);
         --fc-monarch-secondary-over: #fde047;
         /* yellow-300 */

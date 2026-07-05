@@ -3,6 +3,7 @@ import themePlugin from 'fullcalendar/themes/monarch'; // YOUR THEME
 import dayGridPlugin from 'fullcalendar/daygrid';
 import timeGridPlugin from 'fullcalendar/timegrid';
 import listPlugin from 'fullcalendar/list';
+import idLocale from 'fullcalendar/locales/id';
 
 // stylesheets
 import 'fullcalendar/skeleton.css'; // ALWAYS NEED SKELETON
@@ -13,6 +14,7 @@ let calendarEl = document.getElementById('calendar');
 let calendar = new Calendar(calendarEl, {
     plugins: [themePlugin, dayGridPlugin, timeGridPlugin, listPlugin],
     initialView: 'dayGridMonth',
+    locale: idLocale,
     headerToolbar: {
         left: 'prev,next today',
         center: 'title',
