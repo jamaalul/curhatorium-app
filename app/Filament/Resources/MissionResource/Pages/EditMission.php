@@ -8,4 +8,4 @@ use Filament\Resources\Pages\EditRecord;
 class EditMission extends EditRecord
 {
     protected static string $resource = MissionResource::class;
-} 
+}

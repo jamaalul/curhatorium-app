@@ -9,5 +9,3 @@ class CreateAnnouncement extends CreateRecord
 {
     protected static string $resource = AnnouncementResource::class;
 }
-
-

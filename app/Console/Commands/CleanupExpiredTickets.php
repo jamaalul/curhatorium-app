@@ -2,9 +2,9 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
 use App\Models\UserTicket;
 use Carbon\Carbon;
+use Illuminate\Console\Command;
 
 class CleanupExpiredTickets extends Command
 {
@@ -44,4 +44,4 @@ class CleanupExpiredTickets extends Command
 
         return 0;
     }
-} 
+}

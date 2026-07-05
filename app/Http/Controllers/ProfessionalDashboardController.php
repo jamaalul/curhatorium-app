@@ -4,9 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\Professional;
 use App\Models\ProfessionalScheduleSlot;
+use App\Models\Reschedule;
 use App\Models\UserTicket;
+use App\Services\FonnteService;
+use App\Services\RescheduleService;
 use App\Services\ScheduleService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
@@ -15,10 +20,9 @@ class ProfessionalDashboardController extends Controller
 {
     public function __construct(
         private ScheduleService $scheduleService,
-        private \App\Services\FonnteService $fonnteService,
-        private \App\Services\RescheduleService $rescheduleService
-    ) {
-    }
+        private FonnteService $fonnteService,
+        private RescheduleService $rescheduleService
+    ) {}
 
     public function index($professionalId)
     {
@@ -26,10 +30,9 @@ class ProfessionalDashboardController extends Controller
         if (Auth::guard('professional')->id() != $professionalId) {
             abort(403);
         }
-        
+
         return view('professional.dashboard', compact('professional'));
     }
-
 
     public function dashboard($professionalId)
     {
@@ -37,7 +40,7 @@ class ProfessionalDashboardController extends Controller
         if (Auth::guard('professional')->id() != $professionalId) {
             abort(403);
         }
-        
+
         // Get recent sessions for this professional
         $recentSessions = $professional->scheduleSlots()
             ->whereIn('status', ['booked', 'pending_confirmation', 'completed'])
@@ -52,17 +55,17 @@ class ProfessionalDashboardController extends Controller
             ->with(['bookedBy', 'consultation'])
             ->orderBy('slot_start_time', 'asc')
             ->get();
-        
+
         return view('professional.dashboard', compact('professional', 'recentSessions', 'pendingBookings'));
     }
 
     public function logout(Request $request)
     {
         Auth::guard('professional')->logout();
-        
+
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        
+
         return redirect()->route('professional.login');
     }
 
@@ -78,23 +81,23 @@ class ProfessionalDashboardController extends Controller
         if (Auth::guard('professional')->id() != $professionalId) {
             abort(403);
         }
-        
+
         // Verify current password
-        if (!Hash::check($request->current_password, $professional->password)) {
+        if (! Hash::check($request->current_password, $professional->password)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Current password is incorrect.'
+                'message' => 'Current password is incorrect.',
             ], 422);
         }
 
         // Update password
         $professional->update([
-            'password' => Hash::make($request->new_password)
+            'password' => Hash::make($request->new_password),
         ]);
 
         return response()->json([
             'success' => true,
-            'message' => 'Password changed successfully.'
+            'message' => 'Password changed successfully.',
         ]);
     }
 
@@ -177,7 +180,7 @@ class ProfessionalDashboardController extends Controller
                 'start' => $slot->slot_start_time,
                 'end' => $slot->slot_end_time,
                 'color' => $color,
-                'allDay' => false
+                'allDay' => false,
             ];
         });
 
@@ -197,11 +200,11 @@ class ProfessionalDashboardController extends Controller
             $user = $slot->bookedBy;
             $consultation = $slot->consultation;
             $message = "Halo {$user->name},\n\n"
-                . "Booking Anda pada tanggal " 
-                . \Carbon\Carbon::parse($slot->slot_start_time)->format('d M Y H:i')
-                . " telah *dikonfirmasi*.\n\n"
-                . "Terima kasih telah menggunakan layanan kami. "
-                . "Sampai jumpa di waktu yang telah ditentukan!";
+                .'Booking Anda pada tanggal '
+                .Carbon::parse($slot->slot_start_time)->format('d M Y H:i')
+                ." telah *dikonfirmasi*.\n\n"
+                .'Terima kasih telah menggunakan layanan kami. '
+                .'Sampai jumpa di waktu yang telah ditentukan!';
             $this->fonnteService->sendWhatsApp($consultation->no_wa, $message);
 
             return back()->with('success', 'Booking accepted.');
@@ -251,14 +254,14 @@ class ProfessionalDashboardController extends Controller
             $slot->status = 'available';
             $slot->booked_by_user_id = null;
             $slot->save();
-            
+
             $message = "Halo {$user->name},\n\n"
-                . "Mohon maaf, booking Anda pada tanggal "
-                . \Carbon\Carbon::parse($slot->slot_start_time)->format('d M Y H:i')
-                . " tidak dapat kami konfirmasi.\n\n"
-                . "Namun, jangan khawatir. Tiket Anda sudah kami kembalikan.\n"
-                . "Silahkan buat booking dengan jadwal yang lain.\n\n"
-                . "Terima kasih atas pengertian Anda.";
+                .'Mohon maaf, booking Anda pada tanggal '
+                .Carbon::parse($slot->slot_start_time)->format('d M Y H:i')
+                ." tidak dapat kami konfirmasi.\n\n"
+                ."Namun, jangan khawatir. Tiket Anda sudah kami kembalikan.\n"
+                ."Silahkan buat booking dengan jadwal yang lain.\n\n"
+                .'Terima kasih atas pengertian Anda.';
             $this->fonnteService->sendWhatsApp($consultation->no_wa, $message);
 
             return back()->with('success', 'Booking declined and ticket refunded.');
@@ -287,8 +290,7 @@ class ProfessionalDashboardController extends Controller
     /**
      * Start the reschedule process for a pending booking
      *
-     * @param ProfessionalScheduleSlot $slot
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function rescheduleBooking(ProfessionalScheduleSlot $slot)
     {
@@ -298,7 +300,7 @@ class ProfessionalDashboardController extends Controller
         }
 
         // Only allow rescheduling of pending or booked slots
-        if (!in_array($slot->status, ['pending_confirmation', 'booked'])) {
+        if (! in_array($slot->status, ['pending_confirmation', 'booked'])) {
             return back()->with('error', 'This booking cannot be rescheduled.');
         }
 
@@ -308,16 +310,16 @@ class ProfessionalDashboardController extends Controller
         // Redirect to the form for selecting available slots
         return redirect()->route('professional.reschedule.offer-slots', [
             'professionalId' => $slot->professional_id,
-            'rescheduleId' => $reschedule->id
+            'rescheduleId' => $reschedule->id,
         ])->with('reschedule_id', $reschedule->id);
     }
 
     /**
      * Show the form for selecting available slots to offer
      *
-     * @param int $professionalId
-     * @param int $rescheduleId
-     * @return \Illuminate\Http\Response
+     * @param  int  $professionalId
+     * @param  int  $rescheduleId
+     * @return Response
      */
     public function showOfferSlotsForm($professionalId, $rescheduleId)
     {
@@ -328,7 +330,7 @@ class ProfessionalDashboardController extends Controller
         }
 
         // Get the reschedule
-        $reschedule = \App\Models\Reschedule::findOrFail($rescheduleId);
+        $reschedule = Reschedule::findOrFail($rescheduleId);
         $originalSlot = $reschedule->originalSlot;
 
         // Get available slots in the next 30 days (excluding the original slot)
@@ -351,10 +353,9 @@ class ProfessionalDashboardController extends Controller
     /**
      * Save the offered slots and send notification to client
      *
-     * @param \Illuminate\Http\Request $request
-     * @param int $professionalId
-     * @param int $rescheduleId
-     * @return \Illuminate\Http\Response
+     * @param  int  $professionalId
+     * @param  int  $rescheduleId
+     * @return Response
      */
     public function offerRescheduleSlots(Request $request, $professionalId, $rescheduleId)
     {
@@ -372,7 +373,7 @@ class ProfessionalDashboardController extends Controller
         ]);
 
         // Get the reschedule
-        $reschedule = \App\Models\Reschedule::findOrFail($rescheduleId);
+        $reschedule = Reschedule::findOrFail($rescheduleId);
         $originalSlot = $reschedule->originalSlot;
         $selectedSlots = $request->input('slots');
         $notes = $request->input('notes');
@@ -383,21 +384,21 @@ class ProfessionalDashboardController extends Controller
         // Send WhatsApp notification to client
         $consultation = $reschedule->consultation;
         $client = $originalSlot->bookedBy;
-        $originalDate = \Carbon\Carbon::parse($originalSlot->slot_start_time)->format('d M Y');
-        $originalTime = \Carbon\Carbon::parse($originalSlot->slot_start_time)->format('H:i');
+        $originalDate = Carbon::parse($originalSlot->slot_start_time)->format('d M Y');
+        $originalTime = Carbon::parse($originalSlot->slot_start_time)->format('H:i');
 
         // Generate the reschedule link
         $rescheduleLink = route('reschedule.client', $reschedule->token);
 
         $message = "Halo {$client->name},\n\n"
-            . "{$professional->name} ingin menukar jadwal konsultasi Anda.\n\n"
-            . "🗓️ Jadwal Lama: {$originalDate}\n"
-            . "🕐 Waktu: {$originalTime}\n\n"
-            . "Silakan pilih jadwal baru melalui link berikut:\n"
-            . "{$rescheduleLink}\n\n"
-            . "Pilihan harus dilakukan dalam 48 jam.\n\n"
-            . "Terima kasih,\n"
-            . "Tim Curhatorium";
+            ."{$professional->name} ingin menukar jadwal konsultasi Anda.\n\n"
+            ."🗓️ Jadwal Lama: {$originalDate}\n"
+            ."🕐 Waktu: {$originalTime}\n\n"
+            ."Silakan pilih jadwal baru melalui link berikut:\n"
+            ."{$rescheduleLink}\n\n"
+            ."Pilihan harus dilakukan dalam 48 jam.\n\n"
+            ."Terima kasih,\n"
+            .'Tim Curhatorium';
 
         $this->fonnteService->sendWhatsApp($consultation->no_wa, $message);
 
@@ -408,8 +409,8 @@ class ProfessionalDashboardController extends Controller
     /**
      * List all reschedules for the professional
      *
-     * @param int $professionalId
-     * @return \Illuminate\Http\Response
+     * @param  int  $professionalId
+     * @return Response
      */
     public function listReschedules($professionalId)
     {
@@ -420,12 +421,12 @@ class ProfessionalDashboardController extends Controller
         }
 
         // Get all reschedules for this professional's bookings
-        $reschedules = \App\Models\Reschedule::whereHas('originalSlot', function ($query) use ($professionalId) {
+        $reschedules = Reschedule::whereHas('originalSlot', function ($query) use ($professionalId) {
             $query->where('professional_id', $professionalId);
         })
-        ->with(['rescheduleSlots.slot', 'originalSlot', 'consultation'])
-        ->orderBy('created_at', 'desc')
-        ->paginate(10);
+            ->with(['rescheduleSlots.slot', 'originalSlot', 'consultation'])
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
 
         return view('professional.reschedule.list', [
             'professional' => $professional,

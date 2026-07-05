@@ -25,4 +25,4 @@ return new class extends Migration
     {
         Schema::dropIfExists('mental_health_test_results');
     }
-}; 
+};

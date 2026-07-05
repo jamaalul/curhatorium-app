@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Agenda extends Model
 {
     protected $table = 'agendas';
+
     protected $fillable = [
         'type',
         'title',
@@ -14,6 +15,6 @@ class Agenda extends Model
         'event_date',
         'event_time',
         'event_address',
-        'is_done'
+        'is_done',
     ];
 }

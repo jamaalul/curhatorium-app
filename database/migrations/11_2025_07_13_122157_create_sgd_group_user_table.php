@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('sgd_group_id')->constrained()->onDelete('cascade');
             $table->timestamp('joined_at')->useCurrent();
             $table->timestamps();
-            
+
             // Ensure a user can only join a group once
             $table->unique(['user_id', 'sgd_group_id']);
         });

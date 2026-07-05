@@ -38,12 +38,12 @@ class ChatbotSession extends Model
         if ($value) {
             return $value;
         }
-        
+
         $firstMessage = $this->messages()->where('role', 'user')->first();
         if ($firstMessage) {
             return Str::limit($firstMessage->content, 50);
         }
-        
+
         return 'New Chat';
     }
 }

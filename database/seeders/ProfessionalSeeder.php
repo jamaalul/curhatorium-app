@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\Professional;
+use Illuminate\Database\Seeder;
 
 class ProfessionalSeeder extends Seeder
 {
@@ -60,4 +60,4 @@ class ProfessionalSeeder extends Seeder
             Professional::create($professional);
         }
     }
-} 
+}

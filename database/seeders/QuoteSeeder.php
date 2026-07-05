@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\Quote;
+use Illuminate\Database\Seeder;
 
 class QuoteSeeder extends Seeder
 {
@@ -62,11 +62,11 @@ class QuoteSeeder extends Seeder
             'Kamu tidak harus tahu semua jawaban itu sekarang.',
             'Berproses bukan berarti kamu lamban, itu merupakan satu step penting dalam kehidupanmu.',
             'Yang penting bukan kecepatan, tapi konsistensi.',
-            'Kamu sedang menulis kisahmu sendiri, itu sudah lebih dari luar biasa.'
+            'Kamu sedang menulis kisahmu sendiri, itu sudah lebih dari luar biasa.',
         ];
 
         foreach ($quotes as $text) {
             Quote::create(['quote' => $text]);
         }
     }
-} 
+}

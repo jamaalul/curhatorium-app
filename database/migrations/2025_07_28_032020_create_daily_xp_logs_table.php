@@ -17,7 +17,7 @@ return new class extends Migration
             $table->integer('xp_gained');
             $table->string('activity');
             $table->timestamps();
-            
+
             // Index for efficient daily XP queries
             $table->index(['user_id', 'created_at']);
         });

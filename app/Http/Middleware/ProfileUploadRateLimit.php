@@ -5,7 +5,6 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
-use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -20,8 +19,8 @@ class ProfileUploadRateLimit
 
         if (RateLimiter::tooManyAttempts($key, $this->maxAttempts())) {
             throw ValidationException::withMessages([
-                'profile_picture' => 'Too many upload attempts. Please try again in ' . 
-                    ceil(RateLimiter::availableIn($key) / 60) . ' minutes.',
+                'profile_picture' => 'Too many upload attempts. Please try again in '.
+                    ceil(RateLimiter::availableIn($key) / 60).' minutes.',
             ]);
         }
 
@@ -30,7 +29,7 @@ class ProfileUploadRateLimit
         $response = $next($request);
 
         return $response->header('X-RateLimit-Limit', $this->maxAttempts())
-                       ->header('X-RateLimit-Remaining', RateLimiter::remaining($key, $this->maxAttempts()));
+            ->header('X-RateLimit-Remaining', RateLimiter::remaining($key, $this->maxAttempts()));
     }
 
     /**
@@ -41,7 +40,7 @@ class ProfileUploadRateLimit
         return sha1(implode('|', [
             $request->user()->id ?? $request->ip(),
             $request->userAgent(),
-            'profile_upload'
+            'profile_upload',
         ]));
     }
 
@@ -60,4 +59,4 @@ class ProfileUploadRateLimit
     {
         return 60; // 1 hour window
     }
-} 
+}

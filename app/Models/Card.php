@@ -8,6 +8,6 @@ class Card extends Model
 {
     protected $fillable = [
         'content',
-        'category'
+        'category',
     ];
 }

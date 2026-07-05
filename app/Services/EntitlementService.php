@@ -22,13 +22,14 @@ class EntitlementService
             })
             ->exists();
     }
+
     /**
      * Get the total available amount for an entitlement
      */
     public function getAvailableEntitlementAmount(User $user, string $benefit)
     {
         $entitlements = $this->getAvailableEntitlementQuery($user, $benefit)->get();
-        
+
         $total = 0;
         foreach ($entitlements as $entitlement) {
             if ($entitlement->amount_total == -1) {
@@ -36,9 +37,10 @@ class EntitlementService
             }
             $total += max(0, $entitlement->amount_total - $entitlement->amount_used);
         }
-        
+
         return $total;
     }
+
     /**
      * Consume an entitlement amount for a user.
      */

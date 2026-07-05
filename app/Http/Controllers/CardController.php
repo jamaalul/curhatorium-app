@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Card;
 
 class CardController extends Controller
@@ -20,8 +19,9 @@ class CardController extends Controller
 
         return view('cards', compact('cards', 'xpResult'));
     }
-    
-    public function getCards() {
+
+    public function getCards()
+    {
         $pernyataanCards = Card::where('category', 'pernyataan')->inRandomOrder()->limit(2)->get();
         $pertanyaanCards = Card::where('category', 'pertanyaan')->inRandomOrder()->limit(3)->get();
         $cards = $pernyataanCards->concat($pertanyaanCards);

@@ -34,6 +34,7 @@ class AgendaController extends Controller
     public function getPending()
     {
         $pendingAgendas = Agenda::where('is_done', false)->get();
+
         return response()->json($pendingAgendas);
     }
 

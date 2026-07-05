@@ -11,6 +11,8 @@ class MembershipPlan extends Model
 {
     use HasFactory;
 
+    public const FREE_PLAN_ID = 1;
+
     protected $fillable = [
         'name',
         'price_idr',

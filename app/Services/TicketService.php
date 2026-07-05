@@ -35,7 +35,7 @@ class TicketService
                 ->orderBy('expires_at')
                 ->first();
 
-            if (!$ticket) {
+            if (! $ticket) {
                 return false;
             }
 
@@ -68,21 +68,23 @@ class TicketService
         return DB::transaction(function () use ($user, $ticketType, $amount) {
             $ticket = $user->userTickets()
                 ->where('ticket_type', $ticketType)
-                ->where(function($q) {
+                ->where(function ($q) {
                     $q->whereNull('limit_type')->orWhere('limit_type', '!=', 'unlimited');
                 })
                 ->orderByDesc('expires_at')
                 ->first();
 
-            if (!$ticket || $ticket->remaining_value === null) {
+            if (! $ticket || $ticket->remaining_value === null) {
                 Log::warning("No ticket found to refund for user {$user->id}, ticket type: {$ticketType}");
+
                 return false;
             }
 
             $ticket->remaining_value += $amount;
             $ticket->save();
-            
+
             Log::info("Ticket refunded for user {$user->id}, ticket type: {$ticketType}, refund amount: {$amount}");
+
             return true;
         });
     }
@@ -117,10 +119,10 @@ class TicketService
                             'limit_type' => $ticket->limit_type,
                             'expires_at' => $ticket->expires_at,
                         ];
-                    })
+                    }),
                 ];
             });
 
         return $tickets->toArray();
     }
-} 
+}

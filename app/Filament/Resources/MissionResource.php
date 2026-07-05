@@ -9,14 +9,17 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
 
 class MissionResource extends Resource
 {
     protected static ?string $model = Mission::class;
+
     protected static ?string $navigationIcon = 'heroicon-o-flag';
+
     protected static ?string $navigationLabel = 'Missions';
+
     protected static ?string $modelLabel = 'Mission';
+
     protected static ?string $pluralModelLabel = 'Missions';
 
     public static function form(Form $form): Form
@@ -72,4 +75,4 @@ class MissionResource extends Resource
             'edit' => Pages\EditMission::route('/{record}/edit'),
         ];
     }
-} 
+}

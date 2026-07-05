@@ -2,21 +2,18 @@
 
 namespace App\Services;
 
+use App\Models\Consultation;
+use App\Models\ProfessionalScheduleSlot;
 use App\Models\Reschedule;
 use App\Models\RescheduleSlot;
-use App\Models\ProfessionalScheduleSlot;
-use App\Models\Consultation;
-use Illuminate\Support\Str;
 use Carbon\Carbon;
+use Illuminate\Support\Str;
 
 class RescheduleService
 {
     /**
      * Create a reschedule offer for a consultation
      *
-     * @param ProfessionalScheduleSlot $originalSlot
-     * @param array $offeredSlotIds
-     * @param string|null $notes
      * @return Reschedule
      */
     public function createRescheduleOffer(ProfessionalScheduleSlot $originalSlot, array $offeredSlotIds, ?string $notes = null)
@@ -51,9 +48,6 @@ class RescheduleService
     /**
      * Update an existing reschedule offer with offered slots
      *
-     * @param Reschedule $reschedule
-     * @param array $offeredSlotIds
-     * @param string|null $notes
      * @return Reschedule
      */
     public function updateRescheduleOffer(Reschedule $reschedule, array $offeredSlotIds, ?string $notes = null)
@@ -92,8 +86,6 @@ class RescheduleService
     /**
      * Check if a token is valid
      *
-     * @param Reschedule $reschedule
-     * @param string $token
      * @return bool
      */
     public function isTokenValid(Reschedule $reschedule, string $token)
@@ -106,7 +98,7 @@ class RescheduleService
             return false;
         }
 
-        if (Carbon::now()->isAfter(\Carbon\Carbon::parse($reschedule->expires_at))) {
+        if (Carbon::now()->isAfter(Carbon::parse($reschedule->expires_at))) {
             return false;
         }
 
@@ -116,9 +108,6 @@ class RescheduleService
     /**
      * Handle a client's response to a reschedule offer
      *
-     * @param Reschedule $reschedule
-     * @param string $selectedSlotId
-     * @param string $action
      * @return bool
      */
     public function handleClientResponse(Reschedule $reschedule, string $selectedSlotId, string $action)
@@ -129,7 +118,7 @@ class RescheduleService
                 ->where('professional_schedule_slot_id', $selectedSlotId)
                 ->first();
 
-            if (!$rescheduleSlot) {
+            if (! $rescheduleSlot) {
                 return false;
             }
 

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('plan_benefits', function (Blueprint $table) {
             $table->id();
             $table->foreignId('membership_plan_id')->constrained()->cascadeOnDelete();
-            $table->enum('benefit', ['snt_rgr_chat','snt_psy_chat', 'snt_psy_vc', 'sgd', 'ai_window_token']);
+            $table->enum('benefit', ['snt_rgr_chat', 'snt_psy_chat', 'snt_psy_vc', 'sgd', 'ai_window_token']);
             $table->integer('amount');
             $table->timestamps();
         });

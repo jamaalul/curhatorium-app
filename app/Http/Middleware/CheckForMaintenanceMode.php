@@ -12,7 +12,7 @@ class CheckForMaintenanceMode
     /**
      * Handle an incoming request.
      *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     * @param  Closure(Request): (Response)  $next
      */
     public function handle(Request $request, Closure $next): Response
     {
@@ -22,11 +22,12 @@ class CheckForMaintenanceMode
             }
 
             $allowedIps = explode(',', config('maintenance.allow'));
-            if (!in_array($request->ip(), $allowedIps)) {
-                Log::info('Maintenance mode activated for IP: ' . $request->ip());
+            if (! in_array($request->ip(), $allowedIps)) {
+                Log::info('Maintenance mode activated for IP: '.$request->ip());
                 if ($request->expectsJson()) {
                     return response()->json(['message' => config('maintenance.message')], 503);
                 }
+
                 return response()->view('maintenance', [], 503);
             }
         }

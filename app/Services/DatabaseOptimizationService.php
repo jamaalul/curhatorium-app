@@ -2,15 +2,15 @@
 
 namespace App\Services;
 
-use App\Models\User;
-use App\Models\Stat;
-use App\Models\Mission;
 use App\Models\Card;
 use App\Models\Membership;
-use Illuminate\Support\Facades\DB;
+use App\Models\Mission;
+use App\Models\Stat;
+use App\Models\User;
+use Illuminate\Cache\RedisStore;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Carbon\Carbon;
 
 class DatabaseOptimizationService
 {
@@ -29,14 +29,14 @@ class DatabaseOptimizationService
      */
     public function getOptimizedUserStats(User $user): array
     {
-        $cacheKey = "user_stats_{$user->id}_" . now()->format('Y-m-d');
-        
+        $cacheKey = "user_stats_{$user->id}_".now()->format('Y-m-d');
+
         return Cache::remember($cacheKey, self::CACHE_DURATIONS['medium'], function () use ($user) {
             // Use optimized query with proper indexing
             $stats = Stat::where('user_id', $user->id)
                 ->whereBetween('created_at', [
                     now()->subDays(6)->startOfDay(),
-                    now()->endOfDay()
+                    now()->endOfDay(),
                 ])
                 ->select('mood', 'productivity', 'created_at')
                 ->orderBy('created_at', 'asc')
@@ -46,7 +46,7 @@ class DatabaseOptimizationService
                 return [
                     'day' => $stat->created_at->format('D'),
                     'value' => $stat->mood,
-                    'productivity' => $stat->productivity
+                    'productivity' => $stat->productivity,
                 ];
             })->toArray();
 
@@ -56,7 +56,7 @@ class DatabaseOptimizationService
             return [
                 'chartData' => $chartData,
                 'averageMood' => number_format($averageMood, 2),
-                'averageProd' => number_format($averageProd, 2)
+                'averageProd' => number_format($averageProd, 2),
             ];
         });
     }
@@ -66,15 +66,15 @@ class DatabaseOptimizationService
      */
     public function getOptimizedMissions(): array
     {
-        $cacheKey = 'missions_active_' . now()->format('Y-m-d');
-        
+        $cacheKey = 'missions_active_'.now()->format('Y-m-d');
+
         return Cache::remember($cacheKey, self::CACHE_DURATIONS['long'], function () {
             return Mission::where('is_active', true)
-                ->where(function($query) {
+                ->where(function ($query) {
                     $query->where('start_date', '<=', now())
-                          ->where('end_date', '>=', now())
-                          ->orWhereNull('start_date')
-                          ->orWhereNull('end_date');
+                        ->where('end_date', '>=', now())
+                        ->orWhereNull('start_date')
+                        ->orWhereNull('end_date');
                 })
                 ->select('id', 'name', 'description', 'type', 'xp_reward')
                 ->orderBy('created_at', 'desc')
@@ -86,21 +86,21 @@ class DatabaseOptimizationService
     /**
      * Get optimized cards data
      */
-    public function getOptimizedCards(string $category = null, string $difficulty = null): array
+    public function getOptimizedCards(?string $category = null, ?string $difficulty = null): array
     {
-        $cacheKey = "cards_{$category}_{$difficulty}_" . now()->format('Y-m-d');
-        
+        $cacheKey = "cards_{$category}_{$difficulty}_".now()->format('Y-m-d');
+
         return Cache::remember($cacheKey, self::CACHE_DURATIONS['long'], function () use ($category, $difficulty) {
             $query = Card::where('is_active', true);
-            
+
             if ($category) {
                 $query->where('category', $category);
             }
-            
+
             if ($difficulty) {
                 $query->where('difficulty', $difficulty);
             }
-            
+
             return $query->select('id', 'title', 'content', 'category', 'difficulty')
                 ->orderBy('created_at', 'desc')
                 ->get()
@@ -113,35 +113,35 @@ class DatabaseOptimizationService
      */
     public function getOptimizedMemberships(): array
     {
-        $cacheKey = 'memberships_all_' . now()->format('Y-m-d');
-        
+        $cacheKey = 'memberships_all_'.now()->format('Y-m-d');
+
         return Cache::remember($cacheKey, self::CACHE_DURATIONS['daily'], function () {
-            return Membership::with(['membershipTickets' => function($query) {
+            return Membership::with(['membershipTickets' => function ($query) {
                 $query->select('membership_id', 'ticket_type', 'limit_type', 'limit_value');
             }])
-            ->select('id', 'name', 'description', 'price', 'duration', 'duration_type')
-            ->orderBy('price')
-            ->get()
-            ->toArray();
+                ->select('id', 'name', 'description', 'price', 'duration', 'duration_type')
+                ->orderBy('price')
+                ->get()
+                ->toArray();
         });
     }
 
     /**
      * Get optimized user tickets with caching
      */
-    public function getOptimizedUserTickets(User $user, string $ticketType = null): array
+    public function getOptimizedUserTickets(User $user, ?string $ticketType = null): array
     {
-        $cacheKey = "user_tickets_{$user->id}_{$ticketType}_" . now()->format('Y-m-d-H');
-        
+        $cacheKey = "user_tickets_{$user->id}_{$ticketType}_".now()->format('Y-m-d-H');
+
         return Cache::remember($cacheKey, self::CACHE_DURATIONS['short'], function () use ($user, $ticketType) {
             $query = DB::table('user_tickets')
                 ->where('user_id', $user->id)
                 ->where('expires_at', '>', now());
-            
+
             if ($ticketType) {
                 $query->where('ticket_type', $ticketType);
             }
-            
+
             return $query->select('id', 'ticket_type', 'limit_type', 'limit_value', 'remaining_value', 'expires_at')
                 ->orderBy('expires_at', 'asc')
                 ->get()
@@ -154,8 +154,8 @@ class DatabaseOptimizationService
      */
     public function getOptimizedUserMemberships(User $user): array
     {
-        $cacheKey = "user_memberships_{$user->id}_" . now()->format('Y-m-d');
-        
+        $cacheKey = "user_memberships_{$user->id}_".now()->format('Y-m-d');
+
         return Cache::remember($cacheKey, self::CACHE_DURATIONS['medium'], function () use ($user) {
             return DB::table('user_memberships')
                 ->join('memberships', 'user_memberships.membership_id', '=', 'memberships.id')
@@ -180,8 +180,8 @@ class DatabaseOptimizationService
      */
     public function getOptimizedLeaderboard(int $limit = 10): array
     {
-        $cacheKey = "leaderboard_{$limit}_" . now()->format('Y-m-d-H');
-        
+        $cacheKey = "leaderboard_{$limit}_".now()->format('Y-m-d-H');
+
         return Cache::remember($cacheKey, self::CACHE_DURATIONS['medium'], function () use ($limit) {
             return User::select('id', 'username', 'total_xp', 'profile_picture')
                 ->orderBy('total_xp', 'desc')
@@ -196,8 +196,8 @@ class DatabaseOptimizationService
      */
     public function getOptimizedMissionCompletions(User $user, int $limit = 30): array
     {
-        $cacheKey = "mission_completions_{$user->id}_{$limit}_" . now()->format('Y-m-d');
-        
+        $cacheKey = "mission_completions_{$user->id}_{$limit}_".now()->format('Y-m-d');
+
         return Cache::remember($cacheKey, self::CACHE_DURATIONS['medium'], function () use ($user, $limit) {
             return DB::table('mission_completions')
                 ->join('missions', 'mission_completions.mission_id', '=', 'missions.id')
@@ -221,8 +221,8 @@ class DatabaseOptimizationService
      */
     public function getOptimizedChatSessions(User $user, int $limit = 20): array
     {
-        $cacheKey = "chat_sessions_{$user->id}_{$limit}_" . now()->format('Y-m-d');
-        
+        $cacheKey = "chat_sessions_{$user->id}_{$limit}_".now()->format('Y-m-d');
+
         return Cache::remember($cacheKey, self::CACHE_DURATIONS['short'], function () use ($user, $limit) {
             return DB::table('chat_sessions')
                 ->join('professionals', 'chat_sessions.professional_id', '=', 'professionals.id')
@@ -248,8 +248,8 @@ class DatabaseOptimizationService
      */
     public function getOptimizedWeeklyStats(User $user): array
     {
-        $cacheKey = "weekly_stats_{$user->id}_" . now()->format('Y-W');
-        
+        $cacheKey = "weekly_stats_{$user->id}_".now()->format('Y-W');
+
         return Cache::remember($cacheKey, self::CACHE_DURATIONS['long'], function () use ($user) {
             return DB::table('weekly_stats')
                 ->where('user_id', $user->id)
@@ -265,8 +265,8 @@ class DatabaseOptimizationService
      */
     public function getOptimizedMonthlyStats(User $user): array
     {
-        $cacheKey = "monthly_stats_{$user->id}_" . now()->format('Y-m');
-        
+        $cacheKey = "monthly_stats_{$user->id}_".now()->format('Y-m');
+
         return Cache::remember($cacheKey, self::CACHE_DURATIONS['long'], function () use ($user) {
             return DB::table('monthly_stats')
                 ->where('user_id', $user->id)
@@ -289,7 +289,7 @@ class DatabaseOptimizationService
             "mission_completions_{$user->id}_*",
             "chat_sessions_{$user->id}_*",
             "weekly_stats_{$user->id}_*",
-            "monthly_stats_{$user->id}_*"
+            "monthly_stats_{$user->id}_*",
         ];
 
         foreach ($patterns as $pattern) {
@@ -307,7 +307,7 @@ class DatabaseOptimizationService
         // This is a simplified version. In production, you might want to use Redis SCAN
         // or implement a more sophisticated cache clearing mechanism
         try {
-            if (Cache::getStore() instanceof \Illuminate\Cache\RedisStore) {
+            if (Cache::getStore() instanceof RedisStore) {
                 // For Redis, you can use SCAN to find and delete keys
                 $redis = Cache::getStore()->getRedis();
                 $keys = $redis->keys($pattern);
@@ -318,7 +318,7 @@ class DatabaseOptimizationService
         } catch (\Exception $e) {
             Log::warning('Failed to clear cache by pattern', [
                 'pattern' => $pattern,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
         }
     }
@@ -332,7 +332,7 @@ class DatabaseOptimizationService
             'total_queries' => DB::getQueryLog() ? count(DB::getQueryLog()) : 0,
             'slow_queries' => 0,
             'cache_hits' => 0,
-            'cache_misses' => 0
+            'cache_misses' => 0,
         ];
 
         // Analyze query log for slow queries
@@ -356,7 +356,7 @@ class DatabaseOptimizationService
             'users', 'stats', 'user_tickets', 'user_memberships',
             'chat_sessions', 'messages', 'mission_completions',
             'chatbot_sessions', 'chatbot_messages', 'daily_xp_logs',
-            'weekly_stats', 'monthly_stats'
+            'weekly_stats', 'monthly_stats',
         ];
 
         $results = [];
@@ -365,11 +365,12 @@ class DatabaseOptimizationService
                 DB::statement("OPTIMIZE TABLE {$table}");
                 $results[$table] = 'optimized';
             } catch (\Exception $e) {
-                $results[$table] = 'failed: ' . $e->getMessage();
+                $results[$table] = 'failed: '.$e->getMessage();
             }
         }
 
         Log::info('Database tables optimized', $results);
+
         return $results;
     }
 
@@ -381,14 +382,14 @@ class DatabaseOptimizationService
         $stats = [
             'total_keys' => 0,
             'memory_usage' => 0,
-            'hit_rate' => 0
+            'hit_rate' => 0,
         ];
 
         try {
-            if (Cache::getStore() instanceof \Illuminate\Cache\RedisStore) {
+            if (Cache::getStore() instanceof RedisStore) {
                 $redis = Cache::getStore()->getRedis();
                 $info = $redis->info();
-                
+
                 $stats['total_keys'] = $info['db0']['keys'] ?? 0;
                 $stats['memory_usage'] = $info['used_memory_human'] ?? '0B';
                 $stats['hit_rate'] = $this->calculateHitRate($info);
@@ -408,7 +409,7 @@ class DatabaseOptimizationService
         $hits = $info['keyspace_hits'] ?? 0;
         $misses = $info['keyspace_misses'] ?? 0;
         $total = $hits + $misses;
-        
+
         return $total > 0 ? round(($hits / $total) * 100, 2) : 0;
     }
 
@@ -420,16 +421,16 @@ class DatabaseOptimizationService
         try {
             // Warm up missions cache
             $this->getOptimizedMissions();
-            
+
             // Warm up memberships cache
             $this->getOptimizedMemberships();
-            
+
             // Warm up leaderboard cache
             $this->getOptimizedLeaderboard();
-            
+
             Log::info('Cache warmed up successfully');
         } catch (\Exception $e) {
             Log::error('Failed to warm up cache', ['error' => $e->getMessage()]);
         }
     }
-} 
+}

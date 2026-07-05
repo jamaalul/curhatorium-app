@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Models\Professional;
-use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Support\Facades\DB;
 
@@ -12,14 +11,7 @@ class ScheduleService
     /**
      * Generate schedule slots for a professional.
      *
-     * @param Professional $professional
-     * @param array $daysOfWeek
-     * @param string $startTime
-     * @param string $endTime
-     * @param string $startDate
-     * @param string $endDate
-     * @param int $slotDuration in minutes
-     * @return void
+     * @param  int  $slotDuration  in minutes
      */
     public function generateSlots(
         Professional $professional,
@@ -29,8 +21,7 @@ class ScheduleService
         string $startDate,
         string $endDate,
         int $slotDuration = 60
-    ): void
-    {
+    ): void {
         $period = CarbonPeriod::create($startDate, $endDate);
         $slots = [];
 
@@ -59,7 +50,7 @@ class ScheduleService
             }
         }
 
-        if (!empty($slots)) {
+        if (! empty($slots)) {
             DB::table('professional_schedule_slots')->insert($slots);
         }
     }

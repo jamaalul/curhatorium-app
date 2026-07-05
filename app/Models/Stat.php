@@ -47,7 +47,7 @@ class Stat extends Model
             'nature' => 'Nature/Outdoors',
             'food' => 'Food/Cooking',
             'health' => 'Health/Medical',
-            'other' => 'Other'
+            'other' => 'Other',
         ];
     }
 }

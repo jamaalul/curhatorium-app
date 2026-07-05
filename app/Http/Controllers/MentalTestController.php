@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\MentalHealthTestResult;
+use Illuminate\Http\Request;
 
 class MentalTestController extends Controller
 {
@@ -33,10 +33,10 @@ class MentalTestController extends Controller
         $xpResult = $user->awardXp('mental_test');
 
         return response()->json([
-            'success' => true, 
+            'success' => true,
             'result_id' => $result->id,
             'xp_awarded' => $xpResult['xp_awarded'] ?? 0,
-            'xp_message' => $xpResult['message'] ?? ''
+            'xp_message' => $xpResult['message'] ?? '',
         ]);
     }
-} 
+}

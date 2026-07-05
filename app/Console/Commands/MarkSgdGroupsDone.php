@@ -2,9 +2,9 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
 use App\Models\SgdGroup;
 use Carbon\Carbon;
+use Illuminate\Console\Command;
 
 class MarkSgdGroupsDone extends Command
 {
@@ -42,4 +42,4 @@ class MarkSgdGroupsDone extends Command
 
         $this->info("Marked {$count} SGD group(s) as done.");
     }
-} 
+}
