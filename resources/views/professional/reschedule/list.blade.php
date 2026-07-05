@@ -25,7 +25,7 @@
                 </button>
             </div>
             <nav id="mobile-menu" class="mt-2 md:mt-6 hidden md:block">
-                <a href="{{ route('professional.dashboard', $professional->id) }}"
+                <a href="{{ route('professional.dashboard') }}"
                     class="block px-4 py-2 md:px-6 md:py-3 text-gray-700 font-semibold bg-gray-200">
                     <svg class="inline-block w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -34,7 +34,7 @@
                     </svg>
                     Dashboard
                 </a>
-                <a href="{{ route('professional.reschedule.list', $professional->id) }}"
+                <a href="{{ route('professional.reschedule.list') }}"
                     class="block px-4 py-2 md:px-6 md:py-3 text-gray-600 hover:bg-gray-100">
                     <svg class="inline-block w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

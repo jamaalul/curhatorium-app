@@ -24,22 +24,16 @@ class ProfessionalDashboardController extends Controller
         private RescheduleService $rescheduleService
     ) {}
 
-    public function index($professionalId)
+    public function index()
     {
-        $professional = Professional::findOrFail($professionalId);
-        if (Auth::guard('professional')->id() != $professionalId) {
-            abort(403);
-        }
+        $professional = Auth::guard('professional')->user();
 
         return view('professional.dashboard', compact('professional'));
     }
 
-    public function dashboard($professionalId)
+    public function dashboard()
     {
-        $professional = Professional::findOrFail($professionalId);
-        if (Auth::guard('professional')->id() != $professionalId) {
-            abort(403);
-        }
+        $professional = Auth::guard('professional')->user();
 
         // Get recent sessions for this professional
         $recentSessions = $professional->scheduleSlots()
@@ -69,7 +63,7 @@ class ProfessionalDashboardController extends Controller
         return redirect()->route('professional.login');
     }
 
-    public function changePassword(Request $request, $professionalId)
+    public function changePassword(Request $request)
     {
         $request->validate([
             'current_password' => 'required|string',
@@ -77,10 +71,7 @@ class ProfessionalDashboardController extends Controller
             'new_password_confirmation' => 'required|string',
         ]);
 
-        $professional = Professional::findOrFail($professionalId);
-        if (Auth::guard('professional')->id() != $professionalId) {
-            abort(403);
-        }
+        $professional = Auth::guard('professional')->user();
 
         // Verify current password
         if (! Hash::check($request->current_password, $professional->password)) {
@@ -101,7 +92,7 @@ class ProfessionalDashboardController extends Controller
         ]);
     }
 
-    public function setAvailability(Request $request, $professionalId)
+    public function setAvailability(Request $request)
     {
         $validatedData = $request->validate([
             'days' => 'required|array',
@@ -112,10 +103,7 @@ class ProfessionalDashboardController extends Controller
             'end_date' => 'required|date|after_or_equal:start_date',
         ]);
 
-        $professional = Professional::findOrFail($professionalId);
-        if (Auth::guard('professional')->id() != $professionalId) {
-            abort(403);
-        }
+        $professional = Auth::guard('professional')->user();
 
         $this->scheduleService->generateSlots(
             $professional,
@@ -126,7 +114,7 @@ class ProfessionalDashboardController extends Controller
             $validatedData['end_date']
         );
 
-        return redirect()->route('professional.dashboard', $professionalId)
+        return redirect()->route('professional.dashboard')
             ->with('success', 'Availability set successfully.');
     }
 
@@ -309,7 +297,6 @@ class ProfessionalDashboardController extends Controller
 
         // Redirect to the form for selecting available slots
         return redirect()->route('professional.reschedule.offer-slots', [
-            'professionalId' => $slot->professional_id,
             'rescheduleId' => $reschedule->id,
         ])->with('reschedule_id', $reschedule->id);
     }
@@ -321,13 +308,10 @@ class ProfessionalDashboardController extends Controller
      * @param  int  $rescheduleId
      * @return Response
      */
-    public function showOfferSlotsForm($professionalId, $rescheduleId)
+    public function showOfferSlotsForm($rescheduleId)
     {
         // Authorization check
-        $professional = Professional::findOrFail($professionalId);
-        if (Auth::guard('professional')->id() != $professionalId) {
-            abort(403);
-        }
+        $professional = Auth::guard('professional')->user();
 
         // Get the reschedule
         $reschedule = Reschedule::findOrFail($rescheduleId);
@@ -357,13 +341,10 @@ class ProfessionalDashboardController extends Controller
      * @param  int  $rescheduleId
      * @return Response
      */
-    public function offerRescheduleSlots(Request $request, $professionalId, $rescheduleId)
+    public function offerRescheduleSlots(Request $request, $rescheduleId)
     {
         // Authorization check
-        $professional = Professional::findOrFail($professionalId);
-        if (Auth::guard('professional')->id() != $professionalId) {
-            abort(403);
-        }
+        $professional = Auth::guard('professional')->user();
 
         // Validate the request
         $request->validate([
@@ -402,7 +383,7 @@ class ProfessionalDashboardController extends Controller
 
         $this->fonnteService->sendWhatsApp($consultation->no_wa, $message);
 
-        return redirect()->route('professional.dashboard', $professionalId)
+        return redirect()->route('professional.dashboard')
             ->with('success', 'Reschedule offer sent to client successfully.');
     }
 
@@ -412,13 +393,11 @@ class ProfessionalDashboardController extends Controller
      * @param  int  $professionalId
      * @return Response
      */
-    public function listReschedules($professionalId)
+    public function listReschedules()
     {
         // Authorization check
-        $professional = Professional::findOrFail($professionalId);
-        if (Auth::guard('professional')->id() != $professionalId) {
-            abort(403);
-        }
+        $professional = Auth::guard('professional')->user();
+        $professionalId = $professional->id;
 
         // Get all reschedules for this professional's bookings
         $reschedules = Reschedule::whereHas('originalSlot', function ($query) use ($professionalId) {

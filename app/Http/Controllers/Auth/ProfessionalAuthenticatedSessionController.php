@@ -38,7 +38,7 @@ class ProfessionalAuthenticatedSessionController extends Controller
             $request->session()->regenerate();
             $professional = Auth::guard('professional')->user();
 
-            return redirect()->route('professional.dashboard', ['professionalId' => $professional->id]);
+            return redirect()->route('professional.dashboard');
         }
 
         throw ValidationException::withMessages([

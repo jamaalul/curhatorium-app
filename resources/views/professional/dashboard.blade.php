@@ -214,7 +214,7 @@
                             <h3 class="text-lg md:text-xl font-bold mb-4">Atur Ketersediaan</h3>
                             <p class="text-xs md:text-sm text-gray-600 mb-6">Pilih hari dan jam berulang untuk membuka
                                 slot jadwal.</p>
-                            <form action="{{ route('professional.set-availability', $professional->id) }}"
+                            <form action="{{ route('professional.set-availability') }}"
                                 method="POST" class="space-y-4">
                                 @csrf
                                 <div>
@@ -543,7 +543,7 @@
                         new_password: formData.get('new_password'),
                         new_password_confirmation: formData.get('new_password_confirmation')
                     };
-                    fetch(`/professional/{{ $professional->id }}/change-password`, {
+                    fetch(`/professional/change-password`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',

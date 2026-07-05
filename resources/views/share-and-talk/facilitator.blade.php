@@ -16,7 +16,7 @@
             <h2>Lunar</h2>
             <div class="channel active">{{ $user['username'] }}</div>
             <div class="dashboard-link">
-                <a href="{{ route('professional.dashboard', ['professionalId' => $professionalId]) }}" 
+                <a href="{{ route('professional.dashboard') }}" 
                    style="color: #fff; text-decoration: none; padding: 8px 12px; background: rgba(255,255,255,0.1); border-radius: 4px; margin-top: 20px; display: block; font-size: 0.9rem;">
                     📊 Dashboard
                 </a>

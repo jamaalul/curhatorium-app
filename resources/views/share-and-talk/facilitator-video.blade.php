@@ -23,7 +23,7 @@
       </div>
     </div>
     <div id="dashboard-link" style="position:fixed;top:32px;right:32px;z-index:9999;">
-      <a href="{{ route('professional.dashboard', ['professionalId' => $professionalId]) }}" 
+      <a href="{{ route('professional.dashboard') }}" 
          style="background:#222;color:#fff;padding:12px 16px;border-radius:8px;box-shadow:0 2px 12px #0002;text-decoration:none;font-family:'FigtreeReg', Figtree, Arial,sans-serif;font-size:0.9rem;margin-right:10px;">
         📊 Dashboard
       </a>

@@ -166,7 +166,7 @@
     <div class="container">
         <div class="header">
             <h1 class="header-title">Offer Reschedule Slots</h1>
-            <a href="{{ route('professional.dashboard', $professional->id) }}" class="back-button">Back to Dashboard</a>
+            <a href="{{ route('professional.dashboard') }}" class="back-button">Back to Dashboard</a>
         </div>
 
         @if ($errors->any())
@@ -193,7 +193,7 @@
         </div>
 
         <form
-            action="{{ route('professional.reschedule.offer-slots.save', ['professionalId' => $professional->id, 'rescheduleId' => $reschedule->id]) }}"
+            action="{{ route('professional.reschedule.offer-slots.save', ['rescheduleId' => $reschedule->id]) }}"
             method="POST">
             @csrf
             <div class="form-group">
@@ -234,7 +234,7 @@
             </div>
 
             <div class="flex justify-between mt-6">
-                <a href="{{ route('professional.dashboard', $professional->id) }}" class="btn btn-secondary">Cancel</a>
+                <a href="{{ route('professional.dashboard') }}" class="btn btn-secondary">Cancel</a>
                 <button type="submit" class="btn btn-primary" {{ $availableSlots->count() == 0 ? 'disabled' : '' }}>
                     Send Reschedule Offer
                 </button>
