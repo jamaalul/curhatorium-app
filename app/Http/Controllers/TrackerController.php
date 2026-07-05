@@ -17,17 +17,10 @@ class TrackerController extends Controller
     ) {}
     public function index() {
         $user = Auth::user();
-        
-        // Debug: Check user's tickets and memberships
-        $tickets = $user->userTickets()->where('ticket_type', 'tracker')->get();
-        $memberships = $user->activeMemberships()->get();
-        
-        Log::info('User tracker access check:', [
-            'user_id' => $user->id,
-            'tracker_tickets' => $tickets->toArray(),
-            'active_memberships' => $memberships->toArray(),
-        ]);
-        
+
+        // Debug: Check user's memberships
+        $memberships = $user->subscription()->get();
+
         if ($this->trackerService->hasTrackedToday($user)) {
             return redirect()->back()->withErrors(['msg' => 'You have already submitted your tracker for today.']);
         }
