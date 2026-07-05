@@ -13,14 +13,16 @@ class SafeImageRule implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        if (!$value instanceof UploadedFile) {
+        if (! $value instanceof UploadedFile) {
             $fail('The :attribute must be a valid file.');
+
             return;
         }
 
         // Check if file is actually an image
-        if (!$value->isValid()) {
+        if (! $value->isValid()) {
             $fail('The :attribute is not a valid file.');
+
             return;
         }
 
@@ -31,20 +33,22 @@ class SafeImageRule implements ValidationRule
 
         // Validate MIME type
         $allowedMimes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
-        if (!in_array($mimeType, $allowedMimes)) {
+        if (! in_array($mimeType, $allowedMimes)) {
             $fail('The :attribute must be a valid image file (JPEG, PNG, or WebP).');
+
             return;
         }
 
         // Check file size (max 2MB)
         if ($fileSize > 2 * 1024 * 1024) {
             $fail('The :attribute must not be larger than 2MB.');
+
             return;
         }
 
         // Check for potential malicious content
         $fileContent = file_get_contents($filePath);
-        
+
         // The following checks are commented out because scanning binary image data for text patterns
         // can cause false positives on valid images (e.g., PNG screenshots).
         //
@@ -64,6 +68,7 @@ class SafeImageRule implements ValidationRule
         $imageInfo = @getimagesize($filePath);
         if ($imageInfo === false) {
             $fail('The :attribute is not a valid image file.');
+
             return;
         }
 
@@ -73,13 +78,15 @@ class SafeImageRule implements ValidationRule
         // Check dimensions
         if ($width > 2048 || $height > 2048) {
             $fail('The :attribute dimensions must not exceed 2048x2048 pixels.');
+
             return;
         }
 
         // Check for extremely small images (potential steganography)
         if ($width < 10 || $height < 10) {
             $fail('The :attribute dimensions are too small.');
+
             return;
         }
     }
-} 
+}

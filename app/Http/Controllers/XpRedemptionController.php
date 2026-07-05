@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Models\UserTicket;
-use App\Models\MembershipTicket;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class XpRedemptionController extends Controller
 {
@@ -21,7 +20,7 @@ class XpRedemptionController extends Controller
             'limit_value' => 1,
             'remaining_value' => 1,
             'duration_days' => 30,
-            'is_unlimited' => false
+            'is_unlimited' => false,
         ],
         'share_talk_psy_chat' => [
             'name' => 'Share and Talk psy chat',
@@ -31,7 +30,7 @@ class XpRedemptionController extends Controller
             'limit_value' => 1,
             'remaining_value' => 1,
             'duration_days' => 30,
-            'is_unlimited' => false
+            'is_unlimited' => false,
         ],
         'share_talk_partner_chat' => [
             'name' => 'Share and talk partner chat',
@@ -41,7 +40,7 @@ class XpRedemptionController extends Controller
             'limit_value' => 1,
             'remaining_value' => 1,
             'duration_days' => 30,
-            'is_unlimited' => false
+            'is_unlimited' => false,
         ],
         'support_group_discussion' => [
             'name' => 'Support group discussion',
@@ -51,7 +50,7 @@ class XpRedemptionController extends Controller
             'limit_value' => 1,
             'remaining_value' => 1,
             'duration_days' => 30,
-            'is_unlimited' => false
+            'is_unlimited' => false,
         ],
         'mood_tracker' => [
             'name' => 'Mood & Productivity Tracker',
@@ -61,7 +60,7 @@ class XpRedemptionController extends Controller
             'limit_value' => null,
             'remaining_value' => null,
             'duration_days' => 30,
-            'is_unlimited' => true
+            'is_unlimited' => true,
         ],
         'mentai_deepcard_unlimited' => [
             'name' => 'Ment-AI & Deepcard Unlimited',
@@ -71,22 +70,22 @@ class XpRedemptionController extends Controller
             'limit_value' => null,
             'remaining_value' => null,
             'duration_days' => 30,
-            'is_unlimited' => true
-        ]
+            'is_unlimited' => true,
+        ],
     ];
 
     public function index()
     {
         $user = Auth::user();
         $redemptionScheme = self::REDEMPTION_SCHEME;
-        
+
         return view('xp-redemption.index', compact('user', 'redemptionScheme'));
     }
 
     public function redeem(Request $request)
     {
         $request->validate([
-            'ticket_type' => 'required|string|in:' . implode(',', array_keys(self::REDEMPTION_SCHEME))
+            'ticket_type' => 'required|string|in:'.implode(',', array_keys(self::REDEMPTION_SCHEME)),
         ]);
 
         $user = Auth::user();
@@ -95,7 +94,7 @@ class XpRedemptionController extends Controller
 
         // Check if user has enough XP
         if ($user->total_xp < $scheme['xp_cost']) {
-            return back()->with('error', 'Insufficient XP. You need ' . $scheme['xp_cost'] . ' XP to redeem this ticket.');
+            return back()->with('error', 'Insufficient XP. You need '.$scheme['xp_cost'].' XP to redeem this ticket.');
         }
 
         try {
@@ -112,7 +111,7 @@ class XpRedemptionController extends Controller
                     'limit_type' => 'hour',
                     'limit_value' => null,
                     'remaining_value' => null,
-                    'expires_at' => Carbon::now()->addDays($scheme['duration_days'])
+                    'expires_at' => Carbon::now()->addDays($scheme['duration_days']),
                 ]);
 
                 UserTicket::create([
@@ -121,10 +120,10 @@ class XpRedemptionController extends Controller
                     'limit_type' => 'count',
                     'limit_value' => null,
                     'remaining_value' => null,
-                    'expires_at' => Carbon::now()->addDays($scheme['duration_days'])
+                    'expires_at' => Carbon::now()->addDays($scheme['duration_days']),
                 ]);
 
-                return back()->with('success', 'Successfully redeemed ' . $scheme['name'] . ' for ' . $scheme['xp_cost'] . ' XP! You now have unlimited access to both Ment-AI and Deep Cards for 30 days.');
+                return back()->with('success', 'Successfully redeemed '.$scheme['name'].' for '.$scheme['xp_cost'].' XP! You now have unlimited access to both Ment-AI and Deep Cards for 30 days.');
             } else {
                 // Create single user ticket for other types
                 UserTicket::create([
@@ -133,10 +132,10 @@ class XpRedemptionController extends Controller
                     'limit_type' => $scheme['limit_type'],
                     'limit_value' => $scheme['limit_value'],
                     'remaining_value' => $scheme['remaining_value'],
-                    'expires_at' => Carbon::now()->addDays($scheme['duration_days'])
+                    'expires_at' => Carbon::now()->addDays($scheme['duration_days']),
                 ]);
 
-                return back()->with('success', 'Successfully redeemed ' . $scheme['name'] . ' for ' . $scheme['xp_cost'] . ' XP!');
+                return back()->with('success', 'Successfully redeemed '.$scheme['name'].' for '.$scheme['xp_cost'].' XP!');
             }
 
         } catch (\Exception $e) {

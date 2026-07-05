@@ -30,16 +30,16 @@ class HandleXpAwarded implements ShouldQueue
             'xp_awarded' => $event->xpAwarded,
             'activity' => $event->activity,
             'total_xp' => $event->user->total_xp,
-            'progress_percentage' => $event->progress['progress_percentage']
+            'progress_percentage' => $event->progress['progress_percentage'],
         ]);
 
         // Check if user reached psychologist access threshold
         if ($event->progress['progress_percentage'] >= 100) {
             Log::info('User unlocked psychologist access', [
                 'user_id' => $event->user->id,
-                'total_xp' => $event->user->total_xp
+                'total_xp' => $event->user->total_xp,
             ]);
-            
+
             // You could dispatch another event here for psychologist access unlocked
             // event(new PsychologistAccessUnlocked($event->user));
         }
@@ -49,8 +49,8 @@ class HandleXpAwarded implements ShouldQueue
             Log::info('User reached daily XP limit', [
                 'user_id' => $event->user->id,
                 'daily_xp_gained' => $event->progress['daily_xp_gained'],
-                'max_daily_xp' => $event->progress['max_daily_xp']
+                'max_daily_xp' => $event->progress['max_daily_xp'],
             ]);
         }
     }
-} 
+}

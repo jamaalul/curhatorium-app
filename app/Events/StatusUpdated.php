@@ -2,10 +2,9 @@
 
 namespace App\Events;
 
+use App\Models\Consultation;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
-use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
@@ -15,14 +14,17 @@ class StatusUpdated implements ShouldBroadcast
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $room;
+
     public $statusType;
+
     public $status;
+
     public $consultation;
 
     /**
      * Create a new event instance.
      */
-    public function __construct(string $room, string $statusType, string $status, \App\Models\Consultation $consultation)
+    public function __construct(string $room, string $statusType, string $status, Consultation $consultation)
     {
         $this->room = $room;
         $this->statusType = $statusType;
@@ -33,12 +35,12 @@ class StatusUpdated implements ShouldBroadcast
     /**
      * Get the channels the event should broadcast on.
      *
-     * @return array<int, \Illuminate\Broadcasting\Channel>
+     * @return array<int, Channel>
      */
     public function broadcastOn(): array
     {
         return [
-            new Channel('chat.' . $this->room),
+            new Channel('chat.'.$this->room),
         ];
     }
 
@@ -57,7 +59,7 @@ class StatusUpdated implements ShouldBroadcast
                 'id' => $this->consultation->id,
                 'facilitator_status' => $this->consultation->facilitator_status,
                 'client_status' => $this->consultation->client_status,
-            ]
+            ],
         ];
     }
 }

@@ -2,9 +2,8 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
 use App\Models\ChatSession;
-use Carbon\Carbon;
+use Illuminate\Console\Command;
 
 class CleanupExpiredSessions extends Command
 {
@@ -31,9 +30,9 @@ class CleanupExpiredSessions extends Command
 
         // Find expired sessions (waiting or pending)
         $expiredSessions = ChatSession::whereIn('status', ['waiting', 'pending'])
-            ->where(function($query) {
+            ->where(function ($query) {
                 $query->where('start', '<', now('Asia/Jakarta')->subMinutes(5))
-                      ->orWhere('pending_end', '<', now('Asia/Jakarta'));
+                    ->orWhere('pending_end', '<', now('Asia/Jakarta'));
             })
             ->get();
 
@@ -57,7 +56,7 @@ class CleanupExpiredSessions extends Command
 
                 $ticket = $user->userTickets()
                     ->where('ticket_type', $ticketType)
-                    ->where(function($q) {
+                    ->where(function ($q) {
                         $q->whereNull('limit_type')->orWhere('limit_type', '!=', 'unlimited');
                     })
                     ->orderByDesc('expires_at')
@@ -74,6 +73,7 @@ class CleanupExpiredSessions extends Command
         }
 
         $this->info('Cleanup completed successfully!');
+
         return 0;
     }
 }

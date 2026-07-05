@@ -52,12 +52,12 @@ class ProcessOrderEntitlements implements ShouldQueue
         $order->load('orderable.planBenefits');
 
         DB::transaction(function () use ($order) {
-            $plan  = $order->orderable;
+            $plan = $order->orderable;
             $start = now();
-            $end   = match ($plan->billing_cycle) {
+            $end = match ($plan->billing_cycle) {
                 'monthly' => $start->copy()->addDays(30),
-                'yearly'  => $start->copy()->addYear(),
-                default   => throw new \UnexpectedValueException("Unknown billing cycle: {$plan->billing_cycle}"),
+                'yearly' => $start->copy()->addYear(),
+                default => throw new \UnexpectedValueException("Unknown billing cycle: {$plan->billing_cycle}"),
             };
 
             // Delete old active subscription's entitlements before replacing
@@ -75,9 +75,9 @@ class ProcessOrderEntitlements implements ShouldQueue
             $subscription = UserSubscription::updateOrCreate(
                 ['user_id' => $order->user_id, 'status' => 'active'],
                 [
-                    'membership_plan_id'   => $plan->id,
+                    'membership_plan_id' => $plan->id,
                     'current_period_start' => $start,
-                    'current_period_end'   => $end,
+                    'current_period_end' => $end,
                 ]
             );
 
@@ -90,23 +90,23 @@ class ProcessOrderEntitlements implements ShouldQueue
 
                 // Bulk insert instead of one query per benefit
                 UserEntitlement::insert(
-                    $benefits->map(fn($benefit) => [
-                        'user_id'              => $order->user_id,
+                    $benefits->map(fn ($benefit) => [
+                        'user_id' => $order->user_id,
                         'user_subscription_id' => $subscription->id,
-                        'benefit'              => $benefit->benefit,
-                        'amount_total'         => $benefit->amount,
-                        'amount_used'          => 0,
-                        'period_start'         => $start,
-                        'period_end'           => $end,
-                        'last_reset_at'        => $start,
-                        'created_at'           => $now,
-                        'updated_at'           => $now,
+                        'benefit' => $benefit->benefit,
+                        'amount_total' => $benefit->amount,
+                        'amount_used' => 0,
+                        'period_start' => $start,
+                        'period_end' => $end,
+                        'last_reset_at' => $start,
+                        'created_at' => $now,
+                        'updated_at' => $now,
                     ])->all()
                 );
             }
 
             Log::info('Processed membership plan', [
-                'order_id'        => $order->id,
+                'order_id' => $order->id,
                 'subscription_id' => $subscription->id,
             ]);
         });

@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Auth;
 
 use Illuminate\Auth\Events\Lockout;
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
@@ -22,7 +23,7 @@ class LoginRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
@@ -35,34 +36,34 @@ class LoginRequest extends FormRequest
     /**
      * Attempt to authenticate the request's credentials.
      *
-     * @throws \Illuminate\Validation\ValidationException
+     * @throws ValidationException
      */
     public function authenticate(): void
     {
         $this->ensureIsNotRateLimited();
 
-    $login = $this->input('login'); // Ambil input 'login' (email atau username)
-    $password = $this->input('password');
-    $remember = $this->boolean('remember');
+        $login = $this->input('login'); // Ambil input 'login' (email atau username)
+        $password = $this->input('password');
+        $remember = $this->boolean('remember');
 
-    // Tentukan apakah login yang dimasukkan adalah email atau username
-    $loginType = filter_var($login, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
+        // Tentukan apakah login yang dimasukkan adalah email atau username
+        $loginType = filter_var($login, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
 
-    if (! Auth::attempt([$loginType => $login, 'password' => $password], $remember)) {
-        RateLimiter::hit($this->throttleKey());
+        if (! Auth::attempt([$loginType => $login, 'password' => $password], $remember)) {
+            RateLimiter::hit($this->throttleKey());
 
-        throw ValidationException::withMessages([
-            'login' => trans('auth.failed'),
-        ]);
-    }
+            throw ValidationException::withMessages([
+                'login' => trans('auth.failed'),
+            ]);
+        }
 
-    RateLimiter::clear($this->throttleKey());
+        RateLimiter::clear($this->throttleKey());
     }
 
     /**
      * Ensure the login request is not rate limited.
      *
-     * @throws \Illuminate\Validation\ValidationException
+     * @throws ValidationException
      */
     public function ensureIsNotRateLimited(): void
     {

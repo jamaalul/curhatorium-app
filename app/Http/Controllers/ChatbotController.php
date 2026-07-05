@@ -2,17 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Services\ChatbotService;
-use App\Http\Requests\ChatbotMessageRequest;
-use App\Models\ChatbotChatMessageV2;
 use App\Models\ChatbotChatV2;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
+use App\Services\ChatbotService;
 use Gemini\Data\Content;
-use Gemini\Data\Part;
 use Gemini\Enums\Role;
 use Gemini\Laravel\Facades\Gemini;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ChatbotController extends Controller
@@ -21,7 +17,8 @@ class ChatbotController extends Controller
         private ChatbotService $chatbotService
     ) {}
 
-    public function index(Request $request) {
+    public function index(Request $request)
+    {
         $user = Auth::user();
         $chats = ChatbotChatV2::where('user_id', $user->id)
             ->orderBy('created_at', 'desc')
@@ -30,7 +27,8 @@ class ChatbotController extends Controller
         return view('chatbot.index', compact('user', 'chats'));
     }
 
-    public function chat(Request $request, $identifier) {
+    public function chat(Request $request, $identifier)
+    {
         $user = Auth::user();
         $chats = ChatbotChatV2::where('user_id', $user->id)
             ->orderBy('created_at', 'desc')
@@ -41,7 +39,8 @@ class ChatbotController extends Controller
         return view('chatbot.chat', compact('user', 'chats', 'activeChat', 'messages'));
     }
 
-    public function send(Request $request, $identifier) {
+    public function send(Request $request, $identifier)
+    {
         $user = Auth::user();
         $message = $request->input('message');
         $chat = ChatbotChatV2::where('identifier', $identifier)->where('user_id', $user->id)->firstOrFail();
@@ -57,7 +56,7 @@ class ChatbotController extends Controller
         $geminiChat = Gemini::chat(model: 'gemini-2.0-flash')
             ->startChat(history: $history);
 
-        $response = $geminiChat->sendMessage($systemPrompt . "\n" . $message);
+        $response = $geminiChat->sendMessage($systemPrompt."\n".$message);
 
         $responseText = $response->text();
 
@@ -69,7 +68,8 @@ class ChatbotController extends Controller
         return response()->json($responseText);
     }
 
-    public function stream(Request $request, $identifier) {
+    public function stream(Request $request, $identifier)
+    {
         $user = Auth::user();
         $message = $request->input('message');
         $chat = ChatbotChatV2::where('identifier', $identifier)->where('user_id', $user->id)->firstOrFail();
@@ -95,11 +95,11 @@ class ChatbotController extends Controller
             }
 
             foreach ($stream as $response) {
-                echo "data: " . json_encode(['text' => $response->text()]) . "\n\n";
+                echo 'data: '.json_encode(['text' => $response->text()])."\n\n";
                 flush();
             }
 
-            echo "data: " . json_encode(['done' => true]) . "\n\n";
+            echo 'data: '.json_encode(['done' => true])."\n\n";
             flush();
         });
 
@@ -111,7 +111,8 @@ class ChatbotController extends Controller
         return $response;
     }
 
-    public function saveMessage(Request $request, $identifier) {
+    public function saveMessage(Request $request, $identifier)
+    {
         $user = Auth::user();
         $message = $request->input('message');
         $chat = ChatbotChatV2::where('identifier', $identifier)->where('user_id', $user->id)->firstOrFail();
@@ -132,7 +133,7 @@ class ChatbotController extends Controller
         $mode = $request->input('mode', 'friendly');
         $title = Gemini::generativeModel(model: 'gemini-2.0-flash')
             ->generateContent(
-                'Buat judul obrolan singkat (2–6 kata) yang jelas, ringkas, dan representatif, mirip dengan judul otomatis ChatGPT. Jangan gunakan tanda kutip, tanda baca, atau format markdown. Plain text saja. Fokus pada inti dari obrolan berikut: ' . $message
+                'Buat judul obrolan singkat (2–6 kata) yang jelas, ringkas, dan representatif, mirip dengan judul otomatis ChatGPT. Jangan gunakan tanda kutip, tanda baca, atau format markdown. Plain text saja. Fokus pada inti dari obrolan berikut: '.$message
             )
             ->text();
 
@@ -152,7 +153,7 @@ class ChatbotController extends Controller
 
         $chatInstance = Gemini::chat(model: 'gemini-2.0-flash')
             ->startChat();
-        $response = $chatInstance->sendMessage($systemPrompt . "\n" . $message);
+        $response = $chatInstance->sendMessage($systemPrompt."\n".$message);
 
         $chat->messages()->create([
             'message' => $response->text(),

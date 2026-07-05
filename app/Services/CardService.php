@@ -23,6 +23,7 @@ class CardService
     public function getCard(int $id): ?array
     {
         $card = Card::find($id);
+
         return $card ? $card->toArray() : null;
     }
 
@@ -32,6 +33,7 @@ class CardService
     public function getRandomCard(): ?array
     {
         $card = Card::inRandomOrder()->first();
+
         return $card ? $card->toArray() : null;
     }
 
@@ -64,7 +66,7 @@ class CardService
     {
         // Get user's XP level to determine appropriate difficulty
         $userXp = $user->total_xp;
-        
+
         $difficulty = match (true) {
             $userXp < 100 => 'beginner',
             $userXp < 500 => 'intermediate',
@@ -87,11 +89,11 @@ class CardService
     {
         return DB::transaction(function () use ($user, $cardId, $interactionType) {
             $card = Card::find($cardId);
-            
-            if (!$card) {
+
+            if (! $card) {
                 return [
                     'success' => false,
-                    'message' => 'Card not found.'
+                    'message' => 'Card not found.',
                 ];
             }
 
@@ -99,7 +101,7 @@ class CardService
                 'user_id' => $user->id,
                 'card_id' => $cardId,
                 'interaction_type' => $interactionType,
-                'card_title' => $card->title
+                'card_title' => $card->title,
             ]);
 
             // Award XP based on interaction type
@@ -116,7 +118,7 @@ class CardService
                 'success' => true,
                 'card' => $card->toArray(),
                 'xp_awarded' => $xpResult['xp_awarded'] ?? 0,
-                'xp_message' => $xpResult['message'] ?? ''
+                'xp_message' => $xpResult['message'] ?? '',
             ];
         });
     }
@@ -131,7 +133,7 @@ class CardService
             ->groupBy('category')
             ->get()
             ->toArray();
-        
+
         $cardsByDifficulty = Card::selectRaw('difficulty, COUNT(*) as count')
             ->groupBy('difficulty')
             ->get()
@@ -140,7 +142,7 @@ class CardService
         return [
             'total_cards' => $totalCards,
             'by_category' => $cardsByCategory,
-            'by_difficulty' => $cardsByDifficulty
+            'by_difficulty' => $cardsByDifficulty,
         ];
     }
 
@@ -165,8 +167,9 @@ class CardService
         // Use today's date as seed for consistent daily card
         $today = now()->format('Y-m-d');
         $seed = crc32($today);
-        
+
         $card = Card::inRandomOrder($seed)->first();
+
         return $card ? $card->toArray() : null;
     }
 
@@ -177,6 +180,7 @@ class CardService
     {
         $seed = crc32($date);
         $card = Card::inRandomOrder($seed)->first();
+
         return $card ? $card->toArray() : null;
     }
 
@@ -222,13 +226,13 @@ class CardService
         // This would require tracking which cards user has completed
         // For now, return basic stats
         $totalCards = Card::count();
-        
+
         return [
             'total_cards' => $totalCards,
             'completed_cards' => 0, // Would need to track this
             'completion_percentage' => 0,
             'favorite_category' => 'general',
-            'last_completed' => null
+            'last_completed' => null,
         ];
     }
 
@@ -289,4 +293,4 @@ class CardService
             ->get()
             ->toArray();
     }
-} 
+}

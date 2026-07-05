@@ -8,6 +8,7 @@ use Illuminate\Support\Str;
 class SgdGroup extends Model
 {
     protected $table = 'sgd_groups';
+
     protected $fillable = [
         'title',
         'topic',
@@ -15,7 +16,7 @@ class SgdGroup extends Model
         'schedule',
         'is_done',
         'category',
-        'host_id'
+        'host_id',
     ];
 
     protected $casts = [
@@ -40,8 +41,8 @@ class SgdGroup extends Model
     public function users()
     {
         return $this->belongsToMany(User::class, 'sgd_group_user')
-                    ->withPivot('joined_at')
-                    ->withTimestamps();
+            ->withPivot('joined_at')
+            ->withTimestamps();
     }
 
     /**
@@ -52,7 +53,7 @@ class SgdGroup extends Model
     //     $now = now();
     //     $startTime = $this->schedule;
     //     $fifteenMinutesBefore = $startTime->copy()->subMinutes(15);
-        
+
     //     return $now->gte($fifteenMinutesBefore) && $now->lt($startTime);
     // }
 
@@ -72,14 +73,12 @@ class SgdGroup extends Model
         return now()->lt($this->schedule);
     }
 
-
-
     /**
      * Get the host (professional) for this SGD group.
      */
     public function host()
     {
-        return $this->belongsTo(\App\Models\Professional::class, 'host_id');
+        return $this->belongsTo(Professional::class, 'host_id');
     }
 
     /**
@@ -90,6 +89,7 @@ class SgdGroup extends Model
         $now = now();
         $startTime = $this->schedule;
         $fiveMinutesBefore = $startTime->copy()->subMinutes(5);
+
         return $now->gte($fiveMinutesBefore);
     }
 }

@@ -2,8 +2,8 @@
 
 namespace App\Repositories;
 
-use App\Models\User;
 use App\Models\DailyXpLog;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 
@@ -12,10 +12,10 @@ class XpRepository
     /**
      * Get daily XP gained by user for a specific date
      */
-    public function getDailyXpGained(User $user, Carbon $date = null): int
+    public function getDailyXpGained(User $user, ?Carbon $date = null): int
     {
         $date = $date ?? Carbon::today();
-        
+
         return DailyXpLog::where('user_id', $user->id)
             ->whereDate('created_at', $date)
             ->sum('xp_gained');
@@ -52,7 +52,7 @@ class XpRepository
     public function getUsersWithPsychologistAccess(): Collection
     {
         $targetXp = config('xp.targets.psychologist_access');
-        
+
         return User::where('total_xp', '>=', $targetXp)->get();
     }
 
@@ -63,7 +63,7 @@ class XpRepository
     {
         $targetXp = config('xp.targets.psychologist_access');
         $threshold = $targetXp * 0.9; // 90% of target
-        
+
         return User::where('total_xp', '>=', $threshold)
             ->where('total_xp', '<', $targetXp)
             ->get();
@@ -82,10 +82,10 @@ class XpRepository
     /**
      * Get daily XP statistics for all users
      */
-    public function getDailyXpStatistics(Carbon $date = null): array
+    public function getDailyXpStatistics(?Carbon $date = null): array
     {
         $date = $date ?? Carbon::today();
-        
+
         $stats = DailyXpLog::whereDate('created_at', $date)
             ->selectRaw('
                 COUNT(DISTINCT user_id) as active_users,
@@ -116,4 +116,4 @@ class XpRepository
             ->get()
             ->toArray();
     }
-} 
+}

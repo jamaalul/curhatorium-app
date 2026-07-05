@@ -11,6 +11,7 @@ use Illuminate\Support\Str;
 class ProductMedia extends Model
 {
     use HasFactory;
+
     private const STORAGE_DISK = 'public';
 
     protected $table = 'product_media';

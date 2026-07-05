@@ -16,8 +16,9 @@ class FonnteService
 
     public function sendWhatsApp($phoneNumber, $message)
     {
-        if (!$this->token) {
+        if (! $this->token) {
             Log::error('Fonnte API key is not set.');
+
             return false;
         }
 
@@ -33,6 +34,7 @@ class FonnteService
                 'response' => $response->body(),
                 'phone_number' => $phoneNumber,
             ]);
+
             return false;
         }
 

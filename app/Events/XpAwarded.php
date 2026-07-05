@@ -3,9 +3,7 @@
 namespace App\Events;
 
 use App\Models\User;
-use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
@@ -28,7 +26,7 @@ class XpAwarded implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new PrivateChannel('user.' . $this->user->id),
+            new PrivateChannel('user.'.$this->user->id),
         ];
     }
 
@@ -42,7 +40,7 @@ class XpAwarded implements ShouldBroadcast
             'activity' => $this->activity,
             'activity_description' => config("xp.activities.{$this->activity}.description"),
             'progress' => $this->progress,
-            'message' => "You earned {$this->xpAwarded} XP for {$this->activity}!"
+            'message' => "You earned {$this->xpAwarded} XP for {$this->activity}!",
         ];
     }
-} 
+}

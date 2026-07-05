@@ -3,15 +3,14 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\SgdGroupResource\Pages;
-use App\Filament\Resources\SgdGroupResource\RelationManagers;
+use App\Models\Professional;
 use App\Models\SgdGroup;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 
 class SgdGroupResource extends Resource
@@ -19,11 +18,11 @@ class SgdGroupResource extends Resource
     protected static ?string $model = SgdGroup::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-users';
-    
+
     protected static ?string $navigationLabel = 'SGD Groups';
-    
+
     protected static ?string $modelLabel = 'SGD Group';
-    
+
     protected static ?string $pluralModelLabel = 'SGD Groups';
 
     public static function form(Form $form): Form
@@ -34,13 +33,13 @@ class SgdGroupResource extends Resource
                     ->required()
                     ->maxLength(255)
                     ->label('Group Title'),
-                    
+
                 Forms\Components\Textarea::make('topic')
                     ->required()
                     ->maxLength(255)
                     ->label('Group Topic')
                     ->rows(3),
-                    
+
                 Forms\Components\Select::make('category')
                     ->required()
                     ->options([
@@ -51,26 +50,26 @@ class SgdGroupResource extends Resource
                         'other' => 'Other',
                     ])
                     ->label('Category'),
-                    
+
                 Forms\Components\DateTimePicker::make('schedule')
                     ->required()
                     ->label('Meeting Schedule'),
-                    
+
                 Forms\Components\Select::make('host_id')
                     ->label('Host (Professional)')
                     ->options(function () {
-                        return \App\Models\Professional::where('type', 'partner')
+                        return Professional::where('type', 'partner')
                             ->pluck('name', 'id')
                             ->toArray();
                     })
                     ->searchable()
                     ->placeholder('Select a professional host')
                     ->helperText('Only professionals with partner type can be selected as hosts'),
-                    
+
                 Forms\Components\Toggle::make('is_done')
                     ->label('Meeting Completed')
                     ->default(false),
-                    
+
                 Forms\Components\TextInput::make('meeting_address')
                     ->maxLength(255)
                     ->label('Meeting Address')
@@ -86,7 +85,7 @@ class SgdGroupResource extends Resource
                     ->searchable()
                     ->sortable()
                     ->label('Title'),
-                    
+
                 Tables\Columns\TextColumn::make('category')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
@@ -98,22 +97,22 @@ class SgdGroupResource extends Resource
                     })
                     ->formatStateUsing(fn (string $state): string => ucfirst(str_replace('-', ' ', $state)))
                     ->sortable(),
-                    
+
                 Tables\Columns\TextColumn::make('schedule')
                     ->dateTime()
                     ->sortable()
                     ->label('Scheduled'),
-                    
+
                 Tables\Columns\TextColumn::make('host.name')
                     ->label('Host')
                     ->sortable()
                     ->searchable()
                     ->placeholder('No host assigned'),
-                    
+
                 Tables\Columns\IconColumn::make('is_done')
                     ->boolean()
                     ->label('Completed'),
-                    
+
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -163,12 +162,12 @@ class SgdGroupResource extends Resource
         return Auth::user()->is_admin ?? false;
     }
 
-    public static function canEdit(\Illuminate\Database\Eloquent\Model $record): bool
+    public static function canEdit(Model $record): bool
     {
         return Auth::user()->is_admin ?? false;
     }
 
-    public static function canDelete(\Illuminate\Database\Eloquent\Model $record): bool
+    public static function canDelete(Model $record): bool
     {
         return Auth::user()->is_admin ?? false;
     }
@@ -178,7 +177,7 @@ class SgdGroupResource extends Resource
         return Auth::user()->is_admin ?? false;
     }
 
-    public static function canView(\Illuminate\Database\Eloquent\Model $record): bool
+    public static function canView(Model $record): bool
     {
         return Auth::user()->is_admin ?? false;
     }

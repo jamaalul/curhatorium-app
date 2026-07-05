@@ -9,14 +9,17 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
 
 class AgendaResource extends Resource
 {
     protected static ?string $model = Agenda::class;
+
     protected static ?string $navigationIcon = 'heroicon-o-calendar-days';
+
     protected static ?string $navigationLabel = 'Agendas';
+
     protected static ?string $modelLabel = 'Agenda';
+
     protected static ?string $pluralModelLabel = 'Agendas';
 
     public static function form(Form $form): Form
@@ -75,4 +78,4 @@ class AgendaResource extends Resource
             'edit' => Pages\EditAgenda::route('/{record}/edit'),
         ];
     }
-} 
+}

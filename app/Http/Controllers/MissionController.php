@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\Mission;
@@ -11,10 +12,10 @@ class MissionController extends Controller
     public function index()
     {
         $user = Auth::user();
-        
+
         // Use the current date as a seed for consistent daily "randomness"
         $dailySeed = (int) date('Ymd');
-        
+
         // Set the random seed for consistent daily selection
         mt_srand($dailySeed);
 
@@ -33,7 +34,7 @@ class MissionController extends Controller
             ->whereIn('mission_id', $missionIds)
             ->pluck('mission_id')
             ->toArray();
-            
+
         return view('missions', [
             'missions' => $missions,
             'completedMissions' => $completions,
@@ -44,31 +45,31 @@ class MissionController extends Controller
     {
         // Get all missions for this difficulty
         $allMissions = Mission::where('difficulty', $difficulty)->get();
-        
+
         if ($allMissions->count() <= $count) {
             return $allMissions;
         }
-        
+
         // Use the seed to select missions consistently
         $selectedMissions = collect();
         $missionIds = $allMissions->pluck('id')->toArray();
-        
+
         // Use the seed to generate consistent random indices
         mt_srand($seed + ord($difficulty[0])); // Add difficulty to seed for variety
-        
+
         $selectedIndices = [];
         while (count($selectedIndices) < $count) {
             $randomIndex = mt_rand(0, count($missionIds) - 1);
-            if (!in_array($randomIndex, $selectedIndices)) {
+            if (! in_array($randomIndex, $selectedIndices)) {
                 $selectedIndices[] = $randomIndex;
             }
         }
-        
+
         // Get the selected missions
         foreach ($selectedIndices as $index) {
             $selectedMissions->push($allMissions[$index]);
         }
-        
+
         return $selectedMissions;
     }
 
@@ -91,6 +92,7 @@ class MissionController extends Controller
                     'mission_id' => (int) $missionId,
                 ], 409);
             }
+
             return back()->with('error', 'You have already completed this mission.');
         }
         MissionCompletion::create([
@@ -102,7 +104,7 @@ class MissionController extends Controller
         ]);
 
         // Award XP based on mission difficulty
-        $activity = 'mission_' . $mission->difficulty;
+        $activity = 'mission_'.$mission->difficulty;
         $xpResult = $user->awardXp($activity);
 
         $message = 'Mission completed!';
@@ -119,6 +121,7 @@ class MissionController extends Controller
                 'difficulty' => $mission->difficulty,
             ]);
         }
+
         return back()->with('success', $message);
     }
-} 
+}

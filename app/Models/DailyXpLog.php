@@ -10,7 +10,7 @@ class DailyXpLog extends Model
         'user_id',
         'xp_gained',
         'activity',
-        'created_at'
+        'created_at',
     ];
 
     protected $casts = [
@@ -21,4 +21,4 @@ class DailyXpLog extends Model
     {
         return $this->belongsTo(User::class);
     }
-} 
+}

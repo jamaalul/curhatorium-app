@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Services\XpService;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
@@ -21,21 +21,21 @@ class XpController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'activity' => 'required|string',
-            'quantity' => 'integer|min:1|max:10'
+            'quantity' => 'integer|min:1|max:10',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
                 'message' => 'Validation failed',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
         $user = Auth::user();
         $result = $this->xpService->awardXp(
-            $user, 
-            $request->activity, 
+            $user,
+            $request->activity,
             $request->quantity ?? 1
         );
 
@@ -52,7 +52,7 @@ class XpController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $progress
+            'data' => $progress,
         ]);
     }
 
@@ -66,7 +66,7 @@ class XpController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $summary
+            'data' => $summary,
         ]);
     }
 
@@ -80,7 +80,7 @@ class XpController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $breakdown
+            'data' => $breakdown,
         ]);
     }
 
@@ -97,8 +97,8 @@ class XpController extends Controller
             'data' => [
                 'can_access' => $canAccess,
                 'current_xp' => $user->total_xp,
-                'required_xp' => config('xp.targets.psychologist_access')
-            ]
+                'required_xp' => config('xp.targets.psychologist_access'),
+            ],
         ]);
     }
 
@@ -108,14 +108,14 @@ class XpController extends Controller
     public function getXpHistory(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
-            'days' => 'integer|min:1|max:365'
+            'days' => 'integer|min:1|max:365',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
                 'message' => 'Validation failed',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
@@ -124,7 +124,7 @@ class XpController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $history
+            'data' => $history,
         ]);
     }
-} 
+}

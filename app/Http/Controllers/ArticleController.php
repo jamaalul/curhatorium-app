@@ -51,8 +51,7 @@ class ArticleController extends Controller
     public function show(string $slug)
     {
         $article = Article::where('slug', $slug)->firstOrFail();
+
         return view('articles.show', compact('article'));
     }
 }
-
-

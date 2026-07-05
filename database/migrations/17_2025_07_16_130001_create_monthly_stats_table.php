@@ -31,4 +31,4 @@ return new class extends Migration
     {
         Schema::dropIfExists('monthly_stats');
     }
-}; 
+};

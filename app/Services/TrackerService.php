@@ -2,15 +2,14 @@
 
 namespace App\Services;
 
-use App\Models\Stat;
-use App\Models\WeeklyStat;
 use App\Models\MonthlyStat;
+use App\Models\Stat;
 use App\Models\User;
+use App\Models\WeeklyStat;
+use Gemini\Data\GenerationConfig;
+use Gemini\Laravel\Facades\Gemini;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Carbon\Carbon;
-use Gemini\Laravel\Facades\Gemini;
-use Gemini\Data\GenerationConfig;
 
 class TrackerService
 {
@@ -31,7 +30,7 @@ class TrackerService
     {
         return DB::transaction(function () use ($user, $data) {
             Log::info('Creating tracker entry with data:', $data);
-            
+
             // Get AI feedback
             $feedback = $this->getGeminiFeedback($data);
             Log::info('AI feedback generated:', ['feedback' => $feedback]);
@@ -47,7 +46,7 @@ class TrackerService
                 'day' => now()->format('l'),
                 'feedback' => $feedback,
             ];
-            
+
             Log::info('Creating stat with data:', $statData);
             $stat = Stat::create($statData);
             Log::info('Stat created successfully:', ['stat_id' => $stat->id]);
@@ -59,7 +58,7 @@ class TrackerService
             return [
                 'stat' => $stat->toArray(),
                 'xp_awarded' => $xpResult['xp_awarded'] ?? 0,
-                'xp_message' => $xpResult['message'] ?? ''
+                'xp_message' => $xpResult['message'] ?? '',
             ];
         });
     }
@@ -117,7 +116,7 @@ class TrackerService
             ->where('user_id', $user->id)
             ->first();
 
-        if (!$weeklyStat) {
+        if (! $weeklyStat) {
             return null;
         }
 
@@ -131,7 +130,7 @@ class TrackerService
         return [
             'weeklyStat' => $weeklyStat,
             'stats' => $stats,
-            'analysis' => $analysis
+            'analysis' => $analysis,
         ];
     }
 
@@ -144,7 +143,7 @@ class TrackerService
             ->where('user_id', $user->id)
             ->first();
 
-        if (!$monthlyStat) {
+        if (! $monthlyStat) {
             return null;
         }
 
@@ -158,7 +157,7 @@ class TrackerService
         return [
             'monthly_stat' => $monthlyStat->toArray(),
             'stats' => $stats->toArray(),
-            'analysis' => $analysis
+            'analysis' => $analysis,
         ];
     }
 
@@ -170,7 +169,7 @@ class TrackerService
         // Use optimized query with proper indexing and caching
         $weekStart = now()->subDays(6)->startOfDay();
         $weekEnd = now()->endOfDay();
-        
+
         $stats = Stat::where('user_id', $user->id)
             ->whereBetween('created_at', [$weekStart, $weekEnd])
             ->select('mood', 'productivity', 'created_at') // Only select needed columns
@@ -182,7 +181,7 @@ class TrackerService
             return [
                 'day' => $stat->created_at->format('D'), // Day name (Mon, Tue, etc.)
                 'value' => $stat->mood,
-                'productivity' => $stat->productivity
+                'productivity' => $stat->productivity,
             ];
         })->toArray();
 
@@ -193,7 +192,7 @@ class TrackerService
         return [
             'chartData' => $chartData,
             'averageMood' => number_format($averageMood, 2),
-            'averageProd' => number_format($averageProd, 2)
+            'averageProd' => number_format($averageProd, 2),
         ];
     }
 
@@ -216,8 +215,9 @@ class TrackerService
             return $result->text();
         } catch (\Exception $e) {
             Log::error('Gemini API exception for tracker feedback', [
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
+
             return null;
         }
     }
@@ -228,11 +228,11 @@ class TrackerService
     private function buildFeedbackPrompt(array $data): string
     {
         $moodDescription = match (true) {
-            $data['mood'] <= 2 => "Sangat Negatif - disarankan untuk istirahat dan cari aktivitas yang menenangkan.",
-            $data['mood'] <= 4 => "Negatif - coba luangkan waktu buat refleksi atau ngobrol dengan orang yang dipercaya.",
-            $data['mood'] <= 6 => "Netral - kamu cukup stabil, tapi bisa coba sesuatu yang nyenengin diri.",
-            $data['mood'] <= 8 => "Positif - suasana hatimu bagus, pertahankan dan terus eksplor hal-hal positif.",
-            default => "Sangat Positif - kamu lagi di titik yang baik banget, semoga bisa terus stabil ya.",
+            $data['mood'] <= 2 => 'Sangat Negatif - disarankan untuk istirahat dan cari aktivitas yang menenangkan.',
+            $data['mood'] <= 4 => 'Negatif - coba luangkan waktu buat refleksi atau ngobrol dengan orang yang dipercaya.',
+            $data['mood'] <= 6 => 'Netral - kamu cukup stabil, tapi bisa coba sesuatu yang nyenengin diri.',
+            $data['mood'] <= 8 => 'Positif - suasana hatimu bagus, pertahankan dan terus eksplor hal-hal positif.',
+            default => 'Sangat Positif - kamu lagi di titik yang baik banget, semoga bisa terus stabil ya.',
         };
 
         return "Kamu adalah teman pendamping dari Curatorium yang dirancang khusus untuk memberikan dukungan psikologis awal (Psychological First Aid/PFA) kepada pengguna yang sedang mengisi tracker harian.
@@ -277,12 +277,12 @@ class TrackerService
 
         Mood: {$data['mood']}/10 ({$moodDescription})
         Aktivitas utama: {$data['activity']}
-        Penjelasan aktivitas: " . ($data['activityExplanation'] ?? '-') . "
+        Penjelasan aktivitas: ".($data['activityExplanation'] ?? '-')."
         Energi: {$data['energy']}/10
         Produktivitas: {$data['productivity']}/10
-        Hari: " . now()->format('l') . "
+        Hari: ".now()->format('l').'
 
-        Jawab dengan dekat yang supportif, menenangkan, dan positif DAN PASTIKAN KAMU MERESPON MENGGUNAKAN FORMAT MARKDOWN SEPERTI LIST, HEADER, ATAU TABLE UNTUK MENINGKATKAN READABILITY.";
+        Jawab dengan dekat yang supportif, menenangkan, dan positif DAN PASTIKAN KAMU MERESPON MENGGUNAKAN FORMAT MARKDOWN SEPERTI LIST, HEADER, ATAU TABLE UNTUK MENINGKATKAN READABILITY.';
     }
 
     /**
@@ -377,10 +377,19 @@ class TrackerService
      */
     private function getMoodDescription(float $avgMood): string
     {
-        if ($avgMood <= 2) return 'Sangat Negatif';
-        if ($avgMood <= 4) return 'Negatif';
-        if ($avgMood <= 6) return 'Netral';
-        if ($avgMood <= 8) return 'Positif';
+        if ($avgMood <= 2) {
+            return 'Sangat Negatif';
+        }
+        if ($avgMood <= 4) {
+            return 'Negatif';
+        }
+        if ($avgMood <= 6) {
+            return 'Netral';
+        }
+        if ($avgMood <= 8) {
+            return 'Positif';
+        }
+
         return 'Sangat Positif';
     }
 
@@ -389,8 +398,13 @@ class TrackerService
      */
     private function getMoodRecommendation(float $avgMood): string
     {
-        if ($avgMood <= 4) return 'Meningkatkan Mood';
-        if ($avgMood <= 6) return 'Menjaga Mood';
+        if ($avgMood <= 4) {
+            return 'Meningkatkan Mood';
+        }
+        if ($avgMood <= 6) {
+            return 'Menjaga Mood';
+        }
+
         return 'Mempertahankan Mood';
     }
 
@@ -399,8 +413,13 @@ class TrackerService
      */
     private function getMoodRangeDescription(float $range): string
     {
-        if ($range <= 2) return 'Stabil';
-        if ($range <= 4) return 'Sedang';
+        if ($range <= 2) {
+            return 'Stabil';
+        }
+        if ($range <= 4) {
+            return 'Sedang';
+        }
+
         return 'Fluktuatif';
     }
 
@@ -410,12 +429,12 @@ class TrackerService
     private function analyzeActivities($stats)
     {
         $activityCounts = $stats->groupBy('activity')->map->count();
-        $activityMoods = $stats->groupBy('activity')->map(function($group) {
+        $activityMoods = $stats->groupBy('activity')->map(function ($group) {
             return [
                 'avg_mood' => $group->avg('mood'),
                 'avg_productivity' => $group->avg('productivity'),
                 'count' => $group->count(),
-                'entries' => $group
+                'entries' => $group,
             ];
         });
 
@@ -485,10 +504,10 @@ class TrackerService
                     'avg_productivity' => round($highestMoodActivity['avg_productivity'], 1),
                 ],
                 'lowest' => [
-                    'activity' => $activityNames[array_keys($activityMoods->toArray())[count($activityMoods)-1]] ?? 'Unknown',
+                    'activity' => $activityNames[array_keys($activityMoods->toArray())[count($activityMoods) - 1]] ?? 'Unknown',
                     'avg_mood' => round($lowestMoodActivity['avg_mood'], 1),
                     'avg_productivity' => round($lowestMoodActivity['avg_productivity'], 1),
-                ]
+                ],
             ];
         }
 
@@ -503,9 +522,9 @@ class TrackerService
         $avgProductivity = $stats->avg('productivity');
 
         // Find most and least productive days
-        $dailyProductivity = $stats->groupBy(function($stat) {
+        $dailyProductivity = $stats->groupBy(function ($stat) {
             return $stat->created_at->format('Y-m-d');
-        })->map(function($dayStats) {
+        })->map(function ($dayStats) {
             return [
                 'avg_productivity' => $dayStats->avg('productivity'),
                 'date' => $dayStats->first()->created_at,
@@ -530,7 +549,7 @@ class TrackerService
                 'productivity' => round($leastProductiveDay['avg_productivity'], 1),
                 'activities' => $leastProductiveDay['activities'],
                 'mood' => round($leastProductiveDay['mood'], 1),
-            ]
+            ],
         ];
     }
 
@@ -544,21 +563,21 @@ class TrackerService
                 'pattern' => 'Low Mood Week',
                 'goal' => 'Increase Emotional Support & Energy',
                 'theoretical_backing' => 'Behavioral Activation (BA), Social Support Theory, CBT',
-                'how_it_helps' => 'Builds structure, increases perceived support, enhances self-awareness'
+                'how_it_helps' => 'Builds structure, increases perceived support, enhances self-awareness',
             ];
         } elseif ($avgMood <= 6.0) {
             return [
                 'pattern' => 'Fluctuating Mood',
                 'goal' => 'Create Routine, Reduce Variability',
                 'theoretical_backing' => 'Chronobiology, Habit Formation, Affective Activation Theory',
-                'how_it_helps' => 'Stabilizes circadian rhythm, enhances positive affect, improves emotional regulation'
+                'how_it_helps' => 'Stabilizes circadian rhythm, enhances positive affect, improves emotional regulation',
             ];
         } else {
             return [
                 'pattern' => 'Good/Stable Mood',
                 'goal' => 'Reinforce Success, Growth Focus',
                 'theoretical_backing' => 'Self-Monitoring, Positive Psychology, Self-Determination Theory',
-                'how_it_helps' => 'Reinforces adaptive habits, increases purpose and engagement, boosts social bonding'
+                'how_it_helps' => 'Reinforces adaptive habits, increases purpose and engagement, boosts social bonding',
             ];
         }
     }
@@ -600,4 +619,4 @@ class TrackerService
             'explanation' => $bestMoodStat->explanation,
         ];
     }
-} 
+}

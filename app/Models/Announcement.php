@@ -17,5 +17,3 @@ class Announcement extends Model
         'ends_at',
     ];
 }
-
-

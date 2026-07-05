@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\Mission;
+use Illuminate\Database\Seeder;
 
 class MissionSeeder extends Seeder
 {
@@ -470,7 +470,7 @@ class MissionSeeder extends Seeder
 
         // Delete old data - handle foreign key constraints for different database types
         $connection = \DB::connection()->getDriverName();
-        
+
         if ($connection === 'mysql') {
             // For MySQL, disable foreign key checks temporarily
             \DB::statement('SET FOREIGN_KEY_CHECKS=0;');
@@ -486,4 +486,4 @@ class MissionSeeder extends Seeder
             Mission::create($mission);
         }
     }
-} 
+}

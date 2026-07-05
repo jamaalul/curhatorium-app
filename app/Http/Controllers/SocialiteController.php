@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Laravel\Socialite\Facades\Socialite;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Laravel\Socialite\Facades\Socialite;
 
 class SocialiteController extends Controller
 {
@@ -29,12 +28,13 @@ class SocialiteController extends Controller
 
             // Check if user already exists with this provider ID
             $user = User::where('provider_id', $socialUser->getId())
-                       ->where('provider_name', $provider)
-                       ->first();
+                ->where('provider_name', $provider)
+                ->first();
 
             if ($user) {
                 // User exists, log them in
                 Auth::login($user);
+
                 return redirect()->intended(route('dashboard', absolute: false));
             }
 
@@ -48,6 +48,7 @@ class SocialiteController extends Controller
                     'provider_id' => $socialUser->getId(),
                 ]);
                 Auth::login($existingUser);
+
                 return redirect()->intended(route('dashboard', absolute: false));
             }
 
@@ -63,10 +64,11 @@ class SocialiteController extends Controller
             ]);
 
             Auth::login($user);
+
             return redirect()->intended(route('dashboard', absolute: false));
 
         } catch (\Exception $e) {
-            return redirect('/login')->withErrors(['social' => 'Unable to login with ' . ucfirst($provider) . '. Please try again.']);
+            return redirect('/login')->withErrors(['social' => 'Unable to login with '.ucfirst($provider).'. Please try again.']);
         }
     }
 
@@ -80,7 +82,7 @@ class SocialiteController extends Controller
         $counter = 1;
 
         while (User::where('username', $username)->exists()) {
-            $username = $baseUsername . $counter;
+            $username = $baseUsername.$counter;
             $counter++;
         }
 

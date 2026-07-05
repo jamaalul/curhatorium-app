@@ -10,7 +10,7 @@ class PlanBenefit extends Model
     protected $fillable = [
         'membership_plan_id',
         'benefit',
-        'amount'
+        'amount',
     ];
 
     public function membershipPlan(): BelongsTo
