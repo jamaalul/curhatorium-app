@@ -1,0 +1,129 @@
+:root {
+    /* primary — teal, capped at teal-700 */
+    --fc-monarch-primary: rgb(13 148 136);
+    /* teal-600 */
+    --fc-monarch-primary-foreground: rgb(255 255 255);
+    --fc-monarch-primary-over: #14b8a6;
+    /* teal-500, lighter on hover */
+    --fc-monarch-primary-down: #2dd4bf;
+    /* teal-400, lighter on active */
+
+    /* secondary — yellow, capped at yellow-400 */
+    --fc-monarch-secondary: rgb(254 249 195);
+    /* yellow-100 */
+    --fc-monarch-secondary-foreground: rgb(41 37 36);
+    /* neutral dark text */
+    --fc-monarch-secondary-over: #fde047;
+    /* yellow-300 */
+    --fc-monarch-secondary-down: #facc15;
+    /* yellow-400 (darkest allowed) */
+
+    /* tertiary — deep teal, the darkest teal in the palette */
+    --fc-monarch-tertiary: rgb(15 118 110);
+    /* teal-700 (darkest allowed) */
+    --fc-monarch-tertiary-foreground: rgb(255 255 255);
+    --fc-monarch-tertiary-over: #0d9488;
+    /* teal-600 */
+    --fc-monarch-tertiary-down: #14b8a6;
+    /* teal-500 */
+
+    /* calendar content */
+    --fc-monarch-event: var(--fc-monarch-primary);
+    --fc-monarch-event-contrast: var(--fc-monarch-primary-foreground);
+    --fc-monarch-highlight: #fef9c34D;
+    --fc-monarch-now: rgb(186 26 26);
+
+    /* controls — reuse teal so nothing outside the two accents appears */
+    --fc-monarch-selected: rgb(15 118 110);
+    /* teal-700 */
+    --fc-monarch-selected-foreground: rgb(255 255 255);
+    --fc-monarch-selected-over: #0d9488;
+    /* teal-600 */
+    --fc-monarch-selected-down: #14b8a6;
+    /* teal-500 */
+    --fc-monarch-outline: #0d9488;
+
+    /* popover */
+    --fc-monarch-popover: var(--fc-monarch-background);
+
+    /* neutral backgrounds */
+    --fc-monarch-background: #ffffff;
+    --fc-monarch-faint: #6b72801A;
+    --fc-monarch-muted: #6b728026;
+    --fc-monarch-strong: #6b72804D;
+    --fc-monarch-stronger: #6b728059;
+    --fc-monarch-strongest: #6b728066;
+
+    /* neutral foregrounds */
+    --fc-monarch-foreground: #0c0c09;
+    --fc-monarch-faint-foreground: #9ca3af;
+    --fc-monarch-muted-foreground: #6b7280;
+
+    /* neutral borders */
+    --fc-monarch-border: #e5e7eb;
+    --fc-monarch-strong-border: #d1d5db;
+}
+
+@media not print {
+    [data-color-scheme=dark] {
+        /* primary */
+        --fc-monarch-primary: rgb(45 212 191);
+        /* teal-400 */
+        --fc-monarch-primary-foreground: rgb(17 24 39);
+        /* neutral dark, not a teal shade */
+        --fc-monarch-primary-over: #5eead4;
+        /* teal-300 */
+        --fc-monarch-primary-down: #99f6e4;
+        /* teal-200 */
+
+        /* secondary */
+        --fc-monarch-secondary: rgb(250 204 21);
+        /* yellow-400 (darkest allowed) */
+        --fc-monarch-secondary-foreground: rgb(41 37 36);
+        --fc-monarch-secondary-over: #fde047;
+        /* yellow-300 */
+        --fc-monarch-secondary-down: #fef08a;
+        /* yellow-200 */
+
+        /* tertiary */
+        --fc-monarch-tertiary: rgb(94 234 212);
+        /* teal-300 */
+        --fc-monarch-tertiary-foreground: rgb(17 24 39);
+        --fc-monarch-tertiary-over: #99f6e4;
+        /* teal-200 */
+        --fc-monarch-tertiary-down: #ccfbf1;
+        /* teal-100 */
+
+        /* calendar content */
+        --fc-monarch-event: var(--fc-monarch-primary);
+        --fc-monarch-event-contrast: var(--fc-monarch-primary-foreground);
+        --fc-monarch-highlight: #facc154D;
+        --fc-monarch-now: rgb(255 180 171);
+
+        /* controls */
+        --fc-monarch-selected: rgb(94 234 212);
+        /* teal-300 */
+        --fc-monarch-selected-foreground: rgb(17 24 39);
+        --fc-monarch-selected-over: #99f6e4;
+        /* teal-200 */
+        --fc-monarch-selected-down: #ccfbf1;
+        /* teal-100 */
+        --fc-monarch-outline: #5eead4;
+
+        /* popover */
+        --fc-monarch-popover: rgb(18 20 14);
+        --fc-monarch-popover-foreground: rgb(226 227 216);
+
+        /* neutral backgrounds */
+        --fc-monarch-background: #030712;
+
+        /* neutral foregrounds */
+        --fc-monarch-foreground: #ffffff;
+        --fc-monarch-faint-foreground: #898989;
+        --fc-monarch-muted-foreground: #b0b0b0;
+
+        /* neutral borders */
+        --fc-monarch-border: #313330;
+        --fc-monarch-strong-border: #525650;
+    }
+}

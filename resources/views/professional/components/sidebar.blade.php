@@ -1,4 +1,4 @@
-<aside class="bg-white w-72 h-full">
+<aside class="bg-zinc-100 w-72 h-full">
     <div class="flex flex-row items-center gap-4 p-4 w-full">
         <button class="flex justify-center items-center h-fit aspect-square">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"

@@ -20,6 +20,7 @@
     @yield('content')
 
     @yield('scripts')
+    @stack('scripts')
 </body>
 
 </html>
