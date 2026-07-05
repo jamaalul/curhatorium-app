@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
 use App\Services\DatabaseOptimizationService;
+use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -51,7 +51,7 @@ class OptimizeDatabase extends Command
             }
 
             // If no specific option is provided, run all optimizations
-            if (!$this->option('tables') && !$this->option('cache') && !$this->option('indexes') && !$this->option('stats')) {
+            if (! $this->option('tables') && ! $this->option('cache') && ! $this->option('indexes') && ! $this->option('stats')) {
                 $this->optimizeTables($optimizationService);
                 $this->warmUpCache($optimizationService);
                 $this->checkIndexUsage();
@@ -59,14 +59,16 @@ class OptimizeDatabase extends Command
             }
 
             $this->info('✅ Database optimization completed successfully!');
+
             return Command::SUCCESS;
 
         } catch (\Exception $e) {
-            $this->error('❌ Database optimization failed: ' . $e->getMessage());
+            $this->error('❌ Database optimization failed: '.$e->getMessage());
             Log::error('Database optimization command failed', [
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
+
             return Command::FAILURE;
         }
     }
@@ -77,12 +79,12 @@ class OptimizeDatabase extends Command
     private function optimizeTables(DatabaseOptimizationService $optimizationService): void
     {
         $this->info('📊 Optimizing database tables...');
-        
+
         $results = $optimizationService->optimizeTables();
-        
+
         $this->table(
             ['Table', 'Status'],
-            collect($results)->map(fn($status, $table) => [$table, $status])->toArray()
+            collect($results)->map(fn ($status, $table) => [$table, $status])->toArray()
         );
     }
 
@@ -92,9 +94,9 @@ class OptimizeDatabase extends Command
     private function warmUpCache(DatabaseOptimizationService $optimizationService): void
     {
         $this->info('🔥 Warming up cache...');
-        
+
         $optimizationService->warmUpCache();
-        
+
         $this->info('✅ Cache warmed up successfully');
     }
 
@@ -104,10 +106,10 @@ class OptimizeDatabase extends Command
     private function checkIndexUsage(): void
     {
         $this->info('🔍 Checking index usage...');
-        
+
         try {
             // Get index usage statistics
-            $indexStats = DB::select("
+            $indexStats = DB::select('
                 SELECT 
                     TABLE_NAME,
                     INDEX_NAME,
@@ -119,10 +121,11 @@ class OptimizeDatabase extends Command
                 FROM information_schema.STATISTICS 
                 WHERE TABLE_SCHEMA = DATABASE()
                 ORDER BY TABLE_NAME, INDEX_NAME
-            ");
+            ');
 
             if (empty($indexStats)) {
                 $this->warn('No index statistics available');
+
                 return;
             }
 
@@ -133,13 +136,13 @@ class OptimizeDatabase extends Command
                         $stat->TABLE_NAME,
                         $stat->INDEX_NAME,
                         $stat->CARDINALITY ?? 'N/A',
-                        $stat->INDEX_TYPE
+                        $stat->INDEX_TYPE,
                     ];
                 })->toArray()
             );
 
         } catch (\Exception $e) {
-            $this->warn('Could not retrieve index statistics: ' . $e->getMessage());
+            $this->warn('Could not retrieve index statistics: '.$e->getMessage());
         }
     }
 
@@ -185,6 +188,7 @@ class OptimizeDatabase extends Command
 
             if (empty($tableSizes)) {
                 $this->warn('No table size information available');
+
                 return;
             }
 
@@ -194,13 +198,13 @@ class OptimizeDatabase extends Command
                     return [
                         $table->TABLE_NAME,
                         $table->{'Size (MB)'},
-                        number_format($table->TABLE_ROWS)
+                        number_format($table->TABLE_ROWS),
                     ];
                 })->toArray()
             );
 
         } catch (\Exception $e) {
-            $this->warn('Could not retrieve table sizes: ' . $e->getMessage());
+            $this->warn('Could not retrieve table sizes: '.$e->getMessage());
         }
     }
-} 
+}

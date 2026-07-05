@@ -21,7 +21,7 @@ return new class extends Migration
                 'shopee',
                 'tokopedia',
                 'tiktok',
-                'other'
+                'other',
             ]);
             $table->text('url');
             $table->timestamps();

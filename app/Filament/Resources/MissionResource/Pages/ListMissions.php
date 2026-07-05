@@ -16,4 +16,4 @@ class ListMissions extends ListRecords
             Actions\CreateAction::make(),
         ];
     }
-} 
+}

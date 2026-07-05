@@ -2,10 +2,10 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\Stat;
 use App\Models\User;
 use Faker\Factory as Faker;
+use Illuminate\Database\Seeder;
 
 class StatSeeder extends Seeder
 {
@@ -13,12 +13,14 @@ class StatSeeder extends Seeder
     {
         $faker = Faker::create();
         $userIds = User::pluck('id')->all();
-        if (empty($userIds)) return;
+        if (empty($userIds)) {
+            return;
+        }
 
         // Create 84 stats (12 weeks * 7 days) starting from 3 months ago
         $startDate = now()->subMonths(3)->startOfDay();
         $activities = array_keys(Stat::getActivityOptions());
-        
+
         foreach (range(1, 84) as $i) {
             $createdAt = $startDate->copy()->addDays($i - 1);
             Stat::create([
@@ -35,4 +37,4 @@ class StatSeeder extends Seeder
             ]);
         }
     }
-} 
+}

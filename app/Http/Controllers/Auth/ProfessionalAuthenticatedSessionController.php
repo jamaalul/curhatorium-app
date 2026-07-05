@@ -6,10 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\View\View;
 use Illuminate\Validation\ValidationException;
-use Illuminate\Support\Facades\RateLimiter;
-use Illuminate\Support\Str;
+use Illuminate\View\View;
 
 class ProfessionalAuthenticatedSessionController extends Controller
 {
@@ -39,6 +37,7 @@ class ProfessionalAuthenticatedSessionController extends Controller
 
             $request->session()->regenerate();
             $professional = Auth::guard('professional')->user();
+
             return redirect()->route('professional.dashboard', ['professionalId' => $professional->id]);
         }
 
@@ -60,5 +59,4 @@ class ProfessionalAuthenticatedSessionController extends Controller
 
         return redirect()->route('professional.login');
     }
-
 }

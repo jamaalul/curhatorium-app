@@ -38,4 +38,4 @@ class ChatbotMessageRequest extends FormRequest
             'message.min' => 'Pesan tidak boleh kosong.',
         ];
     }
-} 
+}

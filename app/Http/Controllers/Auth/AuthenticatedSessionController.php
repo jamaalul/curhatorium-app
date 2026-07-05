@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Models\Stat;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -36,8 +37,8 @@ class AuthenticatedSessionController extends Controller
         $user = Auth::user();
 
         // Check if this is user's first login (no stats recorded yet)
-        $hasActivity = \App\Models\Stat::where('user_id', $user->id)->exists();
-        if (!$hasActivity && !$user->onboarding_completed) {
+        $hasActivity = Stat::where('user_id', $user->id)->exists();
+        if (! $hasActivity && ! $user->onboarding_completed) {
             // This is likely their first login, keep onboarding_completed as false
             // so introjs will run
         }
@@ -66,15 +67,15 @@ class AuthenticatedSessionController extends Controller
     public function getUser()
     {
         $user = Auth::user();
-        
+
         // Get daily XP summary for the navbar progress indicator
         $dailyXpSummary = $user->getDailyXpSummary();
-        
+
         return response()->json([
             'id' => $user->id,
             'username' => $user->username,
             'total_xp' => $user->total_xp,
-            'daily_xp_summary' => $dailyXpSummary
+            'daily_xp_summary' => $dailyXpSummary,
         ]);
     }
 }

@@ -8,6 +8,7 @@ use Database\Factories\UserFactory;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -187,5 +188,13 @@ class User extends Authenticatable implements FilamentUser
     public function consultationMessages()
     {
         return $this->morphMany(ConsultationMessage::class, 'sender');
+    }
+
+    /**
+     * Get the user's active subscription.
+     */
+    public function subscription(): HasOne
+    {
+        return $this->hasOne(UserSubscription::class)->where('status', 'active');
     }
 }

@@ -2,12 +2,11 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use App\Models\WeeklyStat;
 use App\Models\Stat;
 use App\Models\User;
+use App\Models\WeeklyStat;
 use Faker\Factory as Faker;
-use Carbon\Carbon;
+use Illuminate\Database\Seeder;
 
 class WeeklyStatSeeder extends Seeder
 {
@@ -15,26 +14,30 @@ class WeeklyStatSeeder extends Seeder
     {
         $faker = Faker::create();
         $userIds = User::pluck('id')->all();
-        if (empty($userIds)) return;
-        
+        if (empty($userIds)) {
+            return;
+        }
+
         // Get all stats ordered by created_at
         $stats = Stat::orderBy('created_at', 'asc')->get();
-        
+
         // Group stats by user and week
-        $userWeekGroups = $stats->groupBy(function($stat) {
-            return $stat->user_id . '_' . $stat->created_at->format('Y-W');
+        $userWeekGroups = $stats->groupBy(function ($stat) {
+            return $stat->user_id.'_'.$stat->created_at->format('Y-W');
         });
-        
+
         foreach ($userWeekGroups as $userWeekKey => $weekStats) {
-            if ($weekStats->count() === 0) continue;
-            
+            if ($weekStats->count() === 0) {
+                continue;
+            }
+
             $weekStart = $weekStats->first()->created_at->startOfWeek();
             $weekEnd = $weekStats->first()->created_at->endOfWeek();
             $avgMood = $weekStats->avg('mood');
             $avgProductivity = $weekStats->avg('productivity');
             $bestMood = $weekStats->max('mood');
             $totalEntries = $weekStats->count();
-            
+
             // Ensure we have valid data
             if ($avgMood > 0 && $bestMood > 0) {
                 WeeklyStat::create([
@@ -50,4 +53,4 @@ class WeeklyStatSeeder extends Seeder
             }
         }
     }
-} 
+}

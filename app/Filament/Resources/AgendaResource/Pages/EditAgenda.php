@@ -8,4 +8,4 @@ use Filament\Resources\Pages\EditRecord;
 class EditAgenda extends EditRecord
 {
     protected static string $resource = AgendaResource::class;
-} 
+}

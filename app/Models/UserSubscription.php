@@ -12,7 +12,7 @@ class UserSubscription extends Model
         'membership_plan_id',
         'status',
         'current_period_start',
-        'current_period_end'
+        'current_period_end',
     ];
 
     public function membershipPlan(): BelongsTo
@@ -25,7 +25,8 @@ class UserSubscription extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function userEntitlements() {
+    public function userEntitlements()
+    {
         return $this->hasMany(UserEntitlement::class);
     }
 }

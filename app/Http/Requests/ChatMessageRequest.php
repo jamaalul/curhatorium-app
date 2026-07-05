@@ -38,4 +38,4 @@ class ChatMessageRequest extends FormRequest
             'message.min' => 'Message cannot be empty.',
         ];
     }
-} 
+}

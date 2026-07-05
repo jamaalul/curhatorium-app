@@ -2,8 +2,9 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
+use App\Models\SgdGroup;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -44,7 +45,7 @@ class DatabaseSeeder extends Seeder
         );
 
         // Always create or update sample SGD groups in order of oldest to newest by 'schedule'
-        \App\Models\SgdGroup::updateOrCreate(
+        SgdGroup::updateOrCreate(
             [
                 'title' => 'Curhat #3',
             ],
@@ -57,7 +58,7 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
-        \App\Models\SgdGroup::updateOrCreate(
+        SgdGroup::updateOrCreate(
             [
                 'title' => 'Curhat #2',
             ],
@@ -70,7 +71,7 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
-        \App\Models\SgdGroup::updateOrCreate(
+        SgdGroup::updateOrCreate(
             [
                 'title' => 'Curhat #1',
             ],
@@ -83,7 +84,7 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
-        \App\Models\SgdGroup::updateOrCreate(
+        SgdGroup::updateOrCreate(
             [
                 'title' => 'Curhat #4',
             ],

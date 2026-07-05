@@ -3,7 +3,6 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\ArticleResource\Pages;
-use App\Filament\Resources\ArticleResource\RelationManagers;
 use App\Models\Article;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -11,8 +10,6 @@ use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Str;
 
 class ArticleResource extends Resource
@@ -49,7 +46,7 @@ class ArticleResource extends Resource
                     ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp']),
                 Forms\Components\RichEditor::make('content')
                     ->required()
-                    ->columnSpan(2)
+                    ->columnSpan(2),
             ]);
     }
 

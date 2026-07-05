@@ -2,13 +2,13 @@
 
 namespace App\Services;
 
-use App\Models\ChatbotSession;
 use App\Models\ChatbotMessage;
+use App\Models\ChatbotSession;
 use App\Models\User;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class ChatbotService
 {
@@ -20,13 +20,13 @@ class ChatbotService
         $sessions = ChatbotSession::where('user_id', $user->id)
             ->orderBy('updated_at', 'desc')
             ->get();
-            
+
         return $sessions->map(function ($session) {
             return [
                 'id' => $session->id,
                 'title' => $session->title,
                 'created_at' => $session->created_at,
-                'updated_at' => $session->updated_at
+                'updated_at' => $session->updated_at,
             ];
         })->toArray();
     }
@@ -41,7 +41,7 @@ class ChatbotService
             ->with('messages')
             ->first();
 
-        if (!$session) {
+        if (! $session) {
             return null;
         }
 
@@ -55,9 +55,9 @@ class ChatbotService
                     'id' => $message->id,
                     'role' => $message->role,
                     'content' => $message->content,
-                    'created_at' => $message->created_at
+                    'created_at' => $message->created_at,
                 ];
-            })->toArray()
+            })->toArray(),
         ];
     }
 
@@ -69,18 +69,18 @@ class ChatbotService
         return DB::transaction(function () use ($user, $title) {
             $session = ChatbotSession::create([
                 'user_id' => $user->id,
-                'title' => $title
+                'title' => $title,
             ]);
 
             // Add initial bot message
             ChatbotMessage::create([
                 'chatbot_session_id' => $session->id,
                 'role' => 'assistant',
-                'content' => 'Haiiii. Ada cerita apa hari ini?'
+                'content' => 'Haiiii. Ada cerita apa hari ini?',
             ]);
 
             $sessionWithMessages = $session->load('messages');
-            
+
             return [
                 'id' => $sessionWithMessages->id,
                 'title' => $sessionWithMessages->title,
@@ -91,9 +91,9 @@ class ChatbotService
                         'id' => $message->id,
                         'role' => $message->role,
                         'content' => $message->content,
-                        'created_at' => $message->created_at
+                        'created_at' => $message->created_at,
                     ];
-                })->toArray()
+                })->toArray(),
             ];
         });
     }
@@ -108,11 +108,12 @@ class ChatbotService
                 ->where('user_id', $user->id)
                 ->first();
 
-            if (!$session) {
+            if (! $session) {
                 return false;
             }
 
             $session->delete();
+
             return true;
         });
     }
@@ -132,7 +133,7 @@ class ChatbotService
             ChatbotMessage::create([
                 'chatbot_session_id' => $session->id,
                 'role' => 'user',
-                'content' => $message
+                'content' => $message,
             ]);
 
             // Get conversation context
@@ -147,11 +148,11 @@ class ChatbotService
             ChatbotMessage::create([
                 'chatbot_session_id' => $session->id,
                 'role' => 'assistant',
-                'content' => $aiResponse
+                'content' => $aiResponse,
             ]);
 
             // Update session title if needed
-            if (!$session->title || $session->title === 'New Chat') {
+            if (! $session->title || $session->title === 'New Chat') {
                 $session->update(['title' => Str::limit($message, 50)]);
             }
 
@@ -167,10 +168,10 @@ class ChatbotService
                     'id' => $freshSession->id,
                     'title' => $freshSession->title,
                     'created_at' => $freshSession->created_at,
-                    'updated_at' => $freshSession->updated_at
+                    'updated_at' => $freshSession->updated_at,
                 ],
                 'xp_awarded' => $xpResult['xp_awarded'] ?? 0,
-                'xp_message' => $xpResult['message'] ?? ''
+                'xp_message' => $xpResult['message'] ?? '',
             ];
         });
     }
@@ -181,17 +182,18 @@ class ChatbotService
     public function getRemainingTime(): ?int
     {
         $endTime = session('chatbot_end_time');
-        
-        if (!$endTime) {
+
+        if (! $endTime) {
             return null;
         }
 
         $remaining = $endTime - now()->timestamp;
-        
+
         if ($remaining > 0) {
             return $remaining;
         } else {
             session()->forget('chatbot_end_time');
+
             return 0;
         }
     }
@@ -212,32 +214,35 @@ class ChatbotService
     {
         $apiKey = env('GEMINI_API_KEY');
         $apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent';
-        
+
         $systemPrompt = $this->getSystemPrompt();
         $geminiMessages = $this->formatMessagesForGemini($messages);
 
         try {
-            $response = Http::post($apiUrl . '?key=' . $apiKey, [
+            $response = Http::post($apiUrl.'?key='.$apiKey, [
                 'system_instruction' => [
-                    'parts' => [['text' => $systemPrompt]]
+                    'parts' => [['text' => $systemPrompt]],
                 ],
                 'contents' => $geminiMessages,
                 'generationConfig' => [
                     'maxOutputTokens' => 800,
                     'temperature' => 0.5,
-                ]
+                ],
             ]);
 
-            if (!$response->ok()) {
-                Log::error('Gemini API error: ' . $response->status() . ' - ' . $response->body());
+            if (! $response->ok()) {
+                Log::error('Gemini API error: '.$response->status().' - '.$response->body());
+
                 return 'Maaf, saya sedang mengalami gangguan teknis. Silakan coba lagi nanti.';
             }
 
             $data = $response->json();
+
             return $data['candidates'][0]['content']['parts'][0]['text'] ?? 'Maaf, saya tidak mengerti.';
 
         } catch (\Exception $e) {
-            Log::error('Gemini API exception: ' . $e->getMessage());
+            Log::error('Gemini API exception: '.$e->getMessage());
+
             return 'Maaf, terjadi kesalahan dalam memproses pesan Anda. Silakan coba lagi.';
         }
     }
@@ -248,17 +253,17 @@ class ChatbotService
     private function getSystemPrompt(): string
     {
         return implode("\n", [
-            "Kamu adalah Ment-AI, chatbot curhat dari Curhatorium yang berperilaku seperti teman dekat sehari-hari.",
-            "",
-            "• Gunakan Bahasa Indonesia yang alami dan nyaman didengar.",
+            'Kamu adalah Ment-AI, chatbot curhat dari Curhatorium yang berperilaku seperti teman dekat sehari-hari.',
+            '',
+            '• Gunakan Bahasa Indonesia yang alami dan nyaman didengar.',
             "• Gunakan gaya santai dan akrab, misalnya: 'iyaa yaa', 'wahh', 'beneran dehh', 'aku paham kok', dll.",
-            "• Dengarkan dengan penuh empati dan jangan menghakimi.",
+            '• Dengarkan dengan penuh empati dan jangan menghakimi.',
             "• Sesekali tambahkan ekspresi dengan huruf akhir berulang seperti 'haiiii', 'oke dehhh', 'hehee', 'gituu yaaa'.",
             "• Jangan pernah menyebutkan bahwa kamu adalah AI, model bahasa, atau menyebutkan nama model seperti 'Gemini'.",
-            "• Jawaban tidak perlu panjang, cukup seperti ngobrol biasa.",
-            "• Jangan memberikan saran medis, psikologis, atau hukum.",
-            "• Jangan mengungkit-ungkit masalah sensitif seperti agama, suku, ras, atau politik.",
-            "• Jika pesan pengguna kosong atau tidak jelas, minta mereka menjelaskannya.",
+            '• Jawaban tidak perlu panjang, cukup seperti ngobrol biasa.',
+            '• Jangan memberikan saran medis, psikologis, atau hukum.',
+            '• Jangan mengungkit-ungkit masalah sensitif seperti agama, suku, ras, atau politik.',
+            '• Jika pesan pengguna kosong atau tidak jelas, minta mereka menjelaskannya.',
             "• Penasaran dan mengajak pengguna bercerita boleh tapi saat pengguna sudah bercerita jangan suruh cerita lagi. Tanya lebih mendalam seperti 'terus gimana' dan sebagainya.",
         ]);
     }
@@ -269,14 +274,14 @@ class ChatbotService
     private function formatMessagesForGemini($messages): array
     {
         $geminiMessages = [];
-        
+
         foreach ($messages as $message) {
             $geminiMessages[] = [
                 'role' => $message->role === 'user' ? 'user' : 'model',
-                'parts' => [['text' => $message->content]]
+                'parts' => [['text' => $message->content]],
             ];
         }
 
         return $geminiMessages;
     }
-} 
+}

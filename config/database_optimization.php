@@ -148,4 +148,4 @@ return [
             'failed_jobs',
         ],
     ],
-]; 
+];

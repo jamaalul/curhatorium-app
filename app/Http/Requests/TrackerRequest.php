@@ -51,4 +51,4 @@ class TrackerRequest extends FormRequest
             'productivity.max' => 'Produktivitas maksimal 10.',
         ];
     }
-} 
+}

@@ -5,9 +5,9 @@ namespace App\Services;
 use App\Models\Mission;
 use App\Models\MissionCompletion;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Carbon\Carbon;
 
 class MissionService
 {
@@ -25,6 +25,7 @@ class MissionService
     public function getMission(int $id): ?array
     {
         $mission = Mission::find($id);
+
         return $mission ? $mission->toArray() : null;
     }
 
@@ -34,11 +35,11 @@ class MissionService
     public function getTodayMissions(): array
     {
         return Mission::where('is_active', true)
-            ->where(function($query) {
+            ->where(function ($query) {
                 $query->where('start_date', '<=', now())
-                      ->where('end_date', '>=', now())
-                      ->orWhereNull('start_date')
-                      ->orWhereNull('end_date');
+                    ->where('end_date', '>=', now())
+                    ->orWhereNull('start_date')
+                    ->orWhereNull('end_date');
             })
             ->orderBy('created_at', 'desc')
             ->get()
@@ -80,10 +81,10 @@ class MissionService
                 ->where('is_active', true)
                 ->first();
 
-            if (!$mission) {
+            if (! $mission) {
                 return [
                     'success' => false,
-                    'message' => 'Mission not found or inactive.'
+                    'message' => 'Mission not found or inactive.',
                 ];
             }
 
@@ -91,7 +92,7 @@ class MissionService
             if ($this->hasCompletedMissionToday($user, $missionId)) {
                 return [
                     'success' => false,
-                    'message' => 'You have already completed this mission today.'
+                    'message' => 'You have already completed this mission today.',
                 ];
             }
 
@@ -99,7 +100,7 @@ class MissionService
             $completion = MissionCompletion::create([
                 'user_id' => $user->id,
                 'mission_id' => $mission->id,
-                'completed_at' => now()
+                'completed_at' => now(),
             ]);
 
             // Award XP based on mission type
@@ -109,7 +110,7 @@ class MissionService
                 'user_id' => $user->id,
                 'mission_id' => $missionId,
                 'mission_name' => $mission->name,
-                'xp_awarded' => $xpResult['xp_awarded'] ?? 0
+                'xp_awarded' => $xpResult['xp_awarded'] ?? 0,
             ]);
 
             return [
@@ -117,7 +118,7 @@ class MissionService
                 'completion' => $completion->toArray(),
                 'mission' => $mission->toArray(),
                 'xp_awarded' => $xpResult['xp_awarded'] ?? 0,
-                'xp_message' => $xpResult['message'] ?? ''
+                'xp_message' => $xpResult['message'] ?? '',
             ];
         });
     }
@@ -138,7 +139,7 @@ class MissionService
             $progress[] = [
                 'mission' => $mission,
                 'completed' => in_array($mission['id'], $completedToday),
-                'completed_at' => $this->getCompletionTime($user->id, $mission['id'])
+                'completed_at' => $this->getCompletionTime($user->id, $mission['id']),
             ];
         }
 
@@ -146,8 +147,8 @@ class MissionService
             'missions' => $progress,
             'total_missions' => count($todayMissions),
             'completed_missions' => count($completedToday),
-            'completion_rate' => count($todayMissions) > 0 ? 
-                round((count($completedToday) / count($todayMissions)) * 100, 1) : 0
+            'completion_rate' => count($todayMissions) > 0 ?
+                round((count($completedToday) / count($todayMissions)) * 100, 1) : 0,
         ];
     }
 
@@ -168,7 +169,7 @@ class MissionService
             ->with('mission')
             ->get()
             ->groupBy('mission.type')
-            ->map(function($completions) {
+            ->map(function ($completions) {
                 return $completions->count();
             })
             ->toArray();
@@ -177,7 +178,7 @@ class MissionService
             'total_completions' => $totalCompletions,
             'this_week_completions' => $thisWeekCompletions,
             'this_month_completions' => $thisMonthCompletions,
-            'mission_types' => $missionTypes
+            'mission_types' => $missionTypes,
         ];
     }
 
@@ -216,7 +217,7 @@ class MissionService
         $completions = MissionCompletion::where('user_id', $user->id)
             ->orderBy('completed_at', 'desc')
             ->get()
-            ->groupBy(function($completion) {
+            ->groupBy(function ($completion) {
                 return $completion->completed_at->format('Y-m-d');
             });
 
@@ -225,7 +226,7 @@ class MissionService
 
         foreach ($completions as $date => $dayCompletions) {
             $completionDate = Carbon::parse($date)->startOfDay();
-            
+
             if ($currentDate->diffInDays($completionDate) <= 1 && count($dayCompletions) > 0) {
                 $streak++;
                 $currentDate = $completionDate;
@@ -237,7 +238,7 @@ class MissionService
         return [
             'current_streak' => $streak,
             'longest_streak' => $this->getLongestStreak($user->id),
-            'last_completion_date' => $this->getLastCompletionDate($user->id)
+            'last_completion_date' => $this->getLastCompletionDate($user->id),
         ];
     }
 
@@ -249,7 +250,7 @@ class MissionService
         $completions = MissionCompletion::where('user_id', $userId)
             ->orderBy('completed_at', 'asc')
             ->get()
-            ->groupBy(function($completion) {
+            ->groupBy(function ($completion) {
                 return $completion->completed_at->format('Y-m-d');
             });
 
@@ -259,7 +260,7 @@ class MissionService
 
         foreach ($completions as $date => $dayCompletions) {
             $completionDate = Carbon::parse($date);
-            
+
             if ($previousDate && $completionDate->diffInDays($previousDate) == 1) {
                 $currentStreak++;
             } else {
@@ -292,10 +293,10 @@ class MissionService
     {
         $userStats = $this->getUserMissionStats($user);
         $completedTypes = array_keys($userStats['mission_types']);
-        
+
         $recommendations = Mission::where('is_active', true)
             ->whereNotIn('type', $completedTypes)
-            ->orWhere(function($query) use ($completedTypes) {
+            ->orWhere(function ($query) use ($completedTypes) {
                 if (empty($completedTypes)) {
                     $query->where('type', 'daily');
                 }
@@ -312,20 +313,20 @@ class MissionService
      */
     public function getMissionLeaderboard(int $limit = 10): array
     {
-        return User::withCount(['missionCompletions' => function($query) {
+        return User::withCount(['missionCompletions' => function ($query) {
             $query->whereBetween('completed_at', [now()->startOfMonth(), now()->endOfMonth()]);
         }])
-        ->orderBy('mission_completions_count', 'desc')
-        ->limit($limit)
-        ->get()
-        ->map(function($user) {
-            return [
-                'user_id' => $user->id,
-                'username' => $user->username,
-                'completions_count' => $user->mission_completions_count,
-                'avatar' => $user->profile_picture
-            ];
-        })
-        ->toArray();
+            ->orderBy('mission_completions_count', 'desc')
+            ->limit($limit)
+            ->get()
+            ->map(function ($user) {
+                return [
+                    'user_id' => $user->id,
+                    'username' => $user->username,
+                    'completions_count' => $user->mission_completions_count,
+                    'avatar' => $user->profile_picture,
+                ];
+            })
+            ->toArray();
     }
-} 
+}

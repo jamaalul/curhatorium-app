@@ -79,7 +79,7 @@ return [
     // Membership types that qualify for subscription benefits
     'subscription_memberships' => [
         'Growth Path',
-        'Blossom', 
+        'Blossom',
         'Inner Peace',
     ],
-]; 
+];
