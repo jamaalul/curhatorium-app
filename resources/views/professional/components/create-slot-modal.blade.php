@@ -80,12 +80,14 @@
                                     <label for="start-date" class="text-zinc-600 text-sm">Tanggal Mulai</label>
                                     <input type="date" name="start_date" id="start-date"
                                         x-model="startDate"
+                                        min="{{ now()->format('Y-m-d') }}"
                                         class="border border-zinc-300 rounded-lg text-zinc-600">
                                 </div>
                                 <div class="flex flex-col gap-1 grow">
                                     <label for="end-date" class="text-zinc-600 text-sm">Tanggal Selesai</label>
                                     <input type="date" name="end_date" id="end-date"
                                         x-model="endDate"
+                                        :min="startDate"
                                         class="border border-zinc-300 rounded-lg text-zinc-600">
                                 </div>
                             </div>
