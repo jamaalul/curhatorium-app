@@ -10,15 +10,24 @@ import 'fullcalendar/skeleton.css'; // ALWAYS NEED SKELETON
 import 'fullcalendar/themes/monarch/theme.css'; // YOUR THEME
 import '../css/calendar-palette.css'
 
-let calendarEl = document.getElementById('calendar');
-let calendar = new Calendar(calendarEl, {
-    plugins: [themePlugin, dayGridPlugin, timeGridPlugin, listPlugin],
-    initialView: 'dayGridMonth',
-    locale: idLocale,
-    headerToolbar: {
-        left: 'prev,next today',
-        center: 'title',
-        right: 'dayGridMonth,timeGridWeek,listWeek'
-    }
+document.addEventListener('alpine:init', () => {
+    window.Alpine.data('calendarWidget', (eventsUrl, initialView) => ({
+        calendar: null,
+        initCalendar() {
+            let calendarEl = this.$refs.calendarEl;
+            this.calendar = new Calendar(calendarEl, {
+                plugins: [themePlugin, dayGridPlugin, timeGridPlugin, listPlugin],
+                initialView: initialView,
+                locale: idLocale,
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,listWeek'
+                },
+                dayMaxEvents: true, // allow "more" link when too many events
+                events: eventsUrl
+            });
+            this.calendar.render();
+        }
+    }));
 });
-calendar.render();

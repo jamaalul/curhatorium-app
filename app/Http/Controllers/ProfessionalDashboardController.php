@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\BulkCreateSlotRequest;
 use App\Models\Professional;
 use App\Models\ProfessionalScheduleSlot;
 use App\Models\Reschedule;
@@ -35,22 +36,20 @@ class ProfessionalDashboardController extends Controller
     {
         $professional = Auth::guard('professional')->user();
 
-        // Get recent sessions for this professional
-        $recentSessions = $professional->scheduleSlots()
-            ->whereIn('status', ['booked', 'pending_confirmation', 'completed'])
+        $waitingConsultations = $professional->scheduleSlots()
+            ->where('status', 'pending_confirmation')
             ->whereNotNull('booked_by_user_id')
             ->with(['bookedBy', 'consultation'])
             ->orderBy('slot_start_time', 'desc')
-            ->limit(10)
             ->get();
 
-        $pendingBookings = $professional->scheduleSlots()
-            ->where('status', 'pending_confirmation')
+        $upcomingConsultations = $professional->scheduleSlots()
+            ->where('status', 'booked')
             ->with(['bookedBy', 'consultation'])
-            ->orderBy('slot_start_time', 'asc')
+            ->orderBy('slot_start_time', 'desc')
             ->get();
 
-        return view('professional.dashboard', compact('professional', 'recentSessions', 'pendingBookings'));
+        return view('professional.dashboard', compact('professional', 'waitingConsultations', 'upcomingConsultations'));
     }
 
     public function logout(Request $request)
@@ -92,30 +91,22 @@ class ProfessionalDashboardController extends Controller
         ]);
     }
 
-    public function setAvailability(Request $request)
+    public function setAvailability(BulkCreateSlotRequest $request)
     {
-        $validatedData = $request->validate([
-            'days' => 'required|array',
-            'days.*' => 'integer|between:0,6', // 0 for Sunday, 6 for Saturday
-            'start_time' => 'required|date_format:H:i',
-            'end_time' => 'required|date_format:H:i|after:start_time',
-            'start_date' => 'required|date',
-            'end_date' => 'required|date|after_or_equal:start_date',
-        ]);
-
+        $validated = $request->validated();
         $professional = Auth::guard('professional')->user();
 
         $this->scheduleService->generateSlots(
             $professional,
-            $validatedData['days'],
-            $validatedData['start_time'],
-            $validatedData['end_time'],
-            $validatedData['start_date'],
-            $validatedData['end_date']
+            $validated['days'],
+            $validated['start_time'],
+            $validated['end_time'],
+            $validated['start_date'],
+            $validated['end_date']
         );
 
         return redirect()->route('professional.dashboard')
-            ->with('success', 'Availability set successfully.');
+            ->with('success', 'Slot berhasil dibuat.');
     }
 
     public function getSchedule(Request $request, Professional $professional)

@@ -11,6 +11,7 @@ class Professional extends Authenticatable
     protected $fillable = [
         'name', 'password', 'title', 'avatar', 'specialties', 'type', 'rating',
         'whatsapp_number', 'bank_account_number', 'bank_name',
+        'availability', 'availabilityText',
     ];
 
     protected $hidden = [

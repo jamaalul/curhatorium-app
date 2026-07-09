@@ -26,6 +26,7 @@ class ConsultationApiController extends Controller
         $room = $request->input('room');
 
         $consultation = Consultation::where('room', $room)->first();
+        $scheduleSlot = $consultation->professionalScheduleSlot();
 
         if ($consultation) {
             $consultation->update([
@@ -33,6 +34,10 @@ class ConsultationApiController extends Controller
                 'client_status' => 'offline',
                 'status' => 'completed',
                 'end' => now(),
+            ]);
+
+            $scheduleSlot->update([
+                'status' => 'completed',
             ]);
 
             $statusType = Auth::guard('professional')->check() ? 'facilitator' : 'client';

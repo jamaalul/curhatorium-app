@@ -31,8 +31,10 @@
                                 </svg>
                             </button>
                         </div>
-                        <form class="relative flex flex-col flex-1 gap-4 mt-6 px-4 sm:px-6"
+                        <form method="POST" action="{{ route('professional.set-availability') }}"
+                            class="relative flex flex-col flex-1 gap-4 mt-6 px-4 sm:px-6"
                             x-data="{
+                                submitting: false,
                                 startDate: '{{ now()->format('Y-m-d') }}',
                                 endDate: '{{ now()->addDays(6)->format('Y-m-d') }}',
                                 days: ['senin', 'selasa', 'rabu', 'kamis', 'jumat'],
@@ -59,17 +61,30 @@
                                     }
                                     return count;
                                 }
-                            }">
+                            }"
+                            @submit="submitting = true">
+                            @csrf
+
+                            @if ($errors->any())
+                                <div class="bg-red-50 border border-red-200 rounded-lg p-3">
+                                    <ul class="text-red-600 text-sm space-y-1">
+                                        @foreach ($errors->all() as $error)
+                                            <li>{{ $error }}</li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            @endif
+
                             <div class="flex gap-2 w-full">
                                 <div class="flex flex-col gap-1 grow">
                                     <label for="start-date" class="text-zinc-600 text-sm">Tanggal Mulai</label>
-                                    <input type="date" name="start-date" id="start-date" value="{{ now()->format('Y-m-d') }}"
+                                    <input type="date" name="start_date" id="start-date"
                                         x-model="startDate"
                                         class="border border-zinc-300 rounded-lg text-zinc-600">
                                 </div>
                                 <div class="flex flex-col gap-1 grow">
                                     <label for="end-date" class="text-zinc-600 text-sm">Tanggal Selesai</label>
-                                    <input type="date" name="end-date" id="end-date" value="{{ now()->addWeek()->format('Y-m-d') }}"
+                                    <input type="date" name="end_date" id="end-date"
                                         x-model="endDate"
                                         class="border border-zinc-300 rounded-lg text-zinc-600">
                                 </div>
@@ -147,13 +162,13 @@
                             <div class="flex gap-2 w-full">
                                 <div class="flex flex-col gap-1 grow">
                                     <label for="start-time" class="text-zinc-600 text-sm">Dari jam</label>
-                                    <input type="time" name="start-time" id="start-time" value="16:00"
+                                    <input type="time" name="start_time" id="start-time"
                                         x-model="startTime"
                                         class="border border-zinc-300 rounded-lg text-zinc-600">
                                 </div>
                                 <div class="flex flex-col gap-1 grow">
                                     <label for="end-time" class="text-zinc-600 text-sm">Hingga jam</label>
-                                    <input type="time" name="end-time" id="end-time" value="21:00"
+                                    <input type="time" name="end_time" id="end-time"
                                         x-model="endTime"
                                         class="border border-zinc-300 rounded-lg text-zinc-600">
                                 </div>
@@ -162,9 +177,10 @@
                                 <div class="bg-zinc-100 p-3 border border-zinc-200 rounded-lg text-zinc-600 text-sm text-center leading-relaxed">
                                     Akan membuat <span class="font-bold" x-text="totalSlots"></span> slot jadwal sesi dari tanggal <span class="font-bold" x-text="startDate"></span> sampai <span class="font-bold" x-text="endDate"></span> pada hari <span class="font-bold capitalize" x-text="days.join(', ')"></span> di jam <span class="font-bold" x-text="startTime"></span> hingga <span class="font-bold" x-text="endTime"></span>.
                                 </div>
-                                <button
-                                    class="bg-teal-600 hover:bg-teal-700 hover:shadow-sm px-4 py-2 rounded-lg w-full text-white transition-all duration-100">
-                                    Buat slot
+                                <button type="submit" :disabled="submitting || totalSlots === 0"
+                                    class="flex items-center justify-center gap-2 bg-teal-600 hover:bg-teal-700 disabled:bg-teal-400 disabled:cursor-not-allowed hover:shadow-sm px-4 py-2 rounded-lg w-full text-white transition-all duration-100">
+                                    <svg x-show="submitting" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="animate-spin"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+                                    <span x-text="submitting ? 'Membuat slot...' : 'Buat slot'"></span>
                                 </button>
                             </div>
                     </div>

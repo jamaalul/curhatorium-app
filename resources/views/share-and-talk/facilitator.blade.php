@@ -278,6 +278,11 @@
                         chatBody.scrollTop = chatBody.scrollHeight;
                     }
                 });
+
+                channel.bind('SessionForceEnded', function(data) {
+                    alert(data.message || 'Sesi telah berakhir secara otomatis karena batas waktu.');
+                    window.location.href = "{{ route('professional.dashboard') }}";
+                });
             } else {
                 console.error('Pusher key is not configured.');
             }
