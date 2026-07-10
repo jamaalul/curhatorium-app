@@ -32,8 +32,7 @@
                             </button>
                         </div>
                         <form method="POST" action="{{ route('professional.set-availability') }}"
-                            class="relative flex flex-col flex-1 gap-4 mt-6 px-4 sm:px-6"
-                            x-data="{
+                            class="relative flex flex-col flex-1 gap-4 mt-6 px-4 sm:px-6" x-data="{
                                 submitting: false,
                                 startDate: '{{ now()->format('Y-m-d') }}',
                                 endDate: '{{ now()->addDays(6)->format('Y-m-d') }}',
@@ -60,14 +59,29 @@
                                         if (hours > 0) return count * hours;
                                     }
                                     return count;
+                                },
+                                get availableDays() {
+                                    if (!this.startDate || !this.endDate) return [];
+                                    let start = new Date(this.startDate);
+                                    let end = new Date(this.endDate);
+                                    if (start > end) return [];
+                                    let dayNames = ['minggu', 'senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu'];
+                                    let found = new Set();
+                                    let curr = new Date(start);
+                                    while (curr <= end && found.size < 7) {
+                                        found.add(dayNames[curr.getDay()]);
+                                        curr.setDate(curr.getDate() + 1);
+                                    }
+                                    return dayNames.filter(d => found.has(d));
                                 }
                             }"
+                            x-init="$watch('availableDays', value => { days = days.filter(d => value.includes(d)) })"
                             @submit="submitting = true">
                             @csrf
 
                             @if ($errors->any())
-                                <div class="bg-red-50 border border-red-200 rounded-lg p-3">
-                                    <ul class="text-red-600 text-sm space-y-1">
+                                <div class="bg-red-50 p-3 border border-red-200 rounded-lg">
+                                    <ul class="space-y-1 text-red-600 text-sm">
                                         @foreach ($errors->all() as $error)
                                             <li>{{ $error }}</li>
                                         @endforeach
@@ -78,16 +92,13 @@
                             <div class="flex gap-2 w-full">
                                 <div class="flex flex-col gap-1 grow">
                                     <label for="start-date" class="text-zinc-600 text-sm">Tanggal Mulai</label>
-                                    <input type="date" name="start_date" id="start-date"
-                                        x-model="startDate"
+                                    <input type="date" name="start_date" id="start-date" x-model="startDate"
                                         min="{{ now()->format('Y-m-d') }}"
                                         class="border border-zinc-300 rounded-lg text-zinc-600">
                                 </div>
                                 <div class="flex flex-col gap-1 grow">
                                     <label for="end-date" class="text-zinc-600 text-sm">Tanggal Selesai</label>
-                                    <input type="date" name="end_date" id="end-date"
-                                        x-model="endDate"
-                                        :min="startDate"
+                                    <input type="date" name="end_date" id="end-date" x-model="endDate" :min="startDate"
                                         class="border border-zinc-300 rounded-lg text-zinc-600">
                                 </div>
                             </div>
@@ -96,64 +107,78 @@
                                 <div class="gap-2 grid grid-cols-7 w-full max-w-md">
 
                                     <!-- Senin -->
-                                    <label class="text-center cursor-pointer">
-                                        <input type="checkbox" name="days[]" value="senin" class="sr-only peer" checked x-model="days">
+                                    <label class="text-center cursor-pointer"
+                                        :class="{ 'opacity-40 cursor-not-allowed': !availableDays.includes('senin') }">
+                                        <input type="checkbox" name="days[]" value="senin" class="sr-only peer"
+                                            x-model="days" :disabled="!availableDays.includes('senin')">
                                         <div
-                                            class="flex justify-center items-center bg-white hover:bg-gray-50 peer-checked:bg-teal-600 border border-gray-300 peer-checked:border-teal-600 rounded-lg h-14 font-medium text-gray-700 peer-checked:text-white text-xs transition-all">
+                                            class="flex justify-center items-center bg-white hover:bg-gray-50 peer-checked:bg-teal-600 peer-disabled:hover:bg-white border border-gray-300 peer-checked:border-teal-600 rounded-lg h-14 font-medium text-gray-700 peer-checked:text-white text-xs transition-all">
                                             Sen
                                         </div>
                                     </label>
 
                                     <!-- Selasa -->
-                                    <label class="text-center cursor-pointer">
-                                        <input type="checkbox" name="days[]" value="selasa" class="sr-only peer" checked x-model="days">
+                                    <label class="text-center cursor-pointer"
+                                        :class="{ 'opacity-40 cursor-not-allowed': !availableDays.includes('selasa') }">
+                                        <input type="checkbox" name="days[]" value="selasa" class="sr-only peer"
+                                            x-model="days" :disabled="!availableDays.includes('selasa')">
                                         <div
-                                            class="flex justify-center items-center bg-white hover:bg-gray-50 peer-checked:bg-teal-600 border border-gray-300 peer-checked:border-teal-600 rounded-lg h-14 font-medium text-gray-700 peer-checked:text-white text-xs transition-all">
+                                            class="flex justify-center items-center bg-white hover:bg-gray-50 peer-checked:bg-teal-600 peer-disabled:hover:bg-white border border-gray-300 peer-checked:border-teal-600 rounded-lg h-14 font-medium text-gray-700 peer-checked:text-white text-xs transition-all">
                                             Sel
                                         </div>
                                     </label>
 
                                     <!-- Rabu -->
-                                    <label class="text-center cursor-pointer">
-                                        <input type="checkbox" name="days[]" value="rabu" class="sr-only peer" checked x-model="days">
+                                    <label class="text-center cursor-pointer"
+                                        :class="{ 'opacity-40 cursor-not-allowed': !availableDays.includes('rabu') }">
+                                        <input type="checkbox" name="days[]" value="rabu" class="sr-only peer"
+                                            x-model="days" :disabled="!availableDays.includes('rabu')">
                                         <div
-                                            class="flex justify-center items-center bg-white hover:bg-gray-50 peer-checked:bg-teal-600 border border-gray-300 peer-checked:border-teal-600 rounded-lg h-14 font-medium text-gray-700 peer-checked:text-white text-xs transition-all">
+                                            class="flex justify-center items-center bg-white hover:bg-gray-50 peer-checked:bg-teal-600 peer-disabled:hover:bg-white border border-gray-300 peer-checked:border-teal-600 rounded-lg h-14 font-medium text-gray-700 peer-checked:text-white text-xs transition-all">
                                             Rab
                                         </div>
                                     </label>
 
                                     <!-- Kamis -->
-                                    <label class="text-center cursor-pointer">
-                                        <input type="checkbox" name="days[]" value="kamis" class="sr-only peer" checked x-model="days">
+                                    <label class="text-center cursor-pointer"
+                                        :class="{ 'opacity-40 cursor-not-allowed': !availableDays.includes('kamis') }">
+                                        <input type="checkbox" name="days[]" value="kamis" class="sr-only peer"
+                                            x-model="days" :disabled="!availableDays.includes('kamis')">
                                         <div
-                                            class="flex justify-center items-center bg-white hover:bg-gray-50 peer-checked:bg-teal-600 border border-gray-300 peer-checked:border-teal-600 rounded-lg h-14 font-medium text-gray-700 peer-checked:text-white text-xs transition-all">
+                                            class="flex justify-center items-center bg-white hover:bg-gray-50 peer-checked:bg-teal-600 peer-disabled:hover:bg-white border border-gray-300 peer-checked:border-teal-600 rounded-lg h-14 font-medium text-gray-700 peer-checked:text-white text-xs transition-all">
                                             Kam
                                         </div>
                                     </label>
 
                                     <!-- Jumat -->
-                                    <label class="text-center cursor-pointer">
-                                        <input type="checkbox" name="days[]" value="jumat" class="sr-only peer" checked x-model="days">
+                                    <label class="text-center cursor-pointer"
+                                        :class="{ 'opacity-40 cursor-not-allowed': !availableDays.includes('jumat') }">
+                                        <input type="checkbox" name="days[]" value="jumat" class="sr-only peer"
+                                            x-model="days" :disabled="!availableDays.includes('jumat')">
                                         <div
-                                            class="flex justify-center items-center bg-white hover:bg-gray-50 peer-checked:bg-teal-600 border border-gray-300 peer-checked:border-teal-600 rounded-lg h-14 font-medium text-gray-700 peer-checked:text-white text-xs transition-all">
+                                            class="flex justify-center items-center bg-white hover:bg-gray-50 peer-checked:bg-teal-600 peer-disabled:hover:bg-white border border-gray-300 peer-checked:border-teal-600 rounded-lg h-14 font-medium text-gray-700 peer-checked:text-white text-xs transition-all">
                                             Jum
                                         </div>
                                     </label>
 
                                     <!-- Sabtu -->
-                                    <label class="text-center cursor-pointer">
-                                        <input type="checkbox" name="days[]" value="sabtu" class="sr-only peer" x-model="days">
+                                    <label class="text-center cursor-pointer"
+                                        :class="{ 'opacity-40 cursor-not-allowed': !availableDays.includes('sabtu') }">
+                                        <input type="checkbox" name="days[]" value="sabtu" class="sr-only peer"
+                                            x-model="days" :disabled="!availableDays.includes('sabtu')">
                                         <div
-                                            class="flex justify-center items-center bg-white hover:bg-gray-50 peer-checked:bg-teal-600 border border-gray-300 peer-checked:border-teal-600 rounded-lg h-14 font-medium text-gray-700 peer-checked:text-white text-xs transition-all">
+                                            class="flex justify-center items-center bg-white hover:bg-gray-50 peer-checked:bg-teal-600 peer-disabled:hover:bg-white border border-gray-300 peer-checked:border-teal-600 rounded-lg h-14 font-medium text-gray-700 peer-checked:text-white text-xs transition-all">
                                             Sab
                                         </div>
                                     </label>
 
                                     <!-- Minggu -->
-                                    <label class="text-center cursor-pointer">
-                                        <input type="checkbox" name="days[]" value="minggu" class="sr-only peer" x-model="days">
+                                    <label class="text-center cursor-pointer"
+                                        :class="{ 'opacity-40 cursor-not-allowed': !availableDays.includes('minggu') }">
+                                        <input type="checkbox" name="days[]" value="minggu" class="sr-only peer"
+                                            x-model="days" :disabled="!availableDays.includes('minggu')">
                                         <div
-                                            class="flex justify-center items-center bg-white hover:bg-gray-50 peer-checked:bg-teal-600 border border-gray-300 peer-checked:border-teal-600 rounded-lg h-14 font-medium text-gray-700 peer-checked:text-white text-xs transition-all">
+                                            class="flex justify-center items-center bg-white hover:bg-gray-50 peer-checked:bg-teal-600 peer-disabled:hover:bg-white border border-gray-300 peer-checked:border-teal-600 rounded-lg h-14 font-medium text-gray-700 peer-checked:text-white text-xs transition-all">
                                             Min
                                         </div>
                                     </label>
@@ -164,24 +189,32 @@
                             <div class="flex gap-2 w-full">
                                 <div class="flex flex-col gap-1 grow">
                                     <label for="start-time" class="text-zinc-600 text-sm">Dari jam</label>
-                                    <input type="time" name="start_time" id="start-time"
-                                        x-model="startTime"
+                                    <input type="time" name="start_time" id="start-time" x-model="startTime"
                                         class="border border-zinc-300 rounded-lg text-zinc-600">
                                 </div>
                                 <div class="flex flex-col gap-1 grow">
                                     <label for="end-time" class="text-zinc-600 text-sm">Hingga jam</label>
-                                    <input type="time" name="end_time" id="end-time"
-                                        x-model="endTime"
+                                    <input type="time" name="end_time" id="end-time" x-model="endTime"
                                         class="border border-zinc-300 rounded-lg text-zinc-600">
                                 </div>
                             </div>
                             <div class="flex flex-col gap-3 mt-auto w-full">
-                                <div class="bg-zinc-100 p-3 border border-zinc-200 rounded-lg text-zinc-600 text-sm text-center leading-relaxed">
-                                    Akan membuat <span class="font-bold" x-text="totalSlots"></span> slot jadwal sesi dari tanggal <span class="font-bold" x-text="startDate"></span> sampai <span class="font-bold" x-text="endDate"></span> pada hari <span class="font-bold capitalize" x-text="days.join(', ')"></span> di jam <span class="font-bold" x-text="startTime"></span> hingga <span class="font-bold" x-text="endTime"></span>.
+                                <div
+                                    class="bg-zinc-100 p-3 border border-zinc-200 rounded-lg text-zinc-600 text-sm text-center leading-relaxed">
+                                    Akan membuat <span class="font-bold" x-text="totalSlots"></span> slot jadwal sesi
+                                    dari tanggal <span class="font-bold" x-text="startDate"></span> sampai <span
+                                        class="font-bold" x-text="endDate"></span> pada hari <span
+                                        class="font-bold capitalize" x-text="days.join(', ')"></span> di jam <span
+                                        class="font-bold" x-text="startTime"></span> hingga <span class="font-bold"
+                                        x-text="endTime"></span>.
                                 </div>
                                 <button type="submit" :disabled="submitting || totalSlots === 0"
-                                    class="flex items-center justify-center gap-2 bg-teal-600 hover:bg-teal-700 disabled:bg-teal-400 disabled:cursor-not-allowed hover:shadow-sm px-4 py-2 rounded-lg w-full text-white transition-all duration-100">
-                                    <svg x-show="submitting" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="animate-spin"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+                                    class="flex justify-center items-center gap-2 bg-teal-600 hover:bg-teal-700 disabled:bg-teal-400 hover:shadow-sm px-4 py-2 rounded-lg w-full text-white transition-all duration-100 disabled:cursor-not-allowed">
+                                    <svg x-show="submitting" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round" class="animate-spin">
+                                        <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+                                    </svg>
                                     <span x-text="submitting ? 'Membuat slot...' : 'Buat slot'"></span>
                                 </button>
                             </div>
