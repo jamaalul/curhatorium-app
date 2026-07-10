@@ -1,4 +1,4 @@
-<aside x-data class="bg-zinc-100 w-72 h-full">
+<aside x-data class="flex flex-col bg-zinc-100 w-72 h-screen">
     <div class="flex flex-row items-center gap-4 p-4 w-full">
         <button class="flex justify-center items-center h-fit aspect-square">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -93,7 +93,16 @@
             </div>
         </div>
     @endif
+    <a href="{{ route('professional.profile') }}" class="flex items-center gap-3 mx-4 mt-auto mb-4 p-4 border-t">
+        <div class="bg-zinc-400 border-2 border-zinc-400 rounded-full size-10">
+            <img src="{{ asset('assets/profile_pict.svg') }}" alt="Foto profil" class="h-full">
+        </div>
+        <div class="flex flex-col">
+            <p class="font-semibold text-zinc-700 text-sm">{{ $professional->name }}</p>
+            <p class="text-zinc-500 text-xs">{{ $professional->whatsapp_number }}</p>
+        </div>
+    </a>
 
-    @include('professional.components.create-slot-modal')
+    @include('professional.components.create-slot-drawer')
     @include('professional.components.waiting-consultation-drawer')
 </aside>

@@ -25,13 +25,6 @@ class ProfessionalDashboardController extends Controller
         private RescheduleService $rescheduleService
     ) {}
 
-    public function index()
-    {
-        $professional = Auth::guard('professional')->user();
-
-        return view('professional.dashboard', compact('professional'));
-    }
-
     public function dashboard()
     {
         $professional = Auth::guard('professional')->user();
@@ -50,6 +43,26 @@ class ProfessionalDashboardController extends Controller
             ->get();
 
         return view('professional.dashboard', compact('professional', 'waitingConsultations', 'upcomingConsultations'));
+    }
+
+    public function profile()
+    {
+        $professional = Auth::guard('professional')->user();
+
+        $waitingConsultations = $professional->scheduleSlots()
+            ->where('status', 'pending_confirmation')
+            ->whereNotNull('booked_by_user_id')
+            ->with(['bookedBy', 'consultation'])
+            ->orderBy('slot_start_time', 'desc')
+            ->get();
+
+        $upcomingConsultations = $professional->scheduleSlots()
+            ->where('status', 'booked')
+            ->with(['bookedBy', 'consultation'])
+            ->orderBy('slot_start_time', 'desc')
+            ->get();
+
+        return view('professional.profile', compact('professional', 'waitingConsultations', 'upcomingConsultations'));
     }
 
     public function logout(Request $request)
