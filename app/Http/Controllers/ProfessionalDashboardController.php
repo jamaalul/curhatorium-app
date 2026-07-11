@@ -15,7 +15,6 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
 
 class ProfessionalDashboardController extends Controller
 {
@@ -181,15 +180,35 @@ class ProfessionalDashboardController extends Controller
         if ($slot->status === 'pending_confirmation') {
             $slot->status = 'booked';
             $slot->save();
+
             $user = $slot->bookedBy;
             $consultation = $slot->consultation;
-            $message = "Halo {$user->name},\n\n"
+            $professional = Auth::guard('professional')->user();
+            $sessionTime = Carbon::parse($slot->slot_start_time)->format('d M Y H:i');
+            $reminderTimestamp = Carbon::parse($slot->slot_start_time)->subHour()->timestamp;
+
+            // Confirmation message to client (sent immediately)
+            $confirmationMessage = "Halo {$user->name},\n\n"
                 .'Booking Anda pada tanggal '
                 .Carbon::parse($slot->slot_start_time)->format('d M Y H:i')
                 ." telah *dikonfirmasi*.\n\n"
                 .'Terima kasih telah menggunakan layanan kami. '
                 .'Sampai jumpa di waktu yang telah ditentukan!';
-            $this->fonnteService->sendWhatsApp($consultation->no_wa, $message);
+            $this->fonnteService->sendWhatsApp($consultation->no_wa, $confirmationMessage);
+
+            // 1-hour reminder for the professional
+            $professionalReminder = "Halo {$professional->name}, Anda memiliki sesi konsultasi dengan *{$user->username}* dalam 1 jam lagi.\n\n"
+                ."Jadwal: {$sessionTime}\n\n"
+                ."Silakan login ke dashboard untuk memulai:\n"
+                .config('app.url').'/professional/dashboard';
+            $this->fonnteService->sendScheduledWhatsApp($professional->whatsapp_number, $professionalReminder, $reminderTimestamp);
+
+            // 1-hour reminder for the client
+            $clientReminder = "Halo! Sesi konsultasi kamu dengan *{$professional->name}* dimulai dalam 1 jam lagi 🕐\n\n"
+                ."Jadwal: {$sessionTime}\n\n"
+                ."Jangan sampai terlambat ya. Sampai jumpa!\n"
+                .config('app.url').'/share-and-talk';
+            $this->fonnteService->sendScheduledWhatsApp($consultation->no_wa, $clientReminder, $reminderTimestamp);
 
             return back()->with('success', 'Booking accepted.');
         }
