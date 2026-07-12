@@ -64,6 +64,35 @@ class ProfessionalDashboardController extends Controller
         return view('professional.profile', compact('professional', 'waitingConsultations', 'upcomingConsultations'));
     }
 
+    public function updateProfile(Request $request)
+    {
+        $professional = Auth::guard('professional')->user();
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'whatsapp_number' => 'nullable|string|max:20',
+            'bank_name' => 'nullable|string|max:255',
+            'bank_account_number' => 'nullable|string|max:255',
+            'avatar' => 'nullable|image|max:2048',
+            'specialties' => 'nullable|string', // Will be comma separated
+        ]);
+
+        if ($request->hasFile('avatar')) {
+            $path = $request->file('avatar')->store('professionals/avatars', 'public');
+            $validated['avatar'] = $path;
+        }
+
+        if (isset($validated['specialties'])) {
+            $specialtiesArray = array_map('trim', explode(',', $validated['specialties']));
+            // Filter out empty ones
+            $validated['specialties'] = array_filter($specialtiesArray);
+        }
+
+        $professional->update($validated);
+
+        return redirect()->route('professional.profile')->with('success', 'Profile updated successfully.');
+    }
+
     public function logout(Request $request)
     {
         Auth::guard('professional')->logout();

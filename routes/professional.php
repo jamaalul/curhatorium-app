@@ -19,6 +19,7 @@ Route::controller(ProfessionalAuthenticatedSessionController::class)->prefix('pr
 Route::middleware([AuthenticateProfessional::class])->prefix('professional')->name('professional.')->group(function () {
     Route::get('/dashboard', [ProfessionalDashboardController::class, 'dashboard'])->name('dashboard');
     Route::get('/profile', [ProfessionalDashboardController::class, 'profile'])->name('profile');
+    Route::put('/profile', [ProfessionalDashboardController::class, 'updateProfile'])->name('profile.update');
 
     Route::post('/availability/set', [ProfessionalDashboardController::class, 'setAvailability'])->name('set-availability');
 
