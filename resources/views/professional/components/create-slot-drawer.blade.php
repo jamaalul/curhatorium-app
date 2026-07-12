@@ -39,6 +39,7 @@
                                 days: ['senin', 'selasa', 'rabu', 'kamis', 'jumat'],
                                 startTime: '16:00',
                                 endTime: '21:00',
+                                conflictResolution: 'skip',
                                 get totalSlots() {
                                     if (!this.startDate || !this.endDate || this.days.length === 0) return 0;
                                     let start = new Date(this.startDate);
@@ -198,15 +199,36 @@
                                         class="border border-zinc-300 rounded-lg text-zinc-600">
                                 </div>
                             </div>
+                            
+                            <div class="flex flex-col gap-2 w-full mt-2">
+                                <p class="text-zinc-600 text-sm font-medium">Jika terjadi konflik jadwal:</p>
+                                <div class="flex flex-col gap-2">
+                                    <label class="flex items-center gap-2 text-zinc-600 text-sm cursor-pointer">
+                                        <input type="radio" name="conflict_resolution" value="skip" x-model="conflictResolution" class="text-teal-600 focus:ring-teal-600 border-gray-300">
+                                        <span>Lewati (Jangan buat slot baru)</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 text-zinc-600 text-sm cursor-pointer">
+                                        <input type="radio" name="conflict_resolution" value="overwrite" x-model="conflictResolution" class="text-teal-600 focus:ring-teal-600 border-gray-300">
+                                        <span>Timpa (Ganti slot lama yang belum di-booking)</span>
+                                    </label>
+                                </div>
+                            </div>
                             <div class="flex flex-col gap-3 mt-auto w-full">
                                 <div
                                     class="bg-zinc-100 p-3 border border-zinc-200 rounded-lg text-zinc-600 text-sm text-center leading-relaxed">
-                                    Akan membuat <span class="font-bold" x-text="totalSlots"></span> slot jadwal sesi
+                                    <span x-show="conflictResolution === 'skip'">Maksimal akan membuat</span>
+                                    <span x-show="conflictResolution === 'overwrite'">Akan membuat/menimpa maksimal</span>
+                                    <span class="font-bold" x-text="totalSlots"></span> slot jadwal sesi
                                     dari tanggal <span class="font-bold" x-text="startDate"></span> sampai <span
                                         class="font-bold" x-text="endDate"></span> pada hari <span
                                         class="font-bold capitalize" x-text="days.join(', ')"></span> di jam <span
                                         class="font-bold" x-text="startTime"></span> hingga <span class="font-bold"
                                         x-text="endTime"></span>.
+                                    
+                                    <div class="mt-2 text-xs italic opacity-80">
+                                        <span x-show="conflictResolution === 'skip'">* Jadwal yang bentrok akan dilewati.</span>
+                                        <span x-show="conflictResolution === 'overwrite'">* Jadwal lama yang bentrok & belum dibooking akan ditimpa.</span>
+                                    </div>
                                 </div>
                                 <button type="submit" :disabled="submitting || totalSlots === 0"
                                     class="flex justify-center items-center gap-2 bg-teal-600 hover:bg-teal-700 disabled:bg-teal-400 hover:shadow-sm px-4 py-2 rounded-lg w-full text-white transition-all duration-100 disabled:cursor-not-allowed">

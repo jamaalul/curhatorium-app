@@ -56,6 +56,7 @@ class BulkCreateSlotRequest extends FormRequest
             'days.*' => ['integer', 'between:0,6'],
             'start_time' => ['required', 'date_format:H:i'],
             'end_time' => ['required', 'date_format:H:i', 'after:start_time'],
+            'conflict_resolution' => ['nullable', 'string', 'in:skip,overwrite'],
         ];
     }
 

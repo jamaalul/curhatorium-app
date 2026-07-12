@@ -137,17 +137,23 @@ class ProfessionalDashboardController extends Controller
         $validated = $request->validated();
         $professional = Auth::guard('professional')->user();
 
-        $this->scheduleService->generateSlots(
+        $result = $this->scheduleService->generateSlots(
             $professional,
             $validated['days'],
             $validated['start_time'],
             $validated['end_time'],
             $validated['start_date'],
-            $validated['end_date']
+            $validated['end_date'],
+            $validated['conflict_resolution'] ?? 'skip'
         );
 
+        $message = "Berhasil membuat {$result['created']} slot.";
+        if ($result['skipped'] > 0) {
+            $message .= " {$result['skipped']} slot dilewati karena konflik jadwal.";
+        }
+
         return redirect()->route('professional.dashboard')
-            ->with('success', 'Slot berhasil dibuat.');
+            ->with('success', $message);
     }
 
     public function getSchedule(Request $request, Professional $professional)
