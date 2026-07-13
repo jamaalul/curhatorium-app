@@ -162,8 +162,7 @@ class ProfessionalDashboardController extends Controller
         $isOwner = Auth::guard('professional')->check() && Auth::guard('professional')->id() == $professional->id;
 
         $slotsQuery = $professional->scheduleSlots()
-            ->where('slot_start_time', '>=', $request->start)
-            ->where('slot_end_time', '>=', now()->toDateTimeLocalString());
+            ->where('slot_start_time', '>=', now()->toDateTimeLocalString());
 
         // If the viewer is not the owner, only show available slots
 

@@ -106,53 +106,84 @@
             const timerEl = document.getElementById('session-timer');
             const activationSection = document.getElementById('activation-section');
             const activateBtn = document.getElementById('activate-session-btn');
-            const interval = {{ $interval }};
-            let sessionStart = new Date();
             let sessionStatus = '{{ $sessionStatus ?? "waiting" }}';
             const sessionId = '{{ $sessionId }}';
 
-            function updateTimer() {
-                const now = new Date();
-                const end = new Date(sessionStart.getTime() + interval * 60 * 1000);
-                const diff = end - now;
+            // endMs holds the server-provided session end time in milliseconds.
+            // Sourced from the session-status API and updated on every poll.
+            let endMs = null;
+            let countdownTimer = null;
 
-                if (diff <= 0) {
-                    input.disabled = true;
-                    btn.disabled = true;
-                    timerEl.innerText = 'Sesi telah berakhir';
-                    timerEl.style.color = 'red';
-                } else {
-                    const mins = String(Math.floor(diff / 60000)).padStart(2, '0');
-                    const secs = String(Math.floor((diff % 60000) / 1000)).padStart(2, '0');
-                    timerEl.innerText = `Sisa waktu: ${mins}:${secs}`;
+            function startCountdown() {
+                if (countdownTimer !== null) {
+                    return; // already running
                 }
+
+                function tick() {
+                    if (endMs === null) {
+                        return;
+                    }
+
+                    const diffMs = endMs - Date.now();
+
+                    if (diffMs <= 0) {
+                        timerEl.textContent = 'Sesi telah berakhir';
+                        timerEl.style.color = 'red';
+                        input.disabled = true;
+                        btn.disabled = true;
+                        return; // stop ticking
+                    }
+
+                    const totalSecs = Math.floor(diffMs / 1000);
+                    const hours     = Math.floor(totalSecs / 3600);
+                    const mins      = Math.floor((totalSecs % 3600) / 60);
+                    const secs      = totalSecs % 60;
+
+                    const formatted = hours > 0
+                        ? `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`
+                        : `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+
+                    timerEl.textContent = `Sisa waktu: ${formatted}`;
+                    timerEl.style.color = diffMs < 5 * 60 * 1000 ? 'red' : 'var(--text-muted)';
+
+                    countdownTimer = setTimeout(tick, 1000);
+                }
+
+                tick();
             }
 
             // Check session status and control UI
             async function checkSessionStatus() {
                 try {
                     const response = await fetch(`/api/share-and-talk/session-status/${sessionId}`);
-                    if (!response.ok) return;
+                    if (!response.ok) { return; }
                     const data = await response.json();
                     sessionStatus = data.status;
-                    
+
+                    // Update endMs from the server-provided end time
+                    if (data.end) {
+                        const parsed = new Date(data.end).getTime();
+                        if (!isNaN(parsed)) {
+                            endMs = parsed;
+                        }
+                    }
+
                     if (sessionStatus === 'waiting' || sessionStatus === 'pending') {
                         activationSection.style.display = 'block';
                         input.disabled = true;
                         btn.disabled = true;
-                        timerEl.innerText = 'Menunggu aktivasi...';
+                        timerEl.textContent = 'Menunggu aktivasi...';
                         timerEl.style.color = 'orange';
                     } else if (sessionStatus === 'active') {
                         activationSection.style.display = 'none';
                         input.disabled = false;
                         btn.disabled = false;
-                        timerEl.style.color = 'var(--text-muted)';
-                        updateTimer();
+                        startCountdown();
                     } else if (sessionStatus === 'cancelled') {
                         activationSection.style.display = 'none';
                         input.disabled = true;
                         btn.disabled = true;
-                        timerEl.innerText = 'Sesi dibatalkan';
+                        timerEl.textContent = 'Sesi dibatalkan';
                         timerEl.style.color = 'red';
                     }
                 } catch (error) {
@@ -185,9 +216,6 @@
             // Check session status every 2 seconds
             setInterval(checkSessionStatus, 2000);
             checkSessionStatus();
-
-            setInterval(updateTimer, 1000);
-            updateTimer();
 
             document.getElementById('chatForm').addEventListener('submit', async function (e) {
                 e.preventDefault();

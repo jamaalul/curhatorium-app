@@ -32,6 +32,16 @@
             <p>Client - <span class="client-status-text">Offline</span></p>
             <span class="h-3 aspect-square rounded-full bg-gray-400 client-indicator"></span>
         </div>
+
+        {{-- Countdown timer (sidebar) --}}
+        <div
+            id="session-countdown"
+            data-end-time="{{ $consultation->end?->toIso8601String() ?? '' }}"
+            class="mt-4 w-full rounded-2xl bg-white/60 border border-stone-300 px-4 py-3 flex flex-col items-center gap-1">
+            <p class="text-xs font-semibold uppercase tracking-widest text-stone-500">Sisa Waktu</p>
+            <p id="countdown-display" class="text-3xl font-bold tabular-nums text-[#48a6a6]">--:--</p>
+        </div>
+
         <button
             class="end-session-button px-6 py-4 text-2xl rounded-2xl bg-none w-full hover:bg-red-300 mt-auto border-red-300 border-2 transition-all duration-100 text-[#222222] font-bold">
             Akhiri Sesi
@@ -51,6 +61,8 @@
                 <p>Client</p>
                 <span class="h-3 aspect-square rounded-full bg-gray-400 client-indicator"></span>
             </div>
+            {{-- Mobile countdown badge --}}
+            <span id="countdown-display-mobile" class="md:hidden text-sm font-semibold tabular-nums text-[#48a6a6]">--:--</span>
             <button
                 class="end-session-button text-xl rounded-xl bg-none w-fit mt-auto transition-all duration-100 text-red-400 font-bold">
                 Akhiri Sesi
@@ -324,5 +336,60 @@
             $('#cancel-button').on('click', function() {
                 $('#confirmation-modal').addClass('hidden');
             });
+
+            // ── Countdown timer ──────────────────────────────────────────────
+            // Reads the server-set end timestamp and recalculates remaining
+            // time every second as (endTime - Date.now()), so it stays
+            // accurate even after tab sleep/resume and avoids drift.
+            (function initCountdown() {
+                const endTimeIso = document.getElementById('session-countdown')
+                    ?.dataset.endTime;
+
+                if (!endTimeIso) {
+                    return; // No end time set – session may still be waiting
+                }
+
+                const endMs = new Date(endTimeIso).getTime();
+
+                if (isNaN(endMs)) {
+                    return;
+                }
+
+                const displayMain   = document.getElementById('countdown-display');
+                const displayMobile = document.getElementById('countdown-display-mobile');
+
+                function renderCountdown() {
+                    const diffMs = endMs - Date.now();
+
+                    if (diffMs <= 0) {
+                        const expiredText = 'Sesi berakhir';
+                        if (displayMain)   { displayMain.textContent   = expiredText; displayMain.classList.replace('text-[#48a6a6]', 'text-red-500'); }
+                        if (displayMobile) { displayMobile.textContent = expiredText; displayMobile.classList.replace('text-[#48a6a6]', 'text-red-500'); }
+                        return;
+                    }
+
+                    const totalSecs = Math.floor(diffMs / 1000);
+                    const hours     = Math.floor(totalSecs / 3600);
+                    const mins      = Math.floor((totalSecs % 3600) / 60);
+                    const secs      = totalSecs % 60;
+
+                    const formatted = hours > 0
+                        ? `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`
+                        : `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+
+                    if (displayMain)   { displayMain.textContent   = formatted; }
+                    if (displayMobile) { displayMobile.textContent = formatted; }
+
+                    // Warn when under 5 minutes
+                    if (diffMs < 5 * 60 * 1000) {
+                        if (displayMain)   { displayMain.classList.replace('text-[#48a6a6]', 'text-red-500'); }
+                        if (displayMobile) { displayMobile.classList.replace('text-[#48a6a6]', 'text-red-500'); }
+                    }
+
+                    setTimeout(renderCountdown, 1000);
+                }
+
+                renderCountdown();
+            })();
         </script>
 @endsection
