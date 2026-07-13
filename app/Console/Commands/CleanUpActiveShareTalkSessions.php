@@ -32,8 +32,11 @@ class CleanUpActiveShareTalkSessions extends Command
         $this->info('Starting cleanup of expired active sessions...');
 
         $expiredSessions = Consultation::with(['user', 'professional', 'professionalScheduleSlot'])
-            ->where('status', 'active')
-            ->where('end', '<', now())
+            ->whereIn('status', ['active', 'waiting'])
+            ->where(function ($query) {
+                $query->where('end', '<', now())
+                    ->orWhereNull('end');
+            })
             ->get();
 
         $this->info("Found {$expiredSessions->count()} expired active sessions to clean up.");
