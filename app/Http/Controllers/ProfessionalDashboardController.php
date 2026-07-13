@@ -37,7 +37,7 @@ class ProfessionalDashboardController extends Controller
             ->get();
 
         $upcomingConsultations = $professional->scheduleSlots()
-            ->where('status', 'booked')
+            ->whereIn('status', ['booked', 'active'])
             ->with(['bookedBy', 'consultation'])
             ->orderBy('slot_start_time', 'desc')
             ->get();
@@ -57,7 +57,7 @@ class ProfessionalDashboardController extends Controller
             ->get();
 
         $upcomingConsultations = $professional->scheduleSlots()
-            ->where('status', 'booked')
+            ->whereIn('status', ['booked', 'active'])
             ->with(['bookedBy', 'consultation'])
             ->orderBy('slot_start_time', 'desc')
             ->get();
