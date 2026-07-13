@@ -6,7 +6,7 @@ use App\Http\Requests\BulkCreateSlotRequest;
 use App\Models\Professional;
 use App\Models\ProfessionalScheduleSlot;
 use App\Models\Reschedule;
-use App\Models\UserTicket;
+use App\Services\EntitlementService;
 use App\Services\FonnteService;
 use App\Services\RescheduleService;
 use App\Services\ScheduleService;
@@ -21,7 +21,8 @@ class ProfessionalDashboardController extends Controller
     public function __construct(
         private ScheduleService $scheduleService,
         private FonnteService $fonnteService,
-        private RescheduleService $rescheduleService
+        private RescheduleService $rescheduleService,
+        private EntitlementService $entitlementService
     ) {}
 
     public function dashboard()
@@ -262,31 +263,17 @@ class ProfessionalDashboardController extends Controller
             $user = $slot->bookedBy;
             $consultation = $slot->consultation;
             if ($consultation->consultation_type == 'Chat w/ Psikolog') {
-                $ticketType = 'share_talk_psy_chat';
+                $benefitType = 'snt_psy_chat';
             } elseif ($consultation->consultation_type == 'Chat w/ Rangers') {
-                $ticketType = 'share_talk_ranger_chat';
+                $benefitType = 'snt_rgr_chat';
             } elseif ($consultation->consultation_type == 'Video Call w/ Psikolog') {
-                $ticketType = 'share_talk_psy_video';
+                $benefitType = 'snt_psy_vc';
             } else {
-                $ticketType = null; // Unknown type
+                $benefitType = null; // Unknown type
             }
 
-            // Find and update the user's ticket
-            $userTicket = UserTicket::where('user_id', $user->id)
-                ->where('ticket_type', $ticketType)
-                ->where('expires_at', '>=', now())
-                ->orderBy('expires_at', 'desc')
-                ->lockForUpdate()
-                ->first();
-
-            if ($userTicket) {
-                $userTicket->increment('remaining_value');
-            } else {
-                // If no ticket is found, create a new one.
-                // This might happen if the ticket was 'unlimited' and not stored,
-                // or if it expired between booking and cancellation.
-                // Adjust the logic as per your application's rules.
-                dd($consultation->consultation_type, $slot->professional->type);
+            if ($benefitType) {
+                $this->entitlementService->refundEntitlement($user, $benefitType);
             }
 
             $slot->status = 'available';

@@ -28,6 +28,19 @@ document.addEventListener('alpine:init', () => {
                 dayMaxEvents: true, // allow "more" link when too many events
                 events: eventsUrl,
                 height: '100%',
+                eventClick: function(info) {
+                    if (info.event.title === 'Available') {
+                        window.dispatchEvent(new CustomEvent('open-delete-slot-modal', {
+                            detail: {
+                                id: info.event.id,
+                                start: info.event.start,
+                                end: info.event.end,
+                            }
+                        }));
+                        // Store the event instance on the window so we can remove it later
+                        window._currentCalendarEvent = info.event;
+                    }
+                },
                 windowResize: function (arg) {
                     const mobile = window.innerWidth < 1024;
                     arg.view.calendar.setOption('headerToolbar', {

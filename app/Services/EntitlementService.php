@@ -93,4 +93,47 @@ class EntitlementService
             ->where('period_start', '<=', $now)
             ->where('period_end', '>=', $now);
     }
+
+    /**
+     * Refund an entitlement amount for a user.
+     */
+    public function refundEntitlement(User $user, string $benefit, int $amount = 1): bool
+    {
+        return DB::transaction(function () use ($user, $benefit, $amount) {
+            $entitlement = UserEntitlement::where('user_id', $user->id)
+                ->where('benefit', $benefit)
+                ->where(function ($query) use ($amount) {
+                    $query->where('amount_total', -1)
+                        ->orWhere('amount_used', '>=', $amount);
+                })
+                ->where('period_end', '>=', Carbon::now())
+                ->orderBy('period_end', 'desc')
+                ->lockForUpdate()
+                ->first();
+
+            if (! $entitlement) {
+                Log::warning('Entitlement refund failed: No valid entitlement found', [
+                    'user_id' => $user->id,
+                    'benefit' => $benefit,
+                    'amount' => $amount,
+                ]);
+
+                return false;
+            }
+
+            if ($entitlement->amount_total !== -1) {
+                $entitlement->amount_used -= $amount;
+                $entitlement->save();
+            }
+
+            Log::info('Entitlement refunded', [
+                'user_id' => $user->id,
+                'benefit' => $benefit,
+                'amount' => $amount,
+                'entitlement_id' => $entitlement->id,
+            ]);
+
+            return true;
+        });
+    }
 }
