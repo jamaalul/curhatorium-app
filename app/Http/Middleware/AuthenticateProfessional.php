@@ -20,14 +20,6 @@ class AuthenticateProfessional
             return redirect()->route('professional.login');
         }
 
-        // Get the professional ID from the route
-        $professionalId = $request->route('professionalId');
-
-        // Ensure the authenticated professional can only access their own dashboard
-        if ($professionalId && Auth::guard('professional')->id() != $professionalId) {
-            abort(403, 'Unauthorized access to professional dashboard.');
-        }
-
         return $next($request);
     }
 }

@@ -6,6 +6,8 @@ import Alpine from 'alpinejs';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 
+import './calendar.js';
+
 window.Alpine = Alpine;
 
 Alpine.start();

@@ -260,6 +260,12 @@
                 $('#chat-messages').scrollTop($('#chat-messages')[0].scrollHeight);
             });
 
+            // Listen for forced end session event
+            sessionChannel.bind('SessionForceEnded', function(data) {
+                alert(data.message || 'Sesi telah berakhir secara otomatis karena batas waktu.');
+                window.location.href = "{{ auth('professional')->check() ? route('professional.dashboard') : route('dashboard') }}";
+            });
+
             function sendMessage() {
                 var message = $('#chat-input').val();
                 if (message) {
