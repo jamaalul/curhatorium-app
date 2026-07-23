@@ -12,6 +12,21 @@
 @endsection
 
 @section('dashboard-content')
+@php
+    $returnUrl = route('membership.index');
+    $returnLabel = 'Kembali';
+    $retryLabel = 'Pilih Paket Baru';
+    $paidDescription = 'Pembayaranmu sudah kami terima. Selamat menikmati paket barumu!';
+    $cancelDescription = 'Pesananmu akan dibatalkan dan kamu harus memulai ulang dari halaman paket.';
+
+    if ($order->orderable instanceof \App\Models\Ebook) {
+        $returnUrl = route('ebooks.show', $order->orderable);
+        $retryLabel = 'Kembali ke Ebook';
+        $paidDescription = 'Pembayaranmu sudah kami terima. Akses ebook akan diproses melalui sistem order.';
+        $cancelDescription = 'Pesananmu akan dibatalkan dan kamu harus memulai ulang dari halaman ebook.';
+    }
+@endphp
+
 <div class="w-full bg-gray-200 py-11 px-4 sm:px-8 flex justify-center items-center min-h-[calc(100vh-64px)]">
     @if ($order->isPaid())
         {{-- Paid State (1-Column Layout) --}}
@@ -47,11 +62,11 @@
                     </svg>
                 </div>
                 <div class="justify-start text-teal-500 text-3xl font-semibold font-bricolage leading-9 text-center">Pembayaran berhasil</div>
-                <div class="self-stretch text-center justify-start text-zinc-500 text-base font-medium font-dm leading-7">Pembayaranmu sudah kami terima. Selamat menikmati paket barumu!</div>
+                <div class="self-stretch text-center justify-start text-zinc-500 text-base font-medium font-dm leading-7">{{ $paidDescription }}</div>
             </div>
             
-            <a href="{{ route('membership.index') }}" class="self-stretch mt-4 px-2 py-4 bg-primary-500 hover:bg-primary-600 transition-colors rounded-xl flex flex-col justify-center items-center gap-4">
-                <div class="text-center justify-start text-white text-lg font-medium font-dm leading-4">Kembali</div>
+            <a href="{{ $returnUrl }}" class="self-stretch mt-4 px-2 py-4 bg-primary-500 hover:bg-primary-600 transition-colors rounded-xl flex flex-col justify-center items-center gap-4">
+                <div class="text-center justify-start text-white text-lg font-medium font-dm leading-4">{{ $returnLabel }}</div>
             </a>
         </div>
     @else
@@ -111,8 +126,8 @@
                             </div>
                         </div>
                         <div class="w-full mt-4 flex flex-col justify-start items-start gap-3">
-                            <a href="{{ route('membership.index') }}" class="w-full px-2 py-4 bg-primary-500 hover:bg-primary-600 rounded-xl flex flex-col justify-center items-center transition-colors">
-                                <span class="text-center text-white text-base font-medium font-dm leading-4">Pilih Paket Baru</span>
+                            <a href="{{ $returnUrl }}" class="w-full px-2 py-4 bg-primary-500 hover:bg-primary-600 rounded-xl flex flex-col justify-center items-center transition-colors">
+                                <span class="text-center text-white text-base font-medium font-dm leading-4">{{ $retryLabel }}</span>
                             </a>
                         </div>
                     </div>
@@ -172,14 +187,14 @@
             
             <div class="flex flex-col items-center gap-2 text-center">
                 <h3 class="text-stone-900 text-xl font-semibold font-bricolage leading-6">Batalkan pembayaran?</h3>
-                <p class="text-text-secondary text-xs font-medium font-dm leading-4">Pesananmu akan dibatalkan dan kamu harus memulai ulang dari halaman paket.</p>
+                <p class="text-text-secondary text-xs font-medium font-dm leading-4">{{ $cancelDescription }}</p>
             </div>
         </div>
         <div class="w-full flex justify-start items-start gap-3 mt-2">
             <button onclick="closeCancelModal()" class="flex-1 py-2.5 bg-gray-200 hover:bg-gray-300 transition-colors rounded-[10px] flex justify-center items-center">
                 <span class="text-black text-sm font-medium font-dm leading-5">Lanjut bayar</span>
             </button>
-            <a href="{{ route('membership.index') }}" class="flex-1 py-2.5 bg-red-500 hover:bg-red-600 transition-colors rounded-[10px] flex justify-center items-center">
+            <a href="{{ $returnUrl }}" class="flex-1 py-2.5 bg-red-500 hover:bg-red-600 transition-colors rounded-[10px] flex justify-center items-center">
                 <span class="text-white text-sm font-medium font-dm leading-5">Ya, batalkan</span>
             </a>
         </div>
