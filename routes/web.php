@@ -80,6 +80,7 @@ require __DIR__.'/api_web.php';
 require __DIR__.'/membership.php';
 require __DIR__.'/order.php';
 require __DIR__.'/articles.php';
+require __DIR__.'/ebooks.php';
 require __DIR__.'/moodtracker.php';
 require __DIR__.'/professional.php';
 require __DIR__.'/sharetalk.php';
