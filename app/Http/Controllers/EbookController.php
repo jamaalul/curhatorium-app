@@ -9,6 +9,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
+use \Illuminate\Http\Request;
 
 class EbookController extends Controller
 {
@@ -16,7 +17,7 @@ class EbookController extends Controller
         private MidtransService $midtrans,
     ) {}
 
-    public function index(\Illuminate\Http\Request $request): View
+    public function index(Request $request): View
     {
         $categories = \App\Models\EbookCategory::orderBy('name')->get();
 
