@@ -38,15 +38,38 @@ class EbookController extends Controller
     {
         abort_unless($ebook->is_published, 404);
 
-        $ebook->load([
-            'category',
-            'comments' => fn ($query) => $query
-                ->where('is_visible', true)
-                ->with('user:id,name')
-                ->latest(),
-        ]);
+        $ebook->load(['category']);
 
-        return view('ebooks.show', compact('ebook'));
+        $comments = $ebook->comments()
+            ->where('is_visible', true)
+            ->with('user:id,name')
+            ->latest()
+            ->paginate(5);
+
+        $hasPurchased = false;
+        $hasReviewed = false;
+
+        if (Auth::check()) {
+            $hasPurchased = Order::where('user_id', Auth::id())
+                ->where('orderable_type', Ebook::class)
+                ->where('orderable_id', $ebook->id)
+                ->where('status', 'paid')
+                ->exists();
+            
+            $hasReviewed = $ebook->comments()->where('user_id', Auth::id())->exists();
+        }
+
+        $relatedEbooks = Ebook::query()
+            ->published()
+            ->where('id', '!=', $ebook->id)
+            ->when($ebook->ebook_category_id, function ($q) use ($ebook) {
+                $q->where('ebook_category_id', $ebook->ebook_category_id);
+            })
+            ->latest()
+            ->limit(4)
+            ->get();
+
+        return view('ebooks.show', compact('ebook', 'comments', 'hasPurchased', 'hasReviewed', 'relatedEbooks'));
     }
 
     public function checkout(Ebook $ebook): RedirectResponse
@@ -99,4 +122,40 @@ class EbookController extends Controller
 
         return redirect()->route('order.show', $order);
     }
+
+    public function review(Request $request, Ebook $ebook): RedirectResponse
+    {
+        abort_unless($ebook->is_published, 404);
+
+        $request->validate([
+            'content' => ['required', 'string', 'min:3', 'max:500'],
+        ]);
+
+        $user = Auth::user();
+
+        $hasPurchased = Order::where('user_id', $user->id)
+            ->where('orderable_type', Ebook::class)
+            ->where('orderable_id', $ebook->id)
+            ->where('status', 'paid')
+            ->exists();
+
+        if (!$hasPurchased) {
+            return back()->with('error', 'Anda harus membeli ebook ini terlebih dahulu untuk memberikan ulasan.');
+        }
+
+        $hasReviewed = $ebook->comments()->where('user_id', $user->id)->exists();
+
+        if ($hasReviewed) {
+            return back()->with('error', 'Anda sudah memberikan ulasan untuk ebook ini.');
+        }
+
+        $ebook->comments()->create([
+            'user_id' => $user->id,
+            'content' => $request->input('content'),
+            'is_visible' => true,
+        ]);
+
+        return back()->with('success', 'Ulasan Anda berhasil ditambahkan.');
+    }
 }
+
