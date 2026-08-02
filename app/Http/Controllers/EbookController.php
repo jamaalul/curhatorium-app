@@ -34,6 +34,47 @@ class EbookController extends Controller
         return view('ebooks.index', compact('ebooks', 'categories'));
     }
 
+    public function library(Request $request): View
+    {
+        $categories = \App\Models\EbookCategory::orderBy('name')->get();
+
+        $query = Order::query()
+            ->where('user_id', Auth::id())
+            ->where('orderable_type', Ebook::class)
+            ->where('status', 'paid')
+            ->with(['orderable.category']);
+
+        if ($request->filled('category')) {
+            $query->whereHasMorph('orderable', [Ebook::class], function ($q) use ($request) {
+                $q->whereHas('category', function ($q2) use ($request) {
+                    $q2->where('slug', $request->category);
+                });
+            });
+        }
+
+        if ($request->filled('sort')) {
+            if ($request->sort === 'oldest') {
+                $query->oldest();
+            } elseif ($request->sort === 'title_asc') {
+                $query->join('ebooks', 'orders.orderable_id', '=', 'ebooks.id')
+                      ->orderBy('ebooks.title', 'asc')
+                      ->select('orders.*');
+            } elseif ($request->sort === 'title_desc') {
+                $query->join('ebooks', 'orders.orderable_id', '=', 'ebooks.id')
+                      ->orderBy('ebooks.title', 'desc')
+                      ->select('orders.*');
+            } else {
+                $query->latest('orders.created_at');
+            }
+        } else {
+            $query->latest('orders.created_at');
+        }
+
+        $orders = $query->paginate(12)->withQueryString();
+
+        return view('ebooks.library', compact('orders', 'categories'));
+    }
+
     public function show(Ebook $ebook): View
     {
         abort_unless($ebook->is_published, 404);
