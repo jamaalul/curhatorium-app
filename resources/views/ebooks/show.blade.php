@@ -75,7 +75,7 @@
                         <div class="bg-green-50 mb-2 p-4 border border-green-200 rounded-sm">
                             <p class="text-green-800 text-sm">Anda telah memiliki akses ke ebook ini.</p>
                         </div>
-                        <a href="{{ asset('storage/'.$ebook->file_url) }}" target="_blank" rel="noopener noreferrer" class="flex justify-center items-center gap-2 bg-blue-600 hover:bg-blue-700 px-6 py-3.5 rounded-sm font-semibold text-white text-sm transition-all duration-200">
+                        <a href="{{ route('ebooks.read', $ebook) }}" class="flex justify-center items-center gap-2 bg-blue-600 hover:bg-blue-700 px-6 py-3.5 rounded-sm font-semibold text-white text-sm transition-all duration-200">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5s3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18s-3.332.477-4.5 1.253" />
                             </svg>

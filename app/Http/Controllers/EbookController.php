@@ -198,5 +198,72 @@ class EbookController extends Controller
 
         return back()->with('success', 'Ulasan Anda berhasil ditambahkan.');
     }
+
+    public function read(Ebook $ebook): View
+    {
+        abort_unless($ebook->isOwnedBy(Auth::user()), 403, 'You do not own this ebook.');
+
+        $pdfUrl = \Illuminate\Support\Facades\URL::temporarySignedRoute(
+            'ebooks.stream',
+            now()->addMinutes(15),
+            ['ebook' => $ebook]
+        );
+
+        $progress = \App\Models\EbookReadingProgress::where('user_id', Auth::id())
+            ->where('ebook_id', $ebook->id)
+            ->first();
+            
+        $startPage = $progress ? $progress->last_page : 1;
+
+        return view('ebooks.read', compact('ebook', 'pdfUrl', 'startPage'));
+    }
+
+    public function stream(Ebook $ebook)
+    {
+        abort_unless($ebook->isOwnedBy(Auth::user()), 403, 'You do not own this ebook.');
+
+        $path = \Illuminate\Support\Facades\Storage::disk('private')->path($ebook->file_url);
+
+        if (!file_exists($path)) {
+            abort(404, 'PDF file not found.');
+        }
+
+        return response()->file($path, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline',
+            'Cache-Control' => 'no-store, no-cache, must-revalidate, max-age=0',
+            'Pragma' => 'no-cache',
+            'X-Frame-Options' => 'SAMEORIGIN'
+        ]);
+    }
+
+    public function refreshUrl(Ebook $ebook)
+    {
+        abort_unless($ebook->isOwnedBy(Auth::user()), 403, 'You do not own this ebook.');
+
+        return response()->json([
+            'url' => \Illuminate\Support\Facades\URL::temporarySignedRoute(
+                'ebooks.stream',
+                now()->addMinutes(15),
+                ['ebook' => $ebook]
+            )
+        ]);
+    }
+
+    public function updateProgress(Request $request, Ebook $ebook)
+    {
+        abort_unless($ebook->isOwnedBy(Auth::user()), 403, 'You do not own this ebook.');
+
+        $request->validate([
+            'page' => ['required', 'integer', 'min:1'],
+        ]);
+
+        \App\Models\EbookReadingProgress::updateOrCreate(
+            ['user_id' => Auth::id(), 'ebook_id' => $ebook->id],
+            ['last_page' => $request->page]
+        );
+
+        return response()->json(['success' => true]);
+    }
 }
 

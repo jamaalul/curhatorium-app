@@ -31,8 +31,8 @@
         <div class="flex md:flex-row flex-col gap-10">
             <!-- Sidebar -->
             <div class="flex-shrink-0 w-full md:w-1/4">
-                <h2 class="mb-6 font-bold text-gray-900 text-lg font-bricolage">Kategori Ebook</h2>
-                <ul class="space-y-4 text-gray-700 font-dm">
+                <h2 class="mb-6 font-bricolage font-bold text-gray-900 text-lg">Kategori Ebook</h2>
+                <ul class="space-y-4 font-dm text-gray-700">
                     <li><a href="{{ request()->fullUrlWithQuery(['category' => null, 'page' => null]) }}" class="hover:text-black transition-colors @if(!request('category')) font-bold text-black @endif">Semua Ebook</a></li>
                     @foreach($categories as $category)
                         <li><a href="{{ request()->fullUrlWithQuery(['category' => $category->slug, 'page' => null]) }}" class="hover:text-black transition-colors @if(request('category') === $category->slug) font-bold text-black @endif">{{ $category->name }}</a></li>
@@ -49,8 +49,8 @@
                         @if(request('category'))
                             <input type="hidden" name="category" value="{{ request('category') }}">
                         @endif
-                        <label for="sort" class="font-bold text-gray-900 text-sm font-dm">Sortir</label>
-                        <select name="sort" id="sort" onchange="this.form.submit()" class="px-3 py-1.5 border border-gray-300 focus:border-black rounded-sm outline-none focus:ring-black text-sm font-dm">
+                        <label for="sort" class="font-dm font-bold text-gray-900 text-sm">Sortir</label>
+                        <select name="sort" id="sort" onchange="this.form.submit()" class="px-3 py-1.5 border border-gray-300 focus:border-black rounded-sm outline-none focus:ring-black font-dm text-sm">
                             <option value="latest" @selected(request('sort') === 'latest' || !request('sort'))>Pembelian Terbaru</option>
                             <option value="oldest" @selected(request('sort') === 'oldest')>Pembelian Terlama</option>
                             <option value="title_asc" @selected(request('sort') === 'title_asc')>Judul A-Z</option>
@@ -104,16 +104,16 @@
                                                 {{ $ebook->category->name }}</p>
                                         @endif
                                         <h3 class="mb-1 font-bricolage font-bold text-gray-900 text-base line-clamp-2 leading-snug">
-                                            <a href="{{ route('ebooks.show', $ebook) }}"
+                                            <a href="{{ route('ebooks.read', $ebook) }}"
                                                 class="hover:text-teal-600 transition-colors">{{ $ebook->title }}</a>
                                         </h3>
                                         <p class="mt-1 mb-4 font-dm text-gray-500 text-xs">Dibeli pada {{ $order->created_at->format('d M Y') }}
                                         </p>
 
                                         <div class="mt-auto pt-3 border-gray-100 border-t">
-                                            <a href="{{ route('ebooks.show', $ebook) }}"
+                                            <a href="{{ route('ebooks.read', $ebook) }}"
                                                 class="flex justify-center items-center bg-gray-50 hover:bg-gray-100 px-4 py-2.5 rounded-xl w-full font-dm font-bold text-gray-700 hover:text-gray-900 text-sm transition">
-                                                Lihat Detail
+                                                Baca
                                             </a>
                                         </div>
                                     </div>
