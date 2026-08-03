@@ -8,7 +8,10 @@ import 'aos/dist/aos.css';
 
 import './calendar.js';
 
+import ebookReader from './ebook-reader.js';
+
 window.Alpine = Alpine;
+Alpine.data('ebookReader', ebookReader);
 
 Alpine.start();
 

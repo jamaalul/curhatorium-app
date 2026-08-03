@@ -64,4 +64,18 @@ class Ebook extends Model
     {
         return Attribute::get(fn (): string => $this->title);
     }
+
+    public function isOwnedBy(\App\Models\User $user): bool
+    {
+        return Order::where('user_id', $user->id)
+            ->where('orderable_type', static::class)
+            ->where('orderable_id', $this->id)
+            ->where('status', 'paid')
+            ->exists();
+    }
+
+    public function progress(): HasMany
+    {
+        return $this->hasMany(EbookReadingProgress::class);
+    }
 }
