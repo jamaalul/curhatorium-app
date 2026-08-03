@@ -135,6 +135,11 @@ export default function ebookReader() {
             this.renderPage(this.currentPage);
         },
 
+        updateZoom() {
+            this.scale = Math.min(3, Math.max(0.5, this.scale));
+            this.renderPage(this.currentPage);
+        },
+
         async refreshUrl() {
             try {
                 if (!this.refreshUrlEndpoint) return;
