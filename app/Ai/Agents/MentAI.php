@@ -13,7 +13,7 @@ use Laravel\Ai\Enums\Lab;
 use Laravel\Ai\Promptable;
 
 #[Provider(Lab::Gemini)]
-#[Model('gemini-3.6-flash')]
+#[Model('gemini-3.1-flash-lite')]
 class MentAI implements Agent, Conversational, HasTools
 {
     use Promptable, RemembersConversations;

@@ -270,7 +270,7 @@
 
                     const userText = this.input.trim();
                     this.input = '';
-                    this.autoResize(); // reset textarea height
+                    this.$nextTick(() => this.autoResize());
 
                     this.messages.push({
                         id: Date.now().toString(),
