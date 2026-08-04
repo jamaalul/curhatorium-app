@@ -31,11 +31,9 @@
                 $featureNames = [
                     'mental_test' => 'Tes Kesehatan Mental',
                     'tracker' => 'Mood and Productivity Tracker',
-                    'mentai_chatbot' => 'Ment-AI Chatbot',
                     'missions' => 'Missions of The Day',
                     'support_group' => 'Support Group Discussion',
                     'deep_cards' => 'Deep Cards',
-                    'mentai_deepcard_unlimited' => 'Ment-AI & Deep Cards',
                     'share_talk_ranger_chat' => 'Share and Talk via Chat w/ Rangers',
                     'share_talk_psy_chat' => 'Share and Talk via Chat w/ Psikolog',
                     'share_talk_psy_video' => 'Share and Talk via Video Call w/ Psikolog',

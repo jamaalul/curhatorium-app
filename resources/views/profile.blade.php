@@ -137,7 +137,6 @@
                       $featureNames = [
                         'mental_test' => 'Tes Kesehatan Mental',
                         'tracker' => 'Mood and Productivity Tracker',
-                        'mentai_chatbot' => 'Ment-AI Chatbot',
                         'missions' => 'Missions of The Day',
                         'support_group' => 'Support Group Discussion',
                         'deep_cards' => 'Deep Cards',

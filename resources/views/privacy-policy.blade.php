@@ -350,7 +350,7 @@
 
             <div class="section">
                 <h2>2. RUANG LINGKUP KEBIJAKAN</h2>
-                <p>Kebijakan ini berlaku untuk seluruh pengguna Curhatorium, baik yang hanya mengakses informasi maupun yang menggunakan seluruh layanan secara aktif, termasuk Support Group, Chatbot, Tracker, dan fitur lain di dalam platform.</p>
+                <p>Kebijakan ini berlaku untuk seluruh pengguna Curhatorium, baik yang hanya mengakses informasi maupun yang menggunakan seluruh layanan secara aktif, termasuk Support Group, Tracker, dan fitur lain di dalam platform.</p>
             </div>
 
             <div class="section">

@@ -4,7 +4,6 @@
     $isDay = $ticket->limit_type === 'day';
     $showTotal = ($isCount || $isDay) && isset($total_remaining);
     $isSupportGroupJoin = request()->routeIs('group.join');
-    $isChatbot = request()->routeIs('chatbot');
 @endphp
 
 <!doctype html>
@@ -36,20 +35,12 @@
                 <p style="font-size:1.1em;margin-bottom:6px;">Expired: <strong>{{ \Carbon\Carbon::parse($ticket->expires_at)->format('d M Y H:i') }}</strong></p>
             </div>
             @if($isHour)
-                @if($isChatbot)
-                    <form method="GET" action="">
-                        <label for="consume_amount" style="font-size:1em;">Masukkan waktu yang ingin digunakan (menit):</label>
-                        <input type="number" step="1" min="1" max="{{ intval($ticket->remaining_value * 60) }}" name="consume_amount" id="consume_amount" required class="form-control" style="margin-bottom:1rem;">
-                        <button type="submit" class="modal-btn">Gunakan</button>
-                    </form>
-                @else
-                    <form method="POST" action="">
-                        @csrf
-                        <label for="consume_amount" style="font-size:1em;">Masukkan waktu yang ingin digunakan (menit):</label>
-                        <input type="number" step="1" min="1" max="{{ intval($ticket->remaining_value * 60) }}" name="consume_amount" id="consume_amount" required class="form-control" style="margin-bottom:1rem;">
-                        <button type="submit" class="modal-btn">Gunakan</button>
-                    </form>
-                @endif
+                <form method="POST" action="">
+                    @csrf
+                    <label for="consume_amount" style="font-size:1em;">Masukkan waktu yang ingin digunakan (menit):</label>
+                    <input type="number" step="1" min="1" max="{{ intval($ticket->remaining_value * 60) }}" name="consume_amount" id="consume_amount" required class="form-control" style="margin-bottom:1rem;">
+                    <button type="submit" class="modal-btn">Gunakan</button>
+                </form>
             @elseif($isCount || $isDay)
                 @if($isSupportGroupJoin)
                     <form method="POST" action="">

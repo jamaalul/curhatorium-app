@@ -62,16 +62,6 @@ class XpRedemptionController extends Controller
             'duration_days' => 30,
             'is_unlimited' => true,
         ],
-        'mentai_deepcard_unlimited' => [
-            'name' => 'Ment-AI & Deepcard Unlimited',
-            'xp_cost' => 2500,
-            'ticket_type' => 'mentai_deepcard_unlimited',
-            'limit_type' => 'unlimited',
-            'limit_value' => null,
-            'remaining_value' => null,
-            'duration_days' => 30,
-            'is_unlimited' => true,
-        ],
     ];
 
     public function index()
@@ -102,31 +92,8 @@ class XpRedemptionController extends Controller
             $user->total_xp -= $scheme['xp_cost'];
             $user->save();
 
-            // Special handling for Ment-AI & Deepcard Unlimited
-            if ($ticketType === 'mentai_deepcard_unlimited') {
-                // Create two separate tickets: one for Ment-AI and one for Deep Cards
-                UserTicket::create([
-                    'user_id' => $user->id,
-                    'ticket_type' => 'mentai_chatbot',
-                    'limit_type' => 'hour',
-                    'limit_value' => null,
-                    'remaining_value' => null,
-                    'expires_at' => Carbon::now()->addDays($scheme['duration_days']),
-                ]);
-
-                UserTicket::create([
-                    'user_id' => $user->id,
-                    'ticket_type' => 'deep_cards',
-                    'limit_type' => 'count',
-                    'limit_value' => null,
-                    'remaining_value' => null,
-                    'expires_at' => Carbon::now()->addDays($scheme['duration_days']),
-                ]);
-
-                return back()->with('success', 'Successfully redeemed '.$scheme['name'].' for '.$scheme['xp_cost'].' XP! You now have unlimited access to both Ment-AI and Deep Cards for 30 days.');
-            } else {
-                // Create single user ticket for other types
-                UserTicket::create([
+            // Create single user ticket
+            UserTicket::create([
                     'user_id' => $user->id,
                     'ticket_type' => $scheme['ticket_type'],
                     'limit_type' => $scheme['limit_type'],
@@ -135,8 +102,7 @@ class XpRedemptionController extends Controller
                     'expires_at' => Carbon::now()->addDays($scheme['duration_days']),
                 ]);
 
-                return back()->with('success', 'Successfully redeemed '.$scheme['name'].' for '.$scheme['xp_cost'].' XP!');
-            }
+            return back()->with('success', 'Successfully redeemed '.$scheme['name'].' for '.$scheme['xp_cost'].' XP!');
 
         } catch (\Exception $e) {
             return back()->with('error', 'Failed to redeem ticket. Please try again.');

@@ -54,11 +54,6 @@ return [
             'subscription' => 16,
             'description' => 'Mission (Hard)',
         ],
-        'mentai_chatbot' => [
-            'free' => 10,
-            'subscription' => 10,
-            'description' => 'Ment-AI Chatbot',
-        ],
         'deep_cards' => [
             'free' => 5,
             'subscription' => 5,

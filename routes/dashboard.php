@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\CardController;
-use App\Http\Controllers\ChatbotController;
 use App\Http\Controllers\MentalTestController;
 use App\Http\Controllers\MissionController;
 use App\Http\Controllers\ProfileController;
@@ -55,8 +54,6 @@ Route::middleware('auth')->group(function () {
     // Feature routes requiring authentication
     Route::get('/support-group-discussion', [SgdController::class, 'show'])->name('sgd');
     Route::get('/deep-cards', [CardController::class, 'index']);
-    Route::get('/mental-support-chatbot', [ChatbotController::class, 'index'])->name('chatbot');
-    Route::get('/mental-support-chatbot/{identifier}', [ChatbotController::class, 'chat'])->name('chatbot.chat');
     Route::get('mental-health-test', fn () => view('mental-test.form'))->name('mhc-sf.form');
     Route::post('/mental-test/submit', [MentalTestController::class, 'store'])->name('mental-test.store');
 
