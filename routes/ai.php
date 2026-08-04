@@ -1,20 +1,22 @@
 <?php
 
-// routes/web.php
 use App\Ai\Agents\MentAI;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Laravel\Ai\Models\Conversation;
 
-// Start a new AI conversation
-Route::post('/ai', function (Request $request) {
-    $request->validate(['message' => 'required|string']);
+Route::post('/ai/start', function (Request $request) {
+    $conversation = $request->user()->conversations()->create([
+        'id' => (string) Str::uuid(),
+        'title' => 'Percakapan baru', // "New conversation" — required field, no default
+    ]);
 
-    return (new MentAI)
-        ->forUser($request->user())
-        ->stream($request->input('message'));
+    return response()->json([
+        'conversationId' => $conversation->id,
+    ]);
 })->middleware('auth');
 
-// Continue an existing AI conversation
+// Send a message in an AI conversation (used for every message, including the first)
 Route::post('/ai/{conversation}/message', function (Request $request, Conversation $conversation) {
     $request->validate(['message' => 'required|string']);
 
@@ -26,4 +28,13 @@ Route::post('/ai/{conversation}/message', function (Request $request, Conversati
 // List a user's AI conversations
 Route::get('/ai/conversations', function (Request $request) {
     return $request->user()->conversations()->latest('updated_at')->paginate(20);
+})->middleware('auth');
+
+// Fetch messages for a specific conversation
+Route::get('/ai/{conversation}/messages', function (Request $request, Conversation $conversation) {
+    if ($conversation->user_id !== $request->user()->id) {
+        abort(403);
+    }
+    
+    return $conversation->messages()->oldest()->get();
 })->middleware('auth');
