@@ -20,6 +20,7 @@ Route::middleware([AuthenticateProfessional::class])->prefix('professional')->na
     Route::get('/dashboard', [ProfessionalDashboardController::class, 'dashboard'])->name('dashboard');
     Route::get('/profile', [ProfessionalDashboardController::class, 'profile'])->name('profile');
     Route::put('/profile', [ProfessionalDashboardController::class, 'updateProfile'])->name('profile.update');
+    Route::get('/consultation-history', [ProfessionalDashboardController::class, 'consultationHistory'])->name('consultation-history');
 
     Route::post('/availability/set', [ProfessionalDashboardController::class, 'setAvailability'])->name('set-availability');
 
@@ -33,10 +34,10 @@ Route::middleware([AuthenticateProfessional::class])->prefix('professional')->na
 
     Route::get('/chat/{room}', [ConsultationRoomController::class,      'chatRoom'])->name('chat.room');
     Route::get('/video/{room}', [ConsultationRoomController::class,      'videoRoom'])->name('video.room');
-    
+
     Route::post('/update-status', [ConsultationApiController::class,       'updateStatus'])->name('updateStatus');
     Route::post('/send-message', [ConsultationApiController::class,       'facilitatorSend'])->name('sendMessage');
-    
+
     Route::delete('/slots/{slot}', [ProfessionalDashboardController::class, 'deleteSlot'])->name('slot.delete');
     Route::post('/change-password', [ProfessionalDashboardController::class, 'changePassword'])->name('change-password');
     Route::post('/logout', [ProfessionalDashboardController::class, 'logout'])->name('dashboard.logout');

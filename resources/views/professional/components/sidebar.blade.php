@@ -141,6 +141,32 @@
                 </div>
             </div>
         @endif
+        @if ($consultationHistory->count() > 0)
+            <div class="flex flex-col gap-2 mt-4 p-4 w-72 shrink-0">
+                <p class="whitespace-nowrap">Riwayat sesi</p>
+                <div class="flex flex-col gap-2 w-full h-fit max-h-64 overflow-y-auto">
+                    @foreach($consultationHistory as $history)
+                        <div class="flex flex-col bg-white p-2 rounded-lg w-full">
+                            <p class="overflow-hidden text-zinc-700 text-sm text-ellipsis whitespace-nowrap">
+                                {{ $history->bookedBy?->name ?? $history->bookedBy?->username ?? 'Unknown' }}
+                            </p>
+                            <p class="text-zinc-400 text-xs">
+                                {{ $history->slot_start_time ? \Carbon\Carbon::parse($history->slot_start_time)->translatedFormat('d M Y, H:i') : '-' }}
+                            </p>
+                        </div>
+                    @endforeach
+                </div>
+                <a href="{{ route('professional.consultation-history') }}"
+                    class="flex justify-end items-center gap-1 mt-1 text-teal-600 hover:text-teal-700 text-sm transition-colors">
+                    Lihat semua
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5">
+                        <path fill-rule="evenodd"
+                            d="M5.22 14.78a.75.75 0 0 0 1.06 0l7.22-7.22v5.69a.75.75 0 0 0 1.5 0v-7.5a.75.75 0 0 0-.75-.75h-7.5a.75.75 0 0 0 0 1.5h5.69l-7.22 7.22a.75.75 0 0 0 0 1.06Z"
+                            clip-rule="evenodd" />
+                    </svg>
+                </a>
+            </div>
+        @endif
         <a href="{{ route('professional.profile') }}"
             class="flex items-center gap-3 mx-4 mt-auto mb-4 px-4 py-4 border-t w-64 overflow-hidden shrink-0">
             <div class="bg-zinc-400 border-2 border-zinc-400 rounded-full size-10 shrink-0">

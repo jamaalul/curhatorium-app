@@ -24,7 +24,7 @@
             @endif
 
             <!-- Profile Form -->
-            <div class="bg-white shadow-sm border border-zinc-200 rounded-2xl overflow-hidden">
+            <div class="bg-white rounded-2xl overflow-hidden">
                 <form action="{{ route('professional.profile.update') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
@@ -131,47 +131,47 @@
             </div>
 
             <!-- Password Change Section -->
-            <div class="bg-white shadow-sm mb-8 border border-zinc-200 rounded-2xl overflow-hidden" x-data="{
-                            current_password: '',
-                            new_password: '',
-                            new_password_confirmation: '',
-                            loading: false,
-                            successMessage: '',
-                            errorMessage: '',
-                            errors: {},
-                            submitPasswordChange() {
-                                this.loading = true;
-                                this.successMessage = '';
-                                this.errorMessage = '';
-                                this.errors = {};
+            <div class="bg-white mb-8 rounded-2xl overflow-hidden" x-data="{
+                                    current_password: '',
+                                    new_password: '',
+                                    new_password_confirmation: '',
+                                    loading: false,
+                                    successMessage: '',
+                                    errorMessage: '',
+                                    errors: {},
+                                    submitPasswordChange() {
+                                        this.loading = true;
+                                        this.successMessage = '';
+                                        this.errorMessage = '';
+                                        this.errors = {};
 
-                                axios.post('{{ route('professional.change-password') }}', {
-                                    current_password: this.current_password,
-                                    new_password: this.new_password,
-                                    new_password_confirmation: this.new_password_confirmation
-                                })
-                                .then(response => {
-                                    this.successMessage = response.data.message;
-                                    this.current_password = '';
-                                    this.new_password = '';
-                                    this.new_password_confirmation = '';
-                                })
-                                .catch(error => {
-                                    if (error.response && error.response.status === 422) {
-                                        if (error.response.data.errors) {
-                                            this.errors = error.response.data.errors;
-                                        } else {
-                                            this.errorMessage = error.response.data.message;
-                                        }
-                                    } else {
-                                        this.errorMessage = 'An error occurred while changing the password.';
+                                        axios.post('{{ route('professional.change-password') }}', {
+                                            current_password: this.current_password,
+                                            new_password: this.new_password,
+                                            new_password_confirmation: this.new_password_confirmation
+                                        })
+                                        .then(response => {
+                                            this.successMessage = response.data.message;
+                                            this.current_password = '';
+                                            this.new_password = '';
+                                            this.new_password_confirmation = '';
+                                        })
+                                        .catch(error => {
+                                            if (error.response && error.response.status === 422) {
+                                                if (error.response.data.errors) {
+                                                    this.errors = error.response.data.errors;
+                                                } else {
+                                                    this.errorMessage = error.response.data.message;
+                                                }
+                                            } else {
+                                                this.errorMessage = 'An error occurred while changing the password.';
+                                            }
+                                        })
+                                        .finally(() => {
+                                            this.loading = false;
+                                        });
                                     }
-                                })
-                                .finally(() => {
-                                    this.loading = false;
-                                });
-                            }
-                        }">
+                                }">
                 <div class="p-6 sm:p-8">
                     <h2 class="mb-6 font-semibold text-zinc-800 text-lg">Change Password</h2>
 
