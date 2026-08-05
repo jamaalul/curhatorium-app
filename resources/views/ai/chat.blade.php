@@ -200,6 +200,7 @@
                 streaming: false,
                 hasStreamedText: false,
                 sidebarOpen: false,
+                isFirstMessage: false,
 
                 _getCSRFToken() {
                     const meta = document.querySelector('meta[name="csrf-token"]');
@@ -226,6 +227,8 @@
 
                     if (this.conversationId) {
                         await this.fetchMessages();
+                    } else {
+                        this.isFirstMessage = true;
                     }
                 },
 
@@ -374,6 +377,40 @@
                     } finally {
                         this.loading = false;
                         this.streaming = false;
+
+                        if (this.isFirstMessage && this.conversationId) {
+                            this.isFirstMessage = false;
+                            const assistantContent = this.messages.find(m => m.id === assistantMessageId)?.content || '';
+                            this.generateTitle(userText, assistantContent);
+                        }
+                    }
+                },
+
+                async generateTitle(userMessage, assistantResponse) {
+                    try {
+                        const res = await fetch(`/ai/${this.conversationId}/generate-title`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': this._getCSRFToken(),
+                                'Accept': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                message: userMessage.substring(0, 500),
+                                response: assistantResponse.substring(0, 500)
+                            })
+                        });
+
+                        if (!res.ok) return;
+
+                        const data = await res.json();
+
+                        const conv = this.conversations.find(c => c.id === this.conversationId);
+                        if (conv) {
+                            conv.title = data.title;
+                        }
+                    } catch (e) {
+                        console.error('Title generation failed:', e);
                     }
                 }
             }

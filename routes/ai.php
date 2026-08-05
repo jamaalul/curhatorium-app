@@ -1,6 +1,7 @@
 <?php
 
 use App\Ai\Agents\MentAI;
+use App\Ai\Agents\TitleGenerator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Laravel\Ai\Models\Conversation;
@@ -25,6 +26,28 @@ Route::post('/ai/{conversation}/message', function (Request $request, Conversati
         ->stream($request->input('message'));
 })->middleware('auth');
 
+// Generate a conversation title from the first exchange
+Route::post('/ai/{conversation}/generate-title', function (Request $request, Conversation $conversation) {
+    if ($conversation->user_id !== $request->user()->id) {
+        abort(403);
+    }
+
+    $request->validate([
+        'message' => 'required|string|max:500',
+        'response' => 'required|string|max:500',
+    ]);
+
+    $prompt = "User: {$request->input('message')}\nAssistant: {$request->input('response')}";
+
+    $result = (new TitleGenerator)->prompt($prompt);
+
+    $title = json_decode($result->text, true)['title'] ?? 'Percakapan baru';
+
+    $conversation->update(['title' => Str::limit($title, 60)]);
+
+    return response()->json(['title' => $conversation->title]);
+})->middleware('auth');
+
 // List a user's AI conversations
 Route::get('/ai/conversations', function (Request $request) {
     return $request->user()->conversations()->latest('updated_at')->paginate(20);
@@ -35,6 +58,6 @@ Route::get('/ai/{conversation}/messages', function (Request $request, Conversati
     if ($conversation->user_id !== $request->user()->id) {
         abort(403);
     }
-    
+
     return $conversation->messages()->oldest()->get();
 })->middleware('auth');

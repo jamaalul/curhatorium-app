@@ -12,8 +12,8 @@ use Laravel\Ai\Contracts\HasTools;
 use Laravel\Ai\Enums\Lab;
 use Laravel\Ai\Promptable;
 
-#[Provider(Lab::Gemini)]
-#[Model('gemini-3.1-flash-lite')]
+#[Provider(Lab::Groq)]
+#[Model('openai/gpt-oss-120b')]
 class MentAI implements Agent, Conversational, HasTools
 {
     use Promptable, RemembersConversations;
