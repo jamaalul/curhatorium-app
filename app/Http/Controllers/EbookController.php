@@ -3,13 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Models\Ebook;
+use App\Models\EbookCategory;
+use App\Models\EbookReadingProgress;
 use App\Models\Order;
 use App\Services\MidtransService;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
-use \Illuminate\Http\Request;
 
 class EbookController extends Controller
 {
@@ -19,30 +25,26 @@ class EbookController extends Controller
 
     public function index(Request $request): View
     {
-        $categories = \App\Models\EbookCategory::orderBy('name')->get();
+        $categories = EbookCategory::orderBy('name', 'asc')->get();
 
         $ebooks = Ebook::query()
             ->published()
-            ->when($request->category, function ($query, $categorySlug) {
-                $query->whereHas('category', fn($q) => $q->where('slug', $categorySlug));
-            })
             ->with('category')
             ->latest()
-            ->paginate(6)
-            ->withQueryString();
+            ->get();
 
         return view('ebooks.index', compact('ebooks', 'categories'));
     }
 
     public function library(Request $request): View
     {
-        $categories = \App\Models\EbookCategory::orderBy('name')->get();
+        $categories = EbookCategory::query()->orderBy('name', 'asc')->get();
 
         $query = Order::query()
             ->where('user_id', Auth::id())
             ->where('orderable_type', Ebook::class)
             ->where('status', 'paid')
-            ->with(['orderable.category']);
+            ->with(['orderable.category', 'orderable.progress' => fn ($q) => $q->where('user_id', Auth::id())]);
 
         if ($request->filled('category')) {
             $query->whereHasMorph('orderable', [Ebook::class], function ($q) use ($request) {
@@ -57,12 +59,12 @@ class EbookController extends Controller
                 $query->oldest();
             } elseif ($request->sort === 'title_asc') {
                 $query->join('ebooks', 'orders.orderable_id', '=', 'ebooks.id')
-                      ->orderBy('ebooks.title', 'asc')
-                      ->select('orders.*');
+                    ->orderBy('ebooks.title', 'asc')
+                    ->select('orders.*');
             } elseif ($request->sort === 'title_desc') {
                 $query->join('ebooks', 'orders.orderable_id', '=', 'ebooks.id')
-                      ->orderBy('ebooks.title', 'desc')
-                      ->select('orders.*');
+                    ->orderBy('ebooks.title', 'desc')
+                    ->select('orders.*');
             } else {
                 $query->latest('orders.created_at');
             }
@@ -85,19 +87,21 @@ class EbookController extends Controller
             ->where('is_visible', true)
             ->with('user:id,name')
             ->latest()
-            ->paginate(5);
+            ->paginate(5)
+            ->onEachSide(1);
 
         $hasPurchased = false;
         $hasReviewed = false;
 
         if (Auth::check()) {
-            $hasPurchased = Order::where('user_id', Auth::id())
-                ->where('orderable_type', Ebook::class)
-                ->where('orderable_id', $ebook->id)
-                ->where('status', 'paid')
+            $hasPurchased = Order::query()
+                ->where('user_id', '=', Auth::id())
+                ->where('orderable_type', '=', Ebook::class)
+                ->where('orderable_id', '=', $ebook->id)
+                ->where('status', '=', 'paid')
                 ->exists();
-            
-            $hasReviewed = $ebook->comments()->where('user_id', Auth::id())->exists();
+
+            $hasReviewed = $ebook->comments()->where('user_id', '=', Auth::id())->exists();
         }
 
         $relatedEbooks = Ebook::query()
@@ -174,13 +178,14 @@ class EbookController extends Controller
 
         $user = Auth::user();
 
-        $hasPurchased = Order::where('user_id', $user->id)
-            ->where('orderable_type', Ebook::class)
-            ->where('orderable_id', $ebook->id)
-            ->where('status', 'paid')
+        $hasPurchased = Order::query()
+            ->where('user_id', '=', $user->id)
+            ->where('orderable_type', '=', Ebook::class)
+            ->where('orderable_id', '=', $ebook->id)
+            ->where('status', '=', 'paid')
             ->exists();
 
-        if (!$hasPurchased) {
+        if (! $hasPurchased) {
             return back()->with('error', 'Anda harus membeli ebook ini terlebih dahulu untuk memberikan ulasan.');
         }
 
@@ -203,16 +208,17 @@ class EbookController extends Controller
     {
         abort_unless($ebook->isOwnedBy(Auth::user()), 403, 'You do not own this ebook.');
 
-        $pdfUrl = \Illuminate\Support\Facades\URL::temporarySignedRoute(
+        $pdfUrl = URL::temporarySignedRoute(
             'ebooks.stream',
             now()->addMinutes(15),
             ['ebook' => $ebook]
         );
 
-        $progress = \App\Models\EbookReadingProgress::where('user_id', Auth::id())
-            ->where('ebook_id', $ebook->id)
+        $progress = EbookReadingProgress::query()
+            ->where('user_id', '=', Auth::id())
+            ->where('ebook_id', '=', $ebook->id)
             ->first();
-            
+
         $startPage = $progress ? $progress->last_page : 1;
 
         return view('ebooks.read', compact('ebook', 'pdfUrl', 'startPage'));
@@ -222,10 +228,46 @@ class EbookController extends Controller
     {
         abort_unless($ebook->isOwnedBy(Auth::user()), 403, 'You do not own this ebook.');
 
-        $path = \Illuminate\Support\Facades\Storage::disk('private')->path($ebook->file_url);
+        if (Str::startsWith($ebook->file_url, ['http://', 'https://'])) {
+            try {
+                $response = Http::timeout(30)
+                    ->withoutVerifying()
+                    ->withHeaders([
+                        'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                    ])
+                    ->get($ebook->file_url);
 
-        if (!file_exists($path)) {
-            abort(404, 'PDF file not found.');
+                if (! $response->successful()) {
+                    abort(404, 'Gagal mengambil PDF dari server luar (HTTP '.$response->status().').');
+                }
+
+                return response($response->body(), 200, [
+                    'Content-Type' => 'application/pdf',
+                    'Content-Disposition' => 'inline',
+                    'Cache-Control' => 'no-store, no-cache, must-revalidate, max-age=0',
+                    'Pragma' => 'no-cache',
+                ]);
+            } catch (\Exception $e) {
+                abort(500, 'Gagal terhubung ke server PDF luar: '.$e->getMessage());
+            }
+        }
+
+        $path = Storage::disk('private')->path($ebook->file_url);
+
+        if (! file_exists($path)) {
+            $path = Storage::disk('public')->path($ebook->file_url);
+        }
+
+        if (! file_exists($path)) {
+            if (file_exists(public_path($ebook->file_url))) {
+                $path = public_path($ebook->file_url);
+            } elseif (file_exists(base_path($ebook->file_url))) {
+                $path = base_path($ebook->file_url);
+            }
+        }
+
+        if (! file_exists($path)) {
+            abort(404, 'File PDF lokal tidak ditemukan di server (Path: '.$ebook->file_url.').');
         }
 
         return response()->file($path, [
@@ -233,7 +275,7 @@ class EbookController extends Controller
             'Content-Disposition' => 'inline',
             'Cache-Control' => 'no-store, no-cache, must-revalidate, max-age=0',
             'Pragma' => 'no-cache',
-            'X-Frame-Options' => 'SAMEORIGIN'
+            'X-Frame-Options' => 'SAMEORIGIN',
         ]);
     }
 
@@ -242,11 +284,11 @@ class EbookController extends Controller
         abort_unless($ebook->isOwnedBy(Auth::user()), 403, 'You do not own this ebook.');
 
         return response()->json([
-            'url' => \Illuminate\Support\Facades\URL::temporarySignedRoute(
+            'url' => URL::temporarySignedRoute(
                 'ebooks.stream',
                 now()->addMinutes(15),
                 ['ebook' => $ebook]
-            )
+            ),
         ]);
     }
 
@@ -258,7 +300,7 @@ class EbookController extends Controller
             'page' => ['required', 'integer', 'min:1'],
         ]);
 
-        \App\Models\EbookReadingProgress::updateOrCreate(
+        EbookReadingProgress::updateOrCreate(
             ['user_id' => Auth::id(), 'ebook_id' => $ebook->id],
             ['last_page' => $request->page]
         );
@@ -266,4 +308,3 @@ class EbookController extends Controller
         return response()->json(['success' => true]);
     }
 }
-

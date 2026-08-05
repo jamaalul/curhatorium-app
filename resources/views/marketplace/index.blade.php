@@ -388,10 +388,7 @@
 <script>
     document.addEventListener('alpine:init', () => {
         Alpine.data('marketplaceComponent', (initialProducts, initialCategories) => ({
-            products: initialProducts.map((p, index) => ({
-                ...p,
-                is_popular: p.id % 4 === 0 || index === 0 || index === 1 || index === 3
-            })),
+            products: initialProducts,
             categories: initialCategories,
             
             // State Filter & Sorting

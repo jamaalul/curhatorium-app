@@ -1,14 +1,14 @@
-<!-- Product Grid & Toolbar -->
+<!-- Ebooks Grid & Toolbar Partial -->
 <div class="marketplace-products-container flex-1 w-full min-w-0" style="flex: 1 1 0%; min-width: 0; width: 100%;">
     
-    <!-- Catalog Header / Sorting & Mobile Filter Toolbar -->
+    <!-- Catalog Header / Sorting & Filter Toolbar -->
     <div style="padding-bottom: 12px; border-bottom: 1px solid #E4E4E7; display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; position: relative; z-index: 40; width: 100%;">
         <div style="color: #000000; font-size: 20px; font-weight: 500; font-family: 'DM Sans', sans-serif; line-height: 36px;">
-            <span x-text="filteredProducts.length"></span> Produk
+            <span x-text="filteredProducts.length"></span> Ebook
         </div>
         
         <div style="display: flex; align-items: center; gap: 8px;">
-            <!-- Mobile Filter Button (Round White Circle - Strictly ONLY visible on Mobile < 768px) -->
+            <!-- Mobile Filter Button -->
             <button @click="mobileFilterOpen = true" 
                     class="mobile-filter-trigger-btn"
                     aria-label="Filter">
@@ -26,7 +26,7 @@
                     </svg>
                 </button>
                 
-                <!-- Dropdown Menu Box (Matching Figma Node 610:1818 Overlay Component) -->
+                <!-- Dropdown Menu Box -->
                 <div x-show="open" @click.away="open = false" 
                      x-transition:enter="transition ease-out duration-100"
                      x-transition:enter-start="transform opacity-0 scale-95"
@@ -61,20 +61,6 @@
                             background-color: #F4F4F5 !important;
                             font-weight: 500 !important;
                             color: #000000 !important;
-                        }
-
-                        /* Card Media Banner Explicit Desktop Aspect Ratio (264/160) */
-                        .marketplace-card-banner {
-                            width: 100% !important;
-                            aspect-ratio: 264 / 160 !important;
-                            position: relative !important;
-                            border-radius: 8px !important;
-                            overflow: hidden !important;
-                            background: #F4F4F5 !important;
-                            display: flex !important;
-                            align-items: center !important;
-                            justify-content: center !important;
-                            flex-shrink: 0 !important;
                         }
 
                         /* Pagination Explicit CSS Rules */
@@ -130,29 +116,6 @@
                             margin: 0 !important;
                             white-space: nowrap !important;
                         }
-
-                        /* Mobile Filter Trigger Button Class with Media Query */
-                        .mobile-filter-trigger-btn {
-                            width: 36px !important;
-                            height: 36px !important;
-                            border-radius: 9999px !important;
-                            background: #FFFFFF !important;
-                            border: 1px solid #E4E4E7 !important;
-                            display: flex !important;
-                            align-items: center !important;
-                            justify-content: center !important;
-                            cursor: pointer !important;
-                            box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important;
-                            flex-shrink: 0 !important;
-                            padding: 0 !important;
-                            margin: 0 !important;
-                        }
-
-                        @media (min-width: 768px) {
-                            .mobile-filter-trigger-btn {
-                                display: none !important;
-                            }
-                        }
                     </style>
 
                     <!-- Option 1: Terbaru -->
@@ -189,35 +152,35 @@
         </div>
     </div>
 
-    <!-- Products Grid (2 cols on Mobile/Tablet, 3 cols on Large Desktop) -->
+    <!-- Ebooks Grid (2 cols on Mobile/Tablet, 3 cols on Large Desktop) -->
     <div class="marketplace-products-grid grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6" style="width: 100%;">
         
-        <!-- Loop paginated products -->
-        <template x-for="product in paginatedProducts" :key="product.id">
-            <a :href="'/marketplace/' + product.slug" 
+        <!-- Loop paginated ebooks -->
+        <template x-for="ebook in paginatedProducts" :key="ebook.id">
+            <a :href="'/ebooks/' + ebook.slug" 
                class="group bg-white rounded-2xl p-3 pb-4 border border-[#E4E4E7] shadow-xs flex flex-col justify-between gap-3 transition-all duration-300 hover:shadow-md hover:no-underline cursor-pointer block"
                style="display: flex; flex-direction: column; justify-content: space-between; gap: 12px; background: #FFF; border-radius: 16px; border: 1px solid #E4E4E7; padding: 12px 12px 16px; box-sizing: border-box; width: 100%; text-decoration: none;">
                 
-                <!-- Card Media Banner (Preserving Desktop Aspect Ratio 264/160 across all views) -->
-                <div class="marketplace-card-banner">
-                    <img :src="product.image_url" :alt="product.name" style="width: 100%; height: 100%; object-fit: cover;" />
+                <!-- Ebook Cover Banner -->
+                <div class="ebook-card-banner">
+                    <img :src="ebook.image_url" :alt="ebook.name" style="width: 100%; height: 100%; object-fit: cover;" />
                 </div>
 
-                <!-- Card Info -->
+                <!-- Ebook Info -->
                 <div style="display: flex; flex-direction: column; gap: 8px; width: 100%;">
                     <!-- Category Badge -->
-                    <span style="color: #71717A; font-size: 12px; font-family: 'DM Sans', sans-serif; text-transform: uppercase; letter-spacing: 0.05em;" x-text="product.category_name"></span>
+                    <span style="color: #71717A; font-size: 12px; font-family: 'DM Sans', sans-serif; text-transform: uppercase; letter-spacing: 0.05em;" x-text="ebook.category_name"></span>
                     
                     <!-- Title & Description Container with Bottom Divider -->
                     <div style="padding-bottom: 12px; border-bottom: 1px solid #E4E4E7; display: flex; flex-direction: column; gap: 4px; width: 100%;">
-                        <h3 style="color: #141414; font-size: 16px; font-weight: 500; font-family: 'DM Sans', sans-serif; line-height: 28px; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" x-text="product.name"></h3>
-                        <p style="color: #71717A; font-size: 15px; font-family: 'DM Sans', sans-serif; line-height: 28px; margin: 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 56px;" x-text="product.description"></p>
+                        <h3 style="color: #141414; font-size: 16px; font-weight: 500; font-family: 'DM Sans', sans-serif; line-height: 28px; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" x-text="ebook.name"></h3>
+                        <p style="color: #71717A; font-size: 15px; font-family: 'DM Sans', sans-serif; line-height: 28px; margin: 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 56px;" x-text="ebook.description"></p>
                     </div>
                 </div>
 
-                <!-- Card Footer (Price) -->
+                <!-- Ebook Footer (Price) -->
                 <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 4px; width: 100%;">
-                    <span style="color: #171717; font-size: 16px; font-weight: 500; font-family: 'DM Sans', sans-serif;" x-text="'Rp' + formatPrice(product.price)"></span>
+                    <span style="color: #171717; font-size: 16px; font-weight: 500; font-family: 'DM Sans', sans-serif;" x-text="'Rp' + formatPrice(ebook.price)"></span>
                 </div>
             </a>
         </template>
@@ -226,17 +189,17 @@
         <template x-if="filteredProducts.length === 0">
             <div style="grid-column: 1 / -1; padding: 64px 0; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #FFF; border-radius: 16px; border: 1px dashed #D4D4D8; width: 100%;">
                 <svg style="width: 64px; height: 64px; color: #D4D4D8; margin-bottom: 16px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5s3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18s-3.332.477-4.5 1.253" />
                 </svg>
-                <p style="color: #27272A; font-weight: 500; font-family: 'DM Sans', sans-serif; font-size: 18px; margin: 0;">Tidak ada produk ditemukan</p>
+                <p style="color: #27272A; font-weight: 500; font-family: 'DM Sans', sans-serif; font-size: 18px; margin: 0;">Tidak ada ebook ditemukan</p>
                 <p style="color: #71717A; font-family: 'DM Sans', sans-serif; font-size: 14px; margin-top: 4px;">Coba atur ulang beberapa filter kategori atau rentang harga.</p>
             </div>
         </template>
     </div>
 
-    <!-- Pagination Bar (Strict Horizontal Row Alignment Matching Figma Node 828:2309 Spec) -->
+    <!-- Pagination Bar -->
     <div class="marketplace-pagination-container" x-show="filteredProducts.length > 0 && totalPages > 1" x-cloak>
-        <!-- Prev Button (Figma Node 863:3907: 36x36px round button) -->
+        <!-- Prev Button -->
         <button @click="if(currentPage > 1) { currentPage--; window.scrollTo({top: 0, behavior: 'smooth'}); }" 
                 :disabled="currentPage === 1"
                 class="marketplace-pagination-btn"
@@ -246,7 +209,7 @@
             </svg>
         </button>
 
-        <!-- Page Numbers Container (Horizontal Flex Row) -->
+        <!-- Page Numbers -->
         <div class="marketplace-pagination-numbers">
             <template x-for="p in getPageRange()" :key="p">
                 <button @click="if(p !== '...') { currentPage = p; window.scrollTo({top: 0, behavior: 'smooth'}); }"
@@ -258,7 +221,7 @@
             </template>
         </div>
 
-        <!-- Next Button (Figma Node 828:2319: 36x36px round button) -->
+        <!-- Next Button -->
         <button @click="if(currentPage < totalPages) { currentPage++; window.scrollTo({top: 0, behavior: 'smooth'}); }" 
                 :disabled="currentPage === totalPages"
                 class="marketplace-pagination-btn"

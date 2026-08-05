@@ -12,13 +12,15 @@ class MarketplaceController extends Controller
     {
         $categories = ProductCategory::query()->orderBy('name', 'asc')->get();
 
-        $products = Product::select(['id', 'name', 'slug', 'description', 'price', 'product_category_id'])
+        $products = Product::query()
+            ->select(['id', 'name', 'slug', 'description', 'price', 'product_category_id'])
             ->with([
                 'primaryImage' => fn ($q) => $q->select(['product_media.id', 'product_media.product_id', 'product_media.media_url']),
                 'ecommerceLinks',
                 'category',
             ])
             ->where('is_published', true)
+            ->latest()
             ->get();
 
         return view('marketplace.index', compact('products', 'categories'));

@@ -166,14 +166,6 @@
                         
                         @php $allMedia = $product->media; @endphp
 
-                        <!-- Terpopuler Badge (Figma Node 856:1791 - top 17.6px, left 17.6px) -->
-                        @if($product->is_popular ?? true)
-                            <div style="position: absolute; top: 12px; left: 12px; padding: 4px 10px; background-color: #FEFCE8; border-radius: 9999px; display: inline-flex; align-items: center; justify-content: center; gap: 4px; z-index: 10;">
-                                <img src="{{ asset('images/marketplace/popular_badge_icon.svg') }}" alt="Popular Icon" style="width: 14px; height: 14px; flex-shrink: 0;" />
-                                <span style="color: #D08700; font-size: 14px; font-family: 'DM Sans', sans-serif; font-weight: 500; line-height: 20px; white-space: nowrap;">Terpopuler</span>
-                            </div>
-                        @endif
-
                         @if($allMedia->isEmpty())
                             <!-- Fallback image -->
                             <img id="main-media" 
@@ -470,15 +462,7 @@
                                 <div class="marketplace-card-banner">
                                     <img src="{{ $rel->primaryImage ? $rel->primaryImage->publicUrl() : 'https://placehold.co/264x160' }}" 
                                          alt="{{ $rel->name }}" 
-                                         style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s;" 
-                                         class="group-hover:scale-105" />
-                                    
-                                    @if($rel->is_popular ?? ($index === 0 || $index === 1))
-                                        <div style="position: absolute; top: 8px; left: 8px; padding: 4px 6px; background-color: #FEF9C2; border-radius: 9999px; display: inline-flex; align-items: center; justify-content: center; gap: 4px; z-index: 10;">
-                                            <img src="{{ asset('images/marketplace/popular_badge_icon.svg') }}" alt="Popular Icon" style="width: 16px; height: 16px; flex-shrink: 0;" />
-                                            <span style="color: #A65F00; font-size: 12px; font-family: 'DM Sans', sans-serif; font-weight: 400; line-height: 16px; white-space: nowrap;">Terpopuler</span>
-                                        </div>
-                                    @endif
+                                         style="width: 100%; height: 100%; object-fit: cover;" />
                                 </div>
 
                                 <!-- Card Info -->

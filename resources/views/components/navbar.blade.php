@@ -2,16 +2,24 @@
 @vite('resources/css/app.css')
 
 <nav x-data="{ mobileMenuOpen: false }" class="top-0 left-0 z-50 fixed flex items-center justify-between bg-white px-4 md:px-6 w-full h-16 shadow-sm" @keydown.escape="mobileMenuOpen = false">
-    <div id="logo-box" onclick="window.location.href = '/dashboard'" class="cursor-pointer flex items-center gap-2">
+    <div class="flex items-center gap-2">
         @if (!request()->is('dashboard'))
-            <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" fill="currentColor"
-                class="bi-arrow-left-short bi" viewBox="0 0 16 16">
-                <path fill-rule="evenodd"
-                    d="M12 8a.5.5 0 0 1-.5.5H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5a.5.5 0 0 1 .5.5" />
-            </svg>
+            <button type="button" 
+                    onclick="if (window.history.length > 1) { window.history.back(); } else { window.location.href = '{{ url()->previous() !== request()->url() ? url()->previous() : route('dashboard') }}'; }" 
+                    class="cursor-pointer text-gray-700 hover:text-black transition-colors focus:outline-none p-1 rounded-lg hover:bg-gray-100" 
+                    title="Kembali ke Halaman Sebelumnya">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor"
+                    class="bi-arrow-left-short bi" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd"
+                        d="M12 8a.5.5 0 0 1-.5.5H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5a.5.5 0 0 1 .5.5" />
+                </svg>
+            </button>
         @endif
-        <img src="{{ asset('assets/mini_logo.png') }}" alt="mini_logo" id="mini-logo">
-        <h1 class="text-[#222222] text-xl font-medium">Curhatorium</h1>
+
+        <div id="logo-box" onclick="window.location.href = '{{ route('dashboard') }}'" class="cursor-pointer flex items-center gap-2">
+            <img src="{{ asset('assets/mini_logo.png') }}" alt="mini_logo" id="mini-logo">
+            <h1 class="text-[#222222] text-xl font-medium">Curhatorium</h1>
+        </div>
     </div>
 
     @php
