@@ -4,12 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use App\Models\ProductCategory;
+use Illuminate\View\View;
 
 class MarketplaceController extends Controller
 {
-    public function index()
+    public function index(): View
     {
-        $categories = ProductCategory::orderBy('name')->get();
+        $categories = ProductCategory::query()->orderBy('name', 'asc')->get();
 
         $products = Product::select(['id', 'name', 'slug', 'description', 'price', 'product_category_id'])
             ->with([
@@ -23,7 +24,7 @@ class MarketplaceController extends Controller
         return view('marketplace.index', compact('products', 'categories'));
     }
 
-    public function detail($slug)
+    public function detail(string $slug): View
     {
         $product = Product::with(['media', 'ecommerceLinks', 'category'])
             ->where('slug', $slug)
