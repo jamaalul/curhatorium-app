@@ -11,7 +11,7 @@ class UserObserverTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function testCreatingUserAutoGrantsFreePlan()
+    public function test_creating_user_auto_grants_free_plan()
     {
         $freePlan = MembershipPlan::factory()->create([
             'id' => MembershipPlan::FREE_PLAN_ID,

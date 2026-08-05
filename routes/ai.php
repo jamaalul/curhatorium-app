@@ -1,63 +1,12 @@
 <?php
 
-use App\Ai\Agents\MentAI;
-use App\Ai\Agents\TitleGenerator;
-use Illuminate\Http\Request;
-use Illuminate\Support\Str;
-use Laravel\Ai\Models\Conversation;
+use App\Http\Controllers\AiConversationController;
+use Illuminate\Support\Facades\Route;
 
-Route::post('/ai/start', function (Request $request) {
-    $conversation = $request->user()->conversations()->create([
-        'id' => (string) Str::uuid(),
-        'title' => 'Percakapan baru', // "New conversation" — required field, no default
-    ]);
-
-    return response()->json([
-        'conversationId' => $conversation->id,
-    ]);
-})->middleware('auth');
-
-// Send a message in an AI conversation (used for every message, including the first)
-Route::post('/ai/{conversation}/message', function (Request $request, Conversation $conversation) {
-    $request->validate(['message' => 'required|string']);
-
-    return (new MentAI)
-        ->continue($conversation->id, as: $request->user())
-        ->stream($request->input('message'));
-})->middleware('auth');
-
-// Generate a conversation title from the first exchange
-Route::post('/ai/{conversation}/generate-title', function (Request $request, Conversation $conversation) {
-    if ($conversation->user_id !== $request->user()->id) {
-        abort(403);
-    }
-
-    $request->validate([
-        'message' => 'required|string|max:500',
-        'response' => 'required|string|max:500',
-    ]);
-
-    $prompt = "User: {$request->input('message')}\nAssistant: {$request->input('response')}";
-
-    $result = (new TitleGenerator)->prompt($prompt);
-
-    $title = json_decode($result->text, true)['title'] ?? 'Percakapan baru';
-
-    $conversation->update(['title' => Str::limit($title, 60)]);
-
-    return response()->json(['title' => $conversation->title]);
-})->middleware('auth');
-
-// List a user's AI conversations
-Route::get('/ai/conversations', function (Request $request) {
-    return $request->user()->conversations()->latest('updated_at')->paginate(20);
-})->middleware('auth');
-
-// Fetch messages for a specific conversation
-Route::get('/ai/{conversation}/messages', function (Request $request, Conversation $conversation) {
-    if ($conversation->user_id !== $request->user()->id) {
-        abort(403);
-    }
-
-    return $conversation->messages()->oldest()->get();
-})->middleware('auth');
+Route::middleware('auth')->group(function () {
+    Route::post('/ai/start', [AiConversationController::class, 'start']);
+    Route::post('/ai/{conversation}/message', [AiConversationController::class, 'sendMessage']);
+    Route::post('/ai/{conversation}/generate-title', [AiConversationController::class, 'generateTitle']);
+    Route::get('/ai/conversations', [AiConversationController::class, 'index']);
+    Route::get('/ai/{conversation}/messages', [AiConversationController::class, 'showMessages']);
+});

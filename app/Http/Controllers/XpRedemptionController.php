@@ -94,13 +94,13 @@ class XpRedemptionController extends Controller
 
             // Create single user ticket
             UserTicket::create([
-                    'user_id' => $user->id,
-                    'ticket_type' => $scheme['ticket_type'],
-                    'limit_type' => $scheme['limit_type'],
-                    'limit_value' => $scheme['limit_value'],
-                    'remaining_value' => $scheme['remaining_value'],
-                    'expires_at' => Carbon::now()->addDays($scheme['duration_days']),
-                ]);
+                'user_id' => $user->id,
+                'ticket_type' => $scheme['ticket_type'],
+                'limit_type' => $scheme['limit_type'],
+                'limit_value' => $scheme['limit_value'],
+                'remaining_value' => $scheme['remaining_value'],
+                'expires_at' => Carbon::now()->addDays($scheme['duration_days']),
+            ]);
 
             return back()->with('success', 'Successfully redeemed '.$scheme['name'].' for '.$scheme['xp_cost'].' XP!');
 

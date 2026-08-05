@@ -12,17 +12,23 @@ class GrantFreeSubscriptionsTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function testCommandGrantsFreeToUsersWithoutSubscription()
+    public function test_command_grants_free_to_users_without_subscription()
     {
         $freePlan = MembershipPlan::factory()->create([
             'id' => MembershipPlan::FREE_PLAN_ID,
             'billing_cycle' => 'monthly',
         ]);
 
-        $userWithoutSubscription1 = User::withoutEvents(function () { return User::factory()->create(); });
-        $userWithoutSubscription2 = User::withoutEvents(function () { return User::factory()->create(); });
+        $userWithoutSubscription1 = User::withoutEvents(function () {
+            return User::factory()->create();
+        });
+        $userWithoutSubscription2 = User::withoutEvents(function () {
+            return User::factory()->create();
+        });
 
-        $userWithSubscription = User::withoutEvents(function () { return User::factory()->create(); });
+        $userWithSubscription = User::withoutEvents(function () {
+            return User::factory()->create();
+        });
         UserSubscription::create([
             'user_id' => $userWithSubscription->id,
             'membership_plan_id' => MembershipPlan::factory()->create()->id,
@@ -45,7 +51,7 @@ class GrantFreeSubscriptionsTest extends TestCase
         $this->assertEquals(1, UserSubscription::where('user_id', $userWithoutSubscription2->id)->where('membership_plan_id', $freePlan->id)->count());
     }
 
-    public function testCommandSkipsUsersWithExistingSubscription()
+    public function test_command_skips_users_with_existing_subscription()
     {
         $freePlan = MembershipPlan::factory()->create([
             'id' => MembershipPlan::FREE_PLAN_ID,
@@ -55,7 +61,7 @@ class GrantFreeSubscriptionsTest extends TestCase
         $user = User::withoutEvents(function () {
             return User::factory()->create();
         });
-        
+
         $subscription = UserSubscription::create([
             'user_id' => $user->id,
             'membership_plan_id' => $freePlan->id, // They already have it
@@ -68,7 +74,7 @@ class GrantFreeSubscriptionsTest extends TestCase
             ->expectsOutput('Finding users without an active subscription...')
             ->expectsOutput('Granted free subscriptions to 0 users.')
             ->assertExitCode(0);
-            
+
         // Should still only have one
         $this->assertEquals(1, UserSubscription::where('user_id', $user->id)->count());
     }

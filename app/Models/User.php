@@ -16,7 +16,7 @@ use Laravel\Ai\Concerns\HasConversations;
 class User extends Authenticatable implements FilamentUser
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable, HasConversations;
+    use HasConversations, HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.

@@ -6,7 +6,6 @@ use App\Ai\Agents\TitleGenerator;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
-use Laravel\Ai\Models\Conversation;
 use Tests\TestCase;
 
 class TitleGenerationTest extends TestCase
@@ -16,7 +15,7 @@ class TitleGenerationTest extends TestCase
     public function test_title_generation_updates_conversation_title(): void
     {
         TitleGenerator::fake([
-            '{"title": "Curhat Soal Kerjaan"}',
+            ['title' => 'Curhat Soal Kerjaan'],
         ]);
 
         $user = User::factory()->create();
@@ -39,7 +38,7 @@ class TitleGenerationTest extends TestCase
             'title' => 'Curhat Soal Kerjaan',
         ]);
 
-        TitleGenerator::assertPrompted(fn (string $prompt) => str_contains($prompt, 'stress banget soal kerjaan'));
+        TitleGenerator::assertPrompted(fn ($prompt) => str_contains(is_string($prompt) ? $prompt : $prompt->prompt, 'stress banget soal kerjaan'));
     }
 
     public function test_title_generation_requires_authentication(): void
