@@ -6,10 +6,12 @@ use App\Ai\Agents\MentAI;
 use App\Ai\Agents\TitleGenerator;
 use App\Http\Requests\AiGenerateTitleRequest;
 use App\Http\Requests\AiSendMessageRequest;
+use App\Services\AiTokenWindowService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Laravel\Ai\Models\Conversation;
+use Laravel\Ai\Responses\StreamedAgentResponse;
 
 class AiConversationController extends Controller
 {
@@ -31,11 +33,28 @@ class AiConversationController extends Controller
     /**
      * Send a message in an AI conversation and stream the response.
      */
-    public function sendMessage(AiSendMessageRequest $request, Conversation $conversation)
-    {
+    public function sendMessage(
+        AiSendMessageRequest $request,
+        Conversation $conversation,
+        AiTokenWindowService $windowService,
+    ) {
+        $user = $request->user();
+
+        $resolved = $windowService->resolveWindowOrFail($user);
+        $window = $resolved['window'];
+
         return (new MentAI)
-            ->continue($conversation->id, as: $request->user())
-            ->stream($request->validated('message'));
+            ->continue($conversation->id, as: $user)
+            ->stream($request->validated('message'))
+            ->then(function (StreamedAgentResponse $response) use ($windowService, $window) {
+                if ($response->usage) {
+                    $windowService->recordTokenUsage(
+                        $window,
+                        $response->usage->promptTokens,
+                        $response->usage->completionTokens,
+                    );
+                }
+            });
     }
 
     /**

@@ -8,6 +8,7 @@ use Database\Factories\UserFactory;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -197,5 +198,21 @@ class User extends Authenticatable implements FilamentUser
     public function subscription(): HasOne
     {
         return $this->hasOne(UserSubscription::class)->where('status', 'active');
+    }
+
+    /**
+     * Get the user's AI usage windows.
+     */
+    public function aiWindows(): HasMany
+    {
+        return $this->hasMany(AiWindow::class);
+    }
+
+    /**
+     * Get the user's entitlements.
+     */
+    public function entitlements(): HasMany
+    {
+        return $this->hasMany(UserEntitlement::class);
     }
 }
