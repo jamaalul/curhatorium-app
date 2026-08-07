@@ -5,15 +5,15 @@
 @section('bodyClass', 'w-full')
 
 @section('head')
-        <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 @endsection
 
 @section('content')
     <nav class="top-0 left-0 z-50 fixed flex items-center gap-6 bg-white px-4 w-full h-16">
-        <div class="flex justify-center items-center gap-2 mr-auto py-3 h-full" onclick="window.location.href = '/'">
+        <div class="flex justify-center items-center gap-2 mr-auto py-3 h-full cursor-pointer" onclick="window.location.href = '/'">
             <img src="{{ asset('assets/mini_logo.png') }}" alt="mini_logo" class="h-full">
-            <h1 class="text-[#222222] text-2xl">Curhatorium</h1>
+            <h1 class="hidden sm:block text-[#222222] text-2xl">Curhatorium</h1>
         </div>
 
         <div class="hidden md:flex items-center gap-4">
@@ -21,11 +21,39 @@
             <a href="#features" class="hover:text-[#48A6A6] transition-colors duration-200 nav-link">Fitur</a>
             <a href="#testimonials" class="hover:text-[#48A6A6] transition-colors duration-200 nav-link">Cerita</a>
             <a href="#pricing" class="hover:text-[#48A6A6] transition-colors duration-200 nav-link">Harga</a>
+            <a href="{{ route('marketplace.index') }}"
+                class="relative hover:text-[#48A6A6] transition-colors duration-200 nav-link">Marketplace<span
+                    class="-top-2.5 -right-1.5 absolute bg-yellow-400 px-2 py-0.5 rounded-full text-white text-xs italic leading-none rotate-6">Baru</span></a>
+            <a href="{{ route('ebooks.index') }}"
+                class="relative hover:text-[#48A6A6] transition-colors duration-200 nav-link">Ebooks<span
+                    class="-top-2.5 -right-1.5 absolute bg-yellow-400 px-2 py-0.5 rounded-full text-white text-xs italic leading-none rotate-6">Baru</span></a>
         </div>
 
-        <!-- Mobile login button -->
-        <a href="/login"
-            class="bg-[#48A6A6] hover:bg-[#48A6A6] px-4 py-2 rounded-md text-white transition-colors duration-200">Masuk</a>
+        <div class="flex items-center gap-2 md:gap-4">
+            <!-- Mobile Marketplace & Ebooks Links -->
+            <div class="md:hidden flex items-center gap-1">
+                <a href="{{ route('marketplace.index') }}" 
+                   class="relative flex justify-center items-center hover:bg-stone-100 p-2 rounded-full text-stone-500 hover:text-[#48A6A6] transition-all"
+                   title="Marketplace">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
+                    </svg>
+                    <span class="top-1.5 right-1.5 absolute bg-yellow-400 shadow-[0_0_0_2px_white] rounded-full w-2.5 h-2.5"></span>
+                </a>
+                <a href="{{ route('ebooks.index') }}" 
+                   class="relative flex justify-center items-center hover:bg-stone-100 p-2 rounded-full text-stone-500 hover:text-[#48A6A6] transition-all"
+                   title="Ebooks">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
+                    </svg>
+                    <span class="top-1.5 right-1.5 absolute bg-yellow-400 shadow-[0_0_0_2px_white] rounded-full w-2.5 h-2.5"></span>
+                </a>
+            </div>
+
+            <!-- Login button -->
+            <a href="/login"
+                class="bg-[#48A6A6] hover:bg-[#357979] px-4 py-2 rounded-md font-medium text-white text-sm md:text-base whitespace-nowrap transition-colors duration-200">Masuk</a>
+        </div>
     </nav>
 
     <!-- Hero Section -->
@@ -236,8 +264,8 @@
     <section id="testimonials" class="relative bg-[#222222] px-4 py-12 md:py-24 w-full">
         <div class="mx-auto max-w-7xl">
             <div class="mb-12 text-center">
-                <h2 class="font-bold text-stone-200 text-3xl md:text-4xl">Cerita Nyata, <span
-                        class="text-[#48A6A6]">Dampak Nyata</span></h2>
+                <h2 class="font-bold text-stone-200 text-3xl md:text-4xl">Cerita Nyata, <span class="text-[#48A6A6]">Dampak
+                        Nyata</span></h2>
                 <p class="mt-2 text-stone-400 text-lg">Lihat bagaimana Curhatorium telah mengubah hidup orang seperti
                     Anda.</p>
             </div>
@@ -420,10 +448,11 @@
     @include('components.footer')
 
     <!-- Fixed Tutorial Button -->
-    <button id="tutorial-btn" style="position: fixed; bottom: 1rem; right: 1rem; z-index: 50; background-color: #48A6A6; color: white;
-            padding: 0.75rem; border-radius: 50%; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
-            0 4px 6px -2px rgba(0, 0, 0, 0.05); border: none; cursor: pointer; transition: all 0.3s ease;
-            display: flex; align-items: center; gap: 0.5rem; overflow: hidden; width: 3rem; height: 3rem;"
+    <button id="tutorial-btn"
+        style="position: fixed; bottom: 1rem; right: 1rem; z-index: 50; background-color: #48A6A6; color: white;
+                                                                                        padding: 0.75rem; border-radius: 50%; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+                                                                                        0 4px 6px -2px rgba(0, 0, 0, 0.05); border: none; cursor: pointer; transition: all 0.3s ease;
+                                                                                        display: flex; align-items: center; gap: 0.5rem; overflow: hidden; width: 3rem; height: 3rem;"
         onmouseover="this.style.backgroundColor = '#357979'; this.style.width = 'auto'; this.style.borderRadius = '2rem'; this.style.padding = '0.75rem 1rem'; this.querySelector('span').style.opacity = '1';"
         onmouseout="this.style.backgroundColor = '#48A6A6'; this.style.width = '3rem'; this.style.borderRadius = '50%'; this.style.padding = '0.75rem'; this.querySelector('span').style.opacity = '0';">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
@@ -435,12 +464,15 @@
     </button>
 
     <!-- Tutorial Modal -->
-    <div id="tutorial-modal" style="position: fixed; inset: 0; background-color: rgba(0, 0, 0, 0.5);
-            display: none; align-items: center; justify-content: center; z-index: 60;">
-        <div style="background-color: white; border-radius: 1rem; width: 90%; max-width: 900px; 
-                    padding: 1.5rem; position: relative; box-shadow: 0 20px 40px rgba(0,0,0,0.2);">
-            <button id="close-modal" style="position: absolute; top: 1rem; right: 1rem; color: #6b7280; border: none;
-                    background: none; cursor: pointer; transition: color 0.2s;"
+    <div id="tutorial-modal"
+        style="position: fixed; inset: 0; background-color: rgba(0, 0, 0, 0.5);
+                                                                                        display: none; align-items: center; justify-content: center; z-index: 60;">
+        <div
+            style="background-color: white; border-radius: 1rem; width: 90%; max-width: 900px; 
+                                                                                                padding: 1.5rem; position: relative; box-shadow: 0 20px 40px rgba(0,0,0,0.2);">
+            <button id="close-modal"
+                style="position: absolute; top: 1rem; right: 1rem; color: #6b7280; border: none;
+                                                                                                background: none; cursor: pointer; transition: color 0.2s;"
                 onmouseover="this.style.color = '#374151'" onmouseout="this.style.color = '#6b7280'">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                     stroke="currentColor" style="width: 1.75rem; height: 1.75rem;">
@@ -453,8 +485,9 @@
                 style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 0.5rem; margin-top: 2rem; border: 2px solid #e5e7eb;">
                 <iframe id="tutorial-video" src="" frameborder="0" allowfullscreen
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    referrerpolicy="strict-origin-when-cross-origin" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-                        border: none; border-radius: 0.5rem;">
+                    referrerpolicy="strict-origin-when-cross-origin"
+                    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+                                                                                                    border: none; border-radius: 0.5rem;">
                 </iframe>
             </div>
         </div>
@@ -463,28 +496,28 @@
 @endsection
 
 @section('scripts')
-        <script>
-            const btn = document.getElementById('tutorial-btn');
-            const modal = document.getElementById('tutorial-modal');
-            const close = document.getElementById('close-modal');
-            const video = document.getElementById('tutorial-video');
+    <script>
+        const btn = document.getElementById('tutorial-btn');
+        const modal = document.getElementById('tutorial-modal');
+        const close = document.getElementById('close-modal');
+        const video = document.getElementById('tutorial-video');
 
-            btn.addEventListener('click', () => {
-                modal.style.display = 'flex';
-                video.src = "https://www.youtube.com/embed/C2pjXtknQSI?si=icjaTmb1-iZbrjSl";
-            });
+        btn.addEventListener('click', () => {
+            modal.style.display = 'flex';
+            video.src = "https://www.youtube.com/embed/C2pjXtknQSI?si=icjaTmb1-iZbrjSl";
+        });
 
-            close.addEventListener('click', () => {
+        close.addEventListener('click', () => {
+            modal.style.display = 'none';
+            video.src = ""; // stop video when closing
+        });
+
+        // Optional: close modal when clicking outside
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
                 modal.style.display = 'none';
-                video.src = ""; // stop video when closing
-            });
-
-            // Optional: close modal when clicking outside
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) {
-                    modal.style.display = 'none';
-                    video.src = "";
-                }
-            });
-        </script>
+                video.src = "";
+            }
+        });
+    </script>
 @endsection
