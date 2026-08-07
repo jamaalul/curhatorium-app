@@ -2,29 +2,25 @@
 
 @section('title', $product->name . ' | Marketplace Curhatorium')
 
-@section('bodyClass', 'pt-16 w-full overflow-x-hidden bg-white')
+@section('bodyClass', 'pt-16 w-full bg-[#F4F4F5]')
 
 @section('head')
     <meta name="description" content="{{ Str::limit(strip_tags($product->description), 160) }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Geist:wght@100..900&family=Inter:wght@100..900&display=swap" rel="stylesheet">
     <style>
-        /* Thumbnail scrollbar */
-        .thumb-list::-webkit-scrollbar {
-            height: 4px;
+        body {
+            background-color: #F4F4F5 !important;
         }
 
-        .thumb-list::-webkit-scrollbar-thumb {
-            background: #d1d5db;
-            border-radius: 9999px;
-        }
-
-        /* Fade-in for main media */
+        /* Fade animation for main media switcher */
         @keyframes fadeIn {
             from {
                 opacity: 0;
-                transform: scale(0.97);
+                transform: scale(0.98);
             }
-
             to {
                 opacity: 1;
                 transform: scale(1);
@@ -32,220 +28,476 @@
         }
 
         .media-fade {
-            animation: fadeIn 0.25s ease;
+            animation: fadeIn 0.2s ease-out;
         }
 
-        /* Thumbnail active ring */
+        /* Active thumbnail ring */
         .thumb-item.active {
-            outline: 2px solid #111827;
-            outline-offset: 2px;
+            border-color: #00BBA7 !important;
+            box-shadow: 0 0 0 2px rgba(0, 187, 167, 0.25) !important;
+        }
+
+        /* Product Card Media Banner Aspect Ratio (Matching Figma Card Component 264:160) */
+        .marketplace-card-banner {
+            width: 100% !important;
+            aspect-ratio: 264 / 160 !important;
+            position: relative !important;
+            border-radius: 8px !important;
+            overflow: hidden !important;
+            background: #F4F4F5 !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            flex-shrink: 0 !important;
+        }
+
+        /* Hero Layout Default (Mobile Stacked - Compact, no empty gap) */
+        .hero-row-container {
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 20px !important;
+            width: 100% !important;
+        }
+
+        .hero-right-column {
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: flex-start !important;
+            gap: 20px !important;
+            height: auto !important;
+            min-height: 0 !important;
+            width: 100% !important;
+        }
+
+        .hero-action-container {
+            position: relative !important;
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 16px !important;
+            width: 100% !important;
+            margin-top: 8px !important;
+            padding-top: 8px !important;
+            z-index: 50 !important;
+        }
+
+        /* Product Title Responsive Heading */
+        .product-title-heading {
+            color: #141414 !important;
+            font-size: 28px !important;
+            font-weight: 600 !important;
+            font-family: 'Bricolage Grotesque', sans-serif !important;
+            line-height: 36px !important;
+            letter-spacing: -0.015em !important;
+            margin: 0 !important;
+        }
+
+        /* Produk Lainnya Grid: 2 Columns on Tablet & Mobile (< 1024px), 4 Columns on Large Desktop (>= 1024px) */
+        .related-products-grid {
+            display: grid !important;
+            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+            gap: 16px !important;
+            width: 100% !important;
+        }
+
+        /* Tablet & Desktop Layout (>= 768px) */
+        @media (min-width: 768px) {
+            .hero-row-container {
+                flex-direction: row !important;
+                gap: 28px !important;
+                align-items: flex-start !important;
+                justify-content: space-between !important;
+            }
+            .hero-left-column {
+                flex: 1 1 48% !important;
+                min-width: 0 !important;
+                max-width: 576px !important;
+            }
+            .hero-right-column {
+                flex: 1 1 48% !important;
+                min-width: 0 !important;
+                max-width: 588px !important;
+                min-height: 576px !important;
+                justify-content: space-between !important;
+                gap: 0 !important;
+            }
+            .hero-action-container {
+                margin-top: auto !important;
+                padding-top: 24px !important;
+            }
+            .product-title-heading {
+                font-size: 40px !important;
+                line-height: 48px !important;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .hero-row-container {
+                gap: 36px !important;
+            }
+            .related-products-grid {
+                grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+                gap: 20px !important;
+            }
+        }
+
+        /* Platform Selection Modal Hover Effect */
+        .platform-modal-item:hover {
+            background-color: #F4F4F5 !important;
         }
     </style>
 @endsection
 
 @section('dashboard-content')
+    <div class="w-full bg-[#F4F4F5] min-h-screen py-6 sm:py-10" style="background-color: #F4F4F5; position: relative;">
+        
+        <!-- Main Max-Width Container (1200px matching Figma Node 854:1771) -->
+        <div class="w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col gap-10 sm:gap-16" style="max-width: 1200px; margin-left: auto; margin-right: auto; padding-left: 16px; padding-right: 16px; display: flex; flex-direction: column; gap: 40px;">
+            
+            <!-- HERO SECTION (Side-by-Side on Tablet/Desktop, Stacked on Mobile) -->
+            <div class="hero-row-container">
 
-    {{-- Breadcrumb --}}
-    <div class="bg-gray-50 border-gray-200 border-b">
-        <div class="flex items-center gap-2 mx-auto px-4 sm:px-6 lg:px-8 py-3 max-w-7xl text-gray-500 text-xs">
-            <a href="{{ route('marketplace.index') }}" class="hover:text-gray-900 transition-colors">Marketplace</a>
-            <svg class="flex-shrink-0 w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-            </svg>
-            <span class="font-medium text-gray-900 truncate">{{ $product->name }}</span>
-        </div>
-    </div>
+                <!-- LEFT COLUMN: Media Gallery (576px wide matching Figma Node 601:3570) -->
+                <div class="hero-left-column" style="display: flex; flex-direction: column; gap: 16px; width: 100%;">
+                    
+                    <!-- Main Image / Video Banner (Figma Node 856:1782 - 576x576px aspect 1:1 with rounded-2xl) -->
+                    <div id="main-media-container"
+                         class="relative w-full aspect-square bg-[#F4F4F5] rounded-2xl overflow-hidden border border-[#E4E4E7] flex items-center justify-center"
+                         style="border-radius: 16px; background: #F4F4F5; border: 1px solid #E4E4E7; position: relative; aspect-ratio: 1 / 1; width: 100%; max-height: 576px;">
+                        
+                        @php $allMedia = $product->media; @endphp
 
-    <div class="mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-16 max-w-7xl">
-        <div class="flex lg:flex-row flex-col gap-10 lg:gap-16">
-
-            {{-- ── LEFT: Media Gallery ── --}}
-            <div class="flex flex-col gap-4 w-full lg:w-1/2">
-
-                {{-- Main display --}}
-                <div id="main-media-container"
-                    class="relative flex justify-center items-center bg-[#f8f8f8] rounded-sm aspect-square overflow-hidden">
-
-                    @php $allMedia = $product->media; @endphp
-
-                    @if($allMedia->isEmpty())
-                        {{-- Placeholder --}}
-                        <div class="flex flex-col items-center gap-2 text-gray-300">
-                            <svg class="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                            </svg>
-                            <span class="text-sm">No media available</span>
-                        </div>
-                    @else
-                        {{-- First media item shown by default --}}
-                        @php $first = $allMedia->first(); @endphp
-                        @if($first->media_type === 'video')
-                            <video id="main-media" src="{{ $first->publicUrl() }}" controls
-                                class="w-full h-full object-contain media-fade">
-                            </video>
+                        @if($allMedia->isEmpty())
+                            <!-- Fallback image -->
+                            <img id="main-media" 
+                                 src="{{ $product->primaryImage ? $product->primaryImage->publicUrl() : 'https://placehold.co/576x576' }}" 
+                                 alt="{{ $product->name }}" 
+                                 class="w-full h-full object-cover media-fade"
+                                 style="width: 100%; height: 100%; object-fit: cover;" />
                         @else
-                            <img id="main-media" src="{{ $first->publicUrl() }}" alt="{{ $product->name }}"
-                                class="w-[82%] h-[82%] object-contain media-fade mix-blend-multiply">
+                            @php $first = $allMedia->first(); @endphp
+                            @if($first->media_type === 'video')
+                                <video id="main-media" src="{{ $first->publicUrl() }}" controls class="w-full h-full object-cover media-fade" style="width: 100%; height: 100%; object-fit: cover;"></video>
+                            @else
+                                <img id="main-media" src="{{ $first->publicUrl() }}" alt="{{ $product->name }}" class="w-full h-full object-cover media-fade" style="width: 100%; height: 100%; object-fit: cover;" />
+                            @endif
                         @endif
+                    </div>
+
+                    <!-- Thumbnails Row (Figma Node 601:3577 - 81.23x80px rounded-lg) -->
+                    @if($allMedia->count() > 1)
+                        <div class="flex gap-3 overflow-x-auto pb-1" style="display: flex; gap: 12px; width: 100%;">
+                            @foreach($allMedia as $i => $media)
+                                <button type="button" 
+                                        data-src="{{ $media->publicUrl() }}" 
+                                        data-type="{{ $media->media_type }}"
+                                        class="thumb-item flex-shrink-0 bg-[#F4F4F5] overflow-hidden flex items-center justify-center rounded-lg border border-[#E4E4E7] cursor-pointer transition-all {{ $i === 0 ? 'active' : '' }}"
+                                        style="width: 81.23px; height: 80px; border-radius: 8px; border: 1px solid #E4E4E7; padding: 0; background: #F4F4F5;"
+                                        onclick="switchMedia(this)">
+                                    @if($media->media_type === 'video')
+                                        <div class="flex items-center justify-center w-full h-full text-[#71717A]">
+                                            <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
+                                                <path d="M8 5v14l11-7z" />
+                                            </svg>
+                                        </div>
+                                    @else
+                                        <img src="{{ $media->publicUrl() }}" alt="{{ $product->name }} thumbnail {{ $i + 1 }}" style="width: 100%; height: 100%; object-fit: cover;" />
+                                    @endif
+                                </button>
+                            @endforeach
+                        </div>
                     @endif
                 </div>
 
-                {{-- Thumbnail strip --}}
-                @if($allMedia->count() > 1)
-                    <div class="flex gap-3 pb-1 overflow-x-auto thumb-list">
-                        @foreach($allMedia as $i => $media)
-                            <button type="button" data-src="{{ $media->publicUrl() }}" data-type="{{ $media->media_type }}"
-                                class="thumb-item flex-shrink-0 w-20 h-20 bg-[#f8f8f8] overflow-hidden flex items-center justify-center rounded-sm border border-transparent hover:border-gray-400 transition-all {{ $i === 0 ? 'active' : '' }}"
-                                onclick="switchMedia(this)">
-                                @if($media->media_type === 'video')
-                                    <div class="relative flex justify-center items-center w-full h-full text-gray-400">
-                                        <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
-                                            <path d="M8 5v14l11-7z" />
-                                        </svg>
-                                    </div>
-                                @else
-                                    <img src="{{ $media->publicUrl() }}" alt="{{ $product->name }} {{ $i + 1 }}"
-                                        class="p-1 w-full h-full object-contain mix-blend-multiply">
-                                @endif
-                            </button>
-                        @endforeach
+                <!-- RIGHT COLUMN: Product Details -->
+                <div class="hero-right-column">
+                    
+                    <!-- Top & Middle Content Container (Figma Node 850:1768 - Gap 20px) -->
+                    <div style="display: flex; flex-direction: column; gap: 20px; width: 100%;">
+                        
+                        <!-- Header Group: Category, Title, Price with Bottom Divider (Figma Node 601:3585) -->
+                        <div style="padding-bottom: 20px; border-bottom: 1px solid #E4E4E7; display: flex; flex-direction: column; gap: 10px; width: 100%;">
+                            <!-- Category Badge -->
+                            <span style="color: #71717A; font-size: 12px; font-family: 'DM Sans', sans-serif; text-transform: uppercase; letter-spacing: 0.05em;">
+                                {{ strtoupper($product->category?->name ?? 'TECH') }}
+                            </span>
+
+                            <!-- Product Name (Responsive Font Size: 28px on mobile, 40px on desktop) -->
+                            <h1 class="product-title-heading">
+                                {{ $product->name }}
+                            </h1>
+
+                            <!-- Price (Heading 5: 24px / 28px / -0.005em) -->
+                            <div style="color: #141414; font-size: 22px; font-weight: 500; font-family: 'Bricolage Grotesque', sans-serif; line-height: 28px; letter-spacing: -0.005em;">
+                                Rp{{ number_format($product->price < 1000 ? $product->price * 1000 : $product->price, 0, ',', '.') }}
+                            </div>
+                        </div>
+
+                        <!-- Description Group with Expand / Truncate Toggle -->
+                        <div x-data="{ expanded: false }" style="display: flex; flex-direction: column; gap: 8px; width: 100%;">
+                            <h3 style="color: #141414; font-size: 16px; font-weight: 500; font-family: 'DM Sans', sans-serif; line-height: 24px; margin: 0;">
+                                Deskripsi
+                            </h3>
+                            
+                            <!-- Description Text with 3-line Clamp Toggle -->
+                            <div style="position: relative; width: 100%;">
+                                <div :style="expanded ? 'max-height: none;' : 'display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; max-height: 84px;'"
+                                     style="color: #71717A; font-size: 15px; font-family: 'DM Sans', sans-serif; line-height: 28px; transition: all 0.3s ease;">
+                                    {!! nl2br(e($product->description)) !!}
+                                </div>
+                            </div>
+
+                            <!-- "Baca selengkapnya" Toggle Button (Only if description > 100 chars) -->
+                            @if(strlen(strip_tags($product->description)) > 100)
+                                <button @click="expanded = !expanded"
+                                        type="button"
+                                        style="color: #00BBA7; font-size: 14px; font-weight: 500; font-family: 'DM Sans', sans-serif; background: none; border: none; padding: 0; cursor: pointer; text-align: left; margin-top: 4px; display: inline-flex; align-items: center; gap: 4px;">
+                                    <span x-text="expanded ? 'Sembunyikan' : 'Baca selengkapnya'">Baca selengkapnya</span>
+                                    <svg style="width: 14px; height: 14px; transition: transform 0.2s;" :class="expanded ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </button>
+                            @endif
+                        </div>
+
                     </div>
-                @endif
-            </div>
 
-            {{-- ── RIGHT: Product Info ── --}}
-            <div class="flex flex-col gap-6 w-full lg:w-1/2">
+                    <!-- Bottom Action Group: Buy Button & Anchored Popover Overlay -->
+                    <div x-data="{ buyModalOpen: false }" class="hero-action-container">
+                        
+                        @if($product->ecommerceLinks->count() > 1)
+                            <!-- Backdrop Overlay for clicking outside / dimming backdrop -->
+                            <div x-show="buyModalOpen"
+                                 x-transition:enter="transition ease-out duration-150"
+                                 x-transition:enter-start="opacity-0"
+                                 x-transition:enter-end="opacity-100"
+                                 x-transition:leave="transition ease-in duration-100"
+                                 x-transition:leave-start="opacity-100"
+                                 x-transition:leave-end="opacity-0"
+                                 @click="buyModalOpen = false"
+                                 style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 40; background: rgba(0, 0, 0, 0.2); backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px);"
+                                 x-cloak>
+                            </div>
 
-                {{-- Name & Price --}}
-                <div>
-                    <h1 class="mb-3 font-bold text-gray-900 text-2xl sm:text-3xl leading-snug">
-                        {{ $product->name }}
-                    </h1>
-                    <p class="font-bold text-gray-900 text-2xl">
-                        Rp{{ number_format($product->price, 0, ',', '.') }}
-                    </p>
+                            <!-- Popover Card Box Anchored Directly ABOVE the Buy Button -->
+                            <div x-show="buyModalOpen"
+                                 @click.away="buyModalOpen = false"
+                                 x-transition:enter="transition ease-out duration-200"
+                                 x-transition:enter-start="transform opacity-0 scale-95 translate-y-3"
+                                 x-transition:enter-end="transform opacity-100 scale-100 translate-y-0"
+                                 x-transition:leave="transition ease-in duration-150"
+                                 x-transition:leave-start="transform opacity-100 scale-100 translate-y-0"
+                                 x-transition:leave-end="transform opacity-0 scale-95 translate-y-3"
+                                 style="position: absolute; bottom: 100%; left: 0; right: 0; margin-bottom: 12px; z-index: 50; background: #FFFFFF; border-radius: 20px; border: 1px solid #E4E4E7; box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.18); overflow: hidden; width: 100%; box-sizing: border-box;"
+                                 x-cloak>
+                                
+                                <!-- Popover Header -->
+                                <div style="padding: 16px 20px 12px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #F4F4F5;">
+                                    <span style="color: #71717A; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 400; line-height: 20px;">
+                                        Pilih platform pembelian
+                                    </span>
+                                    <button @click="buyModalOpen = false" 
+                                            style="width: 28px; height: 28px; border-radius: 9999px; background: #F4F4F5; display: flex; align-items: center; justify-content: center; border: none; cursor: pointer; color: #71717A; transition: background 0.15s ease;"
+                                            title="Tutup">
+                                        <svg style="width: 14px; height: 14px;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </button>
+                                </div>
+
+                                <!-- Platform Option List -->
+                                <div style="display: flex; flex-direction: column; width: 100%;">
+                                    @foreach($product->ecommerceLinks as $index => $link)
+                                        @php
+                                            $eName = strtolower($link->ecommerce_name);
+                                            $name = match($eName) {
+                                                'tokopedia' => 'Tokopedia',
+                                                'shopee'    => 'Shopee',
+                                                'tiktok', 'tiktok shop', 'tiktokshop' => 'TikTok Shop',
+                                                default     => ucfirst($link->ecommerce_name),
+                                            };
+                                            
+                                            $bgColor = match($eName) {
+                                                'tokopedia' => '#42B549',
+                                                'shopee'    => '#EE4D2D',
+                                                'tiktok', 'tiktok shop', 'tiktokshop' => '#18181B',
+                                                default     => '#00BBA7',
+                                            };
+                                        @endphp
+
+                                        <a href="{{ $link->url }}" 
+                                           target="_blank" 
+                                           rel="noopener noreferrer"
+                                           @click="buyModalOpen = false"
+                                           class="platform-modal-item"
+                                           style="display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; text-decoration: none; border-bottom: {{ $index === $product->ecommerceLinks->count() - 1 ? 'none' : '1px solid #F4F4F5' }}; transition: background 0.15s ease; width: 100%; box-sizing: border-box;">
+                                            
+                                            <!-- Left Group: Brand Icon + Platform Name + Price -->
+                                            <div style="display: flex; align-items: center; gap: 14px;">
+                                                <!-- Platform Icon Box -->
+                                                <div style="width: 40px; height: 40px; border-radius: 10px; background: {{ $bgColor }}; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 2px 6px rgba(0,0,0,0.08);">
+                                                    @if($eName === 'tokopedia')
+                                                        <svg style="width: 22px; height: 22px; color: #FFFFFF;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                                                        </svg>
+                                                    @elseif($eName === 'shopee')
+                                                        <svg style="width: 22px; height: 22px; color: #FFFFFF;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                                                        </svg>
+                                                    @elseif(in_array($eName, ['tiktok', 'tiktok shop', 'tiktokshop']))
+                                                        <svg style="width: 18px; height: 18px; fill: #FFFFFF;" viewBox="0 0 24 24">
+                                                            <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.32 6.32 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.75a4.85 4.85 0 0 1-1.01-.06Z" />
+                                                        </svg>
+                                                    @else
+                                                        <svg style="width: 22px; height: 22px; color: #FFFFFF;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                                                        </svg>
+                                                    @endif
+                                                </div>
+
+                                                <!-- Text Details -->
+                                                <div style="display: flex; flex-direction: column; gap: 2px;">
+                                                    <span style="color: #141414; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 500; line-height: 20px;">
+                                                        {{ $name }}
+                                                    </span>
+                                                    <span style="color: #A1A1AA; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 400; line-height: 18px;">
+                                                        Rp{{ number_format($product->price < 1000 ? $product->price * 1000 : $product->price, 0, ',', '.') }}
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            <!-- Right External Link Icon -->
+                                            <div style="width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; color: #141414;">
+                                                <svg style="width: 18px; height: 18px;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                                </svg>
+                                            </div>
+                                        </a>
+                                    @endforeach
+                                </div>
+
+                            </div>
+
+                            <!-- Multi Links -> Toggle Popover -->
+                            <button @click="buyModalOpen = !buyModalOpen"
+                                    style="width: 100%; background: #00BBA7; color: #FFFFFF; font-family: 'DM Sans', sans-serif; font-size: 16px; font-weight: 500; padding: 16px; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; border: none; cursor: pointer; transition: background 0.15s ease; position: relative; z-index: 45;">
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <svg style="width: 24px; height: 24px; color: #FFFFFF; flex-shrink: 0;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                                    </svg>
+                                    <span style="color: #FFFFFF; font-size: 16px; font-weight: 500; font-family: 'DM Sans', sans-serif;">Beli sekarang</span>
+                                </div>
+                                <svg style="width: 16px; height: 16px; color: #FFFFFF; flex-shrink: 0; transition: transform 0.2s;" :class="buyModalOpen ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                </svg>
+                            </button>
+                        @elseif($product->ecommerceLinks->count() === 1)
+                            <!-- Condition B: Product has EXACTLY 1 link -> Direct link to platform -->
+                            @php $singleLink = $product->ecommerceLinks->first(); @endphp
+                            <a href="{{ $singleLink->url }}" target="_blank" rel="noopener noreferrer"
+                               style="width: 100%; background: #00BBA7; color: #FFFFFF; font-family: 'DM Sans', sans-serif; font-size: 16px; font-weight: 500; padding: 16px; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; text-decoration: none; box-sizing: border-box; transition: background 0.15s ease;">
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <svg style="width: 24px; height: 24px; color: #FFFFFF; flex-shrink: 0;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                                    </svg>
+                                    <span style="color: #FFFFFF; font-size: 16px; font-weight: 500; font-family: 'DM Sans', sans-serif;">Beli sekarang</span>
+                                </div>
+                                <svg style="width: 16px; height: 16px; color: #FFFFFF; flex-shrink: 0;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                </svg>
+                            </a>
+                        @else
+                            <!-- Condition C: No link available -->
+                            <button disabled style="width: 100%; background: #00BBA7; color: #FFFFFF; font-family: 'DM Sans', sans-serif; font-size: 16px; font-weight: 500; padding: 16px; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; border: none; cursor: not-allowed; opacity: 0.85;">
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <svg style="width: 24px; height: 24px; color: #FFFFFF; flex-shrink: 0;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                                    </svg>
+                                    <span style="color: #FFFFFF; font-size: 16px; font-weight: 500; font-family: 'DM Sans', sans-serif;">Beli sekarang</span>
+                                </div>
+                                <svg style="width: 16px; height: 16px; color: #FFFFFF; flex-shrink: 0;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                </svg>
+                            </button>
+                        @endif
+
+                        <!-- Disclaimer text matching Figma Node 601:3657 -->
+                        <p style="color: #A1A1AA; font-size: 12px; font-family: 'DM Sans', sans-serif; line-height: 16px; text-align: center; margin: 0;">
+                            Kamu akan diarahkan ke platform penjual pilihan
+                        </p>
+                    </div>
+
                 </div>
 
-                <div class="border-gray-200 border-t"></div>
+            </div>
 
-                {{-- Description --}}
-                @if($product->description)
-                    <div class="max-w-none text-gray-700 leading-relaxed prose prose-sm">
-                        {!! nl2br(e($product->description)) !!}
-                    </div>
-                @endif
+            <!-- Bottom Section: Produk Lainnya (Figma Node 601:3658 - 4 Columns on Desktop >= 1024px, 2 Columns on Tablet/Mobile < 1024px) -->
+            @php
+                $related = \App\Models\Product::select(['id', 'name', 'slug', 'price', 'description', 'product_category_id'])
+                    ->with([
+                        'category',
+                        'primaryImage' => fn($q) => $q->select(['product_media.id', 'product_media.product_id', 'product_media.media_url'])
+                    ])
+                    ->where('is_published', true)
+                    ->where('id', '!=', $product->id)
+                    ->limit(4)
+                    ->get();
+            @endphp
 
-                <div class="border-gray-200 border-t"></div>
+            @if($related->isNotEmpty())
+                <div style="padding-top: 32px; border-top: 1px solid #E4E4E7; display: flex; flex-direction: column; gap: 20px; width: 100%;">
+                    
+                    <!-- Section Title -->
+                    <h2 style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 24px; font-weight: 500; line-height: 28px; letter-spacing: -0.005em; color: #141414; margin: 0;">
+                        Produk Lainnya
+                    </h2>
 
-                {{-- Buy / External Links --}}
-                <div class="flex flex-col gap-3">
-                    <p class="font-semibold text-gray-900 text-sm uppercase tracking-wider">Beli di</p>
-                    @if($product->ecommerceLinks->isNotEmpty())
-                        @foreach($product->ecommerceLinks as $link)
-                            @php
-                                $btnClass = match($link->ecommerce_name) {
-                                    'tokopedia' => 'bg-green-500 hover:bg-green-600',
-                                    'shopee'    => 'bg-[#ee4d2d] hover:bg-[#d9441f]',
-                                    'tiktok'    => 'bg-black hover:bg-gray-800',
-                                    default     => 'bg-blue-600 hover:bg-blue-700',
-                                };
-                                $label = match($link->ecommerce_name) {
-                                    'tokopedia' => 'Tokopedia',
-                                    'shopee'    => 'Shopee',
-                                    'tiktok'    => 'TikTok Shop',
-                                    default     => 'Beli Sekarang',
-                                };
-                            @endphp
-                            <a href="{{ $link->url }}" target="_blank" rel="noopener noreferrer"
-                                class="flex justify-center items-center gap-3 {{ $btnClass }} px-6 py-3.5 rounded-sm font-semibold text-white text-sm transition-all duration-200">
-                                @if($link->ecommerce_name === 'tokopedia')
-                                    <svg class="w-5 h-5" viewBox="0 0 40 40" fill="none">
-                                        <circle cx="20" cy="20" r="20" fill="#42B549" />
-                                        <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" fill="white"
-                                            font-size="18" font-weight="bold">T</text>
-                                    </svg>
-                                @elseif($link->ecommerce_name === 'shopee')
-                                    <svg class="w-5 h-5" viewBox="0 0 40 40" fill="none">
-                                        <circle cx="20" cy="20" r="20" fill="#EE4D2D" />
-                                        <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" fill="white"
-                                            font-size="18" font-weight="bold">S</text>
-                                    </svg>
-                                @elseif($link->ecommerce_name === 'tiktok')
-                                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="white">
-                                        <path
-                                            d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.32 6.32 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.75a4.85 4.85 0 0 1-1.01-.06Z" />
-                                    </svg>
-                                @else
-                                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-8 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4z" />
-                                    </svg>
-                                @endif
-                                {{ $label }}
+                    <!-- Cards Grid (4 Columns on Large Desktop >= 1024px, 2 Columns on Tablet & Mobile < 1024px) -->
+                    <div class="related-products-grid">
+                        @foreach($related as $index => $rel)
+                            <a href="{{ route('marketplace.detail', $rel->slug) }}" 
+                               class="group bg-white rounded-2xl p-3 pb-4 border border-[#E4E4E7] shadow-xs flex flex-col justify-between gap-3 transition-all duration-300 hover:shadow-md hover:no-underline cursor-pointer block"
+                               style="display: flex; flex-direction: column; justify-content: space-between; gap: 12px; background: #FFF; border-radius: 16px; border: 1px solid #E4E4E7; padding: 12px 12px 16px; box-sizing: border-box; width: 100%; text-decoration: none;">
+                                
+                                <!-- Card Media Banner -->
+                                <div class="marketplace-card-banner">
+                                    <img src="{{ $rel->primaryImage ? $rel->primaryImage->publicUrl() : 'https://placehold.co/264x160' }}" 
+                                         alt="{{ $rel->name }}" 
+                                         style="width: 100%; height: 100%; object-fit: cover;" />
+                                </div>
+
+                                <!-- Card Info -->
+                                <div style="display: flex; flex-direction: column; gap: 8px; width: 100%;">
+                                    <!-- Category Badge -->
+                                    <span style="color: #71717A; font-size: 12px; font-family: 'DM Sans', sans-serif; text-transform: uppercase; letter-spacing: 0.05em;">
+                                        {{ strtoupper($rel->category?->name ?? 'TECH') }}
+                                    </span>
+                                    
+                                    <!-- Title & Description Container with Bottom Divider -->
+                                    <div style="padding-bottom: 12px; border-bottom: 1px solid #E4E4E7; display: flex; flex-direction: column; gap: 4px; width: 100%;">
+                                        <h3 style="color: #141414; font-size: 16px; font-weight: 500; font-family: 'DM Sans', sans-serif; line-height: 28px; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                            {{ $rel->name }}
+                                        </h3>
+                                        <p style="color: #71717A; font-size: 15px; font-family: 'DM Sans', sans-serif; line-height: 28px; margin: 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 56px;">
+                                            {{ Str::limit(strip_tags($rel->description), 120) }}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- Card Footer (Price) -->
+                                <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 4px; width: 100%;">
+                                    <span style="color: #171717; font-size: 16px; font-weight: 500; font-family: 'DM Sans', sans-serif;">
+                                        Rp{{ number_format($rel->price < 1000 ? $rel->price * 1000 : $rel->price, 0, ',', '.') }}
+                                    </span>
+                                </div>
                             </a>
                         @endforeach
-                    @else
-                        <p class="text-gray-500 text-sm italic">Link pembelian belum tersedia.</p>
-                    @endif
+                    </div>
                 </div>
-
-                {{-- Social share / back --}}
-                <div class="flex items-center gap-4 mt-auto pt-4">
-                    <a href="{{ route('marketplace.index') }}"
-                        class="inline-flex items-center gap-1.5 text-gray-500 hover:text-gray-900 text-sm transition-colors">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                        </svg>
-                        Kembali ke Marketplace
-                    </a>
-                </div>
-            </div>
+            @endif
 
         </div>
 
-        {{-- ── Related / More Products ── --}}
-        @php
-            $related = \App\Models\Product::select(['id', 'name', 'slug', 'price'])
-                ->with(['primaryImage' => fn($q) => $q->select(['product_media.id', 'product_media.product_id', 'product_media.media_url'])])
-                ->where('is_published', true)
-                ->where('id', '!=', $product->id)
-                ->limit(4)
-                ->get();
-        @endphp
-
-        @if($related->isNotEmpty())
-            <div class="mt-16 pt-12 border-gray-200 border-t">
-                <h2 class="mb-8 font-bold text-gray-900 text-xl">Produk Lainnya</h2>
-                <div class="gap-x-6 gap-y-10 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4">
-                    @foreach($related as $rel)
-                        <div class="group flex flex-col">
-                            <a href="{{ route('marketplace.detail', $rel->slug) }}"
-                                class="block relative flex justify-center items-center bg-[#f8f8f8] mb-3 aspect-square overflow-hidden">
-                                @if($rel->primaryImage)
-                                    <img src="{{ $rel->primaryImage->publicUrl() }}" alt="{{ $rel->name }}"
-                                        class="w-[80%] h-[80%] object-contain group-hover:scale-105 transition-transform duration-300 mix-blend-multiply">
-                                @else
-                                    <div class="text-gray-300">
-                                        <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                        </svg>
-                                    </div>
-                                @endif
-                            </a>
-                            <h3 class="mb-1 font-bold text-gray-900 text-sm leading-snug">
-                                <a href="{{ route('marketplace.detail', $rel->slug) }}" class="hover:underline">{{ $rel->name }}</a>
-                            </h3>
-                            <p class="text-gray-700 text-sm">Rp{{ number_format($rel->price, 0, ',', '.') }}</p>
-                        </div>
-                    @endforeach
-                </div>
-            </div>
-        @endif
     </div>
-
 @endsection
 
 @section('scripts')
@@ -268,12 +520,12 @@
                 el = document.createElement('video');
                 el.src = src;
                 el.controls = true;
-                el.className = 'media-fade w-full h-full object-contain';
+                el.className = 'media-fade w-full h-full object-cover';
             } else {
                 el = document.createElement('img');
                 el.src = src;
                 el.alt = '{{ addslashes($product->name) }}';
-                el.className = 'media-fade w-[82%] h-[82%] object-contain mix-blend-multiply';
+                el.className = 'media-fade w-full h-full object-cover';
             }
             el.id = 'main-media';
             container.appendChild(el);
