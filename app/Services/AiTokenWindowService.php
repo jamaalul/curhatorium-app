@@ -33,7 +33,7 @@ class AiTokenWindowService
             $entitlement = $this->loadActiveEntitlement($user);
 
             if ($entitlement->amount_total !== -1 && $window->tokens_used >= $entitlement->amount_total) {
-                throw new AiQuotaExceededException;
+                throw new AiQuotaExceededException($window->ends_at);
             }
 
             return ['window' => $window, 'entitlement' => $entitlement];

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\AiWindow;
 use App\Models\MembershipPlan;
 use App\Models\User;
 use App\Models\UserEntitlement;
@@ -76,6 +77,12 @@ class SubscriptionService
                         'updated_at' => $now,
                     ])->all()
                 );
+            }
+
+            // Close the current active AI window so a new one is created on next message
+            $activeWindow = AiWindow::activeForUser($user->id)->first();
+            if ($activeWindow) {
+                $activeWindow->update(['ends_at' => now()]);
             }
 
             Log::info('Granted free plan to user', [

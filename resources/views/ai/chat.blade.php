@@ -327,7 +327,19 @@
                             body: JSON.stringify({ message: userText })
                         });
 
-                        if (!response.ok) throw new Error('Network error sending message');
+                        if (!response.ok) {
+                            let errorMsg = 'NETWORK_ERROR';
+                            if (response.status === 429) {
+                                try {
+                                    const errData = await response.json();
+                                    if (errData && errData.message) {
+                                        errorMsg = 'QUOTA_EXCEEDED:' + errData.message;
+                                    }
+                                } catch (e) { }
+                            }
+                            throw new Error(errorMsg);
+                        }
+
                         if (!response.body) throw new Error('ReadableStream not supported');
 
                         const reader = response.body.getReader();
@@ -371,7 +383,11 @@
                         console.error('MentAI Stream Error:', error);
                         const messageIndex = this.messages.findIndex(m => m.id === assistantMessageId);
                         if (messageIndex !== -1) {
-                            this.messages[messageIndex].content = "Maaf, terjadi kesalahan. Coba lagi ya.";
+                            let displayMsg = "Maaf, terjadi kesalahan. Coba lagi ya.";
+                            if (error.message && error.message.startsWith('QUOTA_EXCEEDED:')) {
+                                displayMsg = error.message.substring(15);
+                            }
+                            this.messages[messageIndex].content = displayMsg;
                             this._scrollToBottom();
                         }
                     } finally {
