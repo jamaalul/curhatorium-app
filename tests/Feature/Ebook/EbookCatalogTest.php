@@ -7,7 +7,7 @@ use App\Models\EbookCategory;
 use App\Models\Order;
 use App\Models\Payment;
 use App\Models\User;
-use App\Services\MidtransService;
+use App\Services\DokuService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -82,19 +82,19 @@ class EbookCatalogTest extends TestCase
 
     public function test_user_can_create_ebook_order_with_existing_order_system(): void
     {
-        $this->mock(MidtransService::class, function ($mock): void {
+        $this->mock(DokuService::class, function ($mock): void {
             $mock->shouldReceive('chargeQris')
                 ->once()
                 ->andReturn([
                     'transaction_id' => 'ebook-transaction-1',
-                    'order_id' => 'midtrans-order-1',
+                    'order_id' => 'doku-order-1',
                     'gross_amount' => '99000.00',
                     'payment_type' => 'qris',
                     'transaction_status' => 'pending',
                     'qr_code_url' => 'https://example.com/qr.png',
                     'deeplink_url' => null,
                     'actions' => [],
-                    'raw' => (object) [
+                    'raw' => [
                         'transaction_id' => 'ebook-transaction-1',
                         'transaction_status' => 'pending',
                     ],
@@ -123,7 +123,7 @@ class EbookCatalogTest extends TestCase
 
         $this->assertNotNull($payment);
         $this->assertEquals($order->id, $payment->order_id);
-        $this->assertEquals('ebook-transaction-1', $payment->midtrans_transaction_id);
+        $this->assertEquals('ebook-transaction-1', $payment->payment_transaction_id);
         $this->assertEquals('qris', $payment->payment_type);
         $this->assertEquals('pending', $payment->transaction_status);
 
@@ -149,7 +149,7 @@ class EbookCatalogTest extends TestCase
             'expired_at' => now()->addMinutes(15),
         ]);
 
-        $this->mock(MidtransService::class, function ($mock): void {
+        $this->mock(DokuService::class, function ($mock): void {
             $mock->shouldNotReceive('chargeQris');
         });
 

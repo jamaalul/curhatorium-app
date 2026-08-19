@@ -2,16 +2,24 @@
 @vite('resources/css/app.css')
 
 <nav x-data="{ mobileMenuOpen: false }" class="top-0 left-0 z-50 fixed flex items-center justify-between bg-white px-4 md:px-6 w-full h-16 shadow-sm" @keydown.escape="mobileMenuOpen = false">
-    <div id="logo-box" onclick="window.location.href = '/dashboard'" class="cursor-pointer flex items-center gap-2">
+    <div class="flex items-center gap-2">
         @if (!request()->is('dashboard'))
-            <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" fill="currentColor"
-                class="bi-arrow-left-short bi" viewBox="0 0 16 16">
-                <path fill-rule="evenodd"
-                    d="M12 8a.5.5 0 0 1-.5.5H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5a.5.5 0 0 1 .5.5" />
-            </svg>
+            <button type="button" 
+                    onclick="if (window.history.length > 1) { window.history.back(); } else { window.location.href = '{{ url()->previous() !== request()->url() ? url()->previous() : route('dashboard') }}'; }" 
+                    class="cursor-pointer text-gray-700 hover:text-black transition-colors focus:outline-none p-1 rounded-lg hover:bg-gray-100" 
+                    title="Kembali ke Halaman Sebelumnya">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor"
+                    class="bi-arrow-left-short bi" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd"
+                        d="M12 8a.5.5 0 0 1-.5.5H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5a.5.5 0 0 1 .5.5" />
+                </svg>
+            </button>
         @endif
-        <img src="{{ asset('assets/mini_logo.png') }}" alt="mini_logo" id="mini-logo">
-        <h1 class="text-[#222222] text-xl font-medium">Curhatorium</h1>
+
+        <div id="logo-box" onclick="window.location.href = '{{ route('dashboard') }}'" class="cursor-pointer flex items-center gap-2">
+            <img src="{{ asset('assets/mini_logo.png') }}" alt="mini_logo" id="mini-logo">
+            <h1 class="text-[#222222] text-xl font-medium">Curhatorium</h1>
+        </div>
     </div>
 
     @php
@@ -30,6 +38,15 @@
 
     <!-- Desktop Menu -->
     <div class="hidden md:flex items-center gap-4">
+        <a href="{{ route('marketplace.index') }}"
+            class="relative hover:text-[#48A6A6] text-gray-700 text-[0.9rem] font-semibold transition-colors duration-200">Marketplace<span
+                class="-top-2.5 -right-1.5 absolute bg-yellow-400 px-2 py-0.5 rounded-full text-white text-[10px] font-bold italic leading-none rotate-6 shadow-sm">Baru</span></a>
+        <a href="{{ route('ebooks.index') }}"
+            class="relative hover:text-[#48A6A6] text-gray-700 text-[0.9rem] font-semibold transition-colors duration-200">Ebooks<span
+                class="-top-2.5 -right-1.5 absolute bg-yellow-400 px-2 py-0.5 rounded-full text-white text-[10px] font-bold italic leading-none rotate-6 shadow-sm">Baru</span></a>
+
+        <div class="w-px h-6 bg-gray-200 mx-1"></div>
+
         <a href="/membership" class="hover:opacity-80 transition-opacity" style="text-decoration:none;color:inherit;">
             <div class="flex items-center gap-2 px-4 py-2 bg-gray-200 rounded-lg text-gray-900 font-semibold text-[0.9rem]">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -134,6 +151,36 @@
             </a>
 
             <div class="h-px bg-gray-100 my-2"></div>
+
+            <!-- Mobile Marketplace Link -->
+            <a href="{{ route('marketplace.index') }}" class="flex items-center justify-between p-4 rounded-xl hover:bg-gray-50 transition-colors text-gray-800 font-semibold text-lg">
+                <div class="flex items-center gap-4">
+                    <div class="p-2 bg-gray-100 rounded-lg text-gray-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
+                        </svg>
+                    </div>
+                    Marketplace
+                </div>
+                <span class="px-3 py-1 text-xs font-bold rounded-full border shadow-sm bg-yellow-400 text-white border-yellow-500">
+                    Baru
+                </span>
+            </a>
+
+            <!-- Mobile Ebooks Link -->
+            <a href="{{ route('ebooks.index') }}" class="flex items-center justify-between p-4 rounded-xl hover:bg-gray-50 transition-colors text-gray-800 font-semibold text-lg">
+                <div class="flex items-center gap-4">
+                    <div class="p-2 bg-gray-100 rounded-lg text-gray-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
+                        </svg>
+                    </div>
+                    Ebooks
+                </div>
+                <span class="px-3 py-1 text-xs font-bold rounded-full border shadow-sm bg-yellow-400 text-white border-yellow-500">
+                    Baru
+                </span>
+            </a>
 
             <!-- Mobile Membership Link -->
             <a href="/membership" class="flex items-center justify-between p-4 rounded-xl hover:bg-gray-50 transition-colors text-gray-800 font-semibold text-lg">
