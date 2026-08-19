@@ -9,6 +9,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 @endsection
 
 @section('dashboard-content')
@@ -138,8 +139,9 @@
                         <div class="w-64 flex flex-col justify-start items-center gap-4">
                             <img src="{{ asset('assets/qris-logo 1.svg') }}" alt="QRIS Logo" class="w-40 object-contain" />
                             <div class="w-auto bg-white rounded-[9.45px] outline outline-1 outline-gray-200 flex flex-col justify-start items-start">
-                                <div class="size-44 relative rounded-md overflow-hidden flex justify-center items-center bg-white">
-                                    <img id="qr-image" src="{{ $latestPayment->qris_url }}" alt="QR Code" class="w-full h-full object-contain mix-blend-multiply" />
+                                <div class="size-44 relative rounded-md overflow-hidden flex justify-center items-center bg-white p-2">
+                                    <div id="qr-container" class="flex justify-center items-center"></div>
+                                    <img id="qr-image" src="{{ $latestPayment->qris_url }}" alt="QR Code" class="w-full h-full object-contain mix-blend-multiply hidden" />
                                 </div>
                             </div>
                             <div class="w-full text-center text-base-900 text-xs font-normal font-dm leading-4">NMID: IDXXXXXXXX</div>
@@ -147,7 +149,7 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 text-teal-500">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
                                 </svg>
-                                <a href="{{ $latestPayment->qris_url }}" download="QRIS-{{ $order->order_ref }}.png" target="_blank" class="text-center text-teal-500 text-base font-medium font-dm leading-7 hover:underline">Unduh QR</a>
+                                <a id="qr-download-link" href="{{ $latestPayment->qris_url }}" download="QRIS-{{ $order->order_ref }}.png" target="_blank" class="text-center text-teal-500 text-base font-medium font-dm leading-7 hover:underline">Unduh QR</a>
                             </div>
                         </div>
                         
@@ -267,11 +269,46 @@
         modal.classList.remove('hidden');
         modal.classList.add('flex');
     }
-    function closeCancelModal() {
-        const modal = document.getElementById('cancel-modal');
         modal.classList.add('hidden');
         modal.classList.remove('flex');
     }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const qrString = @json($latestPayment->qris_url ?? null);
+        const qrContainer = document.getElementById('qr-container');
+        const qrImage = document.getElementById('qr-image');
+        const downloadLink = document.getElementById('qr-download-link');
+
+        if (qrString) {
+            if (qrString.startsWith('http://') || qrString.startsWith('https://')) {
+                if (qrImage) {
+                    qrImage.src = qrString;
+                    qrImage.classList.remove('hidden');
+                }
+                if (downloadLink) {
+                    downloadLink.href = qrString;
+                }
+            } else if (typeof QRCode !== 'undefined' && qrContainer) {
+                new QRCode(qrContainer, {
+                    text: qrString,
+                    width: 160,
+                    height: 160,
+                    colorDark: "#000000",
+                    colorLight: "#ffffff",
+                    correctLevel: QRCode.CorrectLevel.M
+                });
+                setTimeout(() => {
+                    const canvas = qrContainer.querySelector('canvas');
+                    const img = qrContainer.querySelector('img');
+                    if (canvas && downloadLink) {
+                        downloadLink.href = canvas.toDataURL('image/png');
+                    } else if (img && downloadLink) {
+                        downloadLink.href = img.src;
+                    }
+                }, 300);
+            }
+        }
+    });
 </script>
 
 </div>

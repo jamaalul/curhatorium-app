@@ -19,7 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'profile.upload.limit' => ProfileUploadRateLimit::class,
         ]);
         $middleware->validateCsrfTokens(except: [
-            'api/midtrans/notification',
+            'api/doku/notification',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

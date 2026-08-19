@@ -15,8 +15,7 @@ class Calendar extends Component
         public string $eventsUrl = '',
         public string $initialView = 'dayGridMonth',
         public string $id = 'calendar'
-    ) {
-    }
+    ) {}
 
     /**
      * Get the view / contents that represent the component.
