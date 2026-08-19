@@ -1,10 +1,15 @@
 <?php
 
 use App\Models\MembershipPlan;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 // Publicly accessible routes
 Route::get('/', function () {
+    if (Auth::check()) {
+        return redirect()->route('dashboard');
+    }
+
     $plans = MembershipPlan::with('planBenefits')->get();
 
     return view('landing', compact('plans'));
