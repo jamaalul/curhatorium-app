@@ -296,12 +296,12 @@ class DokuService
         array $body,
         string $timestamp
     ): string {
-        $minifiedBody = json_encode($body, JSON_UNESCAPED_SLASHES);
+        $minifiedBody = ! empty($body) ? json_encode($body, JSON_UNESCAPED_SLASHES) : '';
         $bodyHash = strtolower(hash('sha256', $minifiedBody !== false ? $minifiedBody : ''));
 
         $stringToSign = strtoupper($httpMethod).':'.$endpointUrl.':'.$accessToken.':'.$bodyHash.':'.$timestamp;
 
-        return hash_hmac('sha512', $stringToSign, $this->secretKey);
+        return base64_encode(hash_hmac('sha512', $stringToSign, $this->secretKey, true));
     }
 
     /**
