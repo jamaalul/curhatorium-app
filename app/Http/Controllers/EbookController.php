@@ -6,7 +6,7 @@ use App\Models\Ebook;
 use App\Models\EbookCategory;
 use App\Models\EbookReadingProgress;
 use App\Models\Order;
-use App\Services\MidtransService;
+use App\Services\DokuService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -20,7 +20,7 @@ use Illuminate\View\View;
 class EbookController extends Controller
 {
     public function __construct(
-        private MidtransService $midtrans,
+        private DokuService $doku,
     ) {}
 
     public function index(Request $request): View
@@ -148,16 +148,16 @@ class EbookController extends Controller
                 'expired_at' => now()->addMinutes(15),
             ]);
 
-            $chargeResult = $this->midtrans->chargeQris($order);
+            $chargeResult = $this->doku->chargeQris($order);
 
             $order->payments()->create([
-                'midtrans_transaction_id' => $chargeResult['transaction_id'],
+                'payment_transaction_id' => $chargeResult['transaction_id'],
                 'gross_amount' => $chargeResult['gross_amount'],
                 'currency' => 'IDR',
                 'payment_type' => $chargeResult['payment_type'],
                 'transaction_status' => $chargeResult['transaction_status'],
                 'qris_url' => $chargeResult['qr_code_url'],
-                'midtrans_response' => $chargeResult['raw'],
+                'payment_gateway_response' => $chargeResult['raw'],
                 'transaction_time' => now(),
                 'expired_at' => now()->addMinutes(15),
             ]);

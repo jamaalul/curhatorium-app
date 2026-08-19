@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\MidtransWebhookController;
+use App\Http\Controllers\DokuWebhookController;
 use App\Models\MembershipPlan;
 use Illuminate\Support\Facades\Route;
 
@@ -10,5 +10,5 @@ Route::get('/membership', function () {
     return view('membership.index', compact('plans'));
 })->name('membership.index')->middleware('auth');
 
-Route::post('/api/midtrans/notification', [MidtransWebhookController::class, 'handle'])
-    ->name('midtrans.notification');
+Route::post('/api/doku/notification', [DokuWebhookController::class, 'handle'])
+    ->name('doku.notification');

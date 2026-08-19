@@ -20,13 +20,13 @@ class PaymentFactory extends Factory
     {
         return [
             'order_id' => Order::factory(),
-            'midtrans_transaction_id' => fake()->uuid(),
+            'payment_transaction_id' => fake()->uuid(),
             'gross_amount' => fake()->randomElement([49900, 79900, 149900]),
             'currency' => 'IDR',
-            'payment_type' => 'gopay',
+            'payment_type' => 'qris',
             'transaction_status' => 'pending',
-            'qris_url' => 'https://api.sandbox.veritrans.co.id/v2/gopay/'.fake()->uuid().'/qr-code',
-            'midtrans_response' => ['status_code' => '201', 'status_message' => 'GO-PAY transaction is created'],
+            'qris_url' => 'https://api-sandbox.doku.com/qr/'.fake()->uuid(),
+            'payment_gateway_response' => ['responseCode' => '2000000', 'responseMessage' => 'Successful'],
             'transaction_time' => now(),
             'expired_at' => now()->addMinutes(15),
         ];

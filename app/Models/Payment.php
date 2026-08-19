@@ -12,20 +12,20 @@ class Payment extends Model
 
     protected $fillable = [
         'order_id',
-        'midtrans_transaction_id',
+        'payment_transaction_id',
         'gross_amount',
         'currency',
         'payment_type',
         'transaction_status',
         'qris_url',
-        'midtrans_response',
+        'payment_gateway_response',
         'transaction_time',
         'expired_at',
     ];
 
     protected $casts = [
         'gross_amount' => 'decimal:2',
-        'midtrans_response' => 'json',
+        'payment_gateway_response' => 'json',
         'transaction_time' => 'datetime',
         'expired_at' => 'datetime',
     ];

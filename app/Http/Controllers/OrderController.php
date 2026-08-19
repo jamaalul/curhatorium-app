@@ -5,22 +5,22 @@ namespace App\Http\Controllers;
 use App\Events\OrderPaid;
 use App\Models\MembershipPlan;
 use App\Models\Order;
-use App\Services\MidtransService;
+use App\Services\DokuService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
-use Log;
 
 class OrderController extends Controller
 {
     public function __construct(
-        private MidtransService $midtrans,
+        private DokuService $doku,
     ) {}
 
     /**
-     * Create an order for a membership plan, charge via Midtrans QRIS, and redirect to checkout.
+     * Create an order for a membership plan, charge via DOKU QRIS, and redirect to checkout.
      */
     public function create(MembershipPlan $plan): RedirectResponse
     {
@@ -52,16 +52,16 @@ class OrderController extends Controller
                 'expired_at' => now()->addMinutes(15),
             ]);
 
-            $chargeResult = $this->midtrans->chargeQris($order);
+            $chargeResult = $this->doku->chargeQris($order);
 
             $order->payments()->create([
-                'midtrans_transaction_id' => $chargeResult['transaction_id'],
+                'payment_transaction_id' => $chargeResult['transaction_id'],
                 'gross_amount' => $chargeResult['gross_amount'],
                 'currency' => 'IDR',
                 'payment_type' => $chargeResult['payment_type'],
                 'transaction_status' => $chargeResult['transaction_status'],
                 'qris_url' => $chargeResult['qr_code_url'],
-                'midtrans_response' => $chargeResult['raw'],
+                'payment_gateway_response' => $chargeResult['raw'],
                 'transaction_time' => now(),
                 'expired_at' => now()->addMinutes(15),
             ]);
@@ -91,7 +91,7 @@ class OrderController extends Controller
 
     /**
      * AJAX endpoint: check current order/payment status.
-     * It pulls the latest status from Midtrans to support local development without ngrok webhooks.
+     * Queries transaction status from DOKU API directly.
      */
     public function checkStatus(Order $order): JsonResponse
     {
@@ -103,18 +103,30 @@ class OrderController extends Controller
 
         $latestPayment = $order->latestPayment;
 
-        if ($latestPayment && $latestPayment->midtrans_transaction_id && $order->isPending()) {
+        if ($latestPayment && $latestPayment->payment_transaction_id && $order->isPending()) {
             try {
-                $status = $this->midtrans->getTransactionStatus($latestPayment->midtrans_transaction_id);
+                $queryResult = $this->doku->queryQris(
+                    $latestPayment->payment_transaction_id,
+                    $order->order_ref
+                );
+
+                $latestStatus = (string) ($queryResult['latestTransactionStatus'] ?? '');
+
+                // Map DOKU latestTransactionStatus
+                $transactionStatus = match ($latestStatus) {
+                    '00', 'PAID', 'SUCCESS' => 'settlement',
+                    '05', 'EXPIRED' => 'expire',
+                    'CANCELLED' => 'cancel',
+                    default => $latestPayment->transaction_status,
+                };
 
                 // Update payment status
                 $latestPayment->update([
-                    'transaction_status' => $status->transaction_status,
-                    'payment_type' => $status->payment_type ?? $latestPayment->payment_type,
+                    'transaction_status' => $transactionStatus,
                 ]);
 
-                // Map Midtrans transaction status to order status
-                $orderStatus = match ($status->transaction_status) {
+                // Map to order status
+                $orderStatus = match ($transactionStatus) {
                     'settlement' => 'paid',
                     'expire' => 'expired',
                     'cancel', 'deny' => 'cancelled',
@@ -129,7 +141,7 @@ class OrderController extends Controller
                     }
                 }
             } catch (\Exception $e) {
-                Log::warning('Failed to check Midtrans transaction status inline', ['error' => $e->getMessage()]);
+                Log::warning('Failed to check DOKU transaction status inline', ['error' => $e->getMessage()]);
             }
         }
 

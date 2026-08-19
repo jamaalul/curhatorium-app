@@ -65,7 +65,7 @@ class Ebook extends Model
         return Attribute::get(fn (): string => $this->title);
     }
 
-    public function isOwnedBy(\App\Models\User $user): bool
+    public function isOwnedBy(User $user): bool
     {
         return Order::where('user_id', $user->id)
             ->where('orderable_type', static::class)
