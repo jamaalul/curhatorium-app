@@ -1,24 +1,24 @@
-@extends('layouts.app')
+@extends('layouts.dashboard')
 
-@section('title', 'Ment-AI Chat | Curhatorium')
+@section('title', ($conversation->title ?? 'Ment-AI Chat') . ' | Curhatorium')
 
 @section('head')
     @vite('resources/css/app.css')
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 @endsection
 
-@section('content')
-    <div class="flex bg-white w-full h-screen overflow-hidden font-sans text-gray-800"
-        x-data="mentai({{ $conversationId ? "'" . $conversationId . "'" : 'null' }})" x-init="initChat()">
+@section('dashboard-content')
+    <div class="flex bg-white pt-16 w-full h-screen overflow-hidden font-sans text-gray-800"
+        x-data="mentaiShow('{{ $conversation->id }}')" x-init="initChat()">
 
         <!-- Sidebar -->
         <div class="z-20 fixed md:relative flex flex-col flex-shrink-0 bg-gray-50 border-gray-200 border-r w-64 h-full transition-transform duration-300"
             :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'">
             <!-- Sidebar Header -->
             <div class="p-3">
-                <a href="{{ route('mentai.chat') }}"
-                    class="flex justify-between items-center gap-2 bg-white hover:bg-gray-50 shadow-sm px-3 py-2 border border-gray-200 rounded-lg w-full transition-colors">
-                    <div class="flex items-center gap-2 font-medium">
+                <a href="{{ route('mentai.index') }}"
+                    class="flex justify-between items-center gap-2 bg-white hover:bg-gray-50 shadow-sm px-3 py-2 border border-gray-200 rounded-lg w-full font-medium transition-colors">
+                    <div class="flex items-center gap-2">
                         <svg class="w-5 h-5 text-[#48a6a6]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                         </svg>
@@ -32,7 +32,7 @@
                 <template x-for="conv in conversations" :key="conv.id">
                     <a :href="`/mental-support-chatbot/${conv.id}`"
                         class="block px-3 py-2 rounded-lg text-sm truncate transition-colors"
-                        :class="conv.id === conversationId ? 'bg-gray-200 font-medium' : 'hover:bg-gray-100 text-gray-700'"
+                        :class="conv.id === conversationId ? 'bg-gray-200 font-medium text-gray-900' : 'hover:bg-gray-100 text-gray-700'"
                         x-text="conv.title || 'Percakapan'">
                     </a>
                 </template>
@@ -64,7 +64,7 @@
                     </svg>
                 </button>
                 <span class="font-semibold text-gray-800">MentAI</span>
-                <div class="w-10"></div> <!-- Placeholder for balance -->
+                <div class="w-10"></div>
             </div>
 
             <!-- Overlay for mobile sidebar -->
@@ -75,26 +75,9 @@
             <div class="flex-1 overflow-y-auto" x-ref="scrollArea">
                 <div class="flex flex-col mx-auto px-4 pt-8 pb-32 max-w-3xl min-h-full">
 
-                    <!-- Empty State / Greeting -->
-                    <template x-if="messages.length === 0 && !loadingMessages">
-                        <div class="flex flex-col flex-1 justify-center items-center mt-20 mb-20 text-center">
-                            <div
-                                class="flex justify-center items-center bg-[#48a6a6] shadow-md mb-6 rounded-full w-16 h-16">
-                                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z">
-                                    </path>
-                                </svg>
-                            </div>
-                            <h1 class="mb-2 font-bold text-gray-800 text-3xl">Halo, Aku MentAI</h1>
-                            <p class="max-w-md text-gray-500">Teman cerita 24/7 yang siap mendengarkanmu tanpa menghakimi.
-                                Ada yang ingin kamu sampaikan hari ini?</p>
-                        </div>
-                    </template>
-
                     <!-- Loading Messages Spinner -->
                     <template x-if="loadingMessages">
-                        <div class="flex flex-1 justify-center items-center">
+                        <div class="flex flex-1 justify-center items-center py-20">
                             <svg class="w-8 h-8 text-[#48a6a6] animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none"
                                 viewBox="0 0 24 24">
                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
@@ -106,8 +89,8 @@
                         </div>
                     </template>
 
-                    <!-- Messages -->
-                    <div class="flex flex-col space-y-6 w-full">
+                    <!-- Messages List -->
+                    <div class="flex flex-col space-y-6 w-full" x-show="!loadingMessages || messages.length > 0">
                         <template x-for="message in messages" :key="message.id">
                             <div class="flex w-full" :class="message.role === 'user' ? 'justify-end' : 'justify-start'">
 
@@ -145,11 +128,10 @@
             </div>
 
             <!-- Input Area (Fixed Bottom Center) -->
-            <div
-                class="bottom-0 left-0 absolute bg-gradient-to-t from-white via-white to-transparent px-4 pt-6 pb-4 sm:pb-6 w-full">
+            <div class="bottom-0 left-0 absolute bg-gradient-to-t from-white via-white to-transparent px-4 pt-6 pb-4 sm:pb-6 w-full">
                 <div class="relative mx-auto max-w-3xl">
                     <form @submit.prevent="sendMessage"
-                        class="relative flex items-end bg-gray-50 focus-within:bg-white shadow-[0_0_15px_rgba(0,0,0,0.05)] border border-gray-200 rounded-3xl focus-within:ring-[#48a6a6] focus-within:ring-1 transition-colors">
+                        class="relative flex items-end bg-gray-50 focus-within:bg-white shadow-[0_0_15px_rgba(0,0,0,0.05)] border border-gray-200 rounded-[30px] focus-within:ring-[#48a6a6] focus-within:ring-1 transition-colors">
                         <textarea x-model="input" x-ref="messageInput"
                             @keydown.enter.prevent="if(!loading) { sendMessage(); }" @input="autoResize()"
                             placeholder="Kirim pesan ke MentAI..."
@@ -188,9 +170,9 @@
     </div>
 
     <script>
-        function mentai(initialConversationId) {
+        function mentaiShow(conversationId) {
             return {
-                conversationId: initialConversationId,
+                conversationId: conversationId,
                 messages: [],
                 conversations: [],
                 input: '',
@@ -200,7 +182,6 @@
                 streaming: false,
                 hasStreamedText: false,
                 sidebarOpen: false,
-                isFirstMessage: false,
 
                 _getCSRFToken() {
                     const meta = document.querySelector('meta[name="csrf-token"]');
@@ -223,12 +204,22 @@
                 },
 
                 async initChat() {
-                    await this.fetchConversations();
+                    this.fetchConversations();
+                    await this.fetchMessages();
 
-                    if (this.conversationId) {
-                        await this.fetchMessages();
-                    } else {
-                        this.isFirstMessage = true;
+                    // Check if an initial prompt was queued from the landing page
+                    const pendingRaw = sessionStorage.getItem('mentai_pending_prompt');
+                    if (pendingRaw) {
+                        try {
+                            const pending = JSON.parse(pendingRaw);
+                            if (pending.conversationId === this.conversationId && pending.message) {
+                                sessionStorage.removeItem('mentai_pending_prompt');
+                                await this.executeSendMessage(pending.message, true);
+                            }
+                        } catch (e) {
+                            sessionStorage.removeItem('mentai_pending_prompt');
+                            console.error('Error parsing pending prompt:', e);
+                        }
                     }
                 },
 
@@ -250,8 +241,6 @@
                 },
 
                 async fetchMessages() {
-                    if (!this.conversationId) return;
-
                     this.loadingMessages = true;
                     try {
                         const res = await fetch(`/ai/${this.conversationId}/messages`, {
@@ -275,6 +264,11 @@
                     this.input = '';
                     this.$nextTick(() => this.autoResize());
 
+                    const isFirstExchange = this.messages.length === 0;
+                    await this.executeSendMessage(userText, isFirstExchange);
+                },
+
+                async executeSendMessage(userText, isFirstExchange = false) {
                     this.messages.push({
                         id: Date.now().toString(),
                         role: 'user',
@@ -294,29 +288,6 @@
                     this._scrollToBottom();
 
                     try {
-                        // If it's a new conversation, create it first
-                        if (!this.conversationId) {
-                            const startRes = await fetch('/ai/start', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'X-CSRF-TOKEN': this._getCSRFToken(),
-                                    'Accept': 'application/json'
-                                }
-                            });
-
-                            if (!startRes.ok) throw new Error('Network error starting conversation');
-
-                            const startData = await startRes.json();
-                            this.conversationId = startData.conversationId;
-
-                            // Update URL without reloading
-                            window.history.pushState({}, '', `/mental-support-chatbot/${this.conversationId}`);
-
-                            // Refresh sidebar to show the new conversation
-                            this.fetchConversations();
-                        }
-
                         const response = await fetch(`/ai/${this.conversationId}/message`, {
                             method: 'POST',
                             headers: {
@@ -394,8 +365,7 @@
                         this.loading = false;
                         this.streaming = false;
 
-                        if (this.isFirstMessage && this.conversationId) {
-                            this.isFirstMessage = false;
+                        if (isFirstExchange) {
                             const assistantContent = this.messages.find(m => m.id === assistantMessageId)?.content || '';
                             this.generateTitle(userText, assistantContent);
                         }
@@ -420,7 +390,6 @@
                         if (!res.ok) return;
 
                         const data = await res.json();
-
                         const conv = this.conversations.find(c => c.id === this.conversationId);
                         if (conv) {
                             conv.title = data.title;

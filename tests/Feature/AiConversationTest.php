@@ -49,6 +49,64 @@ class AiConversationTest extends TestCase
         return compact('user', 'plan', 'subscription', 'entitlement');
     }
 
+    public function test_create_view_renders_for_authenticated_user(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->get('/mental-support-chatbot');
+
+        $response->assertOk()
+            ->assertViewIs('ai.index');
+    }
+
+    public function test_create_view_requires_authentication(): void
+    {
+        $response = $this->get('/mental-support-chatbot');
+
+        $response->assertRedirect('/login');
+    }
+
+    public function test_show_view_renders_for_conversation_owner(): void
+    {
+        $user = User::factory()->create();
+        $conversation = $user->conversations()->create([
+            'id' => (string) Str::uuid(),
+            'title' => 'My Chat',
+        ]);
+
+        $response = $this->actingAs($user)->get("/mental-support-chatbot/{$conversation->id}");
+
+        $response->assertOk()
+            ->assertViewIs('ai.show')
+            ->assertViewHas('conversation', function ($viewConversation) use ($conversation) {
+                return $viewConversation->id === $conversation->id;
+            });
+    }
+
+    public function test_show_view_forbidden_for_other_users(): void
+    {
+        $owner = User::factory()->create();
+        $otherUser = User::factory()->create();
+        $conversation = $owner->conversations()->create([
+            'id' => (string) Str::uuid(),
+            'title' => 'Secret Chat',
+        ]);
+
+        $response = $this->actingAs($otherUser)->get("/mental-support-chatbot/{$conversation->id}");
+
+        $response->assertForbidden();
+    }
+
+    public function test_show_view_returns_not_found_for_missing_conversation(): void
+    {
+        $user = User::factory()->create();
+        $nonExistentId = (string) Str::uuid();
+
+        $response = $this->actingAs($user)->get("/mental-support-chatbot/{$nonExistentId}");
+
+        $response->assertNotFound();
+    }
+
     public function test_start_creates_new_conversation(): void
     {
         $user = User::factory()->create();

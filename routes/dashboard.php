@@ -56,7 +56,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/deep-cards', [CardController::class, 'index']);
     Route::get('mental-health-test', fn () => view('mental-test.form'))->name('mhc-sf.form');
     Route::post('/mental-test/submit', [MentalTestController::class, 'store'])->name('mental-test.store');
-    Route::get('/mental-support-chatbot/{id?}', fn ($id = null) => view('ai.chat', ['conversationId' => $id]))->name('mentai.chat');
 
     // Missions routes
     Route::controller(MissionController::class)->prefix('missions-of-the-day')->name('missions.')->group(function () {

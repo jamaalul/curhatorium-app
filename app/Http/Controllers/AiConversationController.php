@@ -10,11 +10,34 @@ use App\Services\AiTokenWindowService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\View\View;
 use Laravel\Ai\Models\Conversation;
 use Laravel\Ai\Responses\StreamedAgentResponse;
 
 class AiConversationController extends Controller
 {
+    /**
+     * Show the new AI chat interface.
+     */
+    public function create(): View
+    {
+        return view('ai.index');
+    }
+
+    /**
+     * Show a specific AI conversation.
+     */
+    public function show(Request $request, Conversation $conversation): View
+    {
+        if ($conversation->user_id !== $request->user()->id) {
+            abort(403);
+        }
+
+        return view('ai.show', [
+            'conversation' => $conversation,
+        ]);
+    }
+
     /**
      * Start a new AI conversation for the authenticated user.
      */
