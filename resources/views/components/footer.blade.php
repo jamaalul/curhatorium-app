@@ -292,7 +292,6 @@
                                 <li><a href="/tracker">Mental and Productivity Tracker</a></li>
                                 <li><a href="/mental-health-test">Mental Health Test</a></li>
                                 <li><a href="/share-and-talk">Share and Talk</a></li>
-                                <li><a href="/mental-support-chatbot">Ment-AI</a></li>
                                 <li><a href="/missions-of-the-day">Missions of The Day</a></li>
                                 <li><a href="/support-group-discussion">Support Group Discussion</a></li>
                                 <li><a href="/deep-cards">Deep Cards</a></li>

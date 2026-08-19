@@ -3,6 +3,7 @@
 namespace App\Listeners;
 
 use App\Events\OrderPaid;
+use App\Models\AiWindow;
 use App\Models\MembershipPlan;
 use App\Models\UserEntitlement;
 use App\Models\UserSubscription;
@@ -103,6 +104,12 @@ class ProcessOrderEntitlements implements ShouldQueue
                         'updated_at' => $now,
                     ])->all()
                 );
+            }
+
+            // Close the current active AI window so a new one is created on next message
+            $activeWindow = AiWindow::activeForUser($order->user_id)->first();
+            if ($activeWindow) {
+                $activeWindow->update(['ends_at' => now()]);
             }
 
             Log::info('Processed membership plan', [

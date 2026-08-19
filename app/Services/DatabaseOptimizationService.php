@@ -355,7 +355,7 @@ class DatabaseOptimizationService
         $tables = [
             'users', 'stats', 'user_tickets', 'user_memberships',
             'chat_sessions', 'messages', 'mission_completions',
-            'chatbot_sessions', 'chatbot_messages', 'daily_xp_logs',
+            'daily_xp_logs',
             'weekly_stats', 'monthly_stats',
         ];
 

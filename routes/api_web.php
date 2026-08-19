@@ -3,7 +3,6 @@
 use App\Http\Controllers\AgendaController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
-use App\Http\Controllers\ChatbotController;
 use App\Http\Controllers\QuoteController;
 use App\Http\Controllers\ShareAndTalk\BookingController;
 use App\Http\Controllers\ShareAndTalk\ConsultationApiController;
@@ -17,14 +16,6 @@ Route::middleware('auth')->prefix('api')->name('api.')->group(function () {
     Route::get('/agenda/pending', [AgendaController::class, 'getPending'])->name('getPendingAgenda');
     Route::get('/quote/today', [QuoteController::class, 'quoteOfTheDay'])->name('quote.today');
     Route::get('/articles', [ArticleController::class, 'apiIndex'])->name('articles.index');
-
-    // Chatbot API routes
-    Route::controller(ChatbotController::class)->prefix('chatbot')->name('chatbot.')->group(function () {
-        Route::post('/create-send', 'createSend')->name('create-send');
-        Route::post('/send/{identifier}', 'send')->name('send');
-        Route::get('/stream/{identifier}', 'stream')->name('stream');
-        Route::post('/save/{identifier}', 'saveMessage')->name('save');
-    });
 
     // Tracker API routes
     Route::controller(TrackerController::class)->prefix('tracker')->name('tracker.')->group(function () {

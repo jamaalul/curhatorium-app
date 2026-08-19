@@ -311,7 +311,7 @@
       <div class="section">
         <h2>2. DEFINISI</h2>
         <ul>
-          <li><strong>Curhatorium</strong> adalah platform digital berbasis komunitas yang menyediakan layanan dukungan psikososial non-klinis, termasuk namun tidak terbatas pada: diskusi support group, chatbot reflektif, misi penguatan mental harian, dan pelacakan keseharian.</li>
+          <li><strong>Curhatorium</strong> adalah platform digital berbasis komunitas yang menyediakan layanan dukungan psikososial non-klinis, termasuk namun tidak terbatas pada: diskusi support group, misi penguatan mental harian, dan pelacakan keseharian.</li>
           <li><strong>Pengguna</strong> adalah setiap individu yang mengakses, mendaftar, dan/atau menggunakan layanan Curhatorium.</li>
           <li><strong>Ranger</strong> adalah fasilitator peer-support yang telah melalui proses seleksi dan pelatihan internal Curhatorium.</li>
           <li><strong>Fitur</strong> merujuk pada seluruh layanan digital yang disediakan oleh Curhatorium, baik bersifat publik maupun terbatas.</li>
@@ -367,7 +367,7 @@
       <div class="section">
         <h2>7. KEBIJAKAN PENGGUNAAN FITUR LAINNYA</h2>
         <ul>
-          <li>Fitur chatbot (Ment-AI) hanya menyediakan dukungan reflektif dan validasi umum, tanpa memberikan diagnosis atau keputusan personal.</li>
+
           <li>Fitur tracker dan misi harian digunakan untuk memantau kondisi emosional dan kebiasaan positif pengguna secara mandiri.</li>
           <li>Setiap data dari fitur ini bersifat pribadi, tidak dapat diakses oleh pengguna lain, dan tidak digunakan untuk iklan atau penargetan komersial.</li>
         </ul>

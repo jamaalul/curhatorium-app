@@ -3,5 +3,5 @@
 @section('content')
     @include('components.navbar')
     @yield('dashboard-content')
-    @include('components.footer')
+    {{-- @include('components.footer') --}}
 @endsection

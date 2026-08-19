@@ -72,8 +72,6 @@ return [
             'chat_sessions',
             'messages',
             'mission_completions',
-            'chatbot_sessions',
-            'chatbot_messages',
             'daily_xp_logs',
             'weekly_stats',
             'monthly_stats',

@@ -37,13 +37,6 @@ Route::get('/info/{feature}', function ($feature) {
             'cta' => 'Start Sharing',
             'cta_link' => '/share-and-talk',
         ],
-        'ment-ai' => [
-            'title' => 'Ment-AI',
-            'description' => 'Sanny AI is ready to accompany you whenever you need it. It can help with reflection, breathing exercises, or simply accompany you when you\'re feeling down.',
-            'why_choose' => 'Get 24/7 AI-powered support for reflection, breathing exercises, and emotional companionship.',
-            'cta' => 'Chat with AI',
-            'cta_link' => '/chatbot',
-        ],
         'missions' => [
             'title' => 'Missions of the Day',
             'description' => 'Simple daily missions that help you reconnect with yourself. Each mission can be a reflection, a small action, or a light exercise. Choose the level that suits your daily rhythm.',
@@ -85,3 +78,4 @@ require __DIR__.'/moodtracker.php';
 require __DIR__.'/professional.php';
 require __DIR__.'/sharetalk.php';
 require __DIR__.'/marketplace.php';
+require __DIR__.'/ai.php';

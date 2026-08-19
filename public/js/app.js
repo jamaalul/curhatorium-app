@@ -31,7 +31,6 @@ document.addEventListener('DOMContentLoaded', function() {
 document.addEventListener('DOMContentLoaded', function() {
     const mentalTest = document.getElementById("to-mental-test");
     const shareTalk = document.getElementById("to-share-talk");
-    const chatbot = document.getElementById("to-chatbot");
     const missions = document.getElementById("to-missions");
     const sgd = document.getElementById("to-sgd");
     const deepCards = document.getElementById("to-deep-cards");
@@ -45,12 +44,6 @@ document.addEventListener('DOMContentLoaded', function() {
     if (shareTalk) {
         shareTalk.addEventListener("click", function () {
             window.location.href = "/share-and-talk";
-        });
-    }
-
-    if (chatbot) {
-        chatbot.addEventListener("click", function () {
-            window.location.href = "/mental-support-chatbot";
         });
     }
 
