@@ -85,6 +85,22 @@ class OrderFlowTest extends TestCase
         $response->assertSee('https://example.com/qr.png');
     }
 
+    public function test_user_can_view_order_checkout_page_with_raw_qr_string()
+    {
+        $user = User::factory()->create();
+        $order = Order::factory()->for($user)->pending()->create();
+        $rawQr = '00020101021226540012COM.DOKU.WWW01189360089900000252800205252800303UKE51440014ID.CO.QRIS.WWW0215ID20260818785180303UKE520456615303360540849900.005802ID5910tlfnhNLAEQ6015JAKARTA SELATAN61056011562320706DELT015018ORD-20260819-61F1E6304E0A0';
+        $payment = Payment::factory()->for($order)->pending()->create([
+            'qris_url' => $rawQr,
+        ]);
+
+        $response = $this->actingAs($user)->get(route('order.show', $order));
+
+        $response->assertOk();
+        $response->assertSee($order->order_ref);
+        $response->assertDontSee('src="'.$rawQr.'"', false);
+    }
+
     public function test_order_status_check_endpoint()
     {
         $user = User::factory()->create();
