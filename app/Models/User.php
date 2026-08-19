@@ -201,6 +201,14 @@ class User extends Authenticatable implements FilamentUser
     }
 
     /**
+     * Check if the user has an active Inner Peace membership.
+     */
+    public function hasActiveInnerPeaceMembership(): bool
+    {
+        return $this->subscription()->exists();
+    }
+
+    /**
      * Get the user's AI usage windows.
      */
     public function aiWindows(): HasMany

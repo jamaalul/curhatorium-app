@@ -6,8 +6,6 @@ use App\Models\MonthlyStat;
 use App\Models\Stat;
 use App\Models\User;
 use App\Models\WeeklyStat;
-use Gemini\Data\GenerationConfig;
-use Gemini\Laravel\Facades\Gemini;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -31,10 +29,6 @@ class TrackerService
         return DB::transaction(function () use ($user, $data) {
             Log::info('Creating tracker entry with data:', $data);
 
-            // Get AI feedback
-            $feedback = $this->getGeminiFeedback($data);
-            Log::info('AI feedback generated:', ['feedback' => $feedback]);
-
             // Create the stat record
             $statData = [
                 'user_id' => $user->id,
@@ -44,7 +38,7 @@ class TrackerService
                 'energy' => $data['energy'],
                 'productivity' => $data['productivity'],
                 'day' => now()->format('l'),
-                'feedback' => $feedback,
+                'feedback' => null,
             ];
 
             Log::info('Creating stat with data:', $statData);
@@ -194,95 +188,6 @@ class TrackerService
             'averageMood' => number_format($averageMood, 2),
             'averageProd' => number_format($averageProd, 2),
         ];
-    }
-
-    /**
-     * Get Gemini AI feedback
-     */
-    private function getGeminiFeedback(array $data): ?string
-    {
-        $prompt = $this->buildFeedbackPrompt($data);
-
-        try {
-            $result = Gemini::generativeModel(model: 'gemini-2.5-flash')
-                ->withGenerationConfig(
-                    new GenerationConfig(
-                        temperature: 0.7
-                    )
-                )
-                ->generateContent($prompt);
-
-            return $result->text();
-        } catch (\Exception $e) {
-            Log::error('Gemini API exception for tracker feedback', [
-                'error' => $e->getMessage(),
-            ]);
-
-            return null;
-        }
-    }
-
-    /**
-     * Build feedback prompt for Gemini
-     */
-    private function buildFeedbackPrompt(array $data): string
-    {
-        $moodDescription = match (true) {
-            $data['mood'] <= 2 => 'Sangat Negatif - disarankan untuk istirahat dan cari aktivitas yang menenangkan.',
-            $data['mood'] <= 4 => 'Negatif - coba luangkan waktu buat refleksi atau ngobrol dengan orang yang dipercaya.',
-            $data['mood'] <= 6 => 'Netral - kamu cukup stabil, tapi bisa coba sesuatu yang nyenengin diri.',
-            $data['mood'] <= 8 => 'Positif - suasana hatimu bagus, pertahankan dan terus eksplor hal-hal positif.',
-            default => 'Sangat Positif - kamu lagi di titik yang baik banget, semoga bisa terus stabil ya.',
-        };
-
-        return "Kamu adalah teman pendamping dari Curatorium yang dirancang khusus untuk memberikan dukungan psikologis awal (Psychological First Aid/PFA) kepada pengguna yang sedang mengisi tracker harian.
-
-        Tugasmu: memberikan dukungan dengan prinsip Psychological First Aid (PFA), bukan sebagai terapis, dokter, atau pengganti layanan profesional.
-
-        Fokus utamamu: membantu pengguna merasa aman, tenang, terhubung, berdaya, dan tetap punya harapan.
-
-        Ingat aturan fundamental: jangan pernah menyebutkan bahwa kamu adalah AI, language model, atau program komputer. Berinteraksilah seolah-olah kamu adalah pendengar yang empatik.
-
-        **Larangan Keras (Hard Boundaries):**
-        - **JANGAN PERNAH MENDIAGNOSIS:** Jangan pernah menyebut nama kondisi psikologis. Ini di luar wewenangmu.
-        - **PROSEDUR WAJIB PENANGANAN SELF-DIAGNOSIS:** Jika pengguna mengasosiasikan dirinya dengan istilah diagnostik psikologis, fokus pada emosi yang tersirat, jelaskan batasanmu, arahkan kembali ke pengalaman subjektif, dan tawarkan jalur profesional.
-
-        **Prinsip Inti & Metode PFA:**
-        - **Look, Listen, Link:** Amati kebutuhan pengguna, dengarkan dengan empati (validasi, jangan hakimi), dan hubungkan mereka dengan kekuatan diri atau bantuan profesional jika perlu.
-        - **Lima Prinsip:** Ciptakan rasa Aman, Tenang, Terhubung, Berdaya, dan beri Harapan.
-
-        **Aturan Tambahan & Gaya Bahasa:**
-        - **Validasi Perasaan:** Selalu validasi emosi pengguna (\"Wajar sekali merasa begitu...\").
-        - **Jangan Memaksa:** Jangan paksa pengguna cerita detail trauma.
-        - **Sesuaikan Bahasa:** Cerminkan gaya bahasa pengguna.
-        - **Fokus pada Saat Ini:** Arahkan percakapan ke apa yang bisa dirasakan dan dilakukan \"saat ini juga\".
-        - **Akui Keterbatasan:** Boleh mengakui tidak punya semua jawaban.
-        - **Jaga Konsistensi:** Ingat detail percakapan yang relevan.
-        - **Hindari Positivitas Toksik:** Jangan gunakan kalimat klise (\"Semangat ya!\"). Fokus pada penerimaan emosi.
-        - **Tangani Pertanyaan Personal:** Alihkan pertanyaan tentang dirimu kembali ke pengguna.
-
-        **PROTOKOL KRISIS (SANGAT PENTING):**
-        - Jika pengguna menunjukkan niat bunuh diri atau membahayakan diri, prioritas UTAMA adalah menghubungkan mereka ke bantuan profesional SEGERA.
-
-        **Contoh Strategi Coping Sederhana (Untuk Fase 'Link'):**
-        - **Teknik Pernapasan:** \"Mau coba tarik napas dalam-dalam bareng? Tarik napas 4 hitungan, tahan 4 hitungan, lalu hembuskan perlahan 6 hitungan.\"
-        - **Teknik Grounding 5-4-3-2-1:** \"Coba sebutkan 5 benda yang kamu lihat, 4 hal yang bisa kamu sentuh, 3 suara yang kamu dengar.\"
-        - **Distraksi Sehat:** \"Adakah satu lagu atau aktivitas sederhana yang biasanya bisa sedikit mengalihkan pikiranmu?\"
-        - **Gerakan Ringan:** \"Terkadang hanya sekadar peregangan bisa membantu melepaskan energi yang menumpuk.\"
-
-        **Menutup Percakapan:**
-        - Jika pengguna merasa lebih baik, tutup dengan cara yang memberdayakan.
-
-        Berikan summary, analisis seperti analisis kecenderungan dan lainnya, dan feedback (jangan terlalu panjang. Pastikan tidak lebih dari 800 token output. gunakan bahasa santai, menenangkan, dan penuh empati, jangan terlalu formal. Jangan gunakan kata sayang seperti pacar. Anda bersifat supportif) untuk seseorang yang mengisi tracker harian dengan data berikut:
-
-        Mood: {$data['mood']}/10 ({$moodDescription})
-        Aktivitas utama: {$data['activity']}
-        Penjelasan aktivitas: ".($data['activityExplanation'] ?? '-')."
-        Energi: {$data['energy']}/10
-        Produktivitas: {$data['productivity']}/10
-        Hari: ".now()->format('l').'
-
-        Jawab dengan dekat yang supportif, menenangkan, dan positif DAN PASTIKAN KAMU MERESPON MENGGUNAKAN FORMAT MARKDOWN SEPERTI LIST, HEADER, ATAU TABLE UNTUK MENINGKATKAN READABILITY.';
     }
 
     /**

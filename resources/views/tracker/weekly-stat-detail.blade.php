@@ -5,7 +5,6 @@
 @section('head')
     <link rel="stylesheet" href="{{ asset('css/global.css') }}">
     <link rel="stylesheet" href="{{ asset('css/tracker/result.css') }}">
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         .weekly-summary {
             background: white;
@@ -613,8 +612,7 @@
             
             .weekly-summary,
             .analysis-section,
-            .weekly-chart,
-            .ai-analysis {
+            .weekly-chart {
                 padding: 16px;
                 margin-bottom: 16px;
             }
@@ -754,8 +752,7 @@
             
             .weekly-summary,
             .analysis-section,
-            .weekly-chart,
-            .ai-analysis {
+            .weekly-chart {
                 padding: 12px;
                 margin-bottom: 12px;
             }
@@ -1328,24 +1325,6 @@
             </div>
         </div>
         @endif
-        @endif
-
-        <!-- AI Feedback Section -->
-        @if($weeklyStat->feedback)
-        <div class="ai-analysis">
-            <div class="ai-header">
-                <div class="ai-icon">🤖</div>
-                <div>
-                    <h2 class="ai-title">Umpan Balik & Insight AI Mingguan</h2>
-                    <p class="ai-subtitle">Umpan balik personal dari Ment-AI untuk minggu ini</p>
-                </div>
-            </div>
-            <div class="ai-content">
-                <div class="ai-section-content prose prose-lg" style="max-width: none;">
-                    {!! Illuminate\Support\Str::markdown($weeklyStat->feedback) !!}
-                </div>
-            </div>
-        </div>
         @endif
 
         <!-- Daily Entries Section -->
