@@ -5,7 +5,6 @@
 @section('head')
     <link rel="stylesheet" href="{{ asset('css/global.css') }}">
     <link rel="stylesheet" href="{{ asset('css/tracker/result.css') }}">
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         .monthly-summary {
             background: white;
@@ -516,8 +515,7 @@
             
             .monthly-summary,
             .analysis-section,
-            .monthly-chart,
-            .ai-analysis {
+            .monthly-chart {
                 padding: 16px;
                 margin-bottom: 16px;
             }
@@ -626,8 +624,7 @@
             
             .monthly-summary,
             .analysis-section,
-            .monthly-chart,
-            .ai-analysis {
+            .monthly-chart {
                 padding: 12px;
                 margin-bottom: 12px;
             }
@@ -1350,24 +1347,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- AI Feedback Section -->
-        @if($monthlyStat->feedback)
-        <div class="ai-analysis">
-            <div class="ai-header">
-                <div class="ai-icon">🤖</div>
-                <div>
-                    <h2 class="ai-title">Umpan Balik & Insight AI Bulanan</h2>
-                    <p class="ai-subtitle">Umpan balik personal dari Ment-AI untuk bulan ini</p>
-                </div>
-            </div>
-            <div class="ai-content">
-                <div class="ai-section-content prose prose-lg" style="max-width: none;">
-                    {!! Illuminate\Support\Str::markdown($monthlyStat->feedback) !!}
-                </div>
-            </div>
-        </div>
-        @endif
 
         <!-- Daily Entries Section -->
         <div class="daily-entries">

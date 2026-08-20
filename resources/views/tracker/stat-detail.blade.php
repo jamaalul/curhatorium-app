@@ -5,7 +5,6 @@
 @section('head')
     <link rel="stylesheet" href="{{ asset('css/global.css') }}">
     <link rel="stylesheet" href="{{ asset('css/tracker/result.css') }}">
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 @endsection
 
 @section('dashboard-content')
@@ -105,26 +104,6 @@
                         "{{ $stat->explanation }}"
                     </div>
                 </div>
-                @endif
-            </div>
-        </div>
-
-        <!-- AI Feedback Section -->
-        <div class="ai-analysis">
-            <div class="ai-header">
-                <div class="ai-icon">🤖</div>
-                <div>
-                    <h2 class="ai-title">Umpan Balik & Insight AI</h2>
-                    <p class="ai-subtitle">Umpan balik personal dari Ment-AI</p>
-                </div>
-            </div>
-            <div class="ai-content">
-                @if($stat->feedback)
-                    <div class="ai-section-content prose prose-lg" style="max-width: none;">
-                        {!! Illuminate\Support\Str::markdown($stat->feedback) !!}
-                    </div>
-                @else
-                    <div class="ai-section-content text-tertiary font-italic">Belum ada umpan balik AI untuk entri ini.</div>
                 @endif
             </div>
         </div>
