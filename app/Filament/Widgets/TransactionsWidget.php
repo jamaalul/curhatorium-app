@@ -2,6 +2,7 @@
 
 namespace App\Filament\Widgets;
 
+use App\Models\FakeOrder;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use App\Models\Order;
@@ -27,7 +28,7 @@ class TransactionsWidget extends BaseWidget
 
     protected function getStats(): array
     {
-        $digitalGoodsTransactions = Order::where('status', 'completed')->count();
+        $digitalGoodsTransactions = (Order::where('status', 'completed')->count()) + (FakeOrder::where('status', 'completed')->count());
         $physicalGoodsTransactions = MarketplaceOrder::count();
         $totalCompleteTransactions = $digitalGoodsTransactions + $physicalGoodsTransactions;
 
