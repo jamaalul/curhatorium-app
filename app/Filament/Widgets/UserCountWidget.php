@@ -9,7 +9,6 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 
 class UserCountWidget extends BaseWidget
 {
-    use InteractsWithPageFilters;
 
     protected static ?int $sort = 1;
 
@@ -29,17 +28,12 @@ class UserCountWidget extends BaseWidget
 
     protected function getStats(): array
     {
-        $month = $this->filters['month'] ?? null;
-        $year = $this->filters['year'] ?? null;
 
-        $userCount = User::query()
-            ->when($month, fn ($query) => $query->whereMonth('created_at', $month))
-            ->when($year, fn ($query) => $query->whereYear('created_at', $year))
-            ->count();
+        $userCount = User::count();
 
         return [
             Stat::make('Total Users', number_format($userCount))
-                ->description('Current registered users')
+                ->description('All time registered users')
                 ->descriptionIcon('heroicon-m-users')
                 ->color('primary'),
         ];

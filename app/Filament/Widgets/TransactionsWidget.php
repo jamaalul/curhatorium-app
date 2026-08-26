@@ -52,16 +52,16 @@ class TransactionsWidget extends BaseWidget
         $totalCompleteTransactions = $digitalGoodsTransactions + $physicalGoodsTransactions;
 
         return [
-            Stat::make('Total Complete Transactions', number_format($totalCompleteTransactions))
-                ->description('Current complete transactions')
+            Stat::make('Total Completed Transactions', number_format($totalCompleteTransactions))
+                ->description('This month completed transactions')
                 ->descriptionIcon('heroicon-m-shopping-cart')
                 ->color('primary'),
             Stat::make('Digital Goods Transactions', number_format($digitalGoodsTransactions))
-                ->description('Current complete transactions')
+                ->description('This month completed transactions')
                 ->descriptionIcon('heroicon-m-globe-alt')
                 ->color('primary'),
             Stat::make('Physical Goods Transactions', number_format($physicalGoodsTransactions))
-                ->description('Current complete transactions')
+                ->description('This month completed transactions')
                 ->descriptionIcon('heroicon-m-archive-box')
                 ->color('primary'),
         ];
