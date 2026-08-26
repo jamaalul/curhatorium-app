@@ -3,11 +3,15 @@
 namespace App\Filament\Widgets;
 
 use App\Models\User;
+use Carbon\Carbon;
+use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 
 class NewUsersWidget extends BaseWidget
 {
+    use InteractsWithPageFilters;
+
     protected static ?int $sort = 2;
 
     /**
@@ -26,10 +30,48 @@ class NewUsersWidget extends BaseWidget
 
     protected function getStats(): array
     {
-        $currentPeriodCount = User::where('created_at', '>=', now()->subDays(30))->count();
-        $previousPeriodCount = User::where('created_at', '>=', now()->subDays(60))
-            ->where('created_at', '<', now()->subDays(30))
-            ->count();
+        $month = $this->filters['month'] ?? null;
+        $year = $this->filters['year'] ?? null;
+
+        if ($month && $year) {
+            $currentDate = Carbon::createFromDate((int) $year, (int) $month, 1)->startOfMonth();
+            $previousDate = $currentDate->copy()->subMonth();
+
+            $currentPeriodCount = User::whereMonth('created_at', $currentDate->month)
+                ->whereYear('created_at', $currentDate->year)
+                ->count();
+
+            $previousPeriodCount = User::whereMonth('created_at', $previousDate->month)
+                ->whereYear('created_at', $previousDate->year)
+                ->count();
+
+            $periodLabel = 'vs last month';
+        } elseif ($year) {
+            $currentPeriodCount = User::whereYear('created_at', (int) $year)->count();
+            $previousPeriodCount = User::whereYear('created_at', (int) $year - 1)->count();
+            $periodLabel = 'vs last year growth';
+        } elseif ($month) {
+            $currentYear = now()->year;
+            $currentDate = Carbon::createFromDate($currentYear, (int) $month, 1)->startOfMonth();
+            $previousDate = $currentDate->copy()->subMonth();
+
+            $currentPeriodCount = User::whereMonth('created_at', $currentDate->month)
+                ->whereYear('created_at', $currentDate->year)
+                ->count();
+
+            $previousPeriodCount = User::whereMonth('created_at', $previousDate->month)
+                ->whereYear('created_at', $previousDate->year)
+                ->count();
+
+            $periodLabel = 'vs last month';
+        } else {
+            $currentPeriodCount = User::where('created_at', '>=', now()->subDays(30))->count();
+            $previousPeriodCount = User::where('created_at', '>=', now()->subDays(60))
+                ->where('created_at', '<', now()->subDays(30))
+                ->count();
+
+            $periodLabel = 'vs last period';
+        }
 
         $percentageChange = $previousPeriodCount > 0
             ? round((($currentPeriodCount - $previousPeriodCount) / $previousPeriodCount) * 100)
@@ -39,8 +81,8 @@ class NewUsersWidget extends BaseWidget
         $formattedChange = abs($percentageChange).'%';
 
         return [
-            Stat::make('New Users (Last 30 Days)', number_format($currentPeriodCount))
-                ->description("{$formattedChange} ".($isIncrease ? 'increase' : 'decrease').' vs last period')
+            Stat::make('New Users', number_format($currentPeriodCount))
+                ->description("{$formattedChange} ".($isIncrease ? 'increase' : 'decrease')." {$periodLabel}")
                 ->descriptionIcon($isIncrease ? 'heroicon-m-arrow-trending-up' : 'heroicon-m-arrow-trending-down')
                 ->color($isIncrease ? 'success' : 'danger'),
         ];

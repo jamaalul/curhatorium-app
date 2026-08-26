@@ -3,13 +3,16 @@
 namespace App\Filament\Widgets;
 
 use App\Models\FakeOrder;
+use App\Models\MarketplaceOrder;
+use App\Models\Order;
+use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
-use App\Models\Order;
-use App\Models\MarketplaceOrder;
 
 class TransactionsWidget extends BaseWidget
 {
+    use InteractsWithPageFilters;
+
     protected static ?int $sort = 3;
 
     /**
@@ -28,8 +31,24 @@ class TransactionsWidget extends BaseWidget
 
     protected function getStats(): array
     {
-        $digitalGoodsTransactions = (Order::where('status', 'completed')->count()) + (FakeOrder::where('status', 'completed')->count());
-        $physicalGoodsTransactions = MarketplaceOrder::count();
+        $month = $this->filters['month'] ?? null;
+        $year = $this->filters['year'] ?? null;
+
+        $digitalGoodsTransactions = Order::where('status', 'paid')
+            ->when($month, fn ($query) => $query->whereMonth('created_at', $month))
+            ->when($year, fn ($query) => $query->whereYear('created_at', $year))
+            ->count()
+            +
+            FakeOrder::where('status', 'paid')
+            ->when($month, fn ($query) => $query->whereMonth('created_at', $month))
+            ->when($year, fn ($query) => $query->whereYear('created_at', $year))
+            ->count();
+
+        $physicalGoodsTransactions = MarketplaceOrder::query()
+            ->when($month, fn ($query) => $query->whereMonth('created_at', $month))
+            ->when($year, fn ($query) => $query->whereYear('created_at', $year))
+            ->count();
+
         $totalCompleteTransactions = $digitalGoodsTransactions + $physicalGoodsTransactions;
 
         return [

@@ -34,6 +34,24 @@ class UserCountWidgetTest extends TestCase
             ->assertSee((string) User::count());
     }
 
+    public function test_user_count_widget_filters_by_month_and_year(): void
+    {
+        // 2 users in May 2025
+        User::factory()->count(2)->create([
+            'created_at' => '2025-05-15 10:00:00',
+        ]);
+
+        // 3 users in June 2025
+        User::factory()->count(3)->create([
+            'created_at' => '2025-06-15 10:00:00',
+        ]);
+
+        Livewire::test(UserCountWidget::class, ['filters' => ['month' => '5', 'year' => '2025']])
+            ->assertSuccessful()
+            ->assertSee('Total Users')
+            ->assertSee('2');
+    }
+
     public function test_user_count_widget_column_span_configuration(): void
     {
         $widget = new UserCountWidget;

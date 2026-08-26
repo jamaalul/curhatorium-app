@@ -38,7 +38,7 @@ class NewUsersWidgetTest extends TestCase
 
         Livewire::test(NewUsersWidget::class)
             ->assertSuccessful()
-            ->assertSee('New Users (Last 30 Days)')
+            ->assertSee('New Users')
             ->assertSee('increase vs last period');
     }
 
@@ -56,8 +56,27 @@ class NewUsersWidgetTest extends TestCase
 
         Livewire::test(NewUsersWidget::class)
             ->assertSuccessful()
-            ->assertSee('New Users (Last 30 Days)')
+            ->assertSee('New Users')
             ->assertSee('decrease vs last period');
+    }
+
+    public function test_new_users_widget_can_render_with_month_and_year_filters(): void
+    {
+        // 4 users in May 2025
+        User::factory()->count(4)->create([
+            'created_at' => '2025-05-10 12:00:00',
+        ]);
+
+        // 2 users in April 2025
+        User::factory()->count(2)->create([
+            'created_at' => '2025-04-10 12:00:00',
+        ]);
+
+        Livewire::test(NewUsersWidget::class, ['filters' => ['month' => '5', 'year' => '2025']])
+            ->assertSuccessful()
+            ->assertSee('New Users')
+            ->assertSee('4')
+            ->assertSee('100% increase vs last month');
     }
 
     public function test_new_users_widget_column_span_configuration(): void
