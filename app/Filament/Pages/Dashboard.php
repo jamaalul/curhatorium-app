@@ -34,6 +34,7 @@ class Dashboard extends BaseDashboard
                                 '11' => 'November',
                                 '12' => 'December',
                             ])
+                            ->default((string) now()->month)
                             ->placeholder('All Months'),
                         Select::make('year')
                             ->label('Year')
@@ -42,6 +43,7 @@ class Dashboard extends BaseDashboard
                                     ->mapWithKeys(fn (int $year) => [(string) $year => (string) $year])
                                     ->all()
                             )
+                            ->default((string) now()->year)
                             ->placeholder('All Years'),
                     ])
                     ->columns(2),
