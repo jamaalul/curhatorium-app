@@ -3,7 +3,7 @@
 namespace App\Filament\Widgets;
 
 use App\Models\User;
-use Filament\Widgets\Concerns\InteractsWithPageFilters;
+use App\Models\FakeUser;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 
@@ -29,7 +29,7 @@ class UserCountWidget extends BaseWidget
     protected function getStats(): array
     {
 
-        $userCount = User::count();
+        $userCount = (User::count()) + (FakeUser::count());
 
         return [
             Stat::make('Total Users', number_format($userCount))
