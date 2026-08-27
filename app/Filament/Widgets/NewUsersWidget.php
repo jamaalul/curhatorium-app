@@ -3,6 +3,7 @@
 namespace App\Filament\Widgets;
 
 use App\Models\User;
+use App\Models\FakeUser;
 use Carbon\Carbon;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
@@ -37,38 +38,47 @@ class NewUsersWidget extends BaseWidget
             $currentDate = Carbon::createFromDate((int) $year, (int) $month, 1)->startOfMonth();
             $previousDate = $currentDate->copy()->subMonth();
 
-            $currentPeriodCount = User::whereMonth('created_at', $currentDate->month)
+            $currentPeriodCount = (FakeUser::whereMonth('created_at', $currentDate->month)
                 ->whereYear('created_at', $currentDate->year)
-                ->count();
+                ->count()) +_(User::whereMonth('created_at', $currentDate->month)
+                ->whereYear('created_at', $currentDate->year)
+                ->count());
 
-            $previousPeriodCount = User::whereMonth('created_at', $previousDate->month)
+            $previousPeriodCount = (FakeUser::whereMonth('created_at', $previousDate->month)
                 ->whereYear('created_at', $previousDate->year)
-                ->count();
+                ->count()) +_(User::whereMonth('created_at', $currentDate->month)
+                ->whereYear('created_at', $currentDate->year)
+                ->count());
 
             $periodLabel = 'vs last month';
         } elseif ($year) {
-            $currentPeriodCount = User::whereYear('created_at', (int) $year)->count();
-            $previousPeriodCount = User::whereYear('created_at', (int) $year - 1)->count();
+            $currentPeriodCount = (FakeUser::whereYear('created_at', (int) $year)
+                ->count()) +_(User::whereYear('created_at', (int) $year)->count());
+            $previousPeriodCount = (FakeUser::whereYear('created_at', (int) $year - 1)
+                ->count()) +_(User::whereYear('created_at', (int) $year - 1)->count());
             $periodLabel = 'vs last year growth';
         } elseif ($month) {
             $currentYear = now()->year;
             $currentDate = Carbon::createFromDate($currentYear, (int) $month, 1)->startOfMonth();
             $previousDate = $currentDate->copy()->subMonth();
 
-            $currentPeriodCount = User::whereMonth('created_at', $currentDate->month)
+            $currentPeriodCount = (User::whereMonth('created_at', $currentDate->month)
                 ->whereYear('created_at', $currentDate->year)
-                ->count();
+                ->count()) + (FakeUser::whereMonth('created_at', $currentDate->month)
+                ->whereYear('created_at', $currentDate->year)
+                ->count());
 
-            $previousPeriodCount = User::whereMonth('created_at', $previousDate->month)
+            $previousPeriodCount = (User::whereMonth('created_at', $previousDate->month)
                 ->whereYear('created_at', $previousDate->year)
-                ->count();
+                ->count()) + (FakeUser::whereMonth('created_at', $previousDate->month)
+                ->whereYear('created_at', $previousDate->year)
+                ->count());
 
             $periodLabel = 'vs last month';
         } else {
-            $currentPeriodCount = User::where('created_at', '>=', now()->subDays(30))->count();
-            $previousPeriodCount = User::where('created_at', '>=', now()->subDays(60))
-                ->where('created_at', '<', now()->subDays(30))
-                ->count();
+            $currentPeriodCount = (User::where('created_at', '>=', now()->subDays(30))->count()) + (FakeUser::where('created_at', '>=', now()->subDays(30))->count());
+            $previousPeriodCount = (User::where('created_at', '>=', now()->subDays(60))
+                ->where('created_at', '<', now()->subDays(30))->count()) + (FakeUser::where('created_at', '>=', now()->subDays(60))->where('created_at', '<', now()->subDays(30))->count());
 
             $periodLabel = 'vs last period';
         }
