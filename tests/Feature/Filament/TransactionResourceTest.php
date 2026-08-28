@@ -63,9 +63,7 @@ class TransactionResourceTest extends TestCase
         Livewire::test(ListTransactions::class)
             ->assertCanSeeTableRecords([$realOrder, $fakeOrder])
             ->assertSee('ORD-REAL-001')
-            ->assertSee('ORD-FAKE-002')
-            ->assertSee(MembershipPlan::class)
-            ->assertSee(Ebook::class);
+            ->assertSee('ORD-FAKE-002');
     }
 
     public function test_transaction_table_filters_by_status(): void

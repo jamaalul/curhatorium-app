@@ -93,9 +93,6 @@ class TransactionResource extends Resource
                 Forms\Components\TextInput::make('order_ref')
                     ->label('Order Ref')
                     ->disabled(),
-                Forms\Components\TextInput::make('orderable_type')
-                    ->label('Orderable Type')
-                    ->disabled(),
                 Forms\Components\TextInput::make('orderable_id')
                     ->label('Orderable ID')
                     ->disabled(),
@@ -104,6 +101,9 @@ class TransactionResource extends Resource
                     ->disabled(),
                 Forms\Components\TextInput::make('status')
                     ->label('Status')
+                    ->disabled(),
+                Forms\Components\DateTimePicker::make('created_at')
+                    ->label('Created At')
                     ->disabled(),
             ]);
     }
@@ -118,10 +118,6 @@ class TransactionResource extends Resource
                     ->searchable()
                     ->sortable()
                     ->copyable(),
-                Tables\Columns\TextColumn::make('orderable_type')
-                    ->label('Orderable Type')
-                    ->searchable()
-                    ->sortable(),
                 Tables\Columns\TextColumn::make('orderable_id')
                     ->label('Orderable ID')
                     ->searchable()
@@ -140,6 +136,10 @@ class TransactionResource extends Resource
                         'refunded' => 'info',
                         default => 'gray',
                     })
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->label('Created At')
+                    ->dateTime('d M Y H:i')
                     ->sortable(),
             ])
             ->filters([

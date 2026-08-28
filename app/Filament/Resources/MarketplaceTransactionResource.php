@@ -55,6 +55,9 @@ class MarketplaceTransactionResource extends Resource
                 Forms\Components\TextInput::make('total_price')
                     ->label('Total Price')
                     ->disabled(),
+                Forms\Components\DateTimePicker::make('created_at')
+                    ->label('Created At')
+                    ->disabled(),
             ]);
     }
 
@@ -78,8 +81,7 @@ class MarketplaceTransactionResource extends Resource
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Created At')
                     ->dateTime('d M Y H:i')
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->sortable(),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('product_id')
