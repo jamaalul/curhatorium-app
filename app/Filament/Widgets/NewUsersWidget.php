@@ -40,22 +40,22 @@ class NewUsersWidget extends BaseWidget
 
             $currentPeriodCount = (FakeUser::whereMonth('created_at', $currentDate->month)
                 ->whereYear('created_at', $currentDate->year)
-                ->count()) +_(User::whereMonth('created_at', $currentDate->month)
+                ->count()) + (User::whereMonth('created_at', $currentDate->month)
                 ->whereYear('created_at', $currentDate->year)
                 ->count());
 
             $previousPeriodCount = (FakeUser::whereMonth('created_at', $previousDate->month)
                 ->whereYear('created_at', $previousDate->year)
-                ->count()) +_(User::whereMonth('created_at', $currentDate->month)
+                ->count()) + (User::whereMonth('created_at', $currentDate->month)
                 ->whereYear('created_at', $currentDate->year)
                 ->count());
 
             $periodLabel = 'vs last month';
         } elseif ($year) {
             $currentPeriodCount = (FakeUser::whereYear('created_at', (int) $year)
-                ->count()) +_(User::whereYear('created_at', (int) $year)->count());
+                ->count()) + (User::whereYear('created_at', (int) $year)->count());
             $previousPeriodCount = (FakeUser::whereYear('created_at', (int) $year - 1)
-                ->count()) +_(User::whereYear('created_at', (int) $year - 1)->count());
+                ->count()) + (User::whereYear('created_at', (int) $year - 1)->count());
             $periodLabel = 'vs last year growth';
         } elseif ($month) {
             $currentYear = now()->year;
