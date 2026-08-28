@@ -152,23 +152,24 @@ class TransactionResource extends Resource
                         'cancelled' => 'Cancelled',
                         'refunded' => 'Refunded',
                     ]),
-                Tables\Filters\SelectFilter::make('orderable_type')
-                    ->label('Orderable Type')
-                    ->options(function () {
-                        $orderTypes = DB::table('orders')->distinct()->pluck('orderable_type')->filter();
-                        $fakeTypes = DB::table('fake_orders')->distinct()->pluck('orderable_type')->filter();
-
-                        $allTypes = collect([
-                            'App\Models\MembershipPlan',
-                            'App\Models\Ebook',
-                            'App\Models\CbtModule',
-                            'App\Models\Consultation',
-                            'App\Models\SgdGroup',
-                        ])->merge($orderTypes)->merge($fakeTypes)->unique()->values();
-
-                        return $allTypes->mapWithKeys(fn ($type) => [$type => class_basename($type)." ({$type})"])->toArray();
-                    })
-                    ->searchable(),
+                Tables\Filters\Filter::make('created_at')
+                    ->form([
+                        Forms\Components\DatePicker::make('created_from')
+                            ->label('Created From'),
+                        Forms\Components\DatePicker::make('created_until')
+                            ->label('Created Until'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['created_from'] ?? null,
+                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
+                            )
+                            ->when(
+                                $data['created_until'] ?? null,
+                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
+                            );
+                    }),
                 Tables\Filters\Filter::make('orderable_id')
                     ->form([
                         Forms\Components\TextInput::make('orderable_id')

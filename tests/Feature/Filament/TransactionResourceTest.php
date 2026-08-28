@@ -103,12 +103,12 @@ class TransactionResourceTest extends TestCase
             ->assertCanNotSeeTableRecords([$paidOrder]);
     }
 
-    public function test_transaction_table_filters_by_orderable_type(): void
+    public function test_transaction_table_filters_by_created_at(): void
     {
         $user = User::factory()->create();
 
-        $planOrder = Order::create([
-            'order_ref' => 'ORD-PLAN-001',
+        $oldOrder = Order::create([
+            'order_ref' => 'ORD-OLD-001',
             'user_id' => $user->id,
             'orderable_type' => MembershipPlan::class,
             'orderable_id' => 10,
@@ -117,9 +117,10 @@ class TransactionResourceTest extends TestCase
             'gross_amount' => 50000,
             'status' => 'paid',
         ]);
+        $oldOrder->forceFill(['created_at' => now()->subDays(10)])->save();
 
-        $ebookFakeOrder = FakeOrder::create([
-            'order_ref' => 'ORD-EBOOK-002',
+        $newFakeOrder = FakeOrder::create([
+            'order_ref' => 'ORD-NEW-002',
             'user_id' => $user->id,
             'orderable_type' => Ebook::class,
             'orderable_id' => 20,
@@ -128,16 +129,49 @@ class TransactionResourceTest extends TestCase
             'gross_amount' => 75000,
             'status' => 'paid',
         ]);
+        $newFakeOrder->forceFill(['created_at' => now()])->save();
 
         Livewire::test(ListTransactions::class)
-            ->filterTable('orderable_type', MembershipPlan::class)
-            ->assertCanSeeTableRecords([$planOrder])
-            ->assertCanNotSeeTableRecords([$ebookFakeOrder]);
+            ->filterTable('created_at', [
+                'created_from' => now()->subDays(2)->toDateString(),
+            ])
+            ->assertCanSeeTableRecords([$newFakeOrder])
+            ->assertCanNotSeeTableRecords([$oldOrder]);
+    }
+
+    public function test_transaction_table_sorts_by_created_at(): void
+    {
+        $user = User::factory()->create();
+
+        $order1 = Order::create([
+            'order_ref' => 'ORD-FIRST',
+            'user_id' => $user->id,
+            'orderable_type' => MembershipPlan::class,
+            'orderable_id' => 10,
+            'quantity' => 1,
+            'unit_price' => 50000,
+            'gross_amount' => 50000,
+            'status' => 'paid',
+        ]);
+        $order1->forceFill(['created_at' => now()->subDays(5)])->save();
+
+        $order2 = FakeOrder::create([
+            'order_ref' => 'ORD-SECOND',
+            'user_id' => $user->id,
+            'orderable_type' => Ebook::class,
+            'orderable_id' => 20,
+            'quantity' => 1,
+            'unit_price' => 75000,
+            'gross_amount' => 75000,
+            'status' => 'paid',
+        ]);
+        $order2->forceFill(['created_at' => now()])->save();
 
         Livewire::test(ListTransactions::class)
-            ->filterTable('orderable_type', Ebook::class)
-            ->assertCanSeeTableRecords([$ebookFakeOrder])
-            ->assertCanNotSeeTableRecords([$planOrder]);
+            ->sortTable('created_at', 'asc')
+            ->assertCanSeeTableRecords([$order1, $order2], inOrder: true)
+            ->sortTable('created_at', 'desc')
+            ->assertCanSeeTableRecords([$order2, $order1], inOrder: true);
     }
 
     public function test_transaction_table_filters_by_orderable_id(): void
