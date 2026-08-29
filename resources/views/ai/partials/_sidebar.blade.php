@@ -33,7 +33,7 @@
 
             {{-- Header --}}
             <div class="flex items-center justify-between">
-                <a href="{{ route('dashboard') }}" class="flex items-center gap-2 hover:opacity-80 transition-opacity">
+                <a href="{{ route('mentai.index') }}" class="flex items-center gap-2 hover:opacity-80 transition-opacity">
                     <img src="{{ asset('assets/mini_logo.png') }}" alt="Curhatorium" class="w-6 h-6 object-contain" />
                     <span class="font-bricolage font-bold text-[16px] leading-6 tracking-[-0.02em] text-[#1E1E1E]">Curhatorium</span>
                 </a>
