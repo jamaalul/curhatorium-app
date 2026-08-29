@@ -22,6 +22,19 @@ class AiTokenWindowService
     public function resolveWindowOrFail(User $user): array
     {
         return DB::transaction(function () use ($user) {
+            $now = now();
+            $hasActiveEntitlement = UserEntitlement::query()
+                ->where('user_id', $user->id)
+                ->where('benefit', 'ai_window_token')
+                ->where('period_start', '<=', $now)
+                ->where('period_end', '>=', $now)
+                ->exists();
+
+            if (! $user->subscription || ! $hasActiveEntitlement) {
+                app(SubscriptionService::class)->grantFreePlan($user);
+                $user->unsetRelation('subscription');
+            }
+
             $window = AiWindow::activeForUser($user->id)
                 ->lockForUpdate()
                 ->first();
@@ -110,7 +123,8 @@ class AiTokenWindowService
     {
         $now = now();
 
-        $entitlement = UserEntitlement::where('user_id', $user->id)
+        $entitlement = UserEntitlement::query()
+            ->where('user_id', $user->id)
             ->where('benefit', 'ai_window_token')
             ->where('period_start', '<=', $now)
             ->where('period_end', '>=', $now)

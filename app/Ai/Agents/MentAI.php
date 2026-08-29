@@ -9,14 +9,26 @@ use Laravel\Ai\Concerns\RemembersConversations;
 use Laravel\Ai\Contracts\Agent;
 use Laravel\Ai\Contracts\Conversational;
 use Laravel\Ai\Contracts\HasTools;
-use Laravel\Ai\Enums\Lab;
 use Laravel\Ai\Promptable;
 
-#[Provider(Lab::Gemini)]
-#[Model('gemini-3.1-flash-lite')]
 class MentAI implements Agent, Conversational, HasTools
 {
     use Promptable, RemembersConversations;
+
+    /**
+     * Get the configured providers and models for automatic failover / round-robin.
+     * If the primary model fails or hits a rate limit (429), it automatically fails over to the next model tier.
+     *
+     * @return array<string, string>
+     */
+    public function provider(): array
+    {
+        return [
+            'gemini' => 'gemini-3.5-flash-lite',
+            'gemini_flash' => 'gemini-3.7-flash',
+            'gemini_pro' => 'gemini-3.6-flash',
+        ];
+    }
 
     public function instructions(): string
     {
@@ -32,10 +44,10 @@ class MentAI implements Agent, Conversational, HasTools
         EOT;
     }
 
-    public function tools(): iterable
+    public function tools(): array
     {
         return [
-            new CrisisResourceLookup,
+            new CrisisResourceLookup(),
         ];
     }
 }

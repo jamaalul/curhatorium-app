@@ -9,6 +9,7 @@ use App\Http\Requests\AiSendMessageRequest;
 use App\Services\AiTokenWindowService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 use Laravel\Ai\Models\Conversation;
@@ -19,9 +20,13 @@ class AiConversationController extends Controller
     /**
      * Show the new AI chat interface.
      */
-    public function create(): View
+    public function create(Request $request): View
     {
-        return view('ai.index');
+        $paginator = $request->user()->conversations()->latest('updated_at')->paginate(20);
+
+        return view('ai.index', [
+            'initialConversations' => $this->formatConversations($paginator),
+        ]);
     }
 
     /**
@@ -33,9 +38,32 @@ class AiConversationController extends Controller
             abort(403);
         }
 
+        $messages = $conversation->messages()
+            ->select(['id', 'conversation_id', 'role', 'content', 'created_at'])
+            ->oldest()
+            ->get();
+        $paginator = $request->user()->conversations()->latest('updated_at')->paginate(20);
+
         return view('ai.show', [
             'conversation' => $conversation,
+            'initialMessages' => $messages,
+            'initialConversations' => $this->formatConversations($paginator),
         ]);
+    }
+
+    /**
+     * Format paginator into a safe plain array for JS injection.
+     *
+     * @param  LengthAwarePaginator  $paginator
+     * @return array{data: array<mixed>, current_page: int, next_page_url: string|null}
+     */
+    private function formatConversations($paginator): array
+    {
+        return [
+            'data' => $paginator->items(),
+            'current_page' => $paginator->currentPage(),
+            'next_page_url' => $paginator->nextPageUrl(),
+        ];
     }
 
     /**
@@ -63,21 +91,39 @@ class AiConversationController extends Controller
     ) {
         $user = $request->user();
 
-        $resolved = $windowService->resolveWindowOrFail($user);
-        $window = $resolved['window'];
+        try {
+            $resolved = $windowService->resolveWindowOrFail($user);
+            $window = $resolved['window'];
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('MentAI resolveWindowOrFail failed', [
+                'user_id' => $user->id,
+                'error' => $e->getMessage(),
+            ]);
+            throw $e;
+        }
 
-        return (new MentAI)
-            ->continue($conversation->id, as: $user)
-            ->stream($request->validated('message'))
-            ->then(function (StreamedAgentResponse $response) use ($windowService, $window) {
-                if ($response->usage) {
-                    $windowService->recordTokenUsage(
-                        $window,
-                        $response->usage->promptTokens,
-                        $response->usage->completionTokens,
-                    );
-                }
-            });
+        try {
+            return (new MentAI)
+                ->continue($conversation->id, as: $user)
+                ->stream($request->validated('message'))
+                ->then(function (StreamedAgentResponse $response) use ($windowService, $window) {
+                    if ($response->usage) {
+                        $windowService->recordTokenUsage(
+                            $window,
+                            $response->usage->promptTokens,
+                            $response->usage->completionTokens,
+                        );
+                    }
+                });
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('MentAI Stream Initiation Error', [
+                'user_id' => $user->id,
+                'conversation_id' => $conversation->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            throw $e;
+        }
     }
 
     /**
@@ -89,11 +135,22 @@ class AiConversationController extends Controller
             abort(403);
         }
 
-        $prompt = "User: {$request->validated('message')}\nAssistant: {$request->validated('response')}";
+        $userMsg = $request->validated('message');
+        $assistantMsg = $request->validated('response');
 
-        $result = (new TitleGenerator)->prompt($prompt);
+        try {
+            $prompt = 'User: '.Str::limit($userMsg, 200)."\nAssistant: ".Str::limit($assistantMsg, 200);
 
-        $title = $result->structured['title'] ?? json_decode($result->text, true)['title'] ?? 'Percakapan baru';
+            $result = (new TitleGenerator)->prompt($prompt);
+
+            $title = $result->structured['title'] ?? json_decode($result->text, true)['title'] ?? null;
+        } catch (\Throwable) {
+            $title = null;
+        }
+
+        if (! $title || trim($title) === '') {
+            $title = Str::limit($userMsg, 40, '...');
+        }
 
         $conversation->update(['title' => Str::limit($title, 60)]);
 
@@ -117,6 +174,9 @@ class AiConversationController extends Controller
             abort(403);
         }
 
-        return $conversation->messages()->oldest()->get();
+        return $conversation->messages()
+            ->select(['id', 'conversation_id', 'role', 'content', 'created_at'])
+            ->oldest()
+            ->get();
     }
 }

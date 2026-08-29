@@ -95,6 +95,39 @@ return [
             'driver' => 'gemini',
             'key' => env('GEMINI_API_KEY'),
             'url' => env('GEMINI_URL', 'https://generativelanguage.googleapis.com/v1beta/'),
+            'models' => [
+                'text' => [
+                    'default' => 'gemini-3.5-flash-lite',
+                    'cheapest' => 'gemini-3.5-flash-lite',
+                    'smartest' => 'gemini-3.5-flash-lite',
+                ],
+            ],
+        ],
+
+        'gemini_flash' => [
+            'driver' => 'gemini',
+            'key' => env('GEMINI_API_KEY_BACKUP', env('GEMINI_API_KEY')),
+            'url' => env('GEMINI_URL', 'https://generativelanguage.googleapis.com/v1beta/'),
+            'models' => [
+                'text' => [
+                    'default' => 'gemini-3.7-flash',
+                    'cheapest' => 'gemini-3.7-flash',
+                    'smartest' => 'gemini-3.7-flash',
+                ],
+            ],
+        ],
+
+        'gemini_pro' => [
+            'driver' => 'gemini',
+            'key' => env('GEMINI_API_KEY_BACKUP', env('GEMINI_API_KEY')),
+            'url' => env('GEMINI_URL', 'https://generativelanguage.googleapis.com/v1beta/'),
+            'models' => [
+                'text' => [
+                    'default' => 'gemini-3.6-flash',
+                    'cheapest' => 'gemini-3.6-flash',
+                    'smartest' => 'gemini-3.6-flash',
+                ],
+            ],
         ],
 
         'groq' => [
