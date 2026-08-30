@@ -4,228 +4,6 @@
 
 @section('head')
     @include('ai.partials._styles')
-    <style>
-        /* ── Index-only: welcome screen content ── */
-        .mentai-floating-card-index {
-            padding: 36px 36px 28px;
-            overflow-y: auto;
-            justify-content: center;
-        }
-        .mentai-content-wrapper {
-            display: flex; width: 700.242px; max-width: 100%;
-            flex-direction: column; align-items: center;
-            gap: 128px; margin-top: auto; margin-bottom: 0;
-        }
-        .mentai-middle-bottom-group {
-            display: flex; flex-direction: column;
-            align-items: flex-start; gap: 80px;
-            align-self: stretch; width: 100%;
-        }
-        .mentai-top-header {
-            display: flex; flex-direction: column;
-            align-items: center; text-align: center;
-            width: 100%; max-width: 520px;
-        }
-        .mentai-mascot-circle {
-            width: 76px; height: 76px; border-radius: 9999px;
-            background-color: #FAFAFA; border: 1px solid #F4F4F5;
-            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-        }
-        .mentai-mascot-circle img, .mentai-mascot-circle svg { width: 38px; height: 38px; object-fit: contain; }
-        .mentai-title {
-            font-family: 'Bricolage Grotesque', sans-serif !important;
-            font-weight: 700; font-size: 32px; line-height: 38px;
-            letter-spacing: -0.02em; color: #1F2937; margin: 18px 0 8px 0;
-        }
-        .mentai-subtitle { font-size: 14.5px; line-height: 24px; color: #71717A; margin: 0; max-width: 460px; }
-        .mentai-prompts-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; width: 100%; box-sizing: border-box; }
-        .mentai-card-teal {
-            background-color: #00BBA7; border-radius: 16px; padding: 6px 6px 10px;
-            display: flex; flex-direction: column; justify-content: space-between;
-            gap: 8px; cursor: pointer; transition: background-color .2s ease;
-            text-decoration: none; box-sizing: border-box;
-        }
-        .mentai-card-teal:hover { background-color: #009689; }
-        .mentai-card-neutral {
-            background-color: #F4F4F5; border: 1px solid #E4E4E7;
-            border-radius: 16px; padding: 6px 6px 10px;
-            display: flex; flex-direction: column; justify-content: space-between;
-            gap: 8px; cursor: pointer; transition: background-color .2s ease, border-color .2s ease;
-            text-decoration: none; box-sizing: border-box;
-        }
-        .mentai-card-neutral:hover { background-color: #E4E4E7; border-color: #D4D4D8; }
-        .mentai-card-inner-white {
-            background-color: #FFFFFF; border-radius: 12px; padding: 12px 14px;
-            min-height: 94px; display: flex; flex-direction: column; justify-content: flex-start; box-sizing: border-box;
-        }
-        .mentai-input-wrap { width: 100%; max-width: 700px; display: flex; flex-direction: column; gap: 10px; box-sizing: border-box; }
-
-        @media (max-height: 900px) { .mentai-content-wrapper { gap: 96px; } .mentai-middle-bottom-group { gap: 64px; } }
-        @media (max-height: 750px) {
-            .mentai-content-wrapper { gap: 64px; } .mentai-middle-bottom-group { gap: 40px; }
-            .mentai-floating-card-index { padding: 28px 28px 20px; }
-            .mentai-mascot-circle { width: 64px; height: 64px; }
-            .mentai-mascot-circle img, .mentai-mascot-circle svg { width: 32px; height: 32px; }
-            .mentai-title { font-size: 28px; line-height: 34px; margin: 14px 0 6px 0; }
-        }
-        @media (max-height: 620px) {
-            .mentai-content-wrapper { gap: 32px; } .mentai-middle-bottom-group { gap: 20px; }
-            .mentai-floating-card-index { padding: 16px; }
-        }
-        @media (max-width: 768px) {
-            .mentai-page-wrap {
-                background-color: #FFFFFF !important;
-                height: 100vh;
-                height: 100dvh;
-            }
-            .mentai-main-stage {
-                padding: 0 !important;
-                background-color: #FFFFFF !important;
-                height: 100vh;
-                height: 100dvh;
-                display: flex;
-                flex-direction: column;
-            }
-            .mentai-floating-card-index {
-                border: none !important;
-                border-radius: 0 !important;
-                padding: 16px 16px 20px !important;
-                background-color: #FFFFFF !important;
-                height: 100% !important;
-                max-height: 100% !important;
-                box-shadow: none !important;
-                display: flex !important;
-                flex-direction: column !important;
-                justify-content: flex-start !important;
-                box-sizing: border-box !important;
-                overflow-y: auto !important;
-            }
-            .mentai-mobile-top-bar {
-                width: 100%;
-                display: flex;
-                align-items: center;
-                justify-content: flex-start;
-                padding: 0;
-                margin-bottom: 0;
-            }
-            .mentai-content-wrapper {
-                width: 100% !important;
-                display: flex !important;
-                flex-direction: column !important;
-                align-items: center !important;
-                gap: 120px !important;
-                margin-top: auto !important;
-                margin-bottom: 0 !important;
-                padding: 0 !important;
-            }
-            .mentai-top-header {
-                padding-top: 0;
-                max-width: 100%;
-                margin: 0 auto;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                text-align: center;
-            }
-            .mentai-mascot-circle {
-                width: 80px !important;
-                height: 80px !important;
-                background-color: #FAFAFA !important;
-                border: 1px solid #F4F4F5 !important;
-                border-radius: 9999px !important;
-            }
-            .mentai-mascot-circle img, .mentai-mascot-circle svg {
-                width: 40px !important;
-                height: 40px !important;
-            }
-            .mentai-title {
-                font-family: 'Bricolage Grotesque', sans-serif !important;
-                font-size: 24px !important;
-                line-height: 32px !important;
-                font-weight: 600 !important;
-                letter-spacing: -0.01em !important;
-                color: #1F2937 !important;
-                margin: 16px 0 8px 0 !important;
-            }
-            .mentai-subtitle {
-                font-family: 'DM Sans', sans-serif !important;
-                font-size: 14px !important;
-                line-height: 24px !important;
-                color: #71717A !important;
-                max-width: 340px !important;
-                margin: 0 auto !important;
-            }
-            .mentai-middle-bottom-group {
-                display: flex !important;
-                flex-direction: column !important;
-                gap: 80px !important;
-                width: 100% !important;
-            }
-            .mentai-prompts-grid {
-                display: flex !important;
-                flex-direction: row !important;
-                overflow-x: auto !important;
-                -webkit-overflow-scrolling: touch;
-                gap: 16px !important;
-                width: calc(100% + 32px) !important;
-                margin: 0 -16px !important;
-                padding: 4px 16px !important;
-                box-sizing: border-box !important;
-            }
-            .mentai-prompts-grid::-webkit-scrollbar {
-                display: none !important;
-                width: 0 !important;
-                height: 0 !important;
-            }
-            .mentai-card-teal,
-            .mentai-card-neutral {
-                min-width: 220px !important;
-                max-width: 224px !important;
-                width: 62vw !important;
-                flex-shrink: 0 !important;
-                box-sizing: border-box !important;
-                padding: 6px 6px 12px !important;
-                border-radius: 14px !important;
-                box-shadow: 0px 2px 12px 0px rgba(0, 0, 0, 0.05) !important;
-                gap: 12px !important;
-            }
-            .mentai-card-inner-white {
-                min-height: 86px !important;
-                padding: 12px !important;
-                border-radius: 10px !important;
-            }
-            .mentai-card-inner-white p {
-                font-family: 'DM Sans', sans-serif !important;
-                font-size: 14px !important;
-                line-height: 22px !important;
-                color: #09090B !important;
-            }
-            .mentai-input-wrap {
-                width: 100% !important;
-            }
-        }
-
-        /* ── Mobile Height Breakpoints (aturan bertingkat seperti desktop) ── */
-        @media (max-width: 768px) and (max-height: 850px) {
-            .mentai-content-wrapper { gap: 92px !important; }
-            .mentai-middle-bottom-group { gap: 48px !important; }
-        }
-        @media (max-width: 768px) and (max-height: 750px) {
-            .mentai-content-wrapper { gap: 58px !important; }
-            .mentai-middle-bottom-group { gap: 32px !important; }
-            .mentai-mascot-circle { width: 68px !important; height: 68px !important; }
-            .mentai-mascot-circle img, .mentai-mascot-circle svg { width: 34px !important; height: 34px !important; }
-            .mentai-title { font-size: 22px !important; line-height: 28px !important; margin: 12px 0 6px 0 !important; }
-            .mentai-subtitle { font-size: 13px !important; line-height: 20px !important; }
-        }
-        @media (max-width: 768px) and (max-height: 650px) {
-            .mentai-content-wrapper { gap: 32px !important; }
-            .mentai-middle-bottom-group { gap: 20px !important; }
-            .mentai-mascot-circle { width: 56px !important; height: 56px !important; }
-            .mentai-mascot-circle img, .mentai-mascot-circle svg { width: 28px !important; height: 28px !important; }
-            .mentai-title { font-size: 20px !important; line-height: 26px !important; margin: 8px 0 4px 0 !important; }
-        }
-    </style>
 @endsection
 
 @section('content')
@@ -235,94 +13,99 @@
 
     @include('ai.partials._scripts-shared')
 
-    <div class="mentai-page-wrap" x-data="mentaiIndex()" x-init="initChat()">
+    <div class="flex w-screen h-screen overflow-hidden bg-[#F4F4F5] max-md:bg-white font-dm text-[#1E1E1E]"
+         x-data="mentaiIndex()"
+         x-init="initChat()">
 
         @include('ai.partials._sidebar', ['spaNav' => false])
 
         {{-- ── Main Stage ── --}}
-        <main class="mentai-main-stage">
-            <div class="mentai-floating-card mentai-floating-card-index mentai-scrollbar">
-                
+        <main class="flex-1 h-screen overflow-hidden bg-[#F4F4F5] max-md:bg-white flex flex-col items-center justify-center p-6 md:p-8 [@media(max-height:750px)]:p-4 max-md:p-0 box-border max-md:h-[100dvh]">
+            <div class="w-full h-full bg-white border border-[#E4E4E7] max-md:border-0 rounded-3xl max-md:rounded-none flex flex-col items-center justify-center p-9 pb-7 [@media(max-height:750px)]:p-7 [@media(max-height:750px)]:pb-5 [@media(max-height:620px)]:p-4 max-md:p-4 max-md:pb-5 box-border overflow-y-auto scrollbar-none relative max-md:justify-start">
+
                 {{-- Mobile top bar for index (Figma #1231:2040) --}}
-                <div class="mentai-mobile-top-bar md:hidden">
+                <div class="md:hidden w-full flex items-center justify-start shrink-0 mb-2">
                     <button type="button"
                             @click="sidebarOpen = true"
-                            class="mentai-sidebar-action-btn"
-                            style="padding:4px;border-radius:8px;background:transparent;border:none;cursor:pointer;color:#09090B;display:flex;align-items:center;justify-content:center;"
+                            class="w-[30px] h-[30px] rounded-lg bg-transparent border-0 flex items-center justify-center cursor-pointer text-zinc-900 hover:text-[#00BBA7] transition-colors p-1"
                             title="Buka menu riwayat">
-                        <svg style="width:24px;height:24px;" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M14.646 10V6c0-3.333-1.333-4.667-4.667-4.667H5.98C2.646 1.333 1.313 2.667 1.313 6v4c0 3.333 1.333 4.667 4.666 4.667h3.98C13.313 14.667 14.646 13.333 14.646 10z" stroke="#09090B" stroke-linecap="round" stroke-linejoin="round"/>
-                            <path d="M5.313 1.333v13.334" stroke="#09090B" stroke-linecap="round" stroke-linejoin="round"/>
-                            <path d="m9.98 6.293-1.706 1.707 1.706 1.707" stroke="#09090B" stroke-linecap="round" stroke-linejoin="round"/>
+                        <svg class="w-5 h-5" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M14.646 10V6c0-3.333-1.333-4.667-4.667-4.667H5.98C2.646 1.333 1.313 2.667 1.313 6v4c0 3.333 1.333 4.667 4.666 4.667h3.98C13.313 14.667 14.646 13.333 14.646 10z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M5.313 1.333v13.334" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="m9.98 6.293-1.706 1.707 1.706 1.707" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                     </button>
                 </div>
 
-                <div class="mentai-content-wrapper">
+                {{-- Content Container (Responsive Gaps by Viewport Height: 128px -> 96px -> 64px -> 32px) --}}
+                <div class="flex w-[700px] max-w-full flex-col items-center gap-[128px] [@media(max-height:900px)]:gap-[96px] [@media(max-height:750px)]:gap-[64px] [@media(max-height:620px)]:gap-[32px] max-md:gap-[120px] max-md:[@media(max-height:850px)]:gap-[92px] max-md:[@media(max-height:750px)]:gap-[58px] max-md:[@media(max-height:650px)]:gap-[32px] mt-auto mb-0 max-md:w-full">
 
-                    {{-- Welcome Header (Figma #1231:1989) --}}
-                    <div class="mentai-top-header">
-                        <div class="mentai-mascot-circle">
-                            <img src="{{ asset('assets/mentai/mentai_icon.svg') }}" alt="MentAI" />
+                    {{-- Welcome Header (Top Section, Figma #1231:1989) --}}
+                    <div class="flex flex-col items-center text-center w-full max-w-[520px]">
+                        <div class="w-[76px] h-[76px] [@media(max-height:750px)]:w-16 [@media(max-height:750px)]:h-16 [@media(max-height:620px)]:w-14 [@media(max-height:620px)]:h-14 max-md:[@media(max-height:750px)]:w-[68px] max-md:[@media(max-height:750px)]:h-[68px] max-md:[@media(max-height:650px)]:w-[56px] max-md:[@media(max-height:650px)]:h-[56px] rounded-full bg-zinc-50 border border-zinc-100 flex items-center justify-center shrink-0">
+                            <img src="{{ asset('assets/mentai/mentai_icon.svg') }}" alt="MentAI" class="w-10 h-10 [@media(max-height:750px)]:w-8 [@media(max-height:750px)]:h-8 [@media(max-height:620px)]:w-7 [@media(max-height:620px)]:h-7 max-md:[@media(max-height:750px)]:w-[34px] max-md:[@media(max-height:750px)]:h-[34px] max-md:[@media(max-height:650px)]:w-[28px] max-md:[@media(max-height:650px)]:h-[28px] object-contain" />
                         </div>
-                        <h1 class="mentai-title">Halo, Aku MentAI</h1>
-                        <p class="mentai-subtitle">
+                        <h1 class="font-bricolage font-bold text-[32px] leading-[38px] tracking-[-0.02em] text-gray-800 mt-4.5 mb-2 [@media(max-height:750px)]:text-[28px] [@media(max-height:750px)]:leading-[34px] [@media(max-height:750px)]:mt-3.5 [@media(max-height:750px)]:mb-1.5 [@media(max-height:620px)]:text-[20px] [@media(max-height:620px)]:leading-[26px] [@media(max-height:620px)]:mt-2.5 [@media(max-height:620px)]:mb-1 max-md:text-2xl max-md:[@media(max-height:750px)]:text-[22px] max-md:[@media(max-height:750px)]:leading-[28px] max-md:[@media(max-height:650px)]:text-[20px] max-md:[@media(max-height:650px)]:leading-[26px]">Halo, Aku MentAI</h1>
+                        <p class="text-[14.5px] leading-6 text-zinc-500 m-0 max-w-[460px] [@media(max-height:750px)]:text-[13.5px] [@media(max-height:750px)]:leading-5 [@media(max-height:620px)]:text-[12.5px] [@media(max-height:620px)]:leading-4 max-md:text-sm max-md:[@media(max-height:750px)]:text-[13px] max-md:[@media(max-height:750px)]:leading-5">
                             Teman cerita 24/7 yang siap mendengarkanmu tanpa menghakimi.<br>
                             Ada yang ingin kamu sampaikan hari ini?
                         </p>
                     </div>
 
-                    {{-- Prompt Cards + Input (Figma #1231:1997) --}}
-                    <div class="mentai-middle-bottom-group">
+                    {{-- Middle + Bottom Group (Responsive Gap between Prompt Cards & Input: 80px -> 64px -> 40px -> 20px) --}}
+                    <div class="flex flex-col items-start gap-[80px] [@media(max-height:900px)]:gap-[64px] [@media(max-height:750px)]:gap-[40px] [@media(max-height:620px)]:gap-[20px] max-md:gap-[80px] max-md:[@media(max-height:850px)]:gap-[48px] max-md:[@media(max-height:750px)]:gap-[32px] max-md:[@media(max-height:650px)]:gap-[20px] self-stretch w-full">
 
-                        {{-- 3 Starter Cards (Figma #1257:2324) --}}
-                        <div class="mentai-prompts-grid">
+                        {{-- 3 Starter Cards (Middle Section, Figma #1257:2324) --}}
+                        <div class="w-full flex flex-row overflow-x-auto sm:grid sm:grid-cols-3 gap-3.5 max-md:-mx-4 max-md:px-4 max-md:w-[calc(100%+32px)] scrollbar-none box-border">
 
-                            <div @click="selectStarter('Cerita apa aja, aku di sini buat dengerin 🫰🏼')" class="mentai-card-teal">
-                                <div class="mentai-card-inner-white" style="gap:8px;">
-                                    <div style="display:flex;align-items:center;justify-content:space-between;width:100%;">
-                                        <div style="display:flex;align-items:center;gap:5px;">
-                                            <img src="{{ asset('assets/mentai/mentai_icon.svg') }}" alt="MentAI" style="width:16px;height:16px;object-fit:contain;" />
-                                            <span style="font-size:13px;font-weight:600;color:#00BBA7;">MentAI</span>
+                            <div @click="selectStarter('Cerita apa aja, aku di sini buat dengerin 🫰🏼')"
+                                 class="bg-[#00BBA7] hover:bg-[#009689] rounded-2xl p-1.5 pb-2.5 flex flex-col justify-between gap-2 cursor-pointer transition-colors duration-200 box-border min-w-[220px] max-w-[224px] sm:min-w-0 sm:max-w-none shrink-0 sm:shrink max-md:shadow-xs">
+                                <div class="bg-white rounded-xl p-3 min-h-[86px] sm:min-h-[94px] [@media(max-height:750px)]:min-h-[82px] [@media(max-height:750px)]:p-2.5 flex flex-col justify-between gap-2 box-border">
+                                    <div class="flex items-center justify-between w-full">
+                                        <div class="flex items-center gap-1.5">
+                                            <img src="{{ asset('assets/mentai/mentai_icon.svg') }}" alt="MentAI" class="w-4 h-4 object-contain" />
+                                            <span class="font-bricolage text-[13px] font-semibold text-[#00BBA7]">MentAI</span>
                                         </div>
-                                        <span style="background-color:#00BBA7;color:#FFFFFF;font-size:11px;font-weight:500;padding:2px 6px;border-radius:4px;">Temen curhat</span>
+                                        <span class="bg-[#00BBA7] text-white text-[11px] font-medium px-1.5 py-0.5 rounded">Temen curhat</span>
                                     </div>
-                                    <p style="font-size:13.5px;line-height:20px;font-weight:400;color:#1E1E1E;margin:0;">
+                                    <p class="text-[13.5px] leading-5 font-normal text-zinc-800 m-0 [@media(max-height:750px)]:text-[12.5px] [@media(max-height:750px)]:leading-4">
                                         Cerita apa aja, aku di sini buat dengerin 🫰🏼
                                     </p>
                                 </div>
-                                <div style="padding:2px 10px 0;">
-                                    <span style="color:#FFFFFF;font-size:11.5px;font-weight:500;letter-spacing:.02em;">Prompt disarankan</span>
+                                <div class="px-2.5 pt-0.5">
+                                    <span class="text-white text-[11.5px] font-medium tracking-wide">Prompt disarankan</span>
                                 </div>
                             </div>
 
-                            <div @click="selectStarter('Saya merasa sedikit cemas dan butuh teman bicara.')" class="mentai-card-neutral">
-                                <div class="mentai-card-inner-white">
-                                    <p style="font-size:13.5px;line-height:20px;font-weight:400;color:#1E1E1E;margin:0;">
+                            <div @click="selectStarter('Saya merasa sedikit cemas dan butuh teman bicara.')"
+                                 class="bg-zinc-100 hover:bg-zinc-200 border border-zinc-200 hover:border-zinc-300 rounded-2xl p-1.5 pb-2.5 flex flex-col justify-between gap-2 cursor-pointer transition-colors duration-200 box-border min-w-[220px] max-w-[224px] sm:min-w-0 sm:max-w-none shrink-0 sm:shrink max-md:shadow-xs">
+                                <div class="bg-white rounded-xl p-3 min-h-[86px] sm:min-h-[94px] [@media(max-height:750px)]:min-h-[82px] [@media(max-height:750px)]:p-2.5 flex flex-col justify-start box-border">
+                                    <p class="text-[13.5px] leading-5 font-normal text-zinc-800 m-0 [@media(max-height:750px)]:text-[12.5px] [@media(max-height:750px)]:leading-4">
                                         Saya merasa sedikit cemas dan butuh teman bicara.
                                     </p>
                                 </div>
-                                <div style="padding:2px 10px 0;">
-                                    <span style="color:#A1A1AA;font-size:11.5px;font-weight:500;letter-spacing:.02em;">Prompt disarankan</span>
+                                <div class="px-2.5 pt-0.5">
+                                    <span class="text-zinc-400 text-[11.5px] font-medium tracking-wide">Prompt disarankan</span>
                                 </div>
                             </div>
 
-                            <div @click="selectStarter('Hari ini cukup melelahkan, bagaimana cara menenangkan pikiran?')" class="mentai-card-neutral">
-                                <div class="mentai-card-inner-white">
-                                    <p style="font-size:13.5px;line-height:20px;font-weight:400;color:#1E1E1E;margin:0;">
+                            <div @click="selectStarter('Hari ini cukup melelahkan, bagaimana cara menenangkan pikiran?')"
+                                 class="bg-zinc-100 hover:bg-zinc-200 border border-zinc-200 hover:border-zinc-300 rounded-2xl p-1.5 pb-2.5 flex flex-col justify-between gap-2 cursor-pointer transition-colors duration-200 box-border min-w-[220px] max-w-[224px] sm:min-w-0 sm:max-w-none shrink-0 sm:shrink max-md:shadow-xs">
+                                <div class="bg-white rounded-xl p-3 min-h-[86px] sm:min-h-[94px] [@media(max-height:750px)]:min-h-[82px] [@media(max-height:750px)]:p-2.5 flex flex-col justify-start box-border">
+                                    <p class="text-[13.5px] leading-5 font-normal text-zinc-800 m-0 [@media(max-height:750px)]:text-[12.5px] [@media(max-height:750px)]:leading-4">
                                         Hari ini cukup melelahkan, bagaimana cara menenangkan pikiran?
                                     </p>
                                 </div>
-                                <div style="padding:2px 10px 0;">
-                                    <span style="color:#A1A1AA;font-size:11.5px;font-weight:500;letter-spacing:.02em;">Prompt disarankan</span>
+                                <div class="px-2.5 pt-0.5">
+                                    <span class="text-zinc-400 text-[11.5px] font-medium tracking-wide">Prompt disarankan</span>
                                 </div>
                             </div>
 
                         </div>
 
-                        {{-- Input Box --}}
-                        <div class="mentai-input-wrap">
-                            @include('ai.partials._input-box', ['useMentaiClass' => true])
+                        {{-- Input Box (Bottom Section) --}}
+                        <div class="w-full max-w-[700px] flex flex-col gap-2.5 box-border">
+                            @include('ai.partials._input-box')
                         </div>
 
                     </div>

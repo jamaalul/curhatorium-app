@@ -4,59 +4,6 @@
 
 @section('head')
     @include('ai.partials._styles')
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <style>
-        /* ── Show-page specific ── */
-        .mentai-chat-area {
-            flex: 1;
-            overflow-y: auto;
-            padding: 24px 28px 0;
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-            box-sizing: border-box;
-        }
-        .mentai-chat-messages {
-            display: flex;
-            flex-direction: column;
-            gap: 24px;
-            width: 100%;
-            max-width: 700px;
-            margin: 0 auto;
-            padding-bottom: 180px; /* space for input overlay */
-        }
-        .mentai-input-overlay {
-            position: absolute;
-            bottom: 0; left: 0; right: 0;
-            background: linear-gradient(to top, #FFFFFF 65%, transparent);
-            padding: 0 28px 24px;
-            border-radius: 0 0 24px 24px;
-        }
-        .mentai-input-overlay-inner {
-            width: 100%;
-            max-width: 700px;
-            margin: 0 auto;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        /* Mobile top bar inside card */
-        .mentai-card-topbar {
-            display: none;
-            width: 100%;
-            align-items: center;
-            justify-content: space-between;
-            padding: 16px 20px 0;
-            box-sizing: border-box;
-            flex-shrink: 0;
-        }
-        @media (max-width: 768px) {
-            .mentai-card-topbar { display: flex; }
-            .mentai-chat-area { padding: 16px 16px 0; }
-            .mentai-input-overlay { padding: 0 16px 16px; }
-        }
-    </style>
 @endsection
 
 @section('content')
@@ -67,58 +14,38 @@
 
     @include('ai.partials._scripts-shared')
 
-    <div class="mentai-page-wrap"
+    <div class="flex w-screen h-screen overflow-hidden bg-[#F4F4F5] max-md:bg-white font-dm text-[#1E1E1E]"
          x-data="mentaiShow('{{ $conversation->id }}')"
          x-init="initChat()">
 
         @include('ai.partials._sidebar', ['spaNav' => true])
 
         {{-- ── Main Stage (identical wrapper to index) ── --}}
-        <main class="mentai-main-stage">
-            <div class="mentai-floating-card mentai-scrollbar">
+        <main class="flex-1 h-screen overflow-hidden bg-[#F4F4F5] max-md:bg-white flex flex-col items-center justify-center p-6 md:p-8 max-md:p-0 box-border max-md:h-[100dvh]">
+            <div class="w-full h-full bg-white border border-[#E4E4E7] max-md:border-0 rounded-3xl max-md:rounded-none flex flex-col items-center box-border overflow-hidden relative max-md:h-screen max-md:h-[100dvh]">
 
-                {{-- Mobile top bar (hamburger + MentAI label) --}}
-                <div class="mentai-card-topbar">
-                    <div class="flex items-center gap-2">
-                        <button type="button" @click="sidebarOpen = true"
-                                style="padding:4px;border-radius:8px;background:transparent;border:none;cursor:pointer;color:#09090B;display:flex;align-items:center;justify-content:center;"
-                                title="Buka menu riwayat">
-                            <svg style="width:24px;height:24px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-                            </svg>
-                        </button>
-                        <div class="flex items-center gap-2">
-                            <img src="{{ asset('assets/mentai/mentai_icon.svg') }}" alt="MentAI" style="width:18px;height:18px;" />
-                            <span class="font-bricolage" style="font-weight:600;font-size:15px;color:#1F2937;">MentAI</span>
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <button type="button" @click="openSearchModal()"
-                                style="display:flex;align-items:center;justify-content:center;padding:6px 10px;border-radius:8px;background:#FFFFFF;border:1px solid #E4E4E7;color:#71717A;cursor:pointer;"
-                                title="Cari percakapan">
-                            <svg style="width:14px;height:14px;" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M7.667 14.5C3.9 14.5.834 11.433.834 7.667.834 3.9 3.9.833 7.667.833c3.767 0 6.833 3.067 6.833 6.834 0 3.766-3.066 6.833-6.833 6.833zm0-12.667C4.447 1.833 1.834 4.453 1.834 7.667c0 3.213 2.613 5.833 5.833 5.833 3.22 0 5.834-2.62 5.834-5.833C13.5 4.453 10.887 1.833 7.667 1.833z" fill="currentColor"/>
-                                <path d="M14.666 15.167a.664.664 0 0 1-.473-.2l-1.333-1.334a.669.669 0 0 1 0-.946.669.669 0 0 1 .946 0l1.333 1.333a.669.669 0 0 1-.473 1.147z" fill="currentColor"/>
-                            </svg>
-                        </button>
-                        <a href="{{ route('dashboard') }}"
-                           style="display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:8px;background:#FFFFFF;border:1px solid #E4E4E7;color:#71717A;font-size:12px;font-weight:500;text-decoration:none;">
-                            <svg style="width:13px;height:13px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-                            </svg>
-                            Dashboard
-                        </a>
-                    </div>
+                {{-- Mobile sidebar trigger button --}}
+                <div class="md:hidden w-full flex items-center justify-start p-3 pb-0 shrink-0">
+                    <button type="button"
+                            @click="sidebarOpen = true"
+                            class="w-[30px] h-[30px] rounded-lg bg-transparent border-0 flex items-center justify-center cursor-pointer text-zinc-900 hover:text-[#00BBA7] transition-colors p-1"
+                            title="Buka menu riwayat">
+                        <svg class="w-5 h-5" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M14.646 10V6c0-3.333-1.333-4.667-4.667-4.667H5.98C2.646 1.333 1.313 2.667 1.313 6v4c0 3.333 1.333 4.667 4.666 4.667h3.98C13.313 14.667 14.646 13.333 14.646 10z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M5.313 1.333v13.334" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="m9.98 6.293-1.706 1.707 1.706 1.707" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
                 </div>
 
                 {{-- Chat scroll area --}}
-                <div class="mentai-chat-area mentai-scrollbar" x-ref="scrollArea">
-                    <div class="mentai-chat-messages">
+                <div class="flex-1 overflow-y-auto p-4 sm:p-7 pt-4 sm:pt-6 pb-2 flex flex-col w-full box-border scrollbar-none" x-ref="scrollArea">
+                    <div class="flex flex-col gap-6 w-full max-w-[700px] mx-auto pb-4">
 
                         {{-- SPA loading dots (switching chats) --}}
                         <template x-if="loadingChat">
-                            <div style="display:flex;justify-content:center;align-items:center;padding:96px 0;">
-                                <div style="display:flex;align-items:center;gap:6px;">
+                            <div class="flex justify-center items-center py-24">
+                                <div class="flex items-center gap-1.5">
                                     <div class="bg-[#00BBA7] rounded-full w-2 h-2 animate-bounce"></div>
                                     <div class="bg-[#00BBA7] rounded-full w-2 h-2 animate-bounce" style="animation-delay:.15s"></div>
                                     <div class="bg-[#00BBA7] rounded-full w-2 h-2 animate-bounce" style="animation-delay:.3s"></div>
@@ -128,76 +55,62 @@
 
                         {{-- Messages list --}}
                         <template x-if="!loadingChat">
-                            <div style="display:flex;flex-direction:column;gap:26px;width:100%;">
+                            <div class="flex flex-col gap-6 w-full">
                                 <template x-for="message in messages" :key="message.id">
-                                    <div style="display:flex;width:100%;" :style="(message.role === 'user' || message.role === 'User' || (message.role && message.role.value === 'user')) ? 'justify-content:flex-end;' : 'justify-content:flex-start;'">
+                                    <div class="flex w-full" :class="(message.role === 'user' || message.role === 'User' || (message.role && message.role.value === 'user')) ? 'justify-end' : 'justify-start'">
 
-                                        {{-- Assistant plain clean text (left-aligned) --}}
+                                        {{-- Assistant plain clean text (left-aligned, no avatar) --}}
                                         <template x-if="message.role !== 'user' && message.role !== 'User' && (!message.role || message.role.value !== 'user')">
-                                            <div style="width:100%;max-width:90%;margin-right:auto;">
-                                                
+                                            <div class="w-full max-w-[95%] sm:max-w-[90%] mr-auto">
                                                 {{-- Streamed Markdown Text with live typing cursor --}}
-                                                <div x-show="message.content" style="display:inline;">
+                                                <div x-show="message.content" class="inline">
                                                     <div x-html="renderMarkdown(message.content || '')" class="mentai-prose"></div>
                                                     <template x-if="streaming && message.id === messages[messages.length-1].id">
                                                         <span class="mentai-cursor"></span>
                                                     </template>
                                                 </div>
 
-                                                {{-- Action Bar: Copy Button, Regenerate, & Timestamp --}}
+                                                {{-- Action Bar: Copy Button & Timestamp --}}
                                                 <template x-if="message.content && (!streaming || message.id !== messages[messages.length-1].id)">
-                                                    <div class="mentai-msg-actions">
+                                                    <div class="flex items-center gap-1.5 mt-2 opacity-85">
                                                         {{-- Copy Button --}}
                                                         <button type="button"
                                                                 @click="copyMessage(message.content, message.id)"
-                                                                class="mentai-action-icon-btn"
-                                                                :class="copiedId === message.id ? 'is-copied' : ''"
+                                                                class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md border-0 text-xs font-dm cursor-pointer transition-colors"
+                                                                :class="copiedId === message.id ? 'text-[#00BBA7] bg-[#F0FDFA]' : 'text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900'"
                                                                 :title="copiedId === message.id ? 'Tersalin ke clipboard' : 'Salin pesan'">
                                                             <template x-if="copiedId !== message.id">
-                                                                <svg style="width:13px;height:13px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
                                                                 </svg>
                                                             </template>
                                                             <template x-if="copiedId === message.id">
-                                                                <svg style="width:13px;height:13px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <svg class="w-3.5 h-3.5 text-[#00BBA7]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
                                                                 </svg>
                                                             </template>
                                                             <span x-text="copiedId === message.id ? 'Tersalin' : 'Salin'"></span>
                                                         </button>
-
-                                                        {{-- Regenerate Button (Only for latest message) --}}
-                                                        <template x-if="message.id === messages[messages.length-1].id && !loading">
-                                                            <button type="button"
-                                                                    @click="regenerateLastResponse()"
-                                                                    class="mentai-action-icon-btn"
-                                                                    title="Buat ulang respon">
-                                                                <svg style="width:13px;height:13px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-                                                                </svg>
-                                                                <span>Coba lagi</span>
-                                                            </button>
-                                                        </template>
                                                     </div>
                                                 </template>
 
                                                 {{-- Thinking state indicator before first token arrives --}}
                                                 <template x-if="!message.content && streaming && !hasStreamedText && message.id === messages[messages.length-1].id">
-                                                    <div style="display:inline-flex;align-items:center;gap:8px;padding:4px 0;color:#71717A;font-size:14px;font-family:'DM Sans',sans-serif;">
-                                                        <div style="display:flex;align-items:center;gap:4px;">
+                                                    <div class="inline-flex items-center gap-2 py-1 text-zinc-500 text-sm font-dm">
+                                                        <div class="flex items-center gap-1">
                                                             <span class="mentai-thinking-dot"></span>
                                                             <span class="mentai-thinking-dot" style="animation-delay:0.2s;"></span>
                                                             <span class="mentai-thinking-dot" style="animation-delay:0.4s;"></span>
                                                         </div>
-                                                        <span style="font-size:13.5px;color:#71717A;font-weight:400;">MentAI sedang mengetik...</span>
+                                                        <span class="text-[13.5px] text-zinc-500 font-normal">MentAI sedang mengetik...</span>
                                                     </div>
                                                 </template>
                                             </div>
                                         </template>
 
-                                        {{-- User soft gray rounded bubble (dynamically hugs text width, borderless) --}}
+                                        {{-- User full-rounded pill bubble (dynamically hugs text width) --}}
                                         <template x-if="message.role === 'user' || message.role === 'User' || (message.role && message.role.value === 'user')">
-                                            <div style="background:#F3F4F6;color:#18181B;padding:10px 18px;border-radius:18px;width:fit-content;max-width:78%;font-size:14.5px;line-height:1.55;font-family:'DM Sans',sans-serif;word-break:break-word;margin-left:auto;text-align:left;box-sizing:border-box;">
+                                            <div class="bg-[#F3F4F6] text-zinc-900 px-5 py-2.5 rounded-full w-fit max-w-[80%] sm:max-w-[75%] text-[14.5px] sm:text-[15px] leading-relaxed font-dm break-words ml-auto text-left box-border">
                                                 <div x-html="(message.content || '').replace(/\n/g, '<br>')"></div>
                                             </div>
                                         </template>
@@ -210,10 +123,13 @@
                     </div>
                 </div>
 
-                {{-- Input overlay (floats at bottom of card) --}}
-                <div class="mentai-input-overlay">
-                    <div class="mentai-input-overlay-inner">
-                        @include('ai.partials._input-box', ['useMentaiClass' => true])
+                {{-- Bottom Input Form (Docked snug, with subtle smooth gradient on top edge) --}}
+                <div class="w-full shrink-0 bg-white px-4 sm:px-7 pb-4 sm:pb-6 relative z-10 box-border">
+                    {{-- Eased smooth feather gradient edge (Apple-style non-linear bezier transition) --}}
+                    <div class="mentai-smooth-top-fade"></div>
+
+                    <div class="w-full max-w-[700px] mx-auto flex flex-col gap-2">
+                        @include('ai.partials._input-box')
                     </div>
                 </div>
 

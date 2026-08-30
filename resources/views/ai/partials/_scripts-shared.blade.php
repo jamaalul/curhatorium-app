@@ -13,9 +13,10 @@
 <script>
     function renderMarkdown(content) {
         if (!content) return '';
-        if (typeof marked !== 'undefined' && typeof marked.parse === 'function') {
+        const markedLib = typeof marked !== 'undefined' ? marked : (window.marked || null);
+        if (markedLib && typeof markedLib.parse === 'function') {
             try {
-                return marked.parse(content);
+                return markedLib.parse(content);
             } catch (e) {
                 console.warn('marked.parse error:', e);
             }
@@ -329,10 +330,6 @@
                 this.ensureCurrentConversationInList();
                 this._scrollToBottom();
 
-                if (this.conversations.length <= 1) {
-                    this.fetchConversations();
-                }
-
                 window.addEventListener('popstate', (e) => {
                     if (e.state && e.state.conversationId) {
                         this._loadConversation(e.state.conversationId, false);
@@ -562,7 +559,6 @@
                         const conv = this.conversations.find(c => c.id === this.conversationId);
                         if (conv) conv.title = data.title;
                     }
-                    this.fetchConversations();
                 } catch (e) {
                     console.error('Title generation failed:', e);
                 }
@@ -603,9 +599,6 @@
 
             async initChat() {
                 this._initSidebar(window.__mentaiInitialConversations);
-                if (this.conversations.length === 0) {
-                    this.fetchConversations();
-                }
             },
 
             async sendMessage() {
