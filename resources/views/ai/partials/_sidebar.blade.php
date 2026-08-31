@@ -38,7 +38,7 @@
                 </a>
                 <div class="flex items-center gap-1.5">
                     <button type="button" @click="openSearchModal()" title="Cari percakapan (Ctrl+K)"
-                            class="w-[30px] h-[30px] rounded-lg bg-white max-md:bg-transparent border-0 flex items-center justify-center cursor-pointer text-zinc-900 hover:text-[#00BBA7] hover:bg-black/5 transition-colors">
+                            class="w-[30px] h-[30px] rounded-lg bg-white max-md:bg-transparent border-0 flex items-center justify-center cursor-pointer text-zinc-900 hover:text-[#00BBA7] transition-colors">
                         <svg class="w-4 h-4" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M7.667 14.5C3.9 14.5.834 11.433.834 7.667.834 3.9 3.9.833 7.667.833c3.767 0 6.833 3.067 6.833 6.834 0 3.766-3.066 6.833-6.833 6.833zm0-12.667C4.447 1.833 1.834 4.453 1.834 7.667c0 3.213 2.613 5.833 5.833 5.833 3.22 0 5.834-2.62 5.834-5.833C13.5 4.453 10.887 1.833 7.667 1.833z" fill="currentColor"/>
                             <path d="M14.666 15.167a.664.664 0 0 1-.473-.2l-1.333-1.334a.669.669 0 0 1 0-.946.669.669 0 0 1 .946 0l1.333 1.333a.669.669 0 0 1-.473 1.147z" fill="currentColor"/>
@@ -46,7 +46,7 @@
                     </button>
                     <button type="button"
                             @click="if (window.innerWidth < 768) { sidebarOpen = false; } else { sidebarCollapsed = true; }"
-                            class="w-[30px] h-[30px] rounded-lg bg-white max-md:bg-transparent border-0 flex items-center justify-center cursor-pointer text-zinc-900 hover:text-[#00BBA7] hover:bg-black/5 transition-colors"
+                            class="w-[30px] h-[30px] rounded-lg bg-white max-md:bg-transparent border-0 flex items-center justify-center cursor-pointer text-zinc-900 hover:text-[#00BBA7] transition-colors"
                             title="Tutup sidebar">
                         <svg class="w-4 h-4" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M14.646 10V6c0-3.333-1.333-4.667-4.667-4.667H5.98C2.646 1.333 1.313 2.667 1.313 6v4c0 3.333 1.333 4.667 4.666 4.667h3.98C13.313 14.667 14.646 13.333 14.646 10z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
@@ -155,7 +155,7 @@
                 </svg>
             </button>
             <a href="{{ route('mentai.index') }}"
-               class="w-[30px] h-[30px] rounded-lg bg-white border-0 flex items-center justify-center cursor-pointer text-[#00BBA7] hover:bg-zinc-100 transition-colors"
+               class="w-[30px] h-[30px] rounded-lg bg-white border-0 flex items-center justify-center cursor-pointer text-[#00BBA7] hover:opacity-80 transition-opacity"
                title="New Chat">
                 <svg class="w-4 h-4 text-[#00BBA7]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
