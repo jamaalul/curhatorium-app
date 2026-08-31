@@ -92,7 +92,8 @@
                     ['label' => 'Lebih lama',        'method' => 'olderConversations'],
                 ] as $i => $group)
                 <div x-show="{{ $group['method'] }}().length > 0"
-                     class="flex flex-col gap-1 pb-3 {{ $i < 3 ? 'border-b border-[#E4E4E7]' : '' }}">
+                     class="flex flex-col gap-1"
+                     :class="hasLaterGroups({{ $i }}) ? 'pb-3 border-b border-[#E4E4E7]' : ''">
                     <div class="px-2 py-1 text-[12px] font-normal text-[#71717A]">{{ $group['label'] }}</div>
                     <template x-for="conv in {{ $group['method'] }}()" :key="conv.id">
                         <a :href="`/mental-support-chatbot/${conv.id}`"

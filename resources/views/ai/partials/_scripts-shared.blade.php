@@ -234,6 +234,19 @@
                     return d.getTime() < sevenDaysAgo.getTime();
                 });
             },
+
+            hasLaterGroups(index) {
+                const groups = [
+                    () => this.todayConversations(),
+                    () => this.yesterdayConversations(),
+                    () => this.last7DaysConversations(),
+                    () => this.olderConversations(),
+                ];
+                for (let i = index + 1; i < groups.length; i++) {
+                    if (groups[i]().length > 0) return true;
+                }
+                return false;
+            },
         };
     }
 
