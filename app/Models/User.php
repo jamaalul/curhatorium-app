@@ -35,6 +35,7 @@ class User extends Authenticatable implements FilamentUser
         'onboarding_completed',
         'provider_name',
         'provider_id',
+        'birth_date',
     ];
 
     /**
@@ -56,6 +57,7 @@ class User extends Authenticatable implements FilamentUser
     {
         return [
             'email_verified_at' => 'datetime',
+            'birth_date' => 'date',
             'password' => 'hashed',
         ];
     }
