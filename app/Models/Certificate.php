@@ -35,7 +35,7 @@ class Certificate extends Model
 
     public function module(): BelongsTo
     {
-        return $this->belongsTo(CbtModule::class, 'cbt_module_id');
+        return $this->belongsTo(CbtModule::class, 'cbt_module_id')->withTrashed();
     }
 
     public function isOwnedBy(User $user): bool

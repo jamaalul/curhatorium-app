@@ -4,38 +4,33 @@ namespace App\Listeners;
 
 use App\Events\OrderPaid;
 use App\Models\AiWindow;
+use App\Models\CbtModule;
 use App\Models\MembershipPlan;
+use App\Models\Order;
+use App\Models\UserCbtModule;
 use App\Models\UserEntitlement;
 use App\Models\UserSubscription;
-use DB;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class ProcessOrderEntitlements implements ShouldQueue
 {
     use InteractsWithQueue;
 
-    /**
-     * Create the event listener.
-     */
-    public function __construct()
-    {
-        //
-    }
-
-    /**
-     * Handle the event.
-     */
     public function handle(OrderPaid $event): void
     {
         $order = $event->order;
 
+        if (! $order->isPaid()) {
+            return;
+        }
+
         if ($order->orderable_type === MembershipPlan::class) {
             $this->processMembershipPlan($order);
-        } elseif ($order->orderable_type === 'App\\Models\\CbtModule') {
-            // Placeholder for CBT module
-            Log::info('Placeholder for CBT module order processing', ['order_id' => $order->id]);
+        } elseif ($order->orderable_type === CbtModule::class) {
+            $this->processCbtModule($order);
         } elseif ($order->orderable_type === 'App\\Models\\Ebook') {
             // Placeholder for Ebook
             Log::info('Placeholder for Ebook order processing', ['order_id' => $order->id]);
@@ -47,7 +42,7 @@ class ProcessOrderEntitlements implements ShouldQueue
     /**
      * Process entitlements for a Membership Plan order.
      */
-    private function processMembershipPlan($order): void
+    private function processMembershipPlan(Order $order): void
     {
         // Eager load relationships before entering the transaction
         $order->load('orderable.planBenefits');
@@ -116,6 +111,21 @@ class ProcessOrderEntitlements implements ShouldQueue
                 'order_id' => $order->id,
                 'subscription_id' => $subscription->id,
             ]);
+        });
+    }
+
+    private function processCbtModule(Order $order): void
+    {
+        DB::transaction(function () use ($order): void {
+            $entitlement = UserCbtModule::query()->firstOrNew([
+                'user_id' => $order->user_id,
+                'cbt_module_id' => $order->orderable_id,
+            ]);
+
+            $entitlement->source_order_id = $order->getKey();
+            $entitlement->granted_at ??= now();
+            $entitlement->revoked_at = null;
+            $entitlement->save();
         });
     }
 }
