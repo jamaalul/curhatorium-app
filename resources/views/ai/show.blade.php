@@ -30,7 +30,7 @@
                             @click="sidebarOpen = true"
                             class="w-[30px] h-[30px] rounded-lg bg-transparent border-0 flex items-center justify-center cursor-pointer text-zinc-900 hover:text-[#00BBA7] transition-colors p-1"
                             title="Buka menu riwayat">
-                        <svg class="w-5 h-5" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <svg class="w-5 h-5 rotate-180" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M14.646 10V6c0-3.333-1.333-4.667-4.667-4.667H5.98C2.646 1.333 1.313 2.667 1.313 6v4c0 3.333 1.333 4.667 4.666 4.667h3.98C13.313 14.667 14.646 13.333 14.646 10z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
                             <path d="M5.313 1.333v13.334" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
                             <path d="m9.98 6.293-1.706 1.707 1.706 1.707" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
@@ -108,9 +108,9 @@
                                             </div>
                                         </template>
 
-                                        {{-- User full-rounded pill bubble (dynamically hugs text width) --}}
+                                        {{-- User rounded bubble (dynamically hugs text width) --}}
                                         <template x-if="message.role === 'user' || message.role === 'User' || (message.role && message.role.value === 'user')">
-                                            <div class="bg-[#F3F4F6] text-zinc-900 px-5 py-2.5 rounded-full w-fit max-w-[80%] sm:max-w-[75%] text-[14.5px] sm:text-[15px] leading-relaxed font-dm break-words ml-auto text-left box-border">
+                                            <div class="bg-[#F3F4F6] text-zinc-900 px-5 py-2.5 rounded-3xl w-fit max-w-[80%] sm:max-w-[75%] text-[14.5px] sm:text-[15px] leading-relaxed font-dm break-words ml-auto text-left box-border">
                                                 <div x-html="(message.content || '').replace(/\n/g, '<br>')"></div>
                                             </div>
                                         </template>
