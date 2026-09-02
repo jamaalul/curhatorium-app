@@ -7,7 +7,7 @@
           class="bg-white rounded-xl p-3 sm:py-3 sm:px-3.5 flex items-center justify-between gap-3 transition-colors box-border">
 
         <textarea x-model="input" x-ref="messageInput"
-                  @keydown.enter.prevent="if(!loading) { sendMessage(); }"
+                  @keydown.enter="if (!$event.shiftKey) { $event.preventDefault(); if (!loading) { sendMessage(); } } else { $nextTick(() => autoResize()); }"
                   @input="autoResize()"
                   placeholder="Kirim pesan ke MentAI..."
                   rows="1"
