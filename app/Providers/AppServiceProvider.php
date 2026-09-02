@@ -22,7 +22,26 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // URL::forceScheme('https');
+        $caPath = base_path('vendor/midtrans/midtrans-php/data/cacert.pem');
+        if (file_exists($caPath)) {
+            ini_set('curl.cainfo', $caPath);
+            ini_set('openssl.cafile', $caPath);
+        }
+
+        if (app()->isLocal()) {
+            \Illuminate\Support\Facades\Http::globalOptions([
+                'verify' => false,
+            ]);
+
+            \Illuminate\Support\Facades\Http::globalMiddleware(function ($handler) {
+                return function ($request, $options) use ($handler) {
+                    $options['verify'] = false;
+
+                    return $handler($request, $options);
+                };
+            });
+        }
+
         User::observe(UserObserver::class);
     }
 }

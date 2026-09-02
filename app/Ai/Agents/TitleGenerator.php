@@ -3,18 +3,27 @@
 namespace App\Ai\Agents;
 
 use Illuminate\Contracts\JsonSchema\JsonSchema;
+use Laravel\Ai\Attributes\Model;
 use Laravel\Ai\Attributes\Provider;
-use Laravel\Ai\Attributes\UseCheapestModel;
 use Laravel\Ai\Contracts\Agent;
 use Laravel\Ai\Contracts\HasStructuredOutput;
-use Laravel\Ai\Enums\Lab;
 use Laravel\Ai\Promptable;
 
-#[Provider(Lab::Gemini)]
-#[UseCheapestModel]
 class TitleGenerator implements Agent, HasStructuredOutput
 {
     use Promptable;
+
+    /**
+     * Get the configured provider and model.
+     *
+     * @return array<string, string>
+     */
+    public function provider(): array
+    {
+        return [
+            'gemini' => 'gemini-3.1-flash-lite',
+        ];
+    }
 
     /**
      * Get the instructions that the agent should follow.

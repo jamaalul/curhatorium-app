@@ -9,14 +9,23 @@ use Laravel\Ai\Concerns\RemembersConversations;
 use Laravel\Ai\Contracts\Agent;
 use Laravel\Ai\Contracts\Conversational;
 use Laravel\Ai\Contracts\HasTools;
-use Laravel\Ai\Enums\Lab;
 use Laravel\Ai\Promptable;
 
-#[Provider(Lab::Gemini)]
-#[Model('gemini-3.1-flash-lite')]
 class MentAI implements Agent, Conversational, HasTools
 {
     use Promptable, RemembersConversations;
+
+    /**
+     * Get the configured provider and model.
+     *
+     * @return array<string, string>
+     */
+    public function provider(): array
+    {
+        return [
+            'gemini' => 'gemini-3.1-flash-lite',
+        ];
+    }
 
     public function instructions(): string
     {
@@ -32,7 +41,7 @@ class MentAI implements Agent, Conversational, HasTools
         EOT;
     }
 
-    public function tools(): iterable
+    public function tools(): array
     {
         return [
             new CrisisResourceLookup,

@@ -28,6 +28,8 @@ class CrisisResourceLookup implements Tool
 
     public function schema(JsonSchema $schema): array
     {
-        return [];
+        return [
+            'reason' => $schema->string()->description('Reason for looking up crisis hotline resources'),
+        ];
     }
 }
