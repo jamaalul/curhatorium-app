@@ -1,5 +1,7 @@
 {{-- Shared CSS for MentAI Chat (Animations & Markdown Prose) --}}
 <style>
+    @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
+
     .font-bricolage { font-family: 'Bricolage Grotesque', sans-serif !important; }
     .font-dm, .font-dmsans { font-family: 'DM Sans', sans-serif !important; }
 
