@@ -35,6 +35,7 @@ class User extends Authenticatable implements FilamentUser
         'onboarding_completed',
         'provider_name',
         'provider_id',
+        'birth_date',
     ];
 
     /**
@@ -56,6 +57,7 @@ class User extends Authenticatable implements FilamentUser
     {
         return [
             'email_verified_at' => 'datetime',
+            'birth_date' => 'date',
             'password' => 'hashed',
         ];
     }
@@ -222,5 +224,30 @@ class User extends Authenticatable implements FilamentUser
     public function entitlements(): HasMany
     {
         return $this->hasMany(UserEntitlement::class);
+    }
+
+    public function cbtModuleEntitlements(): HasMany
+    {
+        return $this->hasMany(UserCbtModule::class);
+    }
+
+    public function moduleProgresses(): HasMany
+    {
+        return $this->hasMany(UserModuleProgress::class);
+    }
+
+    public function chapterProgresses(): HasMany
+    {
+        return $this->hasMany(UserChapterProgress::class);
+    }
+
+    public function quizAttempts(): HasMany
+    {
+        return $this->hasMany(QuizAttempt::class);
+    }
+
+    public function certificates(): HasMany
+    {
+        return $this->hasMany(Certificate::class);
     }
 }
