@@ -24,11 +24,12 @@ Route::middleware('auth')->group(function () {
             ->latest('starts_at')
             ->first();
         $user = Auth::user();
+        $hasBirthDate = $user->birth_date !== null;
         $cards = []; // Cards are now loaded via JavaScript
         $hasCalmStarter = false;
         $hasEverHadCalmStarter = false;
 
-        return view('main.main', compact('statsData', 'announcement', 'user', 'cards', 'hasCalmStarter', 'hasEverHadCalmStarter'));
+        return view('main.main', compact('statsData', 'announcement', 'user', 'hasBirthDate', 'cards', 'hasCalmStarter', 'hasEverHadCalmStarter'));
     })->name('dashboard');
 
     // Profile routes
