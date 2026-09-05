@@ -1,0 +1,57 @@
+@page {
+    margin: 28px;
+}
+
+body {
+    color: #18181b;
+    font-family: DejaVu Sans, sans-serif;
+    margin: 0;
+}
+
+.certificate {
+    border: 8px double #0f766e;
+    min-height: 620px;
+    padding: 56px;
+    text-align: center;
+}
+
+.brand {
+    color: #0f766e;
+    font-size: 16px;
+    font-weight: bold;
+    letter-spacing: 3px;
+}
+
+h1 {
+    font-size: 38px;
+    margin: 42px 0 28px;
+}
+
+h2 {
+    color: #0f766e;
+    font-size: 32px;
+    margin: 12px 0 28px;
+}
+
+h3 {
+    font-size: 24px;
+    margin: 12px 0 34px;
+}
+
+.muted {
+    color: #52525b;
+    font-size: 16px;
+}
+
+.identity {
+    color: #52525b;
+    font-size: 13px;
+    margin-top: 52px;
+}
+
+.signature {
+    color: #0f766e;
+    font-size: 20px;
+    font-weight: bold;
+    margin-top: 44px;
+}
