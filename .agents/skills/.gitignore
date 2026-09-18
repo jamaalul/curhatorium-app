@@ -1,0 +1,19 @@
+# Ignore all skills by default
+*
+!.gitignore
+
+# Keep these skills tracked in git:
+!laravel-best-practices/
+!laravel-best-practices/**
+!/laravel-best-practices
+!/laravel-best-practices/**
+
+!socialite-development/
+!socialite-development/**
+!/socialite-development
+!/socialite-development/**
+
+!tailwindcss-development/
+!tailwindcss-development/**
+!/tailwindcss-development
+!/tailwindcss-development/**
