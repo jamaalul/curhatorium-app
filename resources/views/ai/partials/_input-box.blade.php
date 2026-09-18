@@ -1,10 +1,10 @@
 {{--
     Shared MentAI Input Box
 --}}
-<div class="bg-[#CCFBF1] border border-[#96F7E4] rounded-2xl p-1.5 pb-2 flex flex-col gap-1.5 transition-all w-full box-border">
+<div class="bg-[#CCFBF1] border border-[#96F7E4] rounded-2xl p-1.5 pb-2 flex flex-col gap-1.5 transition-colors duration-150 w-full box-border">
 
     <form @submit.prevent="sendMessage"
-          class="bg-white rounded-xl p-3 sm:py-3 sm:px-3.5 flex items-center justify-between gap-3 transition-colors box-border">
+          class="bg-white rounded-xl p-3 sm:py-3 sm:px-3.5 flex items-end justify-between gap-3 transition-colors box-border">
 
         <textarea x-model="input" x-ref="messageInput"
                   @keydown.enter="if (!$event.shiftKey) { $event.preventDefault(); if (!loading) { sendMessage(); } } else { $nextTick(() => autoResize()); }"
@@ -12,11 +12,11 @@
                   placeholder="Kirim pesan ke MentAI..."
                   rows="1"
                   :disabled="loading"
-                  class="bg-transparent text-[15px] sm:text-[16px] font-normal text-zinc-900 placeholder-zinc-400 leading-6 border-0 focus:ring-0 focus:outline-none w-full max-h-[140px] overflow-y-auto resize-none p-0 scrollbar-none"></textarea>
+                  class="bg-transparent text-[15px] sm:text-[16px] font-normal text-zinc-900 placeholder-zinc-400 leading-6 border-0 focus:ring-0 focus:outline-none w-full max-h-[140px] overflow-y-auto resize-none py-1.5 px-0 scrollbar-none"></textarea>
 
         <button type="button"
                 @click="loading ? stopGeneration() : sendMessage()"
-                class="shrink-0 w-9 h-9 min-w-9 rounded-full flex items-center justify-center transition-all duration-200 focus:outline-none cursor-pointer p-0 border-0"
+                class="shrink-0 w-9 h-9 min-w-9 rounded-full flex items-center justify-center transition-all duration-200 focus:outline-none cursor-pointer p-0 border-0 self-end"
                 :class="loading ? 'bg-[#00BBA7] hover:bg-[#009e8d] text-white cursor-pointer' : (input.trim() === '' ? 'bg-zinc-200 text-zinc-400 cursor-not-allowed' : 'bg-[#00BBA7] hover:bg-[#009e8d] text-white')"
                 :disabled="!loading && input.trim() === ''"
                 :title="loading ? 'Hentikan jawaban' : 'Kirim pesan'">

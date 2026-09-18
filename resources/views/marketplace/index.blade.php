@@ -205,10 +205,10 @@
 
 @section('dashboard-content')
     <!-- Alpine.js State Wrapper (Root Level) -->
-    <div x-data="marketplaceComponent(@js($productsData), @js($categoriesData))" class="w-full bg-[#F4F4F5] min-h-screen py-10" style="background-color: #F4F4F5; position: relative;">
+    <div x-data="marketplaceComponent(@js($productsData), @js($categoriesData))" class="w-full bg-[#F4F4F5] min-h-screen py-6 sm:py-10" style="background-color: #F4F4F5; position: relative;">
         
-        <!-- Main Max-Width Container (Matching Figma Node 977:4132 - width 1200px, gap 64px) -->
-        <div class="w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col gap-16 md:gap-20" style="max-width: 1200px; margin-left: auto; margin-right: auto; padding-left: 24px; padding-right: 24px; display: flex; flex-direction: column; gap: 64px;">
+        <!-- Main Max-Width Container -->
+        <div class="w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col gap-10 sm:gap-16" style="max-width: 1200px; margin-left: auto; margin-right: auto; padding-left: 16px; padding-right: 16px; display: flex; flex-direction: column; gap: 40px;">
             
             <!-- Header Section Partial -->
             @include('marketplace.partials.header')

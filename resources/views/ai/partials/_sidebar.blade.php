@@ -61,7 +61,7 @@
             <a href="{{ route('mentai.index') }}"
                class="flex items-center justify-center gap-2 bg-[#00BBA7] hover:bg-[#009e8d] text-white py-2.5 px-4 rounded-lg font-medium text-[15px] transition-all">
                 <img src="{{ asset('assets/mentai/new_chat_icon.svg') }}" alt="New Chat" class="w-5 h-5 filter brightness-0 invert" />
-                <span>New chat</span>
+                <span>Obrolan Baru</span>
             </a>
 
             {{-- Conversation List --}}

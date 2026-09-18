@@ -325,8 +325,17 @@
             autoResize() {
                 const el = this.$refs.messageInput;
                 if (!el) return;
-                el.style.height = 'auto';
-                el.style.height = Math.min(el.scrollHeight, 140) + 'px';
+
+                const currentLen = (this.input || '').length;
+                const prevLen = this._prevInputLen || 0;
+                this._prevInputLen = currentLen;
+
+                if (currentLen < prevLen || currentLen === 0) {
+                    el.style.height = 'auto';
+                }
+
+                const targetHeight = Math.min(Math.max(el.scrollHeight, 36), 140);
+                el.style.height = targetHeight + 'px';
             },
 
             stopGeneration() {
@@ -585,6 +594,26 @@
 
             input:   '',
             loading: false,
+            inputExtraHeight: 0,
+            curhatPrompts: [
+                'Aku lagi merasa overwhelmed banget hari ini, boleh bantu temenin ngobrol?',
+                'Ada banyak hal yang berkecamuk di pikiranku dan aku bingung mau cerita ke siapa.',
+                'Hari ini rasanya cukup berat, aku butuh ruang aman buat meluapkan unek-unek.',
+                'Saya merasa sedikit cemas dan butuh teman bicara yang mau mendengarkan.',
+                'Hari ini cukup melelahkan, bagaimana cara menenangkan pikiran yang overthinking?',
+                'Akhir-akhir ini aku merasa burnout dan kehilangan motivasi, boleh bantu aku?',
+                'Aku merasa ragu dan insecure sama diriku sendiri belakangan ini.',
+                'Lagi ngerasa sedih dan hampa tanpa alasan yang jelas, boleh bantu aku urai perasaan ini?',
+                'Aku sering merasa kesepian meski di tengah keramaian, wajar nggak ya?',
+                'Bisa bantu temenin aku refleksi tentang apa yang kurasakan hari ini?'
+            ],
+
+            generateRandomCurhat() {
+                let available = this.curhatPrompts.filter(p => p !== this.input);
+                if (available.length === 0) available = this.curhatPrompts;
+                const picked = available[Math.floor(Math.random() * available.length)];
+                this.selectStarter(picked);
+            },
 
             stopGeneration() {
                 this.loading = false;
@@ -598,8 +627,22 @@
             autoResize() {
                 const el = this.$refs.messageInput;
                 if (!el) return;
-                el.style.height = 'auto';
-                el.style.height = Math.min(el.scrollHeight, 100) + 'px';
+
+                const currentLen = (this.input || '').length;
+                const prevLen = this._prevInputLen || 0;
+                this._prevInputLen = currentLen;
+
+                if (currentLen < prevLen || currentLen === 0) {
+                    el.style.height = 'auto';
+                }
+
+                const targetHeight = Math.min(Math.max(el.scrollHeight, 36), 140);
+                el.style.height = targetHeight + 'px';
+
+                const extra = Math.max(0, targetHeight - 36);
+                if (this.inputExtraHeight !== extra) {
+                    this.inputExtraHeight = extra;
+                }
             },
 
             selectStarter(text) {
@@ -612,6 +655,7 @@
 
             async initChat() {
                 this._initSidebar(window.__mentaiInitialConversations);
+                this.$nextTick(() => this.autoResize());
             },
 
             async sendMessage() {

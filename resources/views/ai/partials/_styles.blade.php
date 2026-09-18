@@ -36,6 +36,27 @@
         pointer-events: none;
     }
 
+    /* ── Seamless white feather fade & solid backdrop for index input expansion ── */
+    .mentai-index-backdrop {
+        position: absolute;
+        top: -28px;
+        bottom: 0;
+        left: -10px;
+        right: -10px;
+        pointer-events: none;
+        z-index: 1;
+        background: linear-gradient(
+            to top,
+            #FFFFFF 0px,
+            #FFFFFF calc(100% - 28px),
+            rgba(255, 255, 255, 0.95) calc(100% - 20px),
+            rgba(255, 255, 255, 0.75) calc(100% - 13px),
+            rgba(255, 255, 255, 0.40) calc(100% - 6px),
+            rgba(255, 255, 255, 0.12) calc(100% - 2px),
+            rgba(255, 255, 255, 0) 100%
+        );
+    }
+
     /* ── Thinking dot pulse animation ── */
     @keyframes mentaiPulse {
         0%, 100% { transform: scale(0.75); opacity: 0.35; }
