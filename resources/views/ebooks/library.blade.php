@@ -18,35 +18,21 @@
         /* Library Page Header Title & Subtitle */
         .library-header-title {
             font-family: 'Bricolage Grotesque', sans-serif !important;
-            font-size: 28px !important;
-            line-height: 36px !important;
+            font-size: 32px !important;
+            line-height: 40px !important;
             font-weight: 600 !important;
             letter-spacing: -0.015em !important;
             color: #18181B !important;
             margin: 0 !important;
         }
 
-        @media (min-width: 640px) {
-            .library-header-title {
-                font-size: 36px !important;
-                line-height: 44px !important;
-            }
-        }
-
         .library-header-subtitle {
             font-family: 'DM Sans', sans-serif !important;
-            font-size: 14px !important;
-            line-height: 20px !important;
+            font-size: 15px !important;
+            line-height: 24px !important;
             font-weight: 500 !important;
             color: #71717A !important;
             margin: 0 !important;
-        }
-
-        @media (min-width: 640px) {
-            .library-header-subtitle {
-                font-size: 16px !important;
-                line-height: 24px !important;
-            }
         }
 
         /* Library Card Aspect & Banner Specs */
@@ -270,11 +256,11 @@
         <div class="w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col gap-8 sm:gap-10" style="max-width: 1200px; margin-left: auto; margin-right: auto; padding-left: 16px; padding-right: 16px; display: flex; flex-direction: column; gap: 32px;">
             
             <!-- Page Header Section -->
-            <div style="display: flex; flex-direction: column; gap: 8px; width: 100%;">
-                <h1 class="library-header-title">
+            <div style="display: flex; flex-direction: column; gap: 10px; max-width: 672px; width: 100%;">
+                <h1 class="library-header-title" style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 32px; font-weight: 600; line-height: 40px; letter-spacing: -0.015em; color: #18181B; margin: 0;">
                     Ebook Curhatorium
                 </h1>
-                <p class="library-header-subtitle">
+                <p class="library-header-subtitle" style="font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 500; line-height: 24px; color: #71717A; margin: 0;">
                     Pilih bacaan digital untuk mendukung proses refleksi dan pengembangan diri.
                 </p>
             </div>

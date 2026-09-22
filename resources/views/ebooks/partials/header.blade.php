@@ -2,10 +2,10 @@
 <div style="display: flex; justify-content: space-between; align-items: flex-start; width: 100%;">
     <!-- Left Title, Description & Library Button Frame -->
     <div style="display: flex; flex-direction: column; gap: 10px; max-width: 672px; width: 100%;">
-        <h1 style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 32px; sm:font-size: 48px; font-weight: 600; line-height: 40px; sm:line-height: 56px; letter-spacing: -0.015em; color: #18181B; margin: 0;">
+        <h1 style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 32px; font-weight: 600; line-height: 40px; letter-spacing: -0.015em; color: #18181B; margin: 0;">
             Ebook Curhatorium
         </h1>
-        <p style="font-family: 'DM Sans', sans-serif; font-size: 15px; sm:font-size: 18px; font-weight: 500; line-height: 24px; sm:line-height: 28px; color: #71717A; margin: 0;">
+        <p style="font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 500; line-height: 24px; color: #71717A; margin: 0;">
             Pilih bacaan digital untuk mendukung proses refleksi dan pengembangan diri.
         </p>
 

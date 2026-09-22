@@ -58,7 +58,7 @@
                         {{-- 3 Starter Cards (Middle Section, Figma #1257:2324) --}}
                         <div class="w-full flex flex-row overflow-x-auto sm:grid sm:grid-cols-3 gap-3.5 max-md:-mx-4 max-md:px-4 max-md:w-[calc(100%+32px)] scrollbar-none box-border">
 
-                            <div @click="selectStarter('Cerita apa aja, aku di sini buat dengerin 🫰🏼')"
+                            <div @click="generateRandomCurhat()"
                                  class="bg-[#00BBA7] hover:bg-[#009689] rounded-2xl p-1.5 pb-2.5 flex flex-col justify-between gap-2 cursor-pointer transition-colors duration-200 box-border min-w-[220px] max-w-[224px] sm:min-w-0 sm:max-w-none shrink-0 sm:shrink max-md:shadow-xs">
                                 <div class="bg-white rounded-xl p-3 min-h-[86px] sm:min-h-[94px] [@media(max-height:750px)]:min-h-[82px] [@media(max-height:750px)]:p-2.5 flex flex-col justify-between gap-2 box-border">
                                     <div class="flex items-center justify-between w-full">
@@ -103,9 +103,15 @@
 
                         </div>
 
-                        {{-- Input Box (Bottom Section) --}}
-                        <div class="w-full max-w-[700px] flex flex-col gap-2.5 box-border">
-                            @include('ai.partials._input-box')
+                        {{-- Input Box (Bottom Section: expands upward so page layout remains unchanged) --}}
+                        <div class="w-full max-w-[700px] flex flex-col gap-2.5 box-border relative z-10"
+                             :style="inputExtraHeight > 0 ? 'margin-top: -' + inputExtraHeight + 'px;' : ''">
+                            {{-- White feather backdrop & mask for smooth upward expansion over cards --}}
+                            <div class="mentai-index-backdrop" aria-hidden="true"></div>
+
+                            <div class="relative z-10 w-full flex flex-col gap-2.5">
+                                @include('ai.partials._input-box')
+                            </div>
                         </div>
 
                     </div>
