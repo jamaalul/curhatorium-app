@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use App\QuizQuestionType;
 use Database\Factories\QuizQuestionOptionFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Validation\ValidationException;
 
 class QuizQuestionOption extends Model
 {
@@ -28,6 +30,29 @@ class QuizQuestionOption extends Model
     protected $attributes = [
         'is_correct' => false,
     ];
+
+    protected static function booted(): void
+    {
+        static::saving(function (QuizQuestionOption $option): void {
+            $question = QuizQuestion::query()->find($option->quiz_question_id);
+
+            if (! $question || $question->type !== QuizQuestionType::MultipleChoice) {
+                throw ValidationException::withMessages([
+                    'option_text' => 'Opsi hanya dapat ditambahkan pada pertanyaan multiple choice.',
+                ]);
+            }
+        });
+
+        static::deleting(function (QuizQuestionOption $option): void {
+            if (! $option->isForceDeleting()) {
+                $option->order_number = ((int) static::query()
+                    ->withTrashed()
+                    ->where('quiz_question_id', $option->quiz_question_id)
+                    ->max('order_number')) + 1;
+                $option->saveQuietly();
+            }
+        });
+    }
 
     /** @return array<string, string> */
     protected function casts(): array

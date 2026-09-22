@@ -3,6 +3,7 @@
 namespace Tests\Feature\Filament;
 
 use App\Filament\Pages\EClassOverview;
+use App\Filament\Resources\CbtModuleResource;
 use App\Filament\Widgets\EClassStats;
 use App\Models\CbtModule;
 use App\Models\Certificate;
@@ -33,6 +34,7 @@ class EClassOverviewTest extends TestCase
             ->assertOk()
             ->assertSee('Ringkasan E-Class')
             ->assertSee('Kelola Modul E-Class')
+            ->assertSee(CbtModuleResource::getUrl('index'))
             ->assertSeeLivewire(EClassStats::class);
     }
 

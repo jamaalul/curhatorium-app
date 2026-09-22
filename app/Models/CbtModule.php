@@ -30,6 +30,19 @@ class CbtModule extends Model
         'is_published' => false,
     ];
 
+    protected static function booted(): void
+    {
+        static::saving(function (CbtModule $module): void {
+            if ($module->is_published) {
+                $module->published_at ??= now();
+
+                return;
+            }
+
+            $module->published_at = null;
+        });
+    }
+
     /** @return array<string, string> */
     protected function casts(): array
     {

@@ -7,7 +7,7 @@
         </p>
 
         <div class="mt-4">
-            <x-filament::button tag="a" href="{{ url('/admin/cbt-modules') }}" icon="heroicon-m-book-open">
+            <x-filament::button tag="a" href="{{ \App\Filament\Resources\CbtModuleResource::getUrl('index') }}" icon="heroicon-m-book-open">
                 Kelola Modul E-Class
             </x-filament::button>
         </div>

@@ -86,7 +86,8 @@ class CbtModuleModelTest extends TestCase
         $question = QuizQuestion::factory()->for($chapter)->shortAnswer()->create([
             'accepted_answer' => 'Mindfulness',
         ]);
-        $option = QuizQuestionOption::factory()->for($question, 'question')->correct()->create();
+        $multipleChoice = QuizQuestion::factory()->for($chapter)->create(['order_number' => 2]);
+        $option = QuizQuestionOption::factory()->for($multipleChoice, 'question')->correct()->create();
 
         $this->assertSame(ChapterType::Quiz, $chapter->type);
         $this->assertSame(QuizQuestionType::ShortAnswer, $question->type);

@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Validation\ValidationException;
 
 class Chapter extends Model
 {
@@ -24,6 +25,54 @@ class Chapter extends Model
         'video_url',
         'order_number',
     ];
+
+    protected static function booted(): void
+    {
+        static::saving(function (Chapter $chapter): void {
+            if ($chapter->type === ChapterType::Reading) {
+                if (blank($chapter->text_content)) {
+                    throw ValidationException::withMessages([
+                        'text_content' => 'Konten bacaan wajib diisi untuk chapter reading.',
+                    ]);
+                }
+
+                $chapter->video_url = null;
+            }
+
+            if ($chapter->type === ChapterType::Video) {
+                if (blank($chapter->video_url)) {
+                    throw ValidationException::withMessages([
+                        'video_url' => 'URL video wajib diisi untuk chapter video.',
+                    ]);
+                }
+
+                $chapter->text_content = null;
+            }
+
+            if ($chapter->type === ChapterType::Quiz) {
+                $chapter->text_content = null;
+                $chapter->video_url = null;
+            }
+        });
+
+        static::saved(function (Chapter $chapter): void {
+            if ($chapter->type !== ChapterType::Quiz) {
+                $chapter->questions()->each(function (QuizQuestion $question): void {
+                    $question->delete();
+                });
+            }
+        });
+
+        static::deleting(function (Chapter $chapter): void {
+            if (! $chapter->isForceDeleting()) {
+                $chapter->order_number = ((int) static::query()
+                    ->withTrashed()
+                    ->where('cbt_module_id', $chapter->cbt_module_id)
+                    ->max('order_number')) + 1;
+                $chapter->saveQuietly();
+            }
+        });
+    }
 
     /** @return array<string, string> */
     protected function casts(): array
