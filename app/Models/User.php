@@ -225,4 +225,29 @@ class User extends Authenticatable implements FilamentUser
     {
         return $this->hasMany(UserEntitlement::class);
     }
+
+    public function cbtModuleEntitlements(): HasMany
+    {
+        return $this->hasMany(UserCbtModule::class);
+    }
+
+    public function moduleProgresses(): HasMany
+    {
+        return $this->hasMany(UserModuleProgress::class);
+    }
+
+    public function chapterProgresses(): HasMany
+    {
+        return $this->hasMany(UserChapterProgress::class);
+    }
+
+    public function quizAttempts(): HasMany
+    {
+        return $this->hasMany(QuizAttempt::class);
+    }
+
+    public function certificates(): HasMany
+    {
+        return $this->hasMany(Certificate::class);
+    }
 }
