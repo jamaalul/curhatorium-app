@@ -28,6 +28,16 @@
             $paidDescription = 'Pembayaranmu sudah kami terima. Akses ebook akan diproses melalui sistem order.';
             $cancelDescription = 'Pesananmu akan dibatalkan dan kamu harus memulai ulang dari halaman ebook.';
         }
+
+        if ($order->orderable instanceof \App\Models\CbtModule) {
+            $returnUrl = $order->isPaid()
+                ? route('e-class.library')
+                : route('e-class.show', $order->orderable);
+            $returnLabel = $order->isPaid() ? 'Buka Library E-Class' : 'Kembali';
+            $retryLabel = 'Kembali ke E-Class';
+            $paidDescription = 'Pembayaranmu sudah kami terima. Module E-Class kini tersedia di library.';
+            $cancelDescription = 'Pesananmu akan dibatalkan dan kamu harus memulai ulang dari halaman E-Class.';
+        }
     @endphp
 
     <div class="flex justify-center items-center bg-gray-200 px-4 sm:px-8 py-11 w-full min-h-[calc(100vh-64px)]">

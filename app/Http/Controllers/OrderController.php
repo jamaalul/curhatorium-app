@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\OrderPaid;
+use App\Models\CbtModule;
 use App\Models\MembershipPlan;
 use App\Models\Order;
 use App\Services\DokuService;
@@ -84,6 +85,14 @@ class OrderController extends Controller
         }
 
         $order->load(['orderable', 'payments']);
+
+        if ($order->orderable === null && $order->orderable_type === CbtModule::class) {
+            $order->setRelation(
+                'orderable',
+                CbtModule::query()->withTrashed()->findOrFail($order->orderable_id),
+            );
+        }
+
         $latestPayment = $order->latestPayment;
 
         return view('order.show', compact('order', 'latestPayment'));

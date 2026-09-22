@@ -7,6 +7,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "barryvdh/laravel-dompdf": "^3.1",
         "filament/filament": "^3.3",
         "google-gemini-php/laravel": "^2.0",
         "laravel/ai": "^0.7.2",
