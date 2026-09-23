@@ -40,9 +40,9 @@ class RevenueWidget extends BaseWidget
             ->sum('gross_amount')
             +
             FakeOrder::where('status', 'paid')
-            ->when($month, fn ($query) => $query->whereMonth('created_at', $month))
-            ->when($year, fn ($query) => $query->whereYear('created_at', $year))
-            ->sum('gross_amount');
+                ->when($month, fn ($query) => $query->whereMonth('created_at', $month))
+                ->when($year, fn ($query) => $query->whereYear('created_at', $year))
+                ->sum('gross_amount');
 
         $physicalGoodsTransactions = MarketplaceOrder::query()
             ->when($month, fn ($query) => $query->whereMonth('created_at', $month))
@@ -52,15 +52,15 @@ class RevenueWidget extends BaseWidget
         $totalCompleteTransactions = $digitalGoodsTransactions + $physicalGoodsTransactions;
 
         return [
-            Stat::make('Total Revenue', 'Rp ' . number_format($totalCompleteTransactions))
+            Stat::make('Total Revenue', 'Rp '.number_format($totalCompleteTransactions))
                 ->description('This month completed transactions')
                 ->descriptionIcon('heroicon-m-shopping-cart')
                 ->color('primary'),
-            Stat::make('Digital Goods Revenue', 'Rp ' . number_format($digitalGoodsTransactions))
+            Stat::make('Digital Goods Revenue', 'Rp '.number_format($digitalGoodsTransactions))
                 ->description('This month completed transactions')
                 ->descriptionIcon('heroicon-m-globe-alt')
                 ->color('primary'),
-            Stat::make('Physical Goods Revenue', 'Rp ' . number_format($physicalGoodsTransactions))
+            Stat::make('Physical Goods Revenue', 'Rp '.number_format($physicalGoodsTransactions))
                 ->description('This month completed transactions')
                 ->descriptionIcon('heroicon-m-archive-box')
                 ->color('primary'),

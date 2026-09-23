@@ -13,7 +13,7 @@ class TransactionsWidget extends BaseWidget
 {
     use InteractsWithPageFilters;
 
-    protected static ?int $sort = 3;
+    protected static ?int $sort = 4;
 
     /**
      * @var int | string | array<string, int | string | null>
@@ -40,9 +40,9 @@ class TransactionsWidget extends BaseWidget
             ->count()
             +
             FakeOrder::where('status', 'paid')
-            ->when($month, fn ($query) => $query->whereMonth('created_at', $month))
-            ->when($year, fn ($query) => $query->whereYear('created_at', $year))
-            ->count();
+                ->when($month, fn ($query) => $query->whereMonth('created_at', $month))
+                ->when($year, fn ($query) => $query->whereYear('created_at', $year))
+                ->count();
 
         $physicalGoodsTransactions = MarketplaceOrder::query()
             ->when($month, fn ($query) => $query->whereMonth('created_at', $month))
