@@ -52,17 +52,12 @@ class EClassCatalogCheckoutTest extends TestCase
         $this->get('/e-class/'.$deleted->slug)->assertNotFound();
     }
 
-    public function test_protected_routes_require_authentication_and_verified_email(): void
+    public function test_protected_routes_require_authentication(): void
     {
         $module = CbtModule::factory()->published()->create();
-        $unverifiedUser = User::factory()->unverified()->create();
 
         $this->post(route('e-class.checkout', $module))->assertRedirect(route('login'));
         $this->get(route('e-class.library'))->assertRedirect(route('login'));
-
-        $this->actingAs($unverifiedUser)
-            ->post(route('e-class.checkout', $module))
-            ->assertRedirect(route('verification.notice'));
     }
 
     public function test_user_can_checkout_published_module_with_doku_and_price_snapshot(): void

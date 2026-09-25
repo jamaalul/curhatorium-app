@@ -13,7 +13,7 @@ class TransactionsWidget extends BaseWidget
 {
     use InteractsWithPageFilters;
 
-    protected static ?int $sort = 4;
+    protected static ?int $sort = 3;
 
     /**
      * @var int | string | array<string, int | string | null>

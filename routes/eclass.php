@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('e-class')->name('e-class.')->group(function () {
     Route::get('/', [EClassController::class, 'index'])->name('index');
 
-    Route::middleware(['auth', 'verified'])->group(function () {
+    Route::middleware(['auth'])->group(function () {
         Route::get('/library', [EClassController::class, 'library'])->name('library');
 
         Route::get('/certificates', [CertificateController::class, 'index'])->name('certificates.index');
@@ -29,7 +29,7 @@ Route::prefix('e-class')->name('e-class.')->group(function () {
 
     Route::get('/{module}', [EClassController::class, 'show'])->name('show');
 
-    Route::middleware(['auth', 'verified'])->scopeBindings()->group(function () {
+    Route::middleware(['auth'])->scopeBindings()->group(function () {
         Route::post('/{module}/checkout', [EClassController::class, 'checkout'])
             ->middleware('throttle:5,1')
             ->name('checkout');

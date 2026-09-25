@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('ebooks')->name('ebooks.')->group(function () {
     Route::get('/', [EbookController::class, 'index'])->name('index');
 
-    Route::middleware(['auth', 'verified'])->group(function () {
+    Route::middleware(['auth'])->group(function () {
         Route::get('/library', [EbookController::class, 'library'])->name('library');
         Route::get('/{ebook}/read', [EbookController::class, 'read'])->name('read');
         Route::get('/{ebook}/stream', [EbookController::class, 'stream'])->name('stream')->middleware('signed');
